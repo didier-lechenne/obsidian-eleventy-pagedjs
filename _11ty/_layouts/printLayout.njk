@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% if title %}{{ title }} | {% endif %}{{ config.title }}</title>
+    <meta name="description" content="{{ subtitle or config.subtitle }}" />
+
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
+
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="{{ config.title }}"
+      href="/feed.xml"
+    />
+
+    <meta property="og:title" content="{{ title or config.title }}" />
+    <meta
+      property="og:description"
+      content="{{ subtitle or config.subtitle }}"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="{{ config.url }}{{ page.url }}" /> 
+
+    <link rel="stylesheet" href="/assets/css/style.css" />
+    <link rel="stylesheet" href="/assets/css/print/print.css" />
+
+    <script src="/csspageweaver/lib/csstree.min.js"></script>
+    <script src="/csspageweaver/main.js" type="module"></script>
+  </head>
+
+  <body class="print {{ bodyClass }} ">
+    <!-- Main content -->
+    <main class="main-content">
+      <div class="container">
+        {% for p in collections.printPages %}
+        <section id="{{ p.fileSlug | cleanTitle | slug }}"
+
+        class="{% if p.data.toc %}toc-{{ p.data.toc}}{% endif %} {{ p.data.template | default('default') }} " >
+          {{ p.templateContent | safe }}
+
+
+          {% if backlinks.length > 0 %}
+          <aside class="backlinks">
+            <h3>Pages qui pointent vers celle-ci</h3>
+            <ul>
+              {% for link in backlinks %}
+              <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+              {% endfor %}
+            </ul>
+          </aside>
+          {% endif %}
+
+        </section>
+        {% endfor %}
+      </div>
+    </main>
+  </body>
+</html>

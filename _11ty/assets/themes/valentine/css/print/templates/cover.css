@@ -1,0 +1,15 @@
+@page cover {
+	margin: 0mm;
+
+	@left-top {
+		display: none;
+	}
+	@right-top {
+		display: none;
+	}
+}
+
+[data-template= cover] {
+	page: cover;
+	page-break-after: always;
+}

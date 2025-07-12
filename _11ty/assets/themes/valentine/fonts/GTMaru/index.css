@@ -1,0 +1,35 @@
+@font-face {
+    font-family: 'GT Maru';
+    src: url('GTMaru-Regular.woff2') format('woff2'),
+        url('GTMaru-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'GT Maru';
+    src: url('GTMaru-RegularOblique.woff2') format('woff2'),
+        url('GTMaru-RegularOblique.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'GT Maru';
+    src: url('GTMaru-LightOblique.woff2') format('woff2'),
+        url('GTMaru-LightOblique.woff') format('woff');
+    font-weight: 300;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'GT Maru';
+    src: url('GTMaru-Light.woff2') format('woff2'),
+        url('GTMaru-Light.woff') format('woff');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}

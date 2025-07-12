@@ -1,0 +1,76 @@
+.toc {
+	page: clean;
+	page-break-after: always;
+}
+
+
+.toc #nav {
+	display: flex;
+	justify-content: center; /* Centre horizontalement le contenu */
+	align-items: flex-start; /* Aligne vers le haut */
+	/* height: calc(var(--pagedjs-pagebox-height) - var(--pagedjs-margin-bottom) - var(--pagedjs-margin-top)); */
+	min-height: 0;
+	padding: 0;
+	width: 100%; 
+}
+
+.toc #list-toc-generated {
+	list-style: none;
+	padding: 0;
+	margin: 0; 
+	width: fit-content; /* La largeur s'adapte au contenu */
+	text-align: center; /* Centre le texte horizontalement */
+}
+
+.toc #list-toc-generated li:first-child {
+	margin-top: 0em;
+}
+
+.toc #list-toc-generated .toc-element a {
+	font-family: var(--fontHeading);
+	font-size: 25pt;
+	line-height: 140%;
+/* ────────────────────────────────────────
+	↑ espacement entre les les élements de la liste en %
+	cela peut être une valeure fixe en mm, pt ect.
+   ──────────────────────────────────────── */
+	display: block; 
+	text-align: center; 
+}
+
+.toc #list-toc-generated .toc-element a::after {
+	content: target-counter( attr(href), page ); /* ajoute le n° de page genereré automatiquement */
+	margin-left: var(--gutter);
+}
+
+.toc #list-toc-generated li:nth-of-type(1) {
+	margin-bottom: var(--gutter);
+}
+/* ────────────────────────────────────────
+   ↑ CIBLE le 1er élément de liste dans la TOC
+   
+   .toc #list-toc-generated = Conteneur de la table des matières
+   li:nth-of-type(1) = Premier <li> parmi tous les <li>
+   margin-bottom: var(--gutter) = Ajoute un espacement en bas
+   
+   Rendu visuel :
+   [1. Premier chapitre    ]
+   [                       ] ← Espace ajouté
+   [2. Deuxième chapitre   ]
+   [3. Troisième chapitre  ]
+   ──────────────────────────────────────── */
+
+.toc #list-toc-generated li:nth-of-type(31) {
+	margin-bottom: var(--gutter);
+}
+/* ────────────────────────────────────────
+   ↑ CIBLE le 31ème élément de liste dans la TOC
+   
+   li:nth-of-type(31) = 31ème <li> parmi tous les <li>
+   margin-bottom: var(--gutter) = Même espacement que le 1er
+   
+   Exemple de structure probable :
+   [1-30. Chapitres principaux]
+   [                          ] ← Espace après le 31ème
+   [32-60. Annexes/références ]
+   ──────────────────────────────────────── */

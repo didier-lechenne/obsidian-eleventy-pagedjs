@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% if title %}{{ title }} | {% endif %}{{ config.title }}</title>
+    <meta name="description" content="{{ subtitle or config.subtitle }}" />
+
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="{{ config.title }}"
+      href="/feed.xml"
+    />
+
+    <meta property="og:title" content="{{ title or config.title }}" />
+    <meta
+      property="og:description"
+      content="{{ subtitle or config.subtitle }}"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="{{ config.url }}{{ page.url }}" />
+
+
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <script  src="assets/js/sideNotes.js"></script>
+    
+
+  </head>
+  <body class="screen {{ bodyClass }} ">
+
+
+    <main id="main">
+
+    <nav id="index">
+      <button>☰</button>
+      <ul class="nav-ul">
+        {% for p in collections.screenPages %}
+        <li id="nav-{{ p.fileSlug | cleanTitle | slug }}" class="nav-{{ p.data.template | default("default") }}">
+          <a href="#{{ p.fileSlug | cleanTitle | slug }}">
+            {{ p.templateContent | extractTitle  }}
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </nav>
+
+      {% for p in collections.screenPages %}
+      <section id="{{ p.fileSlug | cleanTitle | slug }}" class="{{ p.data.template | default('default') }}">
+         {{ p.templateContent | safe  }} 
+
+          {% if backlinks.length > 0 %}
+          <aside class="backlinks">
+            <h3>Pages qui pointent vers celle-ci</h3>
+            <ul>
+              {% for link in backlinks %}
+              <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+              {% endfor %}
+            </ul>
+          </aside>
+          {% endif %}
+
+      </section>
+      {% endfor %}
+    </main>
+  </body>
+</html>

@@ -1,0 +1,117 @@
+@page fauxtitre {
+/* ────────────────────────────────────────
+   Règle @page : Définit un modèle de page pour l'impression
+   
+   "fauxtitre" = nom du modèle de page personnalisé
+   Utilisé par les éléments ayant : page: fauxtitre;
+   
+   But : Contrôler la mise en page lors de l'impression
+   ──────────────────────────────────────── */
+
+	@left-top {
+	/* ────────────────────────────────────────
+	   Marge de page gauche-haut (impression recto-verso)
+	   ──────────────────────────────────────── */
+		display: none; /* supprime le folio */
+	}
+	
+	@right-top {
+	/* ────────────────────────────────────────
+	   Marge de page droite-haut (impression recto-verso)
+	   ──────────────────────────────────────── */
+		display: none; /* supprime le folio */
+	}
+}
+
+.fauxtitre  {
+    page: fauxtitre;
+	/* ────────────────────────────────────────
+	   Associe cette classe au modèle @page "fauxtitre"
+	   
+	   Effet : Lors de l'impression, cet élément utilisera
+	   les règles définies dans @page fauxtitre {}
+	   (ici = pas de numéro de page )
+	   ──────────────────────────────────────── */
+	font-family: var(--fontLabeur);
+	/* ────────────────────────────────────────
+	   Police de caractères utilisant une variable CSS
+	   
+	   var(--fontfamily) = Référence à la variable globale
+	   defini dans le fichier print.css
+	   :root { --fontLabeur: "GT Maru", sans-serif; }
+	   ──────────────────────────────────────── */
+}
+
+.fauxtitre h1 {
+	font-size: 36pt;
+	line-height: 120%;
+	font-family: var(--fontHeading);
+	font-weight: 400;
+	text-align: left;
+	/* ────────────────────────────────────────
+	text-align: left   	→ Alignement à gauche
+	text-align: center 	→ Alignement au centre  
+	text-align: right  	→ Alignement à droite
+	text-align: justify → tetxe justifié
+	──────────────────────────────────────── */
+    margin: 0;
+    padding: 0;
+
+	page: clean;
+}
+
+.fauxtitre h2 {
+	font-size: 14pt;
+	line-height: 120%;
+	font-weight: 400;
+	font-family: var(--fontHeading);
+	text-align: left;
+    margin: 0;
+    padding: 0;
+}
+
+.fauxtitre p {
+/* ────────────────────────────────────────  
+   [data-template="fauxtitre"] → Élément avec attribut data-template="fauxtitre"
+                        │
+                        └─ (espace) = sélecteur descendant
+                                │
+                                └─ p = tous les paragraphes <p>
+   
+   Résultat : Cible tous les <p> contenus dans un élément 
+   ayant l'attribut data-template="fauxtitre"
+   
+   Exemple HTML correspondant :
+   <div data-template="fauxtitre">
+     <p>Ce paragraphe sera stylé ✓</p>
+     <span>Ce span ne sera pas stylé ✗</span>
+   </div>
+   <p>Ce paragraphe ne sera pas stylé ✗</p>
+   ──────────────────────────────────────── */
+	font-size: 9pt;
+	line-height: 140%;
+	text-align: left;
+	/* ────────────────────────────────────────
+	text-align: left   	→ Alignement à gauche
+	text-align: center 	→ Alignement au centre  
+	text-align: right  	→ Alignement à droite
+	text-align: justify → tetxe justifié
+	──────────────────────────────────────── */
+	
+	font-weight: 400;
+/* ────────────────────────────────────────
+   font-weight : Contrôle l'épaisseur du texte.
+   Attention cela depend de votre police de caracteres !
+   
+   Valeurs numériques courantes :
+   • 100, 200, 300 → Texte très fin (thin/light)
+   • 400           → Normal (poids par défaut)
+   • 500, 600      → Medium/Semi-bold
+   • 700           → Gras (bold)
+   • 800, 900      → Très gras (extra-bold/black)
+   ──────────────────────────────────────── */
+}
+
+
+
+

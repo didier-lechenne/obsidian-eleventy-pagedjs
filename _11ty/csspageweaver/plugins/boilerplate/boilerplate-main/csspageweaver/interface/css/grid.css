@@ -1,0 +1,46 @@
+@media print {
+
+
+
+    /* Size and marin for all pages ------------- */
+    @page {
+        size: 148mm 210mm;
+        margin-top: 20mm;
+        margin-bottom: 20mm;
+        bleed: 6mm;
+        marks: crop;
+        @bottom-center{
+            content: counter(page);
+        }
+    }  
+
+    figure, img{
+        width: 100%;
+    }
+
+
+}
+
+
+*{
+    margin: 0;
+    padding: 0;
+}
+
+
+#image-full{
+    --pagedjs-full-page: spread;
+    width: 100%;
+    height: 100%;
+}
+
+#image-full img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+
+.pagedjs_note{
+    color: red;
+}

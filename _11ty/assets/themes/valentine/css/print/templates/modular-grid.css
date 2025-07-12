@@ -1,0 +1,146 @@
+/* main section:not(.modularGrid) h2 {
+		font-family: "BBBBaskervvol-Base", sans-serif;
+		font-size: 28pt;
+		line-height: 33.6pt;
+		font-weight: normal;
+		text-align: center;
+		page: clean ;
+	}
+ */
+
+@page modularGrid {
+}
+
+[data-template="modularGrid"],
+.modularGrid {
+	page: modularGrid;
+
+	page-break-before: always;
+	page-break-after: always;
+
+	--g-column-count: var(--grid-col, 12);
+	--g-column-gutter: var(--grid-col-gutter, var(--gutter));
+	--g-row-count: var(--grid-row, 10);
+	--g-row-gutter: var(--grid-row-gutter, var(--gutter));
+
+	display: grid;
+	grid-template-columns: repeat(var(--g-column-count), 1fr);
+	grid-template-rows: repeat(var(--g-row-count), 1fr);
+	column-gap: var(--g-column-gutter);
+	row-gap: var(--g-row-gutter);
+	height: calc(
+		var(--pagedjs-height) - var(--pagedjs-margin-top) -
+			var(--pagedjs-margin-bottom) - var(--pagedjs-bleed-top) -
+			var(--pagedjs-bleed-bottom)
+	);
+	min-height: 0;
+	padding-top: 0;
+	padding-bottom: 0;
+}
+
+.modularGrid .pagedjs_full-page_content {
+	left: calc((var(--pagedjs-margin-left) + 6mm) * -1) !important;
+	width: calc(var(--pagedjs-pagebox-width) + 6mm + 6mm) !important;
+}
+
+.modularGrid .insert {
+	grid-column: var(--printcol, auto) / span var(--printwidth, 3);
+	grid-row: var(--printrow, auto) / span var(--printheight, 3);
+	position: relative;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	max-width: unset;
+
+	/* break-inside: avoid;      
+        page-break-inside: avoid;  */
+}
+
+.modularGrid .insert h1,
+.modularGrid .insert h2,
+.modularGrid .insert h3,
+.modularGrid .insert h4,
+.modularGrid .insert div,
+.modularGrid .insert p,
+.modularGrid .insert blockquote {
+	align-self: var(--alignself, start);
+	flex-grow: 1;
+	margin: 0;
+	padding: 0;
+	/* evite le dépassement du texte  */
+	overflow: hidden;
+	/* break-inside: avoid;      
+        page-break-inside: avoid;  */
+}
+
+[data-template="modularGrid"] .insert p,
+.modularGrid .insert p {
+	margin-top: 0em;
+	margin-bottom: 0em;
+}
+
+[data-template="modularGrid"] .insert p:last-child ,
+.modularGrid .insert p:last-child {
+	margin-bottom: 0;
+}
+
+[data-template="modularGrid"] figure,
+.modularGrid figure {
+	grid-column: var(--printcol, auto) / span var(--printwidth, 3);
+	grid-row: var(--printrow, auto) / span var(--printheight, 1);
+	align-self: var(--alignself, start);
+	overflow: hidden;
+	position: relative;
+    margin-top: 0 !important;
+    margin-block-start: 0 !important;
+    margin-bottom: 0 !important;
+    margin-block-end: 0 !important;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	max-width: unset;
+	/* background-color: hsla(16, 100%, 50%, 0.15); */
+}
+
+[data-template="modularGrid"] figcaption,
+.modularGrid figcaption {
+	grid-column: var(--printcol, auto) / span var(--printwidth, 12);
+	grid-row: calc(var(--printrow) + var(--printheight)) / span 1;
+	position: relative;
+	width: 100%;
+}
+
+.hideMarker .modularGrid figure {
+	background-color: unset;
+}
+
+[data-template="modularGrid"] figure img,
+.modularGrid figure img {
+	height: auto;
+	position: absolute;
+	border-style: none;
+	break-inside: avoid;
+	max-width: unset;
+
+	left: calc(var(--imgX, 0) * 1%);
+	top: calc(var(--imgY, 0) * 1%);
+	width: calc(var(--imgW, 100) * 1%);
+
+	align-self: var(--alignself, start);
+}
+
+.modularGrid figure figcaption {
+}
+
+.modularGrid h2 {
+	/* display: none; */
+	/* font-family: unset;
+		font-size: unset;
+		line-height: unset;
+		font-weight: unset;
+		text-align: unset; */
+}

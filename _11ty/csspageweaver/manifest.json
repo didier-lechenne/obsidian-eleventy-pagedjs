@@ -1,0 +1,29 @@
+{
+    "plugins": [  "floatElements", "tableOfContent", "marginBox", "imposition", "spread", "previewPage", "fullPage", "inlineNotes",  "reloadInPlace"],
+    "pluginsParameters":{
+
+        "reloadInPlace": {
+            "blur": false,
+            "behavior": "instant"
+        },
+
+        "tableOfContent": {
+            "tocContainer": "#nav-toc",
+            "tocTitles": [ "h2"]
+        }
+
+
+
+    },
+    
+    "css": [
+        "/assets/css/style.css",
+        "/assets/css/print/print.css"
+        
+        
+    ],
+    "hook": [
+
+    ]
+}
+

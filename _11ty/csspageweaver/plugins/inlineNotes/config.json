@@ -1,0 +1,12 @@
+{
+	"name": "Inline notes",
+	"description": "This script moves listed notes to inline elements at the place of the call",
+	"author": ["Julie Blanc"],
+	"license": "MIT License",
+	"version": "1.0",
+	"parameters": {
+		"input": ".footnote-ref",
+		"containerNotes": "#footnotes"
+	},
+	"hook": "inlineNotes.js"
+}

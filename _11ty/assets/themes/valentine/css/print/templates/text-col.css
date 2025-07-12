@@ -1,0 +1,52 @@
+@page textCol {
+	page-break-before: always;
+	page-break-after: always;
+}
+
+[data-template="textCol"],
+[data-template="bibliographie"],
+.bibliographie {
+	page: textCol;
+
+	--g-column-count: var(--grid-col, 2);
+	--g-column-gutter: var(--grid-col-gutter, var(--gutter));
+
+	columns: var(--g-column-count);
+	column-gap: var(--g-column-gutter);
+
+	font-family: var(--fontfamily);
+	font-size: 9pt;
+	line-height: 12pt;
+}
+
+
+[data-template="textCol"] h2,
+[data-template="bibliographie"] h2,
+.bibliographie h2 {
+
+	column-span: all;
+/* ────────────────────────────────────────
+   ↑ ÉTALEMENT SUR TOUTES LES COLONNES
+   
+   column-span : Contrôle si un élément s'étend 
+   sur plusieurs colonnes dans un layout multi-colonnes
+
+   • none → L'élément reste dans une seule colonne (défaut)
+   • all  → L'élément s'étend sur toutes les colonnes
+
+   ──────────────────────────────────────── */
+	font-family: var(--fontHeading);
+	font-size: 28pt;
+	line-height: 33.6pt;
+	font-weight: normal;
+	text-align: center;
+	/* supprime le folio */
+	page: clean;
+}
+
+
+[data-template="textCol"] p,
+[data-template="bibliographie"] p,
+.bibliographie p {
+	/* break-inside: avoid; */
+}

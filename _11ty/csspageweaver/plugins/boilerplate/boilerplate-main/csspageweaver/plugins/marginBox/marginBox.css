@@ -1,0 +1,7 @@
+:root {
+    --color-marginBox: purple;
+}
+
+.no-marginBoxes{
+    --color-marginBox: transparent;
+}

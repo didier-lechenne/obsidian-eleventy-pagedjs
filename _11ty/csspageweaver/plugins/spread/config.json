@@ -1,0 +1,15 @@
+{
+	"name": "Spread",
+	"description": "",
+	"version": "1.0",
+	"ui": {
+		"title": "Screen view",
+		"description": "This Toogle single page or board view",
+		"toggle": false,
+		"template": "spread.html"
+	},
+	"stylesheet": "spread.css",
+	"hook": "spread-hook.js",
+	"script": "spread-ui.js"
+
+}

@@ -1,0 +1,39 @@
+/* PREVIEW MODE */
+
+.interface-preview {
+    background-color: var(--color-preview);
+    --color-pageBox: #999;
+}
+
+.interface-preview .pagedjs_page{
+    box-shadow: none;
+}
+
+.interface-preview .pagedjs_right_page .pagedjs_bleed, 
+.interface-preview .pagedjs_left_page .pagedjs_bleed-top,
+.interface-preview .pagedjs_left_page .pagedjs_bleed-bottom,
+.interface-preview .pagedjs_left_page .pagedjs_bleed-left{
+    background-color: var(--color-preview);
+    z-index:999999;
+}
+
+.interface-preview .pagedjs_marks-crop, 
+.interface-preview .pagedjs_marks-crop{
+    opacity: 0;
+}
+
+
+.interface-preview .pagedjs_pagebox {
+    background: none;
+}
+
+
+.button-print{ display: none; }
+
+.interface-preview{
+    --color-marginBox: transparent;
+}
+
+.interface-preview .grid-page{
+    display: none;
+}

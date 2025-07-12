@@ -1,0 +1,7 @@
+{
+	"name": "Float elements",
+	"author": ["Julie Blanc"],
+	"description": "",
+	"version": "1.0",
+	"hook": "hook.js"
+}

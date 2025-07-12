@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if title %}{{ title }} | {% endif %}{{ site.title }}</title>
+    <meta name="description" content="{{ description or site.description }}">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="/assets/css/style.css">
+    
+
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+    
+    <!-- RSS Feed -->
+    <link rel="alternate" type="application/rss+xml" title="{{ site.title }}" href="/feed.xml">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="{{ title or site.title }}">
+    <meta property="og:description" content="{{ description or site.description }}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ site.url }}{{ page.url }}">
+    
+    <script type="module" src="/assets/js/script.js"></script>
+</head>
+<body class="{{ bodyClass }}">
+    
+    <!-- Main content -->
+    <main class="main-content">
+        <div class="container">
+
+        {% set currentMode = siteMode or 'print' %}
+
+        {% if currentMode == 'print' %}
+        {% set currentCollection = collections.printPages %}
+        {% elif currentMode == 'screen' %}
+        {% set currentCollection = collections.screenPages %}
+        {% else %}
+        {% set currentCollection = collections.contentPages %}
+        {% endif %}
+
+        <!-- Une seule boucle ! -->
+        <nav class="navigation">
+        {% for p in currentCollection %}
+        <li>
+            <a href="#{{ p.fileSlug }}">
+            {{ p.data.title or p.fileSlug | title }} - {{ p.data.show }}
+            </a>
+        </li>
+        {% endfor %}
+        </nav>
+
+
+            <!-- Navigation des sections -->
+            <nav>
+                <ul>
+                    {% for pageItem in collections.contentPages %}
+                    <li>
+                        <a href="#{{ pageItem.fileSlug }}">
+                            {{ pageItem.data.title or pageItem.fileSlug | title }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </nav>
+       
+            
+     
+            
+  
+            {% for pageItem in collections.contentPages %}
+            <section class="content-section" id="{{ pageItem.fileSlug }}">
+
+                
+                <div class="section-content">
+                    {{ pageItem.templateContent | safe }}
+                </div>
+                
+
+
+            </section>
+            {% endfor %}
+
+
+
+
+                   
+        </div>
+    </main>
+    
+</body>
+</html>
+
+

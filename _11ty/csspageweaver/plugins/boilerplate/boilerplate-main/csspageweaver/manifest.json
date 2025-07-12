@@ -1,0 +1,12 @@
+{
+    "plugins": ["baseline","grid","marginBox","imposition","spread","previewPage","reloadInPlace","fullPage"],
+    "pluginsParameters":{},
+    "css": [
+        "css/style.css"
+    ],
+    "hook": [
+        "/js/custom-handler-example-1.js",
+        "/js/custom-handler-example-2.js"
+    ]
+}
+

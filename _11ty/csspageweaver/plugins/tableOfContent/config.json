@@ -1,0 +1,9 @@
+{
+	"name": "Table of content",
+	"description": "A script to generate a table of content",
+	"author": ["Julie Blanc", "Julien Taquet"],
+	"licence": "MIT",
+	"version": "1.0",
+	"hook": "tableOfContent.js",
+	"stylesheet": "tableOfContent.css"
+}

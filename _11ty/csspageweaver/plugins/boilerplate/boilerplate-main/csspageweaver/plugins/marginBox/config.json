@@ -1,0 +1,10 @@
+{
+	"version": "1.0",
+	"ui": {
+		"title": "Margin boxes",
+		"description": "This Toogle border around margin box",
+		"toggle": true
+	},
+	"script": "marginBox.js",
+	"stylesheet": "marginBox.css"
+}

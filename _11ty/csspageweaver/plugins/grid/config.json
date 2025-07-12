@@ -1,0 +1,13 @@
+{
+	"name": "Grid",
+	"description": "",
+	"version": "1.0",
+	"ui": {
+		"title": "Grid",
+		"description": "This Toogle a 12 columns grid",
+		"toggle": true
+	},
+	"stylesheet": "grid.css",
+	"script": "grid-ui.js",
+	"hook": "grid-hook.js"
+}

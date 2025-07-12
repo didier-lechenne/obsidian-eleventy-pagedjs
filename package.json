@@ -1,0 +1,60 @@
+{
+  "name": "didier",
+  "version": "1.0.0",
+  "description": "",
+  "main": ".eleventy.js",
+  "scripts": {
+    "clean": "rimraf .cache _site",
+    "start:screen": "cross-env ELEVENTY_ENV=dev npx eleventy --serve ",
+    "start:print": "npx eleventy --serve --config=.eleventyPrint.js",
+    "start": "npx eleventy --serve --config=.eleventyStart.js",
+    "build:screen": "npx eleventy --config=.eleventy.js",
+    "build:print": "npx eleventy --config=.eleventyPrint.js",
+    "build": "npm run clean && npm run build:screen && npm run build:print",
+    "css": "lightningcss --minify --targets \">= 0.25%\" ./static/css/main.css -o ./static/css/output.css",
+    "sync": "rsync -avz --progress --delete public/ accentgrave@ssh-accentgrave.alwaysdata.net:/home/accentgrave/radicalweb.test/",
+    "deploy": "rm -r public && npm run build && npm run sync"
+  },
+  "keywords": [],
+  "author": "Didier Lechenne",
+  "license": "CCBYSA",
+  "devDependencies": {
+    "@11ty/eleventy": "^3.0.0",
+    "@11ty/eleventy-img": "^5.0.0",
+    "@11ty/eleventy-navigation": "^0.3.5",
+    "eleventy-plugin-svg-sprite": "^2.4.2",
+    "lightningcss": "^1.28.2",
+    "lightningcss-cli": "^1.28.2",
+    "rimraf": "^3.0.2"
+  },
+
+  
+  "dependencies": {
+    "@11ty/eleventy-plugin-rss": "^2.0.2",
+    "@11ty/eleventy-plugin-syntaxhighlight": "^5.0.0",
+    "@11tyrocks/eleventy-plugin-collection-schemas": "^0.1.1",
+    "@11tyrocks/eleventy-plugin-emoji-readtime": "^1.0.1",
+    "@uncenter/eleventy-plugin-toc": "^1.0.3",
+    "adm-zip": "^0.5.16",
+    "clean-css": "^5.3.3",
+    "css-what": "^6.1.0",
+    "dotenv": "^16.4.7",
+    "front-matter": "^4.0.2",
+    "inquirer": "^12.1.0",
+    "js-yaml": "^4.1.0",
+    "markdown-it": "^14.1.0",
+    "markdown-it-abbr": "^2.0.0",
+    "markdown-it-anchor": "^9.2.0",
+    "markdown-it-attrs": "^4.2.0",
+    "markdown-it-container": "^4.0.0",
+    "markdown-it-footnote": "^4.0.0",
+    "markdown-it-image-figures": "^2.1.1",
+    "markdown-it-implicit-figures": "^0.12.0",
+    "markdown-it-mark": "^4.0.0",
+    "markdown-it-sub": "^2.0.0",
+    "markdown-it-sup": "^2.0.0",
+    "markdown-it-toc-done-right": "^4.2.0",
+    "sharp": "^0.33.5",
+    "string": "^3.3.3"
+  }
+}

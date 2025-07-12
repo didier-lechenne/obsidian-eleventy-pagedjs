@@ -1,0 +1,49 @@
+.pagedjs_page_fullLeft .pagedjs_full-spread_container{
+    margin: 0;
+    width: calc(var(--pagedjs-pagebox-width) + var(--bleed-images));
+    height: calc(var(--pagedjs-pagebox-height) + var(--bleed-images)*2)!important;
+    position: absolute;
+    top: calc((var(--pagedjs-margin-top) + var(--bleed-images))*-1);
+    left: calc((var(--pagedjs-margin-left) + var(--bleed-images))*-1);
+    overflow: hidden;
+  }
+  .pagedjs_page_fullRight .pagedjs_full-spread_container{
+    margin: 0;
+    width: calc(var(--pagedjs-pagebox-width) + var(--bleed-images));
+    height: calc(var(--pagedjs-pagebox-height) + var(--bleed-images)*2)!important;
+    position: absolute;
+    top: calc((var(--pagedjs-margin-top) + var(--bleed-images))*-1);
+    left: calc(var(--pagedjs-margin-left)*-1);
+    overflow: hidden;
+  }
+  .pagedjs_full-spread_content{
+    margin: 0;
+    width: calc(var(--pagedjs-pagebox-width)*2 + var(--bleed-images)*2);
+    height: calc(var(--pagedjs-pagebox-height) + var(--bleed-images)*2)!important;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  .pagedjs_page_fullLeft .pagedjs_full-spread_content{
+    left: calc(var(--pagedjs-fold)*-1);
+  }
+  .pagedjs_page_fullRight .pagedjs_full-spread_content{
+    left: calc((var(--pagedjs-pagebox-width) + var(--bleed-images))*-1 + var(--pagedjs-fold))
+  }
+
+  .pagedjs_full-page_content {
+    margin: 0;
+    position: absolute;
+    top: calc((var(--pagedjs-margin-top) + var(--bleed-images))*-1);
+  }
+  .pagedjs_left_page .pagedjs_full-page_content {
+    width: calc(var(--pagedjs-pagebox-width) + var(--bleed-images));
+    height: calc(var(--pagedjs-pagebox-height) + var(--bleed-images) + var(--bleed-images))!important;
+    left: calc((var(--pagedjs-margin-left) + var(--bleed-images))*-1);
+  
+  }
+  .pagedjs_right_page .pagedjs_full-page_content {
+    width: calc(var(--pagedjs-pagebox-width) + var(--bleed-images));
+    height: calc(var(--pagedjs-pagebox-height) + var(--bleed-images) * 2)!important;
+    left: calc(var(--pagedjs-margin-left)*-1);
+  }

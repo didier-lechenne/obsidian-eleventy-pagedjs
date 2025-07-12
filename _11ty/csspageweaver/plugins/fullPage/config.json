@@ -1,0 +1,9 @@
+{
+	"name": "Full page",
+	"description": "Create full page elements and full spread elements in the flow of your book",
+	"licence": "MIT",
+	"author": ["Julie Blanc"],
+	"version": "2.0",
+	"hook": "fullPage.js",
+	"stylesheet": "fullPage.css"
+}

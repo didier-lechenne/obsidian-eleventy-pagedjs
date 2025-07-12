@@ -1,0 +1,13 @@
+#list-toc-generated{
+    --before-page: "";
+}
+
+.toc-element a.toc-page-after::after{
+    content: var(--before-page) target-counter(attr(href), page);
+    float: right;  /* put number at the right of the page */
+}
+
+.toc-element a.toc-page-before::before{
+    content: var(--before-page) target-counter(attr(href), page);
+    margin-right: 1ch; /* space after number */
+}

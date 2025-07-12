@@ -1,0 +1,38 @@
+
+section.introduction h2 {
+	font-family: var(--fontHeading);
+	font-size: 28pt;
+	line-height: 33.6pt;
+	font-weight: normal;
+	text-align: center;
+	/* supprime le folio */
+	page: clean;
+}
+
+section.introduction {
+	font-family: var(--fontHeading);
+	font-size: 19pt;
+	line-height: 22pt;
+}
+
+	/* ===================
+   SI BESOIN AJUSTER UN NOUVEAU STYLE SUR LES PARAGRAPHES
+   =================== */
+section.introduction p{      
+   /* margin-block-start: 0 !important;    
+   margin-block-end: 0 !important;
+   text-indent: 10mm;     */
+}
+
+section.introduction p:first-of-type{          
+   /* text-indent: 0mm!important;       */
+}
+
+
+section.introduction .figure {
+	/* margin-block-start: var(--gutter);
+    margin: var(--gutter) 0;
+    max-width: var(--maxwidth); */
+}
+
+
