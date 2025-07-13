@@ -3,8 +3,8 @@
 	/* ===================
    IMPORTATION DES POLICES DE CARACTERES AU FORMAT WEB
    =================== */
-	@import "../fonts/GTMaru/index.css";
-	@import "../fonts/BBBBaskervvol/index.css";
+	@import "/assets/fonts/GTMaru/index.css";
+	@import "/assets/fonts/BBBBaskervvol/index.css";
 
 
   	/* ===================

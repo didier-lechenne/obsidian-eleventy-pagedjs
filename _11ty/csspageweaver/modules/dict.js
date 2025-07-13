@@ -79,7 +79,7 @@ class CssPageWeaver_Dict {
 		
 		try{
 			// Attempt to read the manifest file to get the list of features
-			return await this.importJson(`${cssPageWeaver.directory.root}/`,`manifest.json`);
+			return await this.importJson(`${cssPageWeaver.directory.root}`,`manifest.json`);
 		} catch(error){
 			console.log('Manifest not found, trying alternative method.');
 			// If the manifest is not found, list feature names from the plugin directory

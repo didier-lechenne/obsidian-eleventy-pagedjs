@@ -6,31 +6,29 @@ const shortcodesConfig = require("./_11ty/config/shortcodes.js");
 const transformsConfig = require("./_11ty/config/transforms.js");
 const passthroughConfig = require("./_11ty/config/passthrough.js");
 const yamlPlugin = require("./_11ty/config/yaml.js");
-
 const config = require("./_11ty/config/siteData.js");
 
 module.exports = function (eleventyConfig) {
+  const env = process.env.ELEVENTY_ENV;
 
 
-  // Copier les assets depuis _11ty
   eleventyConfig.addPassthroughCopy({
-     [`${config.publicFolder}/images`]: "images"  ,
-    "_11ty/assets": "assets",
-    "_11ty/assets/modes": "assets/modes",
-    "_11ty/csspageweaver": "csspageweaver"
+    [`${config.publicFolder}/images`]: "images",
+    [`_11ty/assets/themes/${config.theme}`]: "assets",
+    "_11ty/csspageweaver": "csspageweaver",
   });
 
- 
   eleventyConfig.on("afterBuild", () => {
     console.log("✅ Site screen généré avec succès !");
   });
 
   eleventyConfig.addGlobalData("eleventyComputed", {
     permalink: (data) => {
-
-    if (data.siteMode === "screen") {
-      return data.permalink;
-    }
+      
+      if (data.siteMode === "screen") {
+          return data.permalink;
+        }
+      
       if (data.page.inputPath.endsWith(".md")) {
         return false;
       }
@@ -41,9 +39,12 @@ module.exports = function (eleventyConfig) {
   // === APPLIQUER LES CONFIGURATIONS ===
 
   eleventyConfig.addPlugin(yamlPlugin);
-  eleventyConfig.addPlugin(markdownPlugin);
-  eleventyConfig.addPlugin(imagePlugin);
 
+  if (env === "prod") {
+    console.log("✅ PROD !");
+    eleventyConfig.addPlugin(imagePlugin);
+  }
+  eleventyConfig.addPlugin(markdownPlugin);
   collectionsConfig(eleventyConfig);
   filtersConfig(eleventyConfig);
   shortcodesConfig(eleventyConfig);

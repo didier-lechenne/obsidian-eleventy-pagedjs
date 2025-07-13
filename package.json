@@ -5,15 +5,21 @@
   "main": ".eleventy.js",
   "scripts": {
     "clean": "rimraf .cache _site",
+
     "start:screen": "cross-env ELEVENTY_ENV=dev npx eleventy --serve ",
     "start:print": "npx eleventy --serve --config=.eleventyPrint.js",
     "start": "npx eleventy --serve --config=.eleventyStart.js",
-    "build:screen": "npx eleventy --config=.eleventy.js",
-    "build:print": "npx eleventy --config=.eleventyPrint.js",
-    "build": "npm run clean && npm run build:screen && npm run build:print",
+
+    "build:screen": "cross-env ELEVENTY_ENV=prod npx eleventy --config=.eleventy.js",
+    "build:print": "cross-env ELEVENTY_ENV=prod npx eleventy --config=.eleventyPrint.js",
+    "build": "npm run clean && npm run build:screen && npm run build:print ",
+
     "css": "lightningcss --minify --targets \">= 0.25%\" ./static/css/main.css -o ./static/css/output.css",
+
     "sync": "rsync -avz --progress --delete public/ accentgrave@ssh-accentgrave.alwaysdata.net:/home/accentgrave/radicalweb.test/",
-    "deploy": "rm -r public && npm run build && npm run sync"
+
+    "deploy": "npm run build && cd _site && git init && git branch -M pages && git remote add origin git@codeberg.org:didierlechenne/valentine.git && git add . && git commit -m 'Deploy' && git push -f origin pages"
+
   },
   "keywords": [],
   "author": "Didier Lechenne",

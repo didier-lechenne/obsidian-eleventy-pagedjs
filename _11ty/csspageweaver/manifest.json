@@ -18,9 +18,7 @@
     
     "css": [
         "/assets/css/style.css",
-        "/assets/css/print/print.css"
-        
-        
+        "/assets/css/print.css"
     ],
     "hook": [
 

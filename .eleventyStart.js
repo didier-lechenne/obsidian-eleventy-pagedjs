@@ -1,3 +1,4 @@
+// const { HtmlBasePlugin } = require("@11ty/eleventy");
 const collectionsConfig = require("./_11ty/config/collections.js");
 const transformsConfig = require("./_11ty/config/transforms.js");
 const markdownPlugin = require("./_11ty/config/markdown.js");
@@ -44,8 +45,6 @@ module.exports = function (eleventyConfig) {
         return data.permalink;
       }
       
-
-
       // Pour z_indexScreen.md  
       if (data.page.inputPath.endsWith('z_indexScreen.md')) {
         return data.permalink;
@@ -62,6 +61,7 @@ module.exports = function (eleventyConfig) {
 
   // === APPLIQUER LES CONFIGURATIONS ===
 
+  // eleventyConfig.addPlugin(HtmlBasePlugin);
   eleventyConfig.addPlugin(yamlPlugin);
   eleventyConfig.addPlugin(markdownPlugin);
   collectionsConfig(eleventyConfig);

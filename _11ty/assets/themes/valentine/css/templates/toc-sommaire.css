@@ -3,6 +3,10 @@
 	page-break-after: always;
 }
 
+.toc a {
+	text-decoration: none;
+}
+
 
 .toc #nav {
 	display: flex;
@@ -39,7 +43,7 @@
 }
 
 .toc #list-toc-generated .toc-element a::after {
-	content: target-counter( attr(href), page ); /* ajoute le n° de page genereré automatiquement */
+	content: target-counter( attr(href), page ); 
 	margin-left: var(--gutter);
 }
 
