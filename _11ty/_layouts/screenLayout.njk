@@ -24,6 +24,7 @@
     <meta property="og:url" content="{{ config.url }}{{ page.url }}" />
 
 
+
     <link rel="stylesheet" href="assets/css/style.css" />
     <script  src="assets/js/sideNotes.js"></script>
     
@@ -49,6 +50,7 @@
 
       {% for p in collections.screenPages %}
       <section id="{{ p.fileSlug | cleanTitle | slug }}" class="{{ p.data.template | default('default') }}">
+      
          {{ p.templateContent | safe  }} 
 
           {% if backlinks.length > 0 %}

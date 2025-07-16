@@ -1,0 +1,12 @@
+
+<!-- _11ty/_layouts/cover.njk -->
+<section id="{{ p.fileSlug | cleanTitle | slug }}" 
+         style="{% if bgColor %}--bgColor:{{ bgColor }};{% endif %}" 
+         data-template="cover"
+         {% if show %}data-show="{{ show }}"{% endif %}
+         {% if toc %}data-toc="{{ toc }}"{% endif %}
+         class="{% if toc %}toc-{{ toc }}{% endif %} cover coverNJK">
+
+  {{ p.templateContent | safe  }} 
+
+</section>

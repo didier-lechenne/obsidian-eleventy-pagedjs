@@ -147,7 +147,7 @@ module.exports = function (eleventyConfig) {
   </iframe>`;
 
           case "note":
-            const noteAltText = rest.join("|").trim() || "Fichier"; // ✅ Variable locale
+            const noteAltText = rest.join("|").trim() || "Fichier"; // 
             if (filePath.includes("#")) {
               const [noteName, anchor] = filePath.split("#");
               const cleanNote = noteName.replace(/^\d+[\.\-\s]*/, "");
@@ -225,6 +225,25 @@ module.exports = function (eleventyConfig) {
     return content;
   });
 
+
+// Compteur global en dehors du preprocessor
+let globalImgCounter = 0;
+eleventyConfig.addPreprocessor("imgfull", "*", (data, content) => {
+  content = content.replace(
+    /\(\s*imgfull\s*:\s*([^\s]+)\s+page\s*:\s*([^)]+)\s*\)/g,
+    function(match, src, page) {
+      globalImgCounter++; 
+      const cleanPage = page.trim();
+      return `<figure id="figure-${globalImgCounter}" class="full-page ${cleanPage}">
+        <img src="${src}">
+      </figure>`;
+    }
+  );
+  
+  return content;
+});
+
+
   eleventyConfig.addTransform("invisibleSpaces", function (content, outputPath) {
       if (!outputPath || !outputPath.endsWith(".html")) {
         return content;
@@ -252,8 +271,7 @@ module.exports = function (eleventyConfig) {
   // remettra le rendu de ces notes markdown, en notes compatibles pour pagedjs
   // ouf !!!!
 
-  eleventyConfig.addTransform(
-    "uniqueFootnotes",
+  eleventyConfig.addTransform("uniqueFootnotes",
     function (content, outputPath) {
       if (outputPath && outputPath.endsWith(".html")) {
         let compteur = 0;

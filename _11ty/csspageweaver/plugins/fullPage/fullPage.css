@@ -1,3 +1,4 @@
+
 .pagedjs_page_fullLeft .pagedjs_full-spread_container{
     margin: 0;
     width: calc(var(--pagedjs-pagebox-width) + var(--bleed-images));
@@ -47,3 +48,21 @@
     height: calc(var(--pagedjs-pagebox-height) + var(--bleed-images) * 2)!important;
     left: calc(var(--pagedjs-margin-left)*-1);
   }
+
+  /* hack pour une image full en cover */
+ .pagedjs_right_page .pagedjs_full-page_content.cover {
+    width: calc(var(--pagedjs-pagebox-width) + var(--bleed-images) + var(--bleed-images));
+    height: calc(var(--pagedjs-pagebox-height) + var(--bleed-images) * 2) !important;
+    left: calc(var(--pagedjs-margin-left) - var(--pagedjs-margin-right) + var(--bleed-images)  * -1) !important;
+}
+
+ /* .pagedjs_right_page .pagedjs_full-page_content.cover {
+    width: calc(var(--pagedjs-pagebox-width) - var(--pagedjs-margin-left) - var(--pagedjs-margin-right)   );
+    height: calc(var(--pagedjs-pagebox-height) - var(--pagedjs-margin-top) - var(--pagedjs-margin-bottom) ) !important;
+    left: 0 !important;
+    top: 0 !important;
+} */
+
+
+
+

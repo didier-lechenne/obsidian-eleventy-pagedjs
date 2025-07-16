@@ -16,7 +16,7 @@ module.exports = function(eleventyConfig) {
 		// formats: ["auto"],
 		// optional, output image widths
 		widths: ["800", "400"],
-		urlPath: "/images/", 
+		urlPath: "valentine/images/", 
 		resolveUrls: true,   
 		// optional, attributes assigned on <img> override these values.
 		defaultAttributes: {

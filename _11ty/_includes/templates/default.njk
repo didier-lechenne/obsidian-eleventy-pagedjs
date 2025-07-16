@@ -1,0 +1,10 @@
+<section id="{{ p.fileSlug | cleanTitle | slug }}" 
+         style="" 
+         data-template="default"
+         {% if p.data.show %}data-show="{{ p.data.show }}"{% endif %}
+         {% if p.data.toc %}data-toc="{{ p.data.toc }}"{% endif %}
+         class="{% if p.dat.toc %}toc-{{ p.data.toc }}{% endif %} default marker alla">
+  
+  {{ p.templateContent | safe  }} 
+
+</section>

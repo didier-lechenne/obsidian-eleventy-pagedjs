@@ -91,7 +91,7 @@ module.exports = function (eleventyConfig) {
     pathPrefix: "",
     dir: {
       input: config.publicFolder,
-      output: "_site",
+      output: "_site/",
       includes: "../_11ty/_includes",
       layouts: "../_11ty/_layouts",
       data: "../_11ty/_data",

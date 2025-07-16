@@ -195,7 +195,7 @@ class CssPageWeaver_Dict {
 	 */
 	lookForForgottenStylesheet(userStylesheets) {
 		// Get all stylesheet (not for screen) already loaded
-		const links = document.querySelectorAll(`link[rel="stylesheet"]:not([media="screen"]`)
+		const links = document.querySelectorAll(`link[rel="stylesheet"]:not([media="screen"])`)
 
 		let domStylesheets = []
 
@@ -233,7 +233,7 @@ class CssPageWeaver_Dict {
 			const featureDir = `${cssPageWeaver.directory.plugins}/${featureName}/`
 
 			const featureEmbedConfig =  await this.importJson(featureDir, `config.json`)
-			const featureManifestConfig = {"parameters" : featuresParameters[featureName]} || {}
+			const featureManifestConfig = featuresParameters[featureName] ? {"parameters": featuresParameters[featureName]} : {}
 			const featureConfig = {...featureEmbedConfig, ...featureManifestConfig}
 
 			// Create a new instance of the feature

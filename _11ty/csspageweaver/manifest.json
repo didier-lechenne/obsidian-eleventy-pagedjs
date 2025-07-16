@@ -1,5 +1,5 @@
 {
-    "plugins": [  "floatElements", "tableOfContent", "marginBox", "imposition", "spread", "previewPage", "fullPage", "inlineNotes",  "reloadInPlace"],
+    "plugins": [  "fullPage", "typeCraft", "invisibleSpaces", "floatElements", "tableOfContent", "marginBox", "imposition", "spread", "previewPage",  "inlineNotes",  "marker", "reloadInPlace"],
     "pluginsParameters":{
 
         "reloadInPlace": {
@@ -20,8 +20,9 @@
         "/assets/css/style.css",
         "/assets/css/print.css"
     ],
+    
     "hook": [
-
+        
     ]
 }
 

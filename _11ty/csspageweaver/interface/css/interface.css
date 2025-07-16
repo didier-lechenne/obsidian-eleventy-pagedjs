@@ -9,13 +9,15 @@ Adapted for this project */
 :root {
     --color-background: #efefef;
     --color-pageSheet: #cfcfcf;
-    --color-pageBox: violet;
+    --color-pageBox: hsl(16, 100%, 50%);
     --color-paper: white;
     --pagedjs-crop-color: #000;
     --pagedjs-crop-stroke: 1px;
     --color-preview: #222;
 
    --pagedjs-header-height: 80px;
+
+
 
    /* --pagedjs-bleed-left-right: 0mm!important; */
 }

@@ -1,6 +1,7 @@
 	@page blankpage {
 		margin: 0cm;
-        background-color: var(--bg-color, transparent);
+		background-color: var(--bgColor, transparent);
+        
 		
 		@left-top {
 			display: none;
@@ -34,6 +35,7 @@
 
 	[data-template="blankpage"] {
 		page: blankpage;
+		
 		page-break-before: always;
 		page-break-after: always;
 		/* width:100%; */

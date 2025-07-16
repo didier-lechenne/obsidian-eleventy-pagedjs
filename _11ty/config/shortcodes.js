@@ -25,12 +25,48 @@ module.exports = function(eleventyConfig) {
     return `<a href="/${slug}/" class="internal-link">${displayText}</a>`;
   });
 
-
-
-
   // Shortcode pour les citations
   eleventyConfig.addShortcode("quote", function(text, author = null) {
     const authorHtml = author ? `<cite>— ${author}</cite>` : '';
     return `<blockquote class="custom-quote"><p>${text}</p>${authorHtml}</blockquote>`;
   });
+
+
+eleventyConfig.addShortcode("imgfullPage", function (src, alt, className = "", style = "", caption = "") {
+  let attributes = `src="${src}" alt="${alt}" `;
+  
+  if (className) {
+    attributes += ` class="${className}"`;
+  }
+  
+  if (style) {
+    attributes += ` style="${style}"`;
+  }
+  
+  attributes += ' loading="lazy"';
+  
+  const img = `<img ${attributes}>`;
+  const figcaption = caption ? `<figcaption>${caption}</figcaption>` : '';
+  
+  return `<figure>${img}${figcaption}</figure>`;
+});
+
+
+
+  eleventyConfig.addNunjucksShortcode("imgfullPage", function (src, fullPage) {
+    if (!src) {
+      return '<p>Erreur: src manquant</p>';
+    }
+  
+    const figureClass = fullPage ? `full-page ${fullPage}` : "";
+    
+    return `<figure id="figure" class="${figureClass}">
+      <img src="${src}">
+    </figure>`;
+  });
+
+// {% imgfullPage "/images/archery-outdoors-women-dithered.png", "pageCover" %}
+
+
+
 };

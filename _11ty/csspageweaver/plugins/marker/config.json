@@ -1,0 +1,19 @@
+{
+	"name": "marker",
+	"version": "1.0",
+	"ui": {
+		"title": "Marker",
+		"description": "Ctrl + m",
+		"toggle": true,
+		"shortcut": [
+			{
+				"active": true,
+				"tutorial": true,
+				"keys": ["ctrlKey", "m"]
+			}
+		]
+	},
+	"script": "marker.js",
+	"stylesheet": "marker.css"
+}
+

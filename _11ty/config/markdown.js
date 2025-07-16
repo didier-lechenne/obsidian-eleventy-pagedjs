@@ -48,10 +48,15 @@ module.exports = function(eleventyConfig) {
     //   }),
     //   slugify: sluglofi
     // })
-    .use(markdownItContainer, 'big')
-    .use(markdownItContainer, 'gridlist')
-    .use(markdownItContainer, 'scrollables') 
-    .use(markdownItContainer, 'game') 
+    .use(markdownItContainer, 'columns')
+    .use(markdownItContainer, 'glossary', { marker: '¶' })
+    .use(markdownItContainer, 'term')
+    .use(markdownItContainer, 'post')
+    .use(markdownItContainer, 'content')
+    .use(markdownItContainer, 'items')
+    .use(markdownItContainer, 'flex')
+    .use(markdownItContainer, 'insert')
+    .use(markdownItContainer, 'modularGrid')
     .use(markdownItContainer, 'details', {
       validate: function(params) {
         return params.trim().match(/^details\s+(.*)$/);
@@ -73,9 +78,10 @@ module.exports = function(eleventyConfig) {
       lazyLoading: true, // <img loading="lazy" ...>, default: false
       link: false, // <a href="img.png"><img src="img.png"></a>, default: false
       tabindex: false, // <figure tabindex="1+n">..., default: false
+      copyAttrs: true 
     })
     .use(markdownItAttrs,{
-      allowedAttributes: ['id', 'class']
+      allowedAttributes: ['id', 'class', 'style']
     });
 
 

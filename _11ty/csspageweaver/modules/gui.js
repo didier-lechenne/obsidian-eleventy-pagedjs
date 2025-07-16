@@ -112,6 +112,7 @@ class CssPageWeaver_GUI extends HTMLElement {
 			}
 		}
 
+		// modifié par dl
 		function createToggle(){
 			//
 			// If feature require a simple ON/OFF toggle, 
@@ -125,24 +126,18 @@ class CssPageWeaver_GUI extends HTMLElement {
 				const label = document.createElement('label');
 				label.htmlFor = `${id}-toggle`;
 				label.id = `label-${id}-toggle`;
+				label.className = 'toggle-switch';
 
-				const seeSpan = document.createElement('span');
-				seeSpan.className = 'button-see button-not-selected';
-				seeSpan.textContent = 'see';
+				const slider = document.createElement('span');
+				slider.className = 'toggle-slider';
 
-				const hideSpan = document.createElement('span');
-				hideSpan.className = 'button-hide';
-				hideSpan.textContent = 'hide';
-
-				label.appendChild(seeSpan);
-				label.insertAdjacentHTML('beforeEnd', ' '); // This little hack to preserve harmony with handmade template
-				label.appendChild(hideSpan);
+				label.appendChild(slider);
 
 				// Append input & label to group-title
 				titleContainer.appendChild(checkbox);
 				titleContainer.appendChild(label);
 				
-				form.classList.add('button-toggle')
+				form.classList.add('toggle-switch-container')
 
 				// Add toggle to API
 				cssPageWeaver.ui[id] = {

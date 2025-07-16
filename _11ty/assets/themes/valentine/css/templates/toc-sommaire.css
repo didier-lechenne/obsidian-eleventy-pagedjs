@@ -1,29 +1,32 @@
 .toc {
 	page: clean;
 	page-break-after: always;
-}
-
-.toc a {
-	text-decoration: none;
-}
-
-
-.toc #nav {
 	display: flex;
-	justify-content: center; /* Centre horizontalement le contenu */
-	align-items: flex-start; /* Aligne vers le haut */
-	/* height: calc(var(--pagedjs-pagebox-height) - var(--pagedjs-margin-bottom) - var(--pagedjs-margin-top)); */
-	min-height: 0;
+	justify-content: center;
+	height: calc(var(--pagedjs-pagebox-height) - var(--pagedjs-margin-bottom) - var(--pagedjs-margin-top));
+}
+
+.toc #nav-toc {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+	flex: 1; 
 	padding: 0;
-	width: 100%; 
 }
 
 .toc #list-toc-generated {
 	list-style: none;
 	padding: 0;
 	margin: 0; 
-	width: fit-content; /* La largeur s'adapte au contenu */
-	text-align: center; /* Centre le texte horizontalement */
+	max-width: var(--maxwidth);
+	text-align: center;
+}
+
+
+
+.toc a {
+	text-decoration: none;
 }
 
 .toc #list-toc-generated li:first-child {
@@ -64,17 +67,11 @@
    [3. Troisième chapitre  ]
    ──────────────────────────────────────── */
 
-.toc #list-toc-generated li:nth-of-type(31) {
-	margin-bottom: var(--gutter);
+.toc #list-toc-generated li:nth-last-of-type(3) {
+	margin-top: var(--gutter);
 }
 /* ────────────────────────────────────────
-   ↑ CIBLE le 31ème élément de liste dans la TOC
-   
-   li:nth-of-type(31) = 31ème <li> parmi tous les <li>
-   margin-bottom: var(--gutter) = Même espacement que le 1er
-   
-   Exemple de structure probable :
-   [1-30. Chapitres principaux]
-   [                          ] ← Espace après le 31ème
-   [32-60. Annexes/références ]
+   ↑ Le pseudo-sélecteur :nth-last-of-type(3) compte les éléments 
+   à partir de la fin de la liste, 
+   donc il ciblera le 3ème élément <li> en partant du dernier.
    ──────────────────────────────────────── */

@@ -1,0 +1,8 @@
+<section id="{{ page.fileSlug }}" 
+         style="{% if bgColor %}--bgColor:{{ bgColor }};{% endif %}" 
+         data-template="blankpage"
+         {% if show %}data-show="{{ show }}"{% endif %}
+         {% if toc %}data-toc="{{ toc }}"{% endif %}
+         class="{% if toc %}toc-{{ toc }}{% endif %} blankpage marker coverNJK">
+  
+</section>

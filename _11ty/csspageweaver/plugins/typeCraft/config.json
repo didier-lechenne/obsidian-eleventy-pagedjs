@@ -1,0 +1,16 @@
+{
+	"name": "Type Craft",
+	"description": "La microtypographique avec export en markdown",
+	"author": " Didier Lechenne",
+	"licence": "MIT",
+	"version": "1.0",
+	"repository": "https://gitlab.com/",
+	"ui": {
+		"title": "Type Craft",
+		"description": "Coller vos réglages microtypographiques dans votre fichier .md source",
+		"toggle": true
+	},
+	"hook": "typeCraft-hook.js",
+	"script": "typeCraft-script.js",
+	"stylesheet": "typeCraft.css"
+}

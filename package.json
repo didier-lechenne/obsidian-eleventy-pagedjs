@@ -8,11 +8,11 @@
 
     "start:screen": "cross-env ELEVENTY_ENV=dev npx eleventy --serve ",
     "start:print": "npx eleventy --serve --config=.eleventyPrint.js",
-    "start": "npx eleventy --serve --config=.eleventyStart.js",
+    "start": "cross-env  ELEVENTY_ENV=dev npx eleventy --serve --config=.eleventyStart.js ",
 
     "build:screen": "cross-env ELEVENTY_ENV=prod npx eleventy --config=.eleventy.js",
     "build:print": "cross-env ELEVENTY_ENV=prod npx eleventy --config=.eleventyPrint.js",
-    "build": "npm run clean && npm run build:screen && npm run build:print ",
+    "build": "npm run clean && npm run build:screen",
 
     "css": "lightningcss --minify --targets \">= 0.25%\" ./static/css/main.css -o ./static/css/output.css",
 

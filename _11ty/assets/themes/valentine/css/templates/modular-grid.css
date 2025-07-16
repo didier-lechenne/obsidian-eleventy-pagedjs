@@ -1,14 +1,5 @@
-/* main section:not(.modularGrid) h2 {
-		font-family: "BBBBaskervvol-Base", sans-serif;
-		font-size: 28pt;
-		line-height: 33.6pt;
-		font-weight: normal;
-		text-align: center;
-		page: clean ;
-	}
- */
-
 @page modularGrid {
+	
 }
 
 [data-template="modularGrid"],
@@ -18,10 +9,10 @@
 	page-break-before: always;
 	page-break-after: always;
 
-	--g-column-count: var(--grid-col, 12);
-	--g-column-gutter: var(--grid-col-gutter, var(--gutter));
-	--g-row-count: var(--grid-row, 10);
-	--g-row-gutter: var(--grid-row-gutter, var(--gutter));
+	--g-column-count: var(--gridCol, 12);
+	--g-column-gutter: var(--gridColGutter, var(--gutter));
+	--g-row-count: var(--gridRow, 10);
+	--g-row-gutter: var(--gridRowGutter, var(--gutter));
 
 	display: grid;
 	grid-template-columns: repeat(var(--g-column-count), 1fr);
@@ -44,8 +35,8 @@
 }
 
 .modularGrid .insert {
-	grid-column: var(--printcol, auto) / span var(--printwidth, 3);
-	grid-row: var(--printrow, auto) / span var(--printheight, 3);
+	grid-column: var(--printCol, auto) / span var(--printWidth, 3);
+	grid-row: var(--printRow, auto) / span var(--printHeight, 3);
 	position: relative;
 	margin: 0;
 	padding: 0;
@@ -88,8 +79,8 @@
 
 [data-template="modularGrid"] figure,
 .modularGrid figure {
-	grid-column: var(--printcol, auto) / span var(--printwidth, 3);
-	grid-row: var(--printrow, auto) / span var(--printheight, 1);
+	grid-column: var(--printCol, auto) / span var(--printWidth, 3);
+	grid-row: var(--printRow, auto) / span var(--printHeight, 1);
 	align-self: var(--alignself, start);
 	overflow: hidden;
 	position: relative;
@@ -104,14 +95,6 @@
 	display: flex;
 	max-width: unset;
 	/* background-color: hsla(16, 100%, 50%, 0.15); */
-}
-
-[data-template="modularGrid"] figcaption,
-.modularGrid figcaption {
-	grid-column: var(--printcol, auto) / span var(--printwidth, 12);
-	grid-row: calc(var(--printrow) + var(--printheight)) / span 1;
-	position: relative;
-	width: 100%;
 }
 
 .hideMarker .modularGrid figure {
@@ -133,14 +116,12 @@
 	align-self: var(--alignself, start);
 }
 
-.modularGrid figure figcaption {
+[data-template="modularGrid"] figcaption,
+.modularGrid figcaption {
+	grid-column: var(--printCol, auto) / span var(--printWidth, 12);
+	grid-row: calc(var(--printRow) + var(--printHeight)) / span 1;
+	position: relative;
+	width: 100%;
 }
 
-.modularGrid h2 {
-	/* display: none; */
-	/* font-family: unset;
-		font-size: unset;
-		line-height: unset;
-		font-weight: unset;
-		text-align: unset; */
-}
+

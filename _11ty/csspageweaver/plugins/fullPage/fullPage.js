@@ -275,17 +275,34 @@ export default class fullPage extends Handler {
 
       let elem = obj.elemClone;
 
-      if(prevPage == pageNum){
-        let container = document.createElement("div");
-          container.classList.add("pagedjs_full-page_content");
-          container.innerHTML = elem;
-          let fullPage = chunker.addPage();
+    if(targetedPage == 1 && pageNum == 1){
+      let container = document.createElement("div");
+        container.classList.add("pagedjs_full-page_content");
+        container.classList.add("cover");
+        container.innerHTML = elem;
+        
+      // Utiliser la page actuelle (page 1) au lieu de créer une nouvelle page
+      pageElement
+        .querySelector("section")
+        .insertAdjacentElement("afterbegin", container);
+      pageElement.classList.add("pagedjs_page_fullPage");
+      
 
-          fullPage.element
-            .querySelector(".pagedjs_page_content")
-            .insertAdjacentElement("afterbegin", container);
-          fullPage.element.classList.add("pagedjs_page_fullPage");
-      }
+    } else if(prevPage == pageNum){
+      // Garder la logique originale pour les autres pages
+      let container = document.createElement("div");
+        container.classList.add("pagedjs_full-page_content");
+        container.innerHTML = elem;
+        let fullPage = chunker.addPage();
+
+        fullPage.element
+          .querySelector(".pagedjs_page_content")
+          .insertAdjacentElement("afterbegin", container);
+        fullPage.element.classList.add("pagedjs_page_fullPage");
+    }
+
+
+
     });
     
 

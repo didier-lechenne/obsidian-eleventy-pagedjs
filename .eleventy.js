@@ -64,10 +64,10 @@ module.exports = function (eleventyConfig) {
     markdownTemplateEngine: "njk",
     htmlTemplateEngine: "njk",
     dataTemplateEngine: "njk",
-    pathPrefix: "",
+    pathPrefix: "valentine",
     dir: {
       input: config.publicFolder,
-      output: "_site",
+      output: "_site/",
       includes: "../_11ty/_includes",
       layouts: "../_11ty/_layouts",
       data: "../_11ty/_data",

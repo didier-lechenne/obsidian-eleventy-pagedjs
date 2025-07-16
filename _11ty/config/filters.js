@@ -19,22 +19,62 @@ module.exports = function(eleventyConfig) {
     return text.replace(/^\d+\./, '').trim();
   });
 
-
-  eleventyConfig.addFilter("toDataAttributes", function(data) {
-    const attributes = [];
-    
-    // Exclure certaines propriétés système
-    const excludeKeys = ['page', 'collections', 'pkg', 'eleventy', 'content'];
-    
-    for (const [key, value] of Object.entries(data)) {
-      if (!excludeKeys.includes(key) && value !== undefined && value !== null) {
-        // Convertir les valeurs en string et échapper les guillemets
-        const stringValue = String(value).replace(/"/g, '&quot;');
-        attributes.push(`data-${key}="${stringValue}"`);
-      }
+eleventyConfig.addFilter("toStyleAttributes", function(data) {
+  const styles = [];
+  
+  // Exclure les propriétés système et les objets complexes
+  const excludeKeys = [
+    'page', 'collections', 'pkg', 'eleventy', 'content', 
+    'date', 'tags', 'layout', 'permalink', 'config', 
+    'eleventyComputed', 'templateEngineOverride'
+  ];
+  
+  for (const [key, value] of Object.entries(data)) {
+    if (!excludeKeys.includes(key) && 
+        value !== undefined && 
+        value !== null && 
+        typeof value !== 'object') { // Exclure tous les objets
+      
+      const cssVar = key.startsWith('--') ? key : `--${key}`;
+      styles.push(`${cssVar}:${value}`);
     }
-    
-    return attributes.join(' ');
-  });
+  }
+  
+  return styles.length > 0 ? styles.join('; ') : '';
+});
+
+
+eleventyConfig.addFilter("toDataAttributes", function(data) {
+  const attributes = [];
+  
+  // Exclure les propriétés système et les objets complexes
+  const excludeKeys = [
+    'page', 'collections', 'pkg', 'eleventy', 'content',
+    'config', 'eleventyComputed', 'templateEngineOverride', 'permalink'
+  ];
+  
+  for (const [key, value] of Object.entries(data)) {
+    if (!excludeKeys.includes(key) && 
+        value !== undefined && 
+        value !== null && 
+        typeof value !== 'object') { // Exclure tous les objets
+      
+      // Convertir en string et échapper proprement pour HTML
+      let stringValue = String(value);
+      
+      // Échapper les caractères HTML dangereux
+      stringValue = stringValue
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+      
+      attributes.push(`data-${key}="${stringValue}"`);
+    }
+  }
+  
+  return attributes.join(' ');
+});
 
 };

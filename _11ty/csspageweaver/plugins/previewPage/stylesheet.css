@@ -12,7 +12,8 @@
 .interface-preview .pagedjs_right_page .pagedjs_bleed, 
 .interface-preview .pagedjs_left_page .pagedjs_bleed-top,
 .interface-preview .pagedjs_left_page .pagedjs_bleed-bottom,
-.interface-preview .pagedjs_left_page .pagedjs_bleed-left{
+.interface-preview .pagedjs_left_page .pagedjs_bleed-left,
+.interface-preview.no-spread .pagedjs_left_page .pagedjs_bleed-right{
     background-color: var(--color-preview);
     z-index:999999;
 }
@@ -29,6 +30,7 @@
 
 
 .button-print{ display: none; }
+
 
 .interface-preview{
     --color-marginBox: transparent;

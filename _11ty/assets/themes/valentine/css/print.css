@@ -1,10 +1,15 @@
 @media print {
 
+
+
 	/* ===================
    IMPORTATION DES POLICES DE CARACTERES AU FORMAT WEB
    =================== */
 	@import "/assets/fonts/GTMaru/index.css";
 	@import "/assets/fonts/BBBBaskervvol/index.css";
+
+
+
 
 
   	/* ===================
@@ -79,15 +84,16 @@
 		}
 	}
 
+
+  @import "templates/fullPage.css";
 	@import "templates/cover.css";
 	@import "templates/blankpage.css";
-	@import "templates/fauxtitre.css";
-	@import "templates/toc-sommaire.css";
-	@import "templates/introduction.css";
-	@import "templates/text-col.css";
+	@import "./templates/fauxtitre.css";
+	@import "./templates/toc-sommaire.css";
+	@import "./templates/introduction.css";
+	@import "./templates/text-col.css";
 	@import "templates/modular-grid.css";
-	@import "templates/column-grid.css";
-
+	@import "./templates/column-grid.css";
 
 	/* ===================
    VARIABLES GLOBALES
@@ -127,9 +133,7 @@
   }
 
 
-  html {
-    lang: "fr"; /* ⚠️ OBLIGATOIRE pour hyphens (césures): auto */
-  }
+
 
   
   /* ------------------------------------------------------------------------ Content */
@@ -194,9 +198,9 @@ section.default h2 {
   #nav, section { 
     margin-bottom: 0; 
   }
-  figure {
+  /* figure {
     break-inside: avoid;
-  }
+  } */
   .default figure.full {
     /* “reset” pagebox left margin : */
     margin-left: calc(-1 * (var(--pagedjs-margin-left) - var(--pagedjs-margin-right)) );
@@ -229,6 +233,10 @@ section.default h2 {
   }
   /* ------------------------------------------------------------------------ Spacing */
   [style^="--ls"] { letter-spacing: calc(var(--ls, 0) * -0.001em); }
+
+  .letterSpacing { 
+    letter-spacing: calc(var(--ls, 0) * -0.001em); 
+  }
 
   /* ------------------------------------------------------------------------ Side notes */
   .imagenote_wrapper {

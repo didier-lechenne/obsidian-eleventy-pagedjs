@@ -1,9 +1,0 @@
-{
-	"name": "Reload In Place",
-	"description": "A simple script to add your CSS Page Weaver project. On reload, it will make the web browser scroll to the place it was before reload. ",
-	"author": ["Nicolas Taffin", "Sameh Chafik"],
-	"licence": "MIT",
-	"version": 2,
-	"repository": "https://gitlab.com/nicolastaf/pagedjs-reload-in-place",
-	"hook": "reloadInPlace.js"
-}

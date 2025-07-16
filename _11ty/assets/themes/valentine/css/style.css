@@ -64,11 +64,18 @@ p:first-child { margin-top: 0; }
 a { color: currentColor; }
 img { max-width: 100%; height: auto; }
 mark { background: var(--accentcolor); padding: 0 .15em; color: white;}
-sub, sup { line-height: 0; }
-sup {
-  top: 0.1em;
-  position: relative;
+
+sub, sup { 
+font-size: 75%;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
 }
+
+sup {
+  top: -.5em;
+}
+
 hr{ 
   height: 0;
   border: none;
