@@ -5,8 +5,8 @@
 	"license": "MIT License",
 	"version": "1.0",
 	"parameters": {
-		"input": ".footnote-ref",
-		"containerNotes": "#footnotes"
+		"input": "sup.footnote-ref",
+		"containerNotes": "section.footnotes"
 	},
 	"hook": "inlineNotes.js"
 }

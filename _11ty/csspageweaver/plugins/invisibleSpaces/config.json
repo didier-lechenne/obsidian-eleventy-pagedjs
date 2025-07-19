@@ -1,0 +1,12 @@
+{
+	"name": "invisibleSpaces",
+	"version": "1.0",
+	"ui": {
+		"title": "Invisible space",
+		"description": "Show/hide invisible space",
+		"toggle": true
+
+	},
+	"script": "invisibleSpaces.js",
+	"stylesheet": "invisibleSpaces.css"
+}

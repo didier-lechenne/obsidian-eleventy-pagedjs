@@ -116,14 +116,3 @@ Adapted for this project */
 
 
 
-.note {
-  float: footnote;
-}
-
-/* define the position of the footnote on the page (only bottom is possible for now) */
-
-@page {
-  @footnote {
-    float: bottom;
-  }
-}

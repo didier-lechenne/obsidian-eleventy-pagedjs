@@ -347,7 +347,7 @@ blockquote > :nth-child(1) {
 
 
 
-  @import "templates/footNotes.css";
+  
   @import "templates/fullPage.css";
 	@import "templates/cover.css";
 	@import "templates/blankpage.css";
@@ -357,6 +357,6 @@ blockquote > :nth-child(1) {
 	@import "templates/text-col.css";
 	@import "templates/modular-grid.css";
 	@import "templates/column-grid.css";
-
+@import "templates/footNotes.css";
 
 }
