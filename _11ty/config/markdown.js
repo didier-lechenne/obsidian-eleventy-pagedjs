@@ -36,6 +36,7 @@ module.exports = function(eleventyConfig) {
 
   // letzgo
 	md
+    .use(markdownItFootnote)
     .use(markdownItAbbr)
     .use(markdownItSup)
     .use(markdownItMark)
@@ -69,8 +70,7 @@ module.exports = function(eleventyConfig) {
           return '</details>\n';
         }
       }
-    })
-    .use(markdownItFootnote)
+    })    
     .use(markdownItFigures,{
       dataType: false,  // <figure data-type="image">, default: false
       figcaption: true,  // <figcaption>alternative text</figcaption>, default: false

@@ -13,9 +13,9 @@ eleventyConfig.addPreprocessor("customInterlinker", "*", (data, content) => {
     return line;
   });
   
-  content =  processedLines.join('\n');
-    // 3. Transformer (notes: "...") en notes markdown
-    content = content.replace(/\(notes?\s*:\s*"(.*?)"\s*\)/gs, '^[$1]');
+  // content =  processedLines.join('\n');
+  //   // 3. Transformer (notes: "...") en notes markdown
+  //   content = content.replace(/\(notes?\s*:\s*"(.*?)"\s*\)/gs, '^[$1]');
   
-    return content;
+  //   return content;
   });

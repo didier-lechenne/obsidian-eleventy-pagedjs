@@ -250,10 +250,10 @@ eleventyConfig.addPreprocessor("imgfull", "*", (data, content) => {
       }
 
       return content
-        .replace(/\u00A0/g, '<span class="non-breaking-space">&nbsp;</span>')
-        .replace(/\u202F/g, '<span class="narrow-no-break-space">\u202F</span>')
-        .replace(/\u2009/g, '<span class="thin-space">&thinsp;</span>')
-        .replace(/\u200A/g, '<span class="hair-space">&hairsp;</span>');
+        .replace(/\u00A0/g, '<span class="i_space non-breaking-space">&nbsp;</span>')
+        .replace(/\u202F/g, '<span class="i_space narrow-no-break-space">\u202F</span>')
+        .replace(/\u2009/g, '<span class="i_space thin-space">&thinsp;</span>')
+        .replace(/\u200A/g, '<span class="i_space hair-space">&hairsp;</span>');
     }
   );
 

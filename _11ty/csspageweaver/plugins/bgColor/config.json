@@ -1,0 +1,7 @@
+{
+	"name": "bgColor",
+	"version": "1.0",
+	
+	"hook": "bgColor.js"
+}
+

@@ -7,14 +7,14 @@
 
 
 :root {
-/* Color (HSL) */
+/* Color (HSL)  */
   --color-marker: 16, 100%, 50%;
   --color-marginBox: #0000ff;
 }
 
 @media screen,
 pagedjs-ignore {
-  .modularGrid,
+  .marker,
   .pagedjs_area,
   .pagedjs_footnote_inner_content
    {

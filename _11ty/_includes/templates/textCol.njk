@@ -1,8 +1,10 @@
 <section id="{{ page.fileSlug }}" 
-         style="{% if bgColor %}--bgColor:{{ bgColor }};{% endif %}" 
-         data-template="blankpage"
-         {% if show %}data-show="{{ show }}"{% endif %}
-         {% if toc %}data-toc="{{ toc }}"{% endif %}
-         class="{% if toc %}toc-{{ toc }}{% endif %} blankpage marker coverNJK">
+         style="" 
+         data-template="textCol"
+         {% if p.data.show %}data-show="{{ p.data.show }}"{% endif %}
+         {% if p.data.toc %}data-toc="{{ p.data.toc }}"{% endif %}
+         class="{% if p.data.toc %}toc-{{ p.data.toc }}{% endif %} textCol marker">
   
+  {{ p.templateContent | safe  }} 
+
 </section>

@@ -1,0 +1,8 @@
+@font-face {
+    font-family: 'Hershey-Futural-30';
+    src: url('Hershey-Futural-30.woff2') format('woff2'),
+        url('Hershey-Futural-30.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}

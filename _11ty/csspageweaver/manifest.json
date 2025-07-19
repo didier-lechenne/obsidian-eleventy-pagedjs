@@ -1,5 +1,5 @@
 {
-    "plugins": [  "fullPage", "typeCraft", "invisibleSpaces", "floatElements", "tableOfContent", "marginBox", "imposition", "spread", "previewPage",  "inlineNotes",  "marker", "reloadInPlace"],
+    "plugins": [ "inlineNotes", "bgColor", "fullPage", "typeCraft", "invisibleSpaces",  "tableOfContent", "marginBox", "imposition", "spread", "previewPage",    "marker", "reloadInPlace"],
     "pluginsParameters":{
 
         "reloadInPlace": {
@@ -17,7 +17,7 @@
     },
     
     "css": [
-        "/assets/css/style.css",
+       
         "/assets/css/print.css"
     ],
     

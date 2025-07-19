@@ -3,7 +3,7 @@
          data-template="introduction"
          {% if p.data.show %}data-show="{{ p.data.show }}"{% endif %}
          {% if p.data.toc %}data-toc="{{ p.data.toc }}"{% endif %}
-         class="{% if p.dat.toc %}toc-{{ p.data.toc }}{% endif %} introduction marker ">
+         class="{% if p.data.toc %}toc-{{ p.data.toc }}{% endif %} introduction marker ">
   
   {{ p.templateContent | safe  }} 
 

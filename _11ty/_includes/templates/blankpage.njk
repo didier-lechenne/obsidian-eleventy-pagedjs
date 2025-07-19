@@ -1,9 +1,9 @@
 
 <!-- _11ty/_layouts/blankpage.njk -->
 <section id="{{ p.fileSlug | cleanTitle | slug }}" 
-         style="{% if p.data.bgColor %}--bgColor:{{ p.data.bgColor }};{% endif %}" 
          data-template="blankpage"
-         {% if p.data.show %}data-show="{{ p.data.show }}"{% endif %}
-         {% if p.dat.toc %}data-toc="{{ p.data.toc }}"{% endif %}
+         {% if p.data.bgColor %}data-bg-color="{{ p.data.bgColor }}" {% endif %}
+         {% if p.data.show %}data-show="{{ p.data.show }}" {% endif %}
+         {% if p.data.toc %}data-toc="{{ p.data.toc }}" {% endif %}
          class="{% if p.data.toc %}toc-{{ p.data.toc }}{% endif %} blankpage {% if p.data.class %} {{ p.data.class }}{% endif %}">
 </section>

@@ -1,23 +1,35 @@
+section.introduction {
+	font-family: 'Hershey-Futural-30' !important;
+	font-size: 19pt;
+	line-height: 22pt; 
+	font-weight: 300 !important;  /* light */
+	
+}
+
+
+section.introduction b,
+section.introduction strong {
+	font-family: 'Hershey-Futural-30' !important;
+ 	font-weight: normal !important;
+}
+
 
 section.introduction h2 {
-	font-family: var(--fontHeading);
+	font-family: 'Hershey-Futural-15' !important;
 	font-size: 28pt;
 	line-height: 33.6pt;
-	font-weight: normal;
+	font-weight: normal !important;
 	text-align: center;
 	/* supprime le folio */
 	page: clean;
 }
 
-section.introduction {
-	font-family: var(--fontHeading);
-	font-size: 19pt;
-	line-height: 22pt;
-}
+
 
 	/* ===================
-   SI BESOIN AJUSTER UN NOUVEAU STYLE SUR LES PARAGRAPHES
+   SI BESOIN 
    =================== */
+
 section.introduction p{      
    /* margin-block-start: 0 !important;    
    margin-block-end: 0 !important;

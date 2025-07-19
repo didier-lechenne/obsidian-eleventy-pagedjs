@@ -4,6 +4,7 @@
 	display: flex;
 	justify-content: center;
 	height: calc(var(--pagedjs-pagebox-height) - var(--pagedjs-margin-bottom) - var(--pagedjs-margin-top));
+	font-family: 'Hershey-Futural-15';
 }
 
 .toc #nav-toc {
