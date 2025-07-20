@@ -4,57 +4,19 @@
    =================== */
   @import "print/fonts/fonts.css";
 
- 	/* ===================
+  /* ===================
    GABARITS DE MISE EN PAGE
    =================== */
   @import "print/layout.css";
 
-
-	
   /* ===================
    VARIABLES GLOBALES
    =================== */
-  :root {
-
-    --heading: "Hershey-Futural-15", serif; /*  la police pour les titres */
-    --labeur: "Work Sans", sans-serif; /*  la police pour le texte courant */
-    --sommaire: "Hershey-Futural-15", serif; /*  la police pour le sommaire */
-
-    --text-color: rgba(0, 0, 0, 1);
-
-    --heading-size: 28pt;
-    --heading-line-height: 28pt;
-    --heading-weight: normal;
-
-    --labeur-size: 12pt;
-    --labeur-line-height: 16pt;
-    --labeur-weight: 300; /* light */
-    --labeur-bold-weight: 400;
-
-	--footNote: var(--labeur), sans-serif; 
-	--footNote-size: 10pt;
-	--footNote-line-height: 12pt;
-	--footNote-weight: 300;
-	--footNote-bold-weight: normal;
-
-
-    --caption-size: 10pt;
-    --caption-line-height: 11pt;
-    --caption-weight: 300;
-	  --caption-bold-weight: normal;
-
-    --baseline: var(--labeur-line-height);
-    --gutter: 3mm;
-
-  }
-
-
-
+  @import "print/variables.css";
 
   /* ===================
    LES GABARITS DE MISE EN PAGE
 =================== */
-
 
   @import "templates/fullPage.css";
   @import "templates/cover.css";
@@ -66,12 +28,11 @@
   @import "templates/modular-grid.css";
   @import "templates/column-grid.css";
 
-
   /* ===================
 	MISE EN FORME
 =================== */
   @import "print/base.css";
-   @import "print/figures.css";
+  @import "print/figures.css";
   @import "print/break.css";
   @import "print/spacing.css";
   /* @import "print/sidenotes.css"; a verifier */
@@ -80,7 +41,4 @@
   @import "print/interview.css";
   @import "print/list.css";
   @import "print/custom.css";
-
-
-
 }

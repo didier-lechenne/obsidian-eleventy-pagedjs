@@ -1,0 +1,32 @@
+:root {
+  --heading: "Hershey-Futural-15", serif;
+  --labeur: "Work Sans", sans-serif;
+
+  --sommaire: "Hershey-Futural-15", serif;
+
+  --text-color: rgba(0, 0, 0, 1);
+
+  --heading-size: 28pt;
+  --heading-line-height: 28pt;
+  --heading-weight: normal;
+
+  --labeur-size: 12pt;
+  --labeur-line-height: 16pt;
+  --labeur-weight: 300; /* light */
+  --labeur-bold-weight: 400;
+
+  --footNote: var(--labeur), sans-serif;
+  --footNote-size: 10pt;
+  --footNote-line-height: 12pt;
+  --footNote-weight: 300;
+  --footNote-bold-weight: normal;
+
+  --caption: var(--labeur), sans-serif;
+  --caption-size: 9pt;
+  --caption-line-height: 12pt;
+  --caption-weight: 300;
+  --caption-bold-weight: normal;
+
+  --baseline: 1ch;
+  --gutter: 3mm;
+}

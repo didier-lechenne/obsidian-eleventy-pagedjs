@@ -44,6 +44,7 @@ eleventyConfig.on('eleventy.before', () => {
   eleventyConfig.addPreprocessor("imageCustom", "*", (data, content) => {
     return content.replace(
       /\(\s*image\s*:\s*(.+?)\s+caption\s*:\s*"([^"]*?)"\s*\)/g,
+      
       function (match, src, caption) {
         globalImageCounter++;
 
