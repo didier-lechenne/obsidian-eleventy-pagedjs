@@ -1,11 +1,21 @@
 const config = require("./siteData.js");
+const markdownIt = require("markdown-it");
+
 
 module.exports = function (eleventyConfig) {
+  const md = markdownIt({ 
+    html: true, 
+    typographer: true 
+  });
+
 let globalImageCounter = 0;
+
 
 eleventyConfig.on('eleventy.before', () => {
   globalImageCounter = 0;
 });
+
+
 
   // Transformer pour ajouter des classes CSS aux éléments
   eleventyConfig.addTransform("addClasses", function (content, outputPath) {
@@ -33,7 +43,7 @@ eleventyConfig.on('eleventy.before', () => {
   // Preprocessor pour les images personnalisées (image: ... caption: "...")
   eleventyConfig.addPreprocessor("imageCustom", "*", (data, content) => {
     return content.replace(
-      /\(\s*image\s*:\s*([^\s]+(?:\s+[^\s]+)*?)\s+caption\s*:\s*"([^"]*?)"\s*\)/g,
+      /\(\s*image\s*:\s*(.+?)\s+caption\s*:\s*"([^"]*?)"\s*\)/g,
       function (match, src, caption) {
         globalImageCounter++;
 
@@ -42,7 +52,7 @@ eleventyConfig.on('eleventy.before', () => {
 
         const figcaptionHtml =
           caption && caption.trim()
-            ? `<figcaption class="figcaption">${caption}</figcaption>`
+            ? `<figcaption class="figcaption">${md.renderInline(caption)}</figcaption>`
             : "";
 
         return `<figure id="image-${globalImageCounter}" class="figure image">

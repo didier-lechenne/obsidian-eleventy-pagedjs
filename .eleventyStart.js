@@ -1,7 +1,7 @@
 // const { HtmlBasePlugin } = require("@11ty/eleventy");
 const collectionsConfig = require("./_11ty/config/collections.js");
-const transformsConfig = require("./_11ty/config/transforms.js");
 const markdownPlugin = require("./_11ty/config/markdown.js");
+const transformsConfig = require("./_11ty/config/transforms.js");
 const filtersConfig = require("./_11ty/config/filters.js");
 const shortcodesConfig = require("./_11ty/config/shortcodes.js");
 const yamlPlugin = require("./_11ty/config/yaml.js");
