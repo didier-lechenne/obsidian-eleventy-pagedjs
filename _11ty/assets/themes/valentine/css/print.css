@@ -71,7 +71,7 @@
 	MISE EN FORME
 =================== */
   @import "print/base.css";
-   /* @import "print/figures.css"; */
+   @import "print/figures.css";
   @import "print/break.css";
   @import "print/spacing.css";
   /* @import "print/sidenotes.css"; a verifier */

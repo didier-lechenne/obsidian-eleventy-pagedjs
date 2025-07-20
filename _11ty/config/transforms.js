@@ -1,11 +1,11 @@
 const config = require("./siteData.js");
 
 module.exports = function (eleventyConfig) {
-  let globalImageCounter = 0;
+let globalImageCounter = 0;
 
-  eleventyConfig.on("eleventy.before", () => {
-    globalImageCounter = 0;
-  });
+eleventyConfig.on('eleventy.before', () => {
+  globalImageCounter = 0;
+});
 
   // Transformer pour ajouter des classes CSS aux éléments
   eleventyConfig.addTransform("addClasses", function (content, outputPath) {
@@ -30,201 +30,28 @@ module.exports = function (eleventyConfig) {
     return content;
   });
 
-  // Transformer pour les liens externes
-  // eleventyConfig.addTransform("externalLinks", function (content, outputPath) {
-  //   if (outputPath && outputPath.endsWith(".html")) {
-  //     // Ajouter target="_blank" aux liens externes
-  //     content = content.replace(
-  //       /<a href="(https?:\/\/[^"]*)"([^>]*)>/g,
-  //       '<a href="$1"$2 target="_blank" rel="noopener">'
-  //     );
-  //     return content;
-  //   }
-  //   return content;
-  // });
+  // Preprocessor pour les images personnalisées (image: ... caption: "...")
+  eleventyConfig.addPreprocessor("imageCustom", "*", (data, content) => {
+    return content.replace(
+      /\(\s*image\s*:\s*([^\s]+(?:\s+[^\s]+)*?)\s+caption\s*:\s*"([^"]*?)"\s*\)/g,
+      function (match, src, caption) {
+        globalImageCounter++;
 
-  // eleventyConfig.addPreprocessor("obsidianEmbeds", "*", (data, content) => {
-  //   function slugify(text) {
-  //     return text
-  //       .toLowerCase()
-  //       .replace(/[^a-z0-9\s-]/g, "")
-  //       .replace(/\s+/g, "-")
-  //       .replace(/-+/g, "-")
-  //       .replace(/^-|-$/g, "");
-  //   }
+        // Nettoyer le src en supprimant les espaces en trop
+        const cleanSrc = src.trim();
 
-  //   // Extensions de fichiers par type
-  //   const imageExts = ["png", "jpg", "jpeg", "gif", "bmp", "svg", "webp"];
-  //   const audioExts = ["mp3", "wav", "ogg", "m4a", "flac", "aac"];
-  //   const videoExts = ["mp4", "webm", "ogv", "mov", "avi"];
-  //   const pdfExts = ["pdf"];
+        const figcaptionHtml =
+          caption && caption.trim()
+            ? `<figcaption class="figcaption">${caption}</figcaption>`
+            : "";
 
-  //   // Fonction pour détecter le type de fichier
-  //   function getFileType(filename) {
-  //     const ext = filename.split(".").pop().toLowerCase();
-  //     if (imageExts.includes(ext)) return "image";
-  //     if (audioExts.includes(ext)) return "audio";
-  //     if (videoExts.includes(ext)) return "video";
-  //     if (pdfExts.includes(ext)) return "pdf";
-  //     return "note";
-  //   }
-
-  //   // 1. Traiter tous les embeds ![[...]]
-  //   content = content.replace(
-  //     /!\[\[([^\]]+)\]\]/g,
-  //     function (match, embedContent) {
-  //       let [filePath, ...rest] = embedContent.split("|");
-  //       filePath = filePath.trim();
-
-  //       // Détecter si c'est un chemin avec dossier (images/, assets/, etc.)
-  //       const hasFolder = filePath.includes("/");
-  //       const basePath = hasFolder ? "" : "images/"; // Par défaut dans images/ si pas de dossier spécifié
-  //       const fullPath = hasFolder ? filePath : basePath + filePath;
-
-  //       const fileType = getFileType(filePath);
-
-  //       switch (fileType) {
-  //         case "image":
-  //           let imageAltText = "Image"; // ✅ Renommé pour éviter le conflit
-  //           let caption = "";
-  //           let attributes = ' class="content-image" loading="lazy"';
-
-  //           if (rest.length > 0) {
-  //             const params = rest.join("|").trim();
-
-  //             // Cas 1: Juste des dimensions (100x200)
-  //             const dimensionOnly = params.match(/^(\d+)x(\d+)$/);
-  //             if (dimensionOnly) {
-  //               const [, width, height] = dimensionOnly;
-  //               attributes += ` width="${width}" height="${height}"`;
-  //             }
-  //             // Cas 2: Dimensions + caption (100x200|Titre de l'image)
-  //             else if (params.includes("|")) {
-  //               const parts = params.split("|");
-  //               const dimensionMatch = parts[0].match(/^(\d+)x(\d+)$/);
-  //               if (dimensionMatch) {
-  //                 const [, width, height] = dimensionMatch;
-  //                 attributes += ` width="${width}" height="${height}"`;
-  //                 caption = parts.slice(1).join("|").trim();
-  //                 imageAltText = caption;
-  //               } else {
-  //                 caption = params;
-  //                 imageAltText = caption;
-  //               }
-  //             }
-  //             // Cas 3: Juste du texte (sera utilisé comme caption et alt)
-  //             else {
-  //               const dimensionInText = params.match(/^(\d+)x(\d+)(.*)$/);
-  //               if (dimensionInText) {
-  //                 const [, width, height, remainingText] = dimensionInText;
-  //                 attributes += ` width="${width}" height="${height}"`;
-  //                 if (remainingText.trim()) {
-  //                   caption = remainingText.trim();
-  //                   imageAltText = caption;
-  //                 }
-  //               } else {
-  //                 caption = params;
-  //                 imageAltText = params;
-  //               }
-  //             }
-  //           }
-
-  //           const img = `<img${attributes} src="${fullPath}" alt="${imageAltText}">`;
-  //           const figcaptionHtml = caption
-  //             ? `<figcaption>${caption}</figcaption>`
-  //             : "";
-
-  //           return `<figure>${img}${figcaptionHtml}</figure>`;
-
-  //         case "audio":
-  //           return `<audio controls>
-  //   <source src="${fullPath}" type="audio/${filePath.split(".").pop()}">
-  //   Votre navigateur ne supporte pas l'audio.
-  // </audio>`;
-
-  //         case "video":
-  //           return `<video controls>
-  //   <source src="${fullPath}" type="video/${filePath.split(".").pop()}">
-  //   Votre navigateur ne supporte pas la vidéo.
-  // </video>`;
-
-  //         case "pdf":
-  //           return `<iframe src="${fullPath}" width="100%" height="600px">
-  //   <a href="${fullPath}">Ouvrir le PDF</a>
-  // </iframe>`;
-
-  //         case "note":
-  //           const noteAltText = rest.join("|").trim() || "Fichier"; //
-  //           if (filePath.includes("#")) {
-  //             const [noteName, anchor] = filePath.split("#");
-  //             const cleanNote = noteName.replace(/^\d+[\.\-\s]*/, "");
-  //             const slugifiedNote = slugify(cleanNote);
-  //             return `<div class="embedded-note">
-  //   <a href="#${slugifiedNote}" class="embed-link">📄 ${noteAltText || anchor || cleanNote}</a>
-  // </div>`;
-  //           } else {
-  //             const cleanNote = filePath.replace(/^\d+[\.\-\s]*/, "");
-  //             const slugifiedNote = slugify(cleanNote);
-  //             return `<div class="embedded-note">
-  //   <a href="#${slugifiedNote}" class="embed-link">📄 ${noteAltText || cleanNote}</a>
-  // </div>`;
-  //           }
-
-  //         default:
-  //           const defaultAltText = rest.join("|").trim() || "Fichier"; // ✅ Variable locale
-  //           return `<a href="${fullPath}">${defaultAltText}</a>`;
-  //       }
-  //     }
-  //   );
-
-  //   // 2. Traiter ligne par ligne pour les liens [[]] (sans !)
-  //   const lines = content.split("\n");
-  //   const processedLines = lines.map((line) => {
-  //     // Si la ligne est un titre markdown, on ne touche pas aux [[]]
-  //     if (line.trim().match(/^#{1,6}\s/)) {
-  //       return line;
-  //     }
-
-  //     // Transformer les liens [[]] normaux
-  //     return line.replace(/\[\[([^\]]+)\]\]/g, function (match, content) {
-  //       let linkPart, displayText;
-
-  //       // Gérer [[page|texte]]
-  //       if (content.includes("|")) {
-  //         [linkPart, displayText] = content.split("|");
-  //         linkPart = linkPart.trim();
-  //         displayText = displayText.trim();
-  //       } else {
-  //         linkPart = content;
-  //         displayText = null;
-  //       }
-
-  //       // Gérer [[page#ancre]]
-  //       if (linkPart.includes("#")) {
-  //         const [pagePart, anchorPart] = linkPart.split("#");
-  //         const cleanPage = pagePart.replace(/^\d+[\.\-\s]*/, "");
-  //         const slugifiedPage = slugify(cleanPage);
-  //         if (!displayText) {
-  //           displayText = anchorPart || cleanPage;
-  //         }
-  //         return `<a href="#${slugifiedPage}" class="internal-link">${displayText}</a>`;
-  //       }
-
-  //       // Format normal [[page]]
-  //       const cleanContent = linkPart.replace(/^\d+[\.\-\s]*/, "");
-  //       const slugifiedContent = slugify(cleanContent);
-  //       if (!displayText) {
-  //         displayText = cleanContent;
-  //       }
-  //       return `<a href="#${slugifiedContent}" class="internal-link">${displayText}</a>`;
-  //     });
-  //   });
-  //   content = processedLines.join("\n");
-
-  //   return content;
-  // });
-
-
+        return `<figure id="image-${globalImageCounter}" class="figure image">
+        <img src="${cleanSrc}" alt="${caption || ""}">
+        ${figcaptionHtml}
+      </figure>`;
+      }
+    );
+  });
 
   // 3. Transformer (notes: "...") en notes markdown
   eleventyConfig.addPreprocessor("notes", "*", (data, content) => {
@@ -253,7 +80,7 @@ module.exports = function (eleventyConfig) {
     content = content.replace(
       /\(\s*imgfull\s*:\s*([^\s]+)\s+page\s*:\s*([^)]+)\s*\)/g,
       function (match, src, page) {
-        globalImageCounter++; // Fixed: was globalImgCounter, now matches the declared variable
+        globalImageCounter++;
         const cleanPage = page.trim();
         return `<figure id="figure-${globalImageCounter}" class="full-page ${cleanPage}">
           <img src="${src}">
@@ -264,25 +91,6 @@ module.exports = function (eleventyConfig) {
     return content;
   });
 
-    eleventyConfig.addPreprocessor("imageCustom", "*", (data, content) => {
-    return content.replace(
-      /\(\s*image\s*:\s*([^\s]+(?:\s+[^\s]+)*?)\s+caption\s*:\s*"([^"]*?)"\s*\)/g,
-      function (match, src, caption) {
-        globalImageCounter++;
-
-        const figcaptionHtml =
-          caption && caption.trim()
-            ? `<figcaption class="figcaption">${caption}</figcaption>`
-            : "";
-
-        return `<figure id="image-${globalImageCounter}" class="figure image">
-        <img src="${src}" alt="${caption || ""}">
-        ${figcaptionHtml}
-      </figure>`;
-      }
-    );
-  });
-  
   eleventyConfig.addTransform(
     "invisibleSpaces",
     function (content, outputPath) {
@@ -358,3 +166,7 @@ module.exports = function (eleventyConfig) {
     }
   );
 };
+
+
+
+
