@@ -1,0 +1,58 @@
+.figures_page {
+	/* if we want a special template for iconographic groups */
+	/* page: figures; */
+
+	/* “reset” pagebox left margin : */
+	/* margin-left: calc(-1 * (var(--pagedjs-margin-left) - var(--pagedjs-margin-right)) ); */
+}
+
+.figures_page .content {
+	--g-column-count: 12;
+	--g-column-offset: 0;
+	--g-column-gutter: var(--gutter);
+	--g-row-count: 1;
+	--g-row-offset: 0;
+	--g-row-gutter: var(--gutter);
+
+	display: grid;
+	grid-template-columns: repeat(var(--g-column-count), 1fr);
+	grid-gap: var(--gutter);
+	align-content: start;
+}
+
+.figures_page .content .figure {
+	grid-column: var(--printcol, auto) / span var(--printwidth, 3);
+	grid-row: var(--printrow, auto) / span var(--printheight, 1);
+	align-self: var(--alignself, start);
+}
+
+.figures_page .figure, .figures_page .videofigure {
+    break-inside: avoid;
+    align-self: start;
+    margin: 0;
+    padding: 0;
+    max-width: none;
+    margin-top: 0;
+    margin-block-start: 0;
+    margin-bottom: 0;
+    margin-block-end: 0;
+}
+
+.figures_page .content figcaption::before {
+    content: "↑ ";
+}
+
+.figure_call {
+	font-variant-position: normal;
+	vertical-align: baseline;
+	font-size: 80%;
+}
+.figure_call a::after {
+	content: ", p. " target-counter(attr(href url), page);
+}
+
+.figure_call_back {
+	display: none;
+}
+
+

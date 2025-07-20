@@ -11,8 +11,8 @@ export default class inlineNotes extends Handler {
 
   constructor(chunker, polisher, caller) {
     super(chunker, polisher, caller);
-    this.input = cssPageWeaver.features.inlineNotes.parameters?.input || "sup.footnote-ref"; // ← CSS selector of the call element 
-    this.containerNotes = cssPageWeaver.features.inlineNotes.parameters?.containerNotes || "section.footnotes"; // ← CSS selector of the container of the footnote
+    this.input = cssPageWeaver.features.inlineNotes.parameters?.input || ".footnote-ref"; // ← CSS selector of the call element 
+    this.containerNotes = cssPageWeaver.features.inlineNotes.parameters?.containerNotes || "#footnotes"; // ← CSS selector of the container of the footnote
     this.newClass = cssPageWeaver.features.inlineNotes.parameters?.newClass || "footnote"; // ← Class of the span create for the note
   }
 
@@ -26,6 +26,8 @@ export default class inlineNotes extends Handler {
     });
 
   }
+
+
 }
 
 

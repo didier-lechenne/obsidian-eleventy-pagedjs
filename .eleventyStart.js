@@ -4,7 +4,6 @@ const transformsConfig = require("./_11ty/config/transforms.js");
 const markdownPlugin = require("./_11ty/config/markdown.js");
 const filtersConfig = require("./_11ty/config/filters.js");
 const shortcodesConfig = require("./_11ty/config/shortcodes.js");
-// const passthroughConfig = require("./_11ty/config/passthrough.js");
 const yamlPlugin = require("./_11ty/config/yaml.js");
 
 const config = require('./_11ty/config/siteData.js');

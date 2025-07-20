@@ -1,0 +1,196 @@
+*,
+*:before,
+*:after {
+    box-sizing: border-box;
+    min-width: 0;
+    min-height: 0;
+}
+
+body {
+  font-family: var(--labeur);
+  font-size: var(--labeur-size);
+  line-height: var(--labeur-line-height);
+  font-weight: var(--labeur-weight);
+  color: var(--text-color);
+}
+
+article,
+aside,
+footer,
+header,
+hgroup,
+main,
+nav,
+section {
+  display: block;
+}
+
+
+
+img {
+  height: auto;
+  max-width: 100%;
+  vertical-align: top;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+main {
+  display: block;
+  padding: 0;
+}
+
+p {
+  margin-top: calc(1ch / 1);
+  margin-bottom: calc(1ch / 1);
+}
+
+p:first-child {
+  margin-top: 0;
+}
+
+
+
+.small-caps {
+  font-variant-caps: all-small-caps;
+  line-height: 0;
+  font-style: inherit;
+}
+
+/* blockquote,
+figure,
+hr,
+pre,
+table {
+  margin-top: calc(var(--baseline) );
+  margin-bottom: calc(var(--baseline) );
+} */
+
+main p {
+  text-rendering: optimizeLegibility;
+
+  orphans: 2;
+  widows: 2;
+
+  word-break: break-word;
+  hyphens: auto;
+  hyphenate-limit-chars: 6 3 3;
+}
+
+section.default h2 {
+  font-family: var(--heading);
+  font-size: 28pt;
+  line-height: 33.6pt;
+  font-weight: normal;
+  text-align: center;
+  /* supprime le folio */
+  page: clean;
+}
+
+blockquote {
+  /* ────────────────────────────────────────
+   Styles pour les citations longues <blockquote>
+   
+   blockquote = Élément HTML pour citations de blocs
+   Usage : <blockquote>Citation longue...</blockquote>
+   ──────────────────────────────────────── */
+
+  margin-block-start: var(--gutter);
+  /* ────────────────────────────────────────
+	   Marge au DÉBUT du bloc (équivalent a margin-top)
+	   ──────────────────────────────────────── */
+
+  margin-block-end: var(--gutter);
+  /* ────────────────────────────────────────
+	   Marge à la FIN du bloc (équivalent a margin-bottom)
+	   ──────────────────────────────────────── */
+
+  margin-inline-start: calc(var(--gutter) * 2); /* 6mm */
+  /* ────────────────────────────────────────
+	   Marge à GAUCHE du bloc (équivalent a margin-left)
+	   ──────────────────────────────────────── */
+
+  margin-inline-end: calc(var(--gutter) * 2); /* 6mm */
+  /* ────────────────────────────────────────
+	   Marge à DROITE du bloc (équivalent a margin-right)
+	   ──────────────────────────────────────── */
+
+  font-style: italic;
+}
+
+/* ────────────────────────────────────────
+Contrôle l'épaisseur du éléments en gras.
+──────────────────────────────────────── */
+b,
+strong {
+  /* font-variation-settings: "wght" var(--font-weight-bold); */
+  font-weight: var(--labeur-bold-weight);
+}
+
+/* ────────────────────────────────────────
+   font-weight : Contrôle l'épaisseur du texte.
+   Attention cela depend des graisses de votre police !
+   
+   Valeurs numériques courantes :
+   • 100, 200, 300 → Texte très fin (thin/light)
+   • 400           → Normal 
+   • 500, 600      → Medium/Semi-bold
+   • 700           → Gras (bold)
+   • 800, 900      → Très gras (extra-bold/black)
+   ──────────────────────────────────────── */
+
+/* ────────────────────────────────────────
+   Gère l'affichage des liens, hyper-texte
+   ──────────────────────────────────────── */
+a {
+  text-decoration: none;
+  color: var(--link-color);
+  cursor: pointer;
+}
+
+a:hover {
+  color: var(--link-color-hover);
+}
+a:active {
+  color: var(--link-color-hover);
+}
+a:focus {
+  outline: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+mark {
+  padding: 0 0.15em;
+  color: white;
+}
+sub,
+sup {
+  line-height: 0;
+}
+sup {
+  top: 0.1em;
+  position: relative;
+}
+
+.small-caps + sup {
+  top: 0.25em;
+  font-size: 70%;
+}
+
+
+
+.footnotes {
+  display: none;
+}

@@ -1,0 +1,96 @@
+.pagedjs_footnote_inner_content {
+  font-family: var(--footNote);
+  font-size: var(--footNote-size);
+  line-height: var(--footNote-line-height);
+  font-weight: var(--footNote-weight);
+  /* color: var(--fontNote-color); */
+
+  hyphens: auto;
+  hyphenate-limit-chars: 6 3 3;
+
+}
+
+.footnote {
+  float: footnote ;
+  counter-increment: footnote ;
+
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  display: list-item;
+    
+  margin-bottom: 1ch;
+
+}
+
+
+.footnote b,
+.footnote strong {
+  /* font-variation-settings: "wght" var(--font-weight-bold); */
+  font-weight: var(--footNote-bold-weight);
+}
+
+.footnote:has(.breakcolumn) {
+  break-inside: auto;
+  -webkit-column-break-inside: auto;
+}
+
+.footnotes-sep {
+  display: none;
+}
+
+::footnote-call {
+  content: counter(footnote);
+  line-height: 0;
+  padding-left: 0.2ch;
+  font-weight: var(--footNote-weight);
+}
+
+
+
+.pagedjs_footnote_inner_content {
+  --g-column-count: 2;
+  --g-column-gutter: var(--gutter);
+
+  columns: var(--g-column-count) !important;
+  gap: var(--g-column-gutter) !important;
+  column-width: auto !important;
+  margin-top: 3ch !important;
+}
+
+::footnote-marker {
+  content: counter(footnote-marker) ". ";
+  font-weight: var(--footNote-weight);
+  font-size: 80%;
+}
+
+
+
+
+
+/* ────────────────────────────────────────
+	Autre options
+
+	Style classique
+::footnote-marker {
+	content: counter(footnote-marker) ".";
+	font-weight: 700;
+	padding-right: 10mm;
+}
+
+	Style avec parenthèses 
+::footnote-marker {
+	content: "(" counter(footnote-marker) ")";
+	font-weight: 700;
+	padding-right: 8mm;
+}
+
+ 	Style exposant 
+::footnote-marker {
+	content: counter(footnote-marker);
+	font-weight: 700;
+	font-size: 0.8em;
+	vertical-align: super;
+	padding-right: 6mm;
+}
+
+   ──────────────────────────────────────── */

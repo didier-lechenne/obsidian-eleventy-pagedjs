@@ -1,0 +1,30 @@
+.breakpage {
+  height: 0;
+  page-break-before: always;
+  display: none;
+}
+
+.breakcolumn {
+  break-after: column !important;
+  -webkit-column-break-after: always !important;
+  display: block !important;
+  min-height: auto;
+  height: auto;
+}
+
+
+
+.breakprint {
+  height: 0;
+  page-break-before: always;
+  display: none;
+}
+.breakscreen {
+  display: none;
+}
+
+
+  br + *,
+  [data-previous-break-after="column"]{
+  margin-top: 0ch !important;
+  }

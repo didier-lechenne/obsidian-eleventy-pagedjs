@@ -1,0 +1,27 @@
+
+
+/* mettre les notes sur une colonn sur certaines page */
+[data-page-number="10"] .pagedjs_footnote_inner_content,
+[data-page-number="15"] .pagedjs_footnote_inner_content,
+[data-page-number="17"] .pagedjs_footnote_inner_content,
+[data-page-number="27"] .pagedjs_footnote_inner_content,
+[data-page-number="43"] .pagedjs_footnote_inner_content,
+[data-page-number="44"] .pagedjs_footnote_inner_content,
+[data-page-number="57"] .pagedjs_footnote_inner_content,
+[data-page-number="75"] .pagedjs_footnote_inner_content,
+[data-page-number="85"] .pagedjs_footnote_inner_content
+ {
+	/* --g-column-count: 1 !important; */
+}
+
+
+/* masque la pgination sur certaines page */
+[data-page-number="29"],
+[data-page-number="39"],
+[data-page-number="61"],
+[data-page-number="71"],
+[data-page-number="97"]
+{
+	/* --folio: none !important; */
+}
+

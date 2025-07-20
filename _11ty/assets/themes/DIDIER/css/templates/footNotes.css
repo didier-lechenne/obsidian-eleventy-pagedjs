@@ -49,14 +49,14 @@
   font-size: 100%;
 }
 
-.pagedjs_footnote_inner_content {
+/* .pagedjs_footnote_inner_content {
   --g-column-count: 2;
   --g-column-gutter: var(--gutter);
 
   margin-top: calc(var(--gutter) * 2) !important;
   columns: var(--g-column-count) !important;
   gap: var(--g-column-gutter) !important;
-}
+} */
 
 /* ────────────────────────────────────────
 	Autre options

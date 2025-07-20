@@ -32,7 +32,7 @@
 
 [data-template="columnGrid"] .videofigure,
 [data-template="columnGrid"] .figure {
-	grid-column: var(--printcol, auto) / span var(--printwidth, 3);
+	grid-column: var(--print-col, auto) / span var(--printwidth, 3);
 	align-self: var(--alignself, start);
 
     margin-top: 0 !important;

@@ -1,0 +1,9 @@
+@page {
+    @footnote {
+      float: bottom;
+    }
+  }
+  
+.pagedjs_footnote { 
+  float: footnote; 
+}

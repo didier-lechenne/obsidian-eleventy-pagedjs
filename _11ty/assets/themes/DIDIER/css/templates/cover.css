@@ -1,0 +1,30 @@
+@page cover {
+        margin: 0mm;
+		background-color: rgb(255, 255, 255)!important;
+
+	@left-top {
+		display: none;
+	}
+	@right-top {
+		display: none;
+	}
+}
+
+    /* @page cover:right {
+        margin-top: 10mm;
+        margin-bottom: 10mm;
+        margin-left: 10mm;
+        margin-right: 10mm;
+    } */
+
+
+[data-template=cover] {
+	page: cover;
+	
+	page-break-after: always;
+	height: calc(
+		var(--pagedjs-height) - var(--pagedjs-margin-top) -
+			var(--pagedjs-margin-bottom) - var(--pagedjs-bleed-top) -
+			var(--pagedjs-bleed-bottom)
+	);
+}

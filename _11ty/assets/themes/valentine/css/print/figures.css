@@ -1,0 +1,65 @@
+
+.figure,
+.videofigure {
+  break-inside: avoid;
+  align-self: start;
+  margin: 0;
+  padding: 0;
+  margin-bottom: calc(1ch / 1);
+}
+
+figure.image {
+  /* margin: var(--gutter) 0;
+    max-width: var(--maxwidth);
+
+   margin-top: var(--gutter) ;             
+   margin-block-start: var(--gutter);    
+
+   margin-bottom:var(--gutter);             
+   margin-block-end: var(--gutter);     */
+}
+
+figcaption::before {
+  content: "↑ ";
+}
+
+.default figure.full {
+  /* “reset” pagebox left margin : */
+  margin-left: calc(
+    -1 * (var(--pagedjs-margin-left) - var(--pagedjs-margin-right))
+  );
+  max-width: none;
+}
+
+.figcaption,
+figcaption {
+  font-family: var(--labeur);
+  font-size: var(--caption-size);
+  line-height: var(--caption-line-height);
+  font-weight: var(--caption-weight);
+  padding: calc(1ch / 2) 0 0;
+}
+
+.figcaption strong em,
+.figcaption em strong,
+figcaption strong em,
+figcaption em strong{
+  font-weight: var(--caption-bold-weight);
+}
+
+
+figure.videofigure::after {
+  display: block;
+  content: "→ " attr(data-src);
+  font-size: var(--caption-size);
+  line-height: var(--caption-line-height);
+  font-weight: var(--caption-weight);
+}
+
+.video[style] iframe {
+  visibility: hidden;
+}
+
+.video button {
+  display: none;
+}

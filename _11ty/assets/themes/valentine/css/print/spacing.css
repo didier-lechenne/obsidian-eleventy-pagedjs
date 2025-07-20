@@ -1,0 +1,1 @@
+[style^="--ls"] { letter-spacing: calc(var(--ls, 0) * -0.001em); }

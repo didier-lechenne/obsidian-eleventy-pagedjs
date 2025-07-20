@@ -76,7 +76,7 @@ figure.full-page.cover img {
     height: 100%;
 }
 
-    [data-page-number="13"] figure img
+    [data-page-number="1"] figure img
     {
       object-position: 100% 0px !important;
     }

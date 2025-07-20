@@ -9,15 +9,13 @@ Adapted for this project */
 :root {
     --color-background: #efefef;
     --color-pageSheet: #cfcfcf;
-    --color-pageBox: hsl(16, 100%, 50%);
+    --color-pageBox: violet;
     --color-paper: white;
     --pagedjs-crop-color: #000;
     --pagedjs-crop-stroke: 1px;
     --color-preview: #222;
 
    --pagedjs-header-height: 80px;
-
-
 
    /* --pagedjs-bleed-left-right: 0mm!important; */
 }
@@ -116,3 +114,14 @@ Adapted for this project */
 
 
 
+.note {
+  float: footnote;
+}
+
+/* define the position of the footnote on the page (only bottom is possible for now) */
+
+@page {
+  @footnote {
+    float: bottom;
+  }
+}

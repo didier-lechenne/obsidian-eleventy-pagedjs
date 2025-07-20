@@ -1,0 +1,82 @@
+
+/* --pagedjs-full-page: page → The element will be remove from flow and put in the next page.
+--pagedjs-full-page: left → The element will be remove from flow and put in the next left page.
+--pagedjs-full-page: right → The element will be remove from flow and put in the next right page.
+--pagedjs-full-page: spread → The element will be remove from flow and put in the next spread. */
+
+figure.full-page.left{
+  --pagedjs-full-page: left;
+  width: 100%;
+  height: 100%;
+  margin: 0px;
+}
+
+figure.full-page.left img {
+    object-fit: cover;
+    object-position: 0px 0px;
+    width: 100%;
+    height: 100%;
+}
+
+figure.full-page.right{
+  --pagedjs-full-page: right;
+  width: 100%;
+  height: 100%;
+  margin: 0px;
+}
+
+figure.full-page.right img {
+    object-fit: cover;
+    object-position: 0px 0px;
+    width: 100%;
+    height: 100%;
+}
+
+
+figure.full-page.spread{
+  --pagedjs-full-page: spread;
+  /* width: 100%; */
+  height: 100%;
+  margin: 0px;
+}
+
+figure.full-page.spread img {
+    object-fit: cover;
+    object-position: 0px 0px;
+    width: 100%;
+    height: 100%;
+}
+
+
+figure.full-page.page{
+  --pagedjs-full-page: page;
+  width: 100%;
+  height: 100%;
+  margin: 0px;
+}
+
+figure.full-page.page img {
+    object-fit: cover;
+    object-position: 50% 0px;
+    width: 100%;
+    height: 100%;
+}
+
+figure.full-page.cover{
+  --pagedjs-full-page: 1;
+  width: 100%;
+  height: 100%;
+  margin: 0px;
+}
+
+figure.full-page.cover img {
+    object-fit: cover;
+    object-position: 50% 0px;
+    width: 100%;
+    height: 100%;
+}
+
+    [data-page-number="13"] figure img
+    {
+      object-position: 100% 0px !important;
+    }

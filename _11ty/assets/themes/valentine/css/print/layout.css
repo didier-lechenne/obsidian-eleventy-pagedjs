@@ -1,0 +1,67 @@
+   @page {
+        --g-column-count: 1;
+        --g-column-offset: 0;
+        --g-column-gutter: 3mm;
+        --g-row-count: 1;
+        --g-row-offset: 0;
+        --g-row-gutter: 3mm;
+
+        size: 165mm 240mm;
+
+        margin-top: 10mm;
+        margin-bottom: 10mm;
+        margin-left: 10mm;
+        margin-right: 10mm;
+
+        bleed: 6mm;
+        marks: crop;
+
+        @footnote {
+          float: bottom;
+        }
+    }
+
+    @page:left {
+        margin-top: 10mm;
+        margin-bottom: 10mm;
+        margin-left: 25mm;
+        margin-right: 10mm;
+    }
+
+    @page:right {
+        margin-top: 10mm;
+        margin-bottom: 10mm;
+        margin-left: 10mm;
+        margin-right: 25mm;
+    }
+
+    @page:left{
+      @left-top {
+        content: counter(page);
+        text-align: left;
+        margin-left: 10mm;
+        font-family: var(--note);
+        font-size: var(--labeur-size);
+        display: var(--folio, block);
+      }		
+    }
+
+    @page:right{
+      @right-top {
+        content: counter(page);
+        text-align: right;
+        margin-right: 10mm;
+        font-family: var(--note);
+        font-size: var(--labeur-size);
+        display: var(--folio, block);
+      }		
+    }
+
+  @page clean {
+		@left-top {
+			display: none; /* supprime le folio */
+		}
+		@right-top {
+			display: none; /* supprime le folio */
+		}
+	}

@@ -1,5 +1,5 @@
 <section id="{{ p.fileSlug | cleanTitle | slug }}" 
-         style="{% if p.data.gridCol %}--gridCol:{{ p.data.gridCol }};{% endif %}  {% if p.data.gridRow %}--gridRow:{{ p.data.gridRow }};{% endif %} {% if p.data.gridColGutter %}--gridColGutter:{{ p.data.gridColGutter }};{% endif %} {% if p.data.gridRowGutter %}--gridRowGutter:{{ p.data.gridRowGutter }};{% endif %}" 
+         style="--gridCol:{{ p.data['gridCol'] or '12' }};--gridRow:{{ p.data['gridRow'] or '10' }};"
          data-template="modularGrid"
          {% if p.data.show %}data-show="{{ p.data.show }}"{% endif %}
          {% if p.data.toc %}data-toc="{{ p.data.toc }}"{% endif %}

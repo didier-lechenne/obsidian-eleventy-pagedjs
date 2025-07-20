@@ -1,50 +1,64 @@
-section.introduction {
-	font-family: 'Hershey-Futural-30' !important;
-	font-size: 19pt;
-	line-height: 22pt; 
-	font-weight: 300 !important;  /* light */
-	
+main .introduction p {
+  font-family: "Hershey-Futural-30" !important;
+  font-size: 19pt;
+  line-height: 22pt;
+  font-weight: 300 !important; /* light */
+
+
+  text-rendering: optimizeLegibility;
+
+  orphans: 2;
+  widows: 2;
+
+  hyphens: none !important;
+  /* word-break: break-word;
+hyphenate-limit-chars: 6 3 3; */
+
 }
 
+main .introduction p {
+  margin-top: 1ch;
+}
+main .introduction p:first-child {
+  margin-top: 0;
+}
 
 section.introduction b,
 section.introduction strong {
-	font-family: 'Hershey-Futural-30' !important;
- 	font-weight: normal !important;
+  font-family: "Hershey-Futural-30" !important;
+  font-weight: normal !important;
 }
-
 
 section.introduction h2 {
-	font-family: 'Hershey-Futural-15' !important;
-	font-size: 28pt;
-	line-height: 33.6pt;
-	font-weight: normal !important;
-	text-align: center;
-	/* supprime le folio */
-	page: clean;
+  font-family: "Hershey-Futural-15" !important;
+  font-size: 28pt;
+  line-height: 33.6pt;
+  font-weight: normal !important;
+  text-align: center;
+  /* supprime le folio */
+  page: clean;
 }
 
+[data-template="introduction"] .footnote {
+  font-family: "Hershey-Futural-30" !important;
+  font-size: var(--footNote-size);
+  line-height: var(--footNote-line-height);
+  font-weight: var(--footNote-weight);
+  /* color: var(--fontNote-color); */
 
+  hyphens: auto;
+  hyphenate-limit-chars: 6 3 3;
 
-	/* ===================
-   SI BESOIN 
-   =================== */
-
-section.introduction p{      
-   /* margin-block-start: 0 !important;    
-   margin-block-end: 0 !important;
-   text-indent: 10mm;     */
+  margin-bottom: var(--footNote-size);
 }
 
-section.introduction p:first-of-type{          
-   /* text-indent: 0mm!important;       */
-}
-
-
-section.introduction .figure {
-	/* margin-block-start: var(--gutter);
-    margin: var(--gutter) 0;
-    max-width: var(--maxwidth); */
+[data-template="introduction"] ::footnote-call {
+  content: counter(footnote);
+  vertical-align: super;
+  /* font-size: 75%; */
+  line-height: 0;
+  padding-left: 0.2ch;
+  font-weight: var(--footNote-weight);
 }
 
 

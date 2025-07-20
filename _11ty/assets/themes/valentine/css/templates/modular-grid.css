@@ -1,5 +1,5 @@
+
 @page modularGrid {
-	
 }
 
 [data-template="modularGrid"],
@@ -97,6 +97,14 @@
 	/* background-color: hsla(16, 100%, 50%, 0.15); */
 }
 
+[data-template="modularGrid"] figcaption,
+.modularGrid figcaption {
+	grid-column: var(--printCol, auto) / span var(--printWidth, 12);
+	grid-row: calc(var(--prinRrow) + var(--printHeight)) / span 1;
+	position: relative;
+	width: 100%;
+}
+
 .hideMarker .modularGrid figure {
 	background-color: unset;
 }
@@ -116,12 +124,14 @@
 	align-self: var(--alignself, start);
 }
 
-[data-template="modularGrid"] figcaption,
-.modularGrid figcaption {
-	grid-column: var(--printCol, auto) / span var(--printWidth, 12);
-	grid-row: calc(var(--printRow) + var(--printHeight)) / span 1;
-	position: relative;
-	width: 100%;
+.modularGrid figure figcaption {
 }
 
-
+.modularGrid h2 {
+	/* display: none; */
+	/* font-family: unset;
+		font-size: unset;
+		line-height: unset;
+		font-weight: unset;
+		text-align: unset; */
+}

@@ -1,0 +1,364 @@
+@media print {
+
+	/* ===================
+   IMPORTATION DES POLICES DE CARACTERES AU FORMAT WEB
+   =================== */
+
+	@import "templates/fonts/fonts.css";
+
+
+  	/* ===================
+   GABARITS DE MISE EN PAGE
+   =================== */
+   
+   @page {
+        --g-column-count: 1;
+        --g-column-offset: 0;
+        --g-column-gutter: 3mm;
+        --g-row-count: 1;
+        --g-row-offset: 0;
+        --g-row-gutter: 3mm;
+
+        size: 165mm 240mm;
+
+        margin-top: 10mm;
+        margin-bottom: 10mm;
+        margin-left: 10mm;
+        margin-right: 10mm;
+
+        bleed: 6mm;
+        marks: crop;
+
+        @footnote {
+          float: bottom;
+        }
+    }
+
+    @page:left {
+        margin-top: 10mm;
+        margin-bottom: 10mm;
+        margin-left: 25mm;
+        margin-right: 10mm;
+    }
+
+    @page:right {
+        margin-top: 10mm;
+        margin-bottom: 10mm;
+        margin-left: 10mm;
+        margin-right: 25mm;
+    }
+
+    @page:left{
+      @left-top {
+        content: counter(page);
+        text-align: left;
+        margin-left: 10mm;
+        font-family: var(--note);
+        font-size: var(--labeur-size);
+        display: var(--folio, block);
+      }		
+    }
+
+    @page:right{
+      @right-top {
+        content: counter(page);
+        text-align: right;
+        margin-right: 10mm;
+        font-family: var(--note);
+        font-size: var(--labeur-size);
+        display: var(--folio, block);
+      }		
+    }
+
+  @page clean {
+		@left-top {
+			display: none; /* supprime le folio */
+		}
+		@right-top {
+			display: none; /* supprime le folio */
+		}
+	}
+
+
+
+
+	/* ===================
+   VARIABLES GLOBALES
+   =================== */
+
+  :root {
+    --bigsize: 60px;
+    --basesize: 12px;
+    --smallsize: 10px;
+    --color: rgba(0, 0, 0, 0.85);
+    --spacer: .5cm;
+    /* maximum width for texts */
+    --maxwidth: 40em;
+    /* columns */
+    --columnwidth: calc((186mm - var(--spacer) * 11) / 12);
+    --maxwidth:100%;
+
+
+		--heading: "Hershey-Futural-15", serif; /*  la police pour les titres */
+		--labeur: "Work Sans", sans-serif; /*  la police pour le texte courant */
+		--sommaire: "Hershey-Futural-15", serif; /*  la police pour le sommaire */
+
+		--text-color: rgba(0, 0, 0, 0.85);
+
+    --heading-size: 28pt;
+		--heading-line-height: 28pt;
+    --heading-weight: normal;
+
+		--labeur-size: 12pt;
+		--labeur-line-height: 16pt;
+    --labeur-weight: 300; /* light */
+    --labeur-bold-weight: normal;
+  
+
+		--caption-size: 10pt;
+		--caption-line-height: 11pt;
+    --caption-weight: normal;
+
+    --baseline: var(--labeur-line-height);
+		--gutter: 3mm;
+
+  }
+
+*,
+*:before,
+*:after {
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+article,
+aside,
+footer,
+header,
+hgroup,
+main,
+nav,
+section {
+  display: block;
+}
+
+li {
+  list-style: none;
+}
+
+img {
+  height: auto;
+  max-width: 100%;
+  vertical-align: top;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+/* ::selection {
+  background: var(--color);
+  color: var(--white);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color) !important;
+  outline-offset: 2px;
+} */
+
+html { scroll-behavior: smooth; }
+
+
+
+body{
+    font-family: var(--labeur);
+    font-size: var(--labeur-size);
+    font-weight: var(--labeur-weight);
+    
+    /* letter-spacing: var(--letter-spacing); */
+    line-height: var(--labeur-line-height);
+    color: var(--text-color);
+
+  /* margin-top: calc(var(--baseline) ); */
+
+    text-rendering: optimizeLegibility;
+    /* font-feature-settings: "liga", "dlig"; */
+
+    /* police varaible */
+    /* font-variation-settings: "wght" var(--font-weight-normal); */
+
+    /* minimum deux lignes présentes sur la page, au début ou à la fin d’un paragraphe */
+    orphans: 2;
+    widows: 2;
+    margin: 0;
+
+    word-break: break-word;
+    hyphens: auto;
+    hyphenate-limit-chars: 6 3 3;
+
+
+
+}
+
+main { 
+  display: block;
+  padding: 0;
+}
+
+a {
+  text-decoration: none;
+}
+
+a {
+  color: var(--link-color);
+}
+
+a:hover {
+  color: var(--link-color-hover);
+}
+a:active {
+  color: var(--link-color-hover);
+}
+a:focus {
+  outline: none;
+}
+
+
+p,
+ul,
+ol,
+dl {
+  margin-top: var(--baseline);
+}
+
+p:first-child,
+ul:first-child,
+ol:first-child,
+dl:first-child {
+  margin-top: 0;
+}
+
+
+blockquote,
+figure,
+hr,
+pre,
+table {
+  margin-top: calc(var(--baseline) );
+  margin-bottom: calc(var(--baseline) );
+}
+
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--heading);
+  /* font-variation-settings: "wght" var(--headings-weight); */
+  font-style: var(--headings-style);
+  -ms-hyphens: manual;
+      hyphens: manual;
+  /* letter-spacing: var(--headings-letter-spacing); */
+  line-height: var(--headings-line-height);
+  /* margin-top: calc(var(--baseline) ); */
+  text-transform: var(--headings-transform);
+  margin-top: 0!important;
+}
+
+section.default h2 {
+	font-family: var(--heading);
+	font-size: var(--heading-size);
+	line-height: var(--heading-line-height);
+	font-weight: var(--heading-weight);
+	text-align: center;
+	/* supprime le folio */
+	page: clean;
+
+
+}
+
+h2 + *,
+h3 + *,
+h4 + *,
+h5 + *,
+h6 + * {
+  margin-top: calc(var(--baseline));
+}
+
+b,
+strong {
+  /* font-variation-settings: "wght" var(--font-weight-bold); */
+  font-weight: var(--labeur-bold-weight);
+
+}
+
+br + * {
+  margin-top: 0;
+}
+
+
+  /* ------------------------------------------------------------------------ Break */
+  .breakpage {
+    height: 0;
+    page-break-before: always;
+    display: none;
+  }
+  .breakcolumn{
+    height: 0;
+    break-before:column;
+    break-after:column;
+  }
+  .breakprint {
+    height: 0;
+    page-break-before: always;
+    display: none;
+
+  }
+  .breakscreen {
+    display: none;
+  }
+
+
+
+  /* indentation des paragraphes sauf :
+    — quand le paragaphe succède à autre chose qu’un paragraphe
+    — quand un paragraphe est coupé par un saut ( il contient alors l’attribuet `data-split-from`
+  */
+  /* .default p + p:not([data-split-from]) { text-indent: 5ch; } */
+
+blockquote {
+  /* border-top: 2px solid var(--dark);
+  border-bottom: 2px solid var(--dark);
+  color: var(--headings-color);
+  font-family: var(--heading-font);
+  font-style: italic;
+  font-variation-settings: "wght" var(--font-weight-bold);
+  padding: calc(var(--baseline) * 6 + 1vw) 2rem;
+  font-size: clamp(1.1377777785rem, 1.1377777785rem + 0.1567604947 * (100vw - 20rem) / 70, 1.2945382732rem); */
+}
+blockquote > :nth-child(1) {
+  margin-top: 0;
+}
+
+
+
+  
+  @import "templates/fullPage.css";
+	@import "templates/cover.css";
+	@import "templates/blankpage.css";
+	@import "templates/fauxtitre.css";
+	@import "templates/toc-sommaire.css";
+	@import "templates/introduction.css";
+	@import "templates/text-col.css";
+	@import "templates/modular-grid.css";
+	@import "templates/column-grid.css";
+@import "templates/footNotes.css";
+
+}

@@ -1,0 +1,90 @@
+:root {
+  --list-marker-color: #666;
+  --list-bullet-size: 0.4em;
+  --list-dash-width: 0.8em;
+  --list-indent: 2ch;
+}
+
+/* Base des listes - supprimer les puces par défaut */
+ul {
+  list-style-type: '\200B'; /* Caractère invisible */
+  padding-inline-start: 0;
+  margin-block-start: calc(1ch / 4);
+  margin-block-end: calc(1ch / 4);
+}
+
+ul li {
+  padding-top: calc(1ch / 4);
+  padding-bottom: calc(1ch / 4);
+  margin-inline-start: var(--list-indent);
+  position: relative;
+  text-align: start;
+}
+
+/* Masquer complètement les markers par défaut */
+ul li::marker {
+  color: transparent;
+  content: '';
+}
+
+/* === BULLETS PERSONNALISÉS AVEC ::before === */
+
+ul li::before {
+  content: '–';
+  position: absolute;
+  left: calc(-1 * var(--list-indent) + 0.0ch);
+  top: 0.15em; /* Ajustement vertical */
+  color: var(--list-marker-color);
+  width: var(--list-dash-width);
+  text-align: center;
+  pointer-events: none;
+  font-weight: normal;
+}
+
+
+/* === VARIANTES PAR CLASSES === */
+
+/* Puces rondes */
+ul.round-bullets li::before {
+  content: '';
+  background-color: var(--list-marker-color);
+  border-radius: 50%;
+  width: var(--list-bullet-size);
+  height: var(--list-bullet-size);
+  top: 0.6em; /* Centrer verticalement */
+  left: calc(-1 * var(--list-indent) + 0.4ch);
+}
+
+/* Tirets longs */
+ul.em-dash li::before {
+  content: '—';
+}
+
+/* Puces carrées */
+ul.square-bullets li::before {
+  content: '';
+  background-color: var(--list-marker-color);
+  border-radius: 0;
+  width: var(--list-bullet-size);
+  height: var(--list-bullet-size);
+  top: 0.6em;
+  left: calc(-1 * var(--list-indent) + 0.4ch);
+}
+
+/* Chevrons */
+ul.chevron li::before {
+  content: '›';
+  font-weight: bold;
+}
+
+/* Points triangulaires */
+ul.triangle li::before {
+  content: '▸';
+}
+
+/* === NIVEAUX DE LISTES IMBRIQUÉES === */
+
+/* Niveau 1: tirets */
+ul li::before {
+  content: '–';
+}
