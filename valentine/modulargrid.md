@@ -15,4 +15,4 @@ class: modularGrid
 
 
 
-(imagegrid: content/images/img_test.jpg printcol:1 printwidth:7 printrow:1 printheight:10 imgX:-5.673758865248227 imgY:0 imgW:111.36938794638674)
+(imagegrid: images/img_test.jpg printcol:1 printwidth:7 printrow:1 printheight:10 imgX:-5.673758865248227 imgY:0 imgW:111.36938794638674)

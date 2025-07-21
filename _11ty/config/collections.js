@@ -51,25 +51,4 @@ module.exports = function (eleventyConfig) {
 
     return result;
   });
-
-  // eleventyConfig.addCollection("contentPages", (collectionApi) => {
-  //   return collectionApi
-  //     .getFilteredByGlob("content/text/*.md")
-  //     .filter((item) => !item.data.draft)
-  //     .filter((item) => !item.inputPath.endsWith("z_index.md"))
-  //     .sort((a, b) => {
-  //       if (a.data.order < b.data.order) {
-  //         return -1;
-  //       } else {
-  //         return 1;
-  //       }
-  //     });
-  // });
-
-  // eleventyConfig.addCollection("blog", function (collectionApi) {
-  //   return collectionApi
-  //     .getFilteredByGlob("content/text/blog/*.md")
-  //     .filter((item) => !item.data.draft)
-  //     .sort((a, b) => b.date - a.date);
-  // });
 };
