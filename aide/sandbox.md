@@ -1,6 +1,33 @@
+## **Ordre d'exécution Eleventy :**
 
+1. **Preprocessors** → s'appliquent **AVANT** le rendu Markdown
+2. **Rendu Markdown** → transforme le Markdown en HTML
+3. **Filters** → s'appliquent **PENDANT** le rendu des templates
+4. **Transforms** → s'appliquent **APRÈS** le rendu HTML final
 <span style="--ls:16"> </span>
+## **ORDRE D'EXÉCUTION ELEVENTY (corrigé) :**
 
+1. **PREPROCESSORS** : `notes`, `smallcaps`, `break`, `imgfull`
+    - `(notes: "texte")` → `^[texte]`
+    - `<smallcaps>texte</smallcaps>` → `<span class="small-caps">texte</span>`
+2. **RENDU MARKDOWN** : Markdown → HTML
+    - `^[texte]` → `<a href="#fn1">1</a>` + footnotes
+3. **TEMPLATE** : Rendu des templates (Liquid/Nunjucks)
+    - `{{ content }}` (contient le HTML du markdown)
+    - `{{ content | filter }}` (si filters appliqués)
+4. **FILTERS** : ⚠️ **ATTENTION - Seulement sur HTML déjà rendu**
+    - ❌ `{{ content | notes }}` → IMPOSSIBLE (notes déjà traitées)
+    - ❌ `{{ content | smallcaps }}` → IMPOSSIBLE (smallcaps déjà traitées)
+    - ✅ Filters uniquement pour post-traitement HTML
+5. **TRANSFORMS** : Post-traitement du HTML final
+    - `invisibleSpaces`, `addClasses`, `uniqueFootnotes`
+
+## **Conclusion :**
+
+**Votre architecture actuelle est parfaite :**
+
+- ✅ **Preprocessors** : `notes`, `smallcaps`, `break`, `imgfull`
+- ✅ **Transforms** : `invisibleSpaces`, `addClasses`, `uniqueFootnotes`
 
 ```js
 // Parser YAML-like dans les paramètres

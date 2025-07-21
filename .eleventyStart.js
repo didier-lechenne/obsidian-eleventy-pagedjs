@@ -1,11 +1,10 @@
 // const { HtmlBasePlugin } = require("@11ty/eleventy");
 const collectionsConfig = require("./_11ty/config/collections.js");
 const markdownPlugin = require("./_11ty/config/markdown.js");
-const transformsConfig = require("./_11ty/config/transforms.js");
 const filtersConfig = require("./_11ty/config/filters.js");
-const shortcodesConfig = require("./_11ty/config/shortcodes.js");
+const shortcodesConfig = require("./_11ty/config/mediaShortcodes.js");
+const transformsConfig = require("./_11ty/config/transforms.js");
 const yamlPlugin = require("./_11ty/config/yaml.js");
-
 const config = require('./_11ty/config/siteData.js');
 
 
@@ -59,14 +58,19 @@ module.exports = function (eleventyConfig) {
   });
 
   // === APPLIQUER LES CONFIGURATIONS ===
+// 1. PREPROCESSORS     (transforms.js)
+// 2. SHORTCODES        (mediaShortcodes.js)  
+// 3. RENDU MARKDOWN    
+// 4. TEMPLATE RENDERING
+// 5. TRANSFORMS        (transforms.js)
 
   // eleventyConfig.addPlugin(HtmlBasePlugin);
   eleventyConfig.addPlugin(yamlPlugin);
   eleventyConfig.addPlugin(markdownPlugin);
   collectionsConfig(eleventyConfig);
   filtersConfig(eleventyConfig);
-  shortcodesConfig(eleventyConfig);
   transformsConfig(eleventyConfig);
+  shortcodesConfig(eleventyConfig);
   // passthroughConfig(eleventyConfig);
 
   // === CONFIGURATION SERVEUR DE DEV ===

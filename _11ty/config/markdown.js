@@ -6,7 +6,7 @@ const markdownItSup = require("markdown-it-sup");
 const markdownItMark = require("markdown-it-mark");
 const markdownItAbbr = require("markdown-it-abbr");
 const markdownItContainer = require("markdown-it-container");
-const markdownItFigures = require("markdown-it-image-figures");
+// const markdownItFigures = require("markdown-it-image-figures");
 
 const string = require("string");
 
@@ -57,15 +57,15 @@ module.exports = function (eleventyConfig) {
         }
       },
     })
-    .use(markdownItFigures, {
-      dataType: false,
-      figcaption: true,
-      keepAlt: true,
-      lazyLoading: true,
-      link: false,
-      tabindex: false,
-      copyAttrs: true,
-    })
+    // .use(markdownItFigures, {
+    //   dataType: false,
+    //   figcaption: true,
+    //   keepAlt: true,
+    //   lazyLoading: true,
+    //   link: false,
+    //   tabindex: false,
+    //   copyAttrs: true,
+    // })
     .use(markdownItAttrs, {
       allowedAttributes: ["id", "class", "style"],
     });

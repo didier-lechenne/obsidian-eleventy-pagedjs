@@ -52,7 +52,6 @@ eleventyConfig.addShortcode("imgfullPage", function (src, alt, className = "", s
 });
 
 
-
   eleventyConfig.addNunjucksShortcode("imgfullPage", function (src, fullPage) {
     if (!src) {
       return '<p>Erreur: src manquant</p>';
@@ -65,7 +64,7 @@ eleventyConfig.addShortcode("imgfullPage", function (src, alt, className = "", s
     </figure>`;
   });
 
-// {% imgfullPage "/images/archery-outdoors-women-dithered.png", "pageCover" %}
+
 
 
 
