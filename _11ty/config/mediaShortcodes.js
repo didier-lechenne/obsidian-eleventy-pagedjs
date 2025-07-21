@@ -47,15 +47,15 @@ module.exports = function(eleventyConfig) {
     switch(type) {
       case 'image':
         globalImageCounter++;
-        return `<figure data-id="${id}" id="image_${globalImageCounter}" class="figure image${classAttr}"${styleAttr}>
-          <img src="${config.src}" alt="${config.caption || ''}" data-no-transform="true">
+        return `<figure data-id="${id}" id="image-${globalImageCounter}" class="figure image${classAttr}"${styleAttr}>
+          <img src="${config.src}" alt="${config.caption || ''}" >
           ${captionHTML ? `<figcaption class="figcaption">${captionHTML}</figcaption>` : ''}
         </figure>`;
         
       case 'imagegrid':
         globalFigureGridCounter++;
         let output = `<figure class="resize${classAttr}" id="figure_${globalFigureGridCounter}"${styleAttr}>
-          <img src="${config.src}" alt="${config.caption || ''}" data-no-transform="true">
+          <img src="${config.src}" alt="${config.caption || ''}" >
         </figure>`;
         
         if (captionHTML) {
@@ -69,13 +69,13 @@ module.exports = function(eleventyConfig) {
           [<a href="#fig-${globalFigureCounter}">fig. ${globalFigureCounter}</a>]
         </span>
         <span class="figure figmove${classAttr}" id="fig-${globalFigureCounter}"${styleAttr}>
-          <img src="${config.src}" alt="${config.caption || ''}" data-no-transform="true">
+          <img src="${config.src}" alt="${config.caption || ''}" >
           ${captionHTML ? `<span class="figcaption"><span class="figure_reference">[fig. ${globalFigureCounter}]</span> ${captionHTML}</span>` : ''}
         </span>`;
 
       case 'imagenote':
         return `<span class="imagenote sideNote${classAttr}"${styleAttr}>
-          <img src="${config.src}" alt="${config.caption || ''}" data-no-transform="true">
+          <img src="${config.src}" alt="${config.caption || ''}" >
           ${captionHTML ? `<span class="caption">${captionHTML}</span>` : ''}
         </span>`;
 

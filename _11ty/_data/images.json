@@ -1,6 +1,11 @@
 {
-  "intro": {
-    "id": "intro",
+  "img-intro": {
+    "id": "img-intro",
+    "caption": "Scan de carnet d’étude, *carte heuristique : domestique* <br/>Valentine Saint-Martin, octobre 2025.",
+    "src": "images/intro.jpg"
+  },
+  "img_intro": {
+    "id": "img_intro",
     "caption": "Scan de carnet d’étude, *carte heuristique : domestique* <br/>Valentine Saint-Martin, octobre 2025.",
     "src": "images/intro.jpg"
   }

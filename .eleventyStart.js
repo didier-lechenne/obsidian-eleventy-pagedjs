@@ -69,8 +69,9 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPlugin(markdownPlugin);
   collectionsConfig(eleventyConfig);
   filtersConfig(eleventyConfig);
+    shortcodesConfig(eleventyConfig);
   transformsConfig(eleventyConfig);
-  shortcodesConfig(eleventyConfig);
+
   // passthroughConfig(eleventyConfig);
 
   // === CONFIGURATION SERVEUR DE DEV ===
