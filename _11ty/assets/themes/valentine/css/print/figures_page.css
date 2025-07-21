@@ -2,7 +2,7 @@
 	/* if we want a special template for iconographic groups */
 	/* page: figures; */
 
-	/* “reset” pagebox left margin : */
+	/* "reset" pagebox left margin : */
 	/* margin-left: calc(-1 * (var(--pagedjs-margin-left) - var(--pagedjs-margin-right)) ); */
 }
 
@@ -21,9 +21,9 @@
 }
 
 .figures_page .content .figure {
-	grid-column: var(--printcol, auto) / span var(--printwidth, 3);
-	grid-row: var(--printrow, auto) / span var(--printheight, 1);
-	align-self: var(--alignself, start);
+	grid-column: var(--print-col, auto) / span var(--print-width, 3);
+	grid-row: var(--print-row, auto) / span var(--print-height, 1);
+	align-self: var(--align-self, start);
 }
 
 .figures_page .figure, .figures_page .videofigure {
@@ -54,5 +54,3 @@
 .figure_call_back {
 	display: none;
 }
-
-

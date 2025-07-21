@@ -1,23 +1,264 @@
 {
-  "img_intro": {
-    "id": "img_intro",
-    "caption": "Scan de carnet d’étude, *carte heuristique : domestique* <br/>Valentine Saint-Martin, octobre 2025.",
+  "img-intro": {
+    "id": "img-intro",
+    "caption": "Scan de carnet d'étude, *carte heuristique : domestique* <br/>Valentine Saint-Martin, octobre 2025.",
     "src": "images/intro.jpg"
   },
-  "  img_domesti": {
-    "id": "  img_domesti",
-    "caption": "   Scan de carnet d’étude, *carte heuristique : domestique* <br/>Valentine Saint-Martin, octobre 2025.",
+  "img-domesti": {
+    "id": "img-domesti",
+    "caption": "Scan de carnet d'étude, *carte heuristique : domestique* <br/>Valentine Saint-Martin, octobre 2025.",
     "src": "images/domestique.png"
   },
-  "  img_domestique": {
-    "id": "  img_domestique",
+  "img-domestique": {
+    "id": "img-domestique",
     "caption": "Aménagement domestique de la cuisine moderne proposé par Catharine Beecher, privilégiant les systèmes de rangement et les plans de travail, *The American Woman's Home : or Principles of Domestic Science*, Ford and Company, 1869, p34.",
     "src": "images/domestique.png"
   },
-  "  img_reparer": {
-    "id": "  img_reparer",
+  "img-reparer": {
+    "id": "img-reparer",
     "caption": "Ugo La Pietra, Recupero e reinvenzione, 1975.",
     "src": "images/reparer1.png"
+  },
+  "nobody-at-table-edited-dithered": {
+    "id": "nobody-at-table-edited-dithered",
+    "caption": "La table chauffante électrique est équipée d'une couverture en laine des Abbruzzes de 240×240 cm. Photo : Marina Kálcheva. <br> Source : https://solar.lowtechmagazine.com.",
+    "col": 8,
+    "printCol": 1,
+    "width": 12,
+    "printWidth": 12,
+    "printRow": 1,
+    "printHeight": 10,
+    "alignSelf": "start",
+    "imgX": -7.433808553971486,
+    "imgY": 0.26455026455026454,
+    "imgW": 114.74289656819494,
+    "class": "resizable",
+    "src": "images/nobody-at-table-edited_dithered.png"
+  },
+  "intro-domestique": {
+    "id": "intro-domestique",
+    "printCol": 1,
+    "printWidth": 12,
+    "printRow": 1,
+    "printHeight": 8,
+    "imgX": -3.13419325639285,
+    "imgY": -0.3821281599059374,
+    "imgW": 106.41547861507128,
+    "class": "resizable",
+    "caption": "Scan de carnet d'étude, *carte heuristique : domestique*, <br> Valentine Saint-Martin, octobre 2025",
+    "src": "images/intro_domestique.png"
+  },
+  "intro-heritage": {
+    "id": "intro-heritage",
+    "printCol": 1,
+    "printWidth": 12,
+    "printRow": 11,
+    "printHeight": 8,
+    "imgX": 3.7225616655351876,
+    "imgY": -2.281089036055926,
+    "imgW": 103.1907671418873,
+    "class": "resizable",
+    "caption": "Scan de carnet d'étude, *carte heuristique : héritage*, <br>Valentine Saint-Martin, octobre 2025",
+    "src": "images/intro_heritage.png"
+  },
+  "intro-objet": {
+    "id": "intro-objet",
+    "printCol": 1,
+    "printWidth": 12,
+    "printRow": 1,
+    "printHeight": 14,
+    "imgX": -0.7694048427245986,
+    "imgY": -0.7368900091017321,
+    "imgW": 100.61099796334013,
+    "class": "resizable",
+    "caption": "Scan de carnet d'étude, carte heuristique, Valentine Saint-Martin, octobre 2025",
+    "src": "images/intro_objet.png"
+  },
+  "intro0": {
+    "id": "intro0",
+    "printCol": 1,
+    "printWidth": 12,
+    "printRow": 1,
+    "printHeight": 12,
+    "imgX": -0.1584068793844761,
+    "imgY": -0.9259259259259288,
+    "imgW": 100.61099796334013,
+    "class": "resizable",
+    "caption": "Capture d'écran de la vue graphique du coffre Obsidian mémoire_valentine, juin 2025",
+    "src": "images/intro0.png"
+  },
+  "lowtech2": {
+    "id": "lowtech2",
+    "printCol": 1,
+    "printWidth": 12,
+    "printRow": 1,
+    "printHeight": 18,
+    "imgX": -0.6902014030323589,
+    "imgY": -0.7077991452991441,
+    "imgW": 100.82597872821906,
+    "class": "resizable",
+    "caption": "Low-tech Magazine : la BD, Guillaume Lion, 2022",
+    "src": "images/lowtech2.png"
+  },
+  "lowtech-distilateur": {
+    "id": "lowtech-distilateur",
+    "printCol": 1,
+    "printWidth": 12,
+    "printRow": 1,
+    "printHeight": 8,
+    "imgX": -0.6902014030323589,
+    "imgY": -0.7077991452991441,
+    "imgW": 100.82597872821906,
+    "class": "resizable",
+    "caption": "Distillateur solaire en plastique et sacs de sable, illustration Clément Gaillard",
+    "src": "images/lowtech_distilateur.png"
+  },
+  "siege": {
+    "id": "siege",
+    "printCol": 1,
+    "printWidth": 12,
+    "printRow": 1,
+    "printHeight": 19,
+    "imgX": -7.433808553971486,
+    "imgY": -2.938792353834136,
+    "imgW": 114.74289656819494,
+    "class": "resizable",
+    "caption": "Gianni Pettena, Drawing for Vestirsi di Siede, <br> vers 1971, reprographie 29,8 x 21,1 cm.",
+    "src": "images/siege.jpg"
+  },
+  "carte-skate-02": {
+    "id": "carte-skate-02",
+    "printCol": 1,
+    "printWidth": 12,
+    "printRow": 1,
+    "printHeight": 18,
+    "imgX": -0.6902014030323596,
+    "imgY": -0.11956385118149584,
+    "imgW": 100.82597872821906,
+    "class": "resizable",
+    "caption": "Carte sensible, Valentine Saint-Martin, 2022",
+    "src": "images/carte_skate-02.jpg"
+  },
+  "carte-skate-03": {
+    "id": "carte-skate-03",
+    "printCol": 1,
+    "printWidth": 12,
+    "printRow": 1,
+    "printHeight": 18,
+    "imgX": -0.6902014030323596,
+    "imgY": -0.11956385118149584,
+    "imgW": 100.82597872821906,
+    "class": "resizable",
+    "caption": "Carte sensible, Valentine Saint-Martin, 2022",
+    "src": "images/carte_skate-03.jpg"
+  },
+  "carte-skate-01": {
+    "id": "carte-skate-01",
+    "printCol": 1,
+    "printWidth": 12,
+    "printRow": 1,
+    "printHeight": 18,
+    "imgX": -0.6902014030323596,
+    "imgY": -0.11956385118149584,
+    "imgW": 100.82597872821906,
+    "class": "resizable",
+    "caption": "Légende de carte sensible, Valentine Saint-Martin, 2022.",
+    "src": "images/carte_skate-01.jpg"
+  },
+  "alternative1": {
+    "id": "alternative1",
+    "printCol": 1,
+    "printWidth": 12,
+    "printRow": 1,
+    "printHeight": 22,
+    "imgX": 1.991400769404841,
+    "imgY": -1.1097410604192357,
+    "imgW": 95.6664403711247,
+    "class": "resizable",
+    "src": "images/alternative1.jpg"
+  },
+  "alternative2": {
+    "id": "alternative2",
+    "printCol": 1,
+    "printWidth": 12,
+    "printRow": 1,
+    "printHeight": 22,
+    "imgX": 2.014030323602624,
+    "imgY": -1.7536648856007684,
+    "imgW": 96.17560534057479,
+    "class": "resizable",
+    "caption": "*Si nous ne conservons pas la nature, la nature ne nous conservera pas*, Yona Friedman.",
+    "src": "images/alternative2.jpg"
+  },
+  "alternative-crasset": {
+    "id": "alternative-crasset",
+    "printCol": 1,
+    "printWidth": 11,
+    "printRow": 1,
+    "printHeight": 10,
+    "imgX": -105.76589952981935,
+    "imgY": -41.11266728913787,
+    "imgW": 201.0022271714922,
+    "class": "resizable",
+    "caption": "Les terremblements / La communauté des cratères, Fantaisie, Matali Crasset",
+    "src": "images/alternative_crasset.png"
+  },
+  "velo2": {
+    "id": "velo2",
+    "caption": "Carte tracée par Jean Lin, Le Séré, le 6 Juin 1974. Fernand Deligny, *Cartes et lignes d'erre*, Paris, L'Arachnéen, 2013, p. 201.",
+    "src": "images/velo2.jpg"
+  },
+  "velo3": {
+    "id": "velo3",
+    "caption": "Manuel de fabrication de la boussole, SOC, 2020.",
+    "src": "images/velo3.jpg"
+  },
+  "velo": {
+    "id": "velo",
+    "caption": "Tim Ingold, « Figure 3.1 » : connecter, traverser, longer, p. 109, Illustration tirée du livre *Une brève histoire des lignes*. Bruxelles, Zones sensibles, 2011.",
+    "src": "images/velo.jpg"
+  },
+  "velo4": {
+    "id": "velo4",
+    "caption": "*Terre, vaisseau précieux*, Yona Friedman.",
+    "src": "images/velo4.jpg"
+  },
+  "home-made-solar-system-dithered": {
+    "id": "home-made-solar-system-dithered",
+    "printCol": 1,
+    "printWidth": 5,
+    "printRow": 1,
+    "printHeight": 10,
+    "caption": "These kind of iconographic calls are useful for the layout of bigger figures than the main text flow allows.",
+    "src": "images/home-made-solar-system_dithered.png"
+  },
+  "home-made-solar-system2-dithered": {
+    "id": "home-made-solar-system2-dithered",
+    "printCol": 6,
+    "printWidth": 7,
+    "printRow": 1,
+    "printHeight": 10,
+    "caption": "These kind of iconographic calls are useful for the layout of bigger figures than the main text flow allows.",
+    "src": "images/home-made-solar-system2_dithered.png"
+  },
+  "img-test-simple": {
+    "id": "img-test-simple",
+    "caption": "La légende et *la source*.",
+    "class": "content-image",
+    "src": "images/img_test.jpg"
+  },
+  "img-test": {
+    "id": "img-test",
+    "printCol": 1,
+    "printWidth": 7,
+    "printRow": 1,
+    "printHeight": 10,
+    "imgX": -5.673758865248227,
+    "imgY": 0,
+    "imgW": 111.36938794638674,
+    "class": "resizable",
+    "caption": "Image de test",
+    "src": "images/img_test.jpg"
   },
   "nobody-at-table-edited_dithered": {
     "id": "nobody-at-table-edited_dithered",
@@ -34,5 +275,29 @@
     "imgW": "114.74289656819494",
     "class": "resizable",
     "src": "images/nobody-at-table-edited_dithered.png"
+  },
+  "  img_reparer": {
+    "id": "  img_reparer",
+    "caption": "Ugo La Pietra, Recupero e reinvenzione, 1975.",
+    "src": "images/reparer1.png"
+  },
+  "img_test_simple": {
+    "id": "img_test_simple",
+    "caption": "La légende et *la source*.",
+    "class": "content-image",
+    "src": "images/img_test.jpg"
+  },
+  "img_test": {
+    "id": "img_test",
+    "printCol": 1,
+    "printWidth": 7,
+    "printRow": 1,
+    "printHeight": 10,
+    "imgX": -5.673758865248227,
+    "imgY": 0,
+    "imgW": 111.36938794638674,
+    "class": "resizable",
+    "caption": "Image de test",
+    "src": "images/img_test.jpg"
   }
 }

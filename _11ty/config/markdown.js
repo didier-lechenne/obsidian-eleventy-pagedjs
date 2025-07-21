@@ -33,13 +33,9 @@ module.exports = function (eleventyConfig) {
     .use(markdownItSup)
     .use(markdownItMark)
     .use(markdownItContainer, "columns")
-    .use(markdownItContainer, "breakcolumn") // <- Ajout de la parenthèse fermante manquante
-    .use(markdownItContainer, "glossary", { marker: "¶" })
-    .use(markdownItContainer, "term")
-    .use(markdownItContainer, "post")
+    .use(markdownItContainer, "breakcolumn") 
     .use(markdownItContainer, "content")
     .use(markdownItContainer, "items")
-    .use(markdownItContainer, "flex")
     .use(markdownItContainer, "insert")
     .use(markdownItContainer, "modularGrid")
     .use(markdownItContainer, "details", {

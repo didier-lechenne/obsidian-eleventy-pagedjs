@@ -1,7 +1,8 @@
 <section id="{{ p.fileSlug | cleanTitle | slug }}" 
+         data-template="default"
          {% if p.data.show %}data-show="{{ p.data.show }}"{% endif %}
          {% if p.data.toc %}data-toc="{{ p.data.toc }}"{% endif %}
-         class="{% if p.data.toc %}toc-{{ p.data.toc }}{% endif %} default marker">
+         class="{% if p.data.toc %}toc-{{ p.data.toc }}{% endif %} {% if p.data.class %}{{ p.data.class }}{% endif %} default marker">
   
   {{ p.templateContent | safe }} 
 

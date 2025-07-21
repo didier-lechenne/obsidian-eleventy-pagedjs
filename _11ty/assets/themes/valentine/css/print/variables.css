@@ -15,11 +15,11 @@
   --labeur-weight: 300; /* light */
   --labeur-bold-weight: 400;
 
-  --footNote: var(--labeur), sans-serif;
-  --footNote-size: 8.9pt;
-  --footNote-line-height: 11pt;
-  --footNote-weight: 300;
-  --footNote-bold-weight: normal;
+  --foot-note: var(--labeur), sans-serif;
+  --foot-note-size: 8.9pt;
+  --foot-note-line-height: 11pt;
+  --foot-note-weight: 300;
+  --foot-note-bold-weight: normal;
 
   --caption: var(--labeur), sans-serif;
   --caption-size: 9pt;

@@ -1,9 +1,9 @@
 .pagedjs_footnote_inner_content {
-  font-family: var(--footNote);
-  font-size: var(--footNote-size);
-  line-height: var(--footNote-line-height);
-  font-weight: var(--footNote-weight);
-  /* color: var(--fontNote-color); */
+  font-family: var(--foot-note);
+  font-size: var(--foot-note-size);
+  line-height: var(--foot-note-line-height);
+  font-weight: var(--foot-note-weight);
+  /* color: var(--font-note-color); */
 
   hyphens: auto;
   hyphenate-limit-chars: 6 3 3;
@@ -26,7 +26,7 @@
 .footnote b,
 .footnote strong {
   /* font-variation-settings: "wght" var(--font-weight-bold); */
-  font-weight: var(--footNote-bold-weight);
+  font-weight: var(--foot-note-bold-weight);
 }
 
 .footnote:has(.breakcolumn) {
@@ -42,7 +42,7 @@
   content: counter(footnote);
   line-height: 0;
   padding-left: 0.2ch;
-  font-weight: var(--footNote-weight);
+  font-weight: var(--foot-note-weight);
 }
 
 
@@ -59,7 +59,7 @@
 
 ::footnote-marker {
   content: counter(footnote-marker) ". ";
-  font-weight: var(--footNote-weight);
+  font-weight: var(--foot-note-weight);
   /* font-size: 80%; */
 }
 

@@ -1,0 +1,10 @@
+<section id="{{ p.fileSlug | cleanTitle | slug }}" 
+         style="{% if p.data.gridCol %}--grid-col: {{ p.data.gridCol }};{% endif %}{% if p.data.gutter %}--gutter: {{ p.data.gutter }};{% endif %}"
+         data-template="columnGrid"
+         {% if p.data.show %}data-show="{{ p.data.show }}"{% endif %}
+         {% if p.data.toc %}data-toc="{{ p.data.toc }}"{% endif %}
+         class="{% if p.data.toc %}toc-{{ p.data.toc }}{% endif %} {% if p.data.class %}{{ p.data.class }}{% endif %} marker">
+
+  {{ p.templateContent | safe }} 
+
+</section>

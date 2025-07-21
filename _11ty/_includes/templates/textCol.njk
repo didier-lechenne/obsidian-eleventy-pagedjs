@@ -1,9 +1,9 @@
-<section id="{{ page.fileSlug }}" 
-         style="" 
+<section id="{{ p.fileSlug | cleanTitle | slug }}" 
+         style="{% if p.data.gridCol %}--grid-col: {{ p.data.gridCol }};{% endif %}{% if p.data.gridColGutter %}--grid-col-gutter: {{ p.data.gridColGutter }};{% endif %}"
          data-template="textCol"
          {% if p.data.show %}data-show="{{ p.data.show }}"{% endif %}
          {% if p.data.toc %}data-toc="{{ p.data.toc }}"{% endif %}
-         class="{% if p.data.toc %}toc-{{ p.data.toc }}{% endif %} textCol marker">
+         class="{% if p.data.toc %}toc-{{ p.data.toc }}{% endif %} {% if p.data.class %}{{ p.data.class }}{% endif %} textCol marker">
   
   {{ p.templateContent | safe  }} 
 

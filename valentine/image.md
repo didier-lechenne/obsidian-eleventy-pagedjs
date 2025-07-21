@@ -3,5 +3,11 @@ template: default
 toc: ignore
 draft: true
 ---
-(image: images/img_test.jpg  caption: La légende et _la source_.)
+
+
+ {% image "images/img_test.jpg", { 
+  id: "img_test_simple",
+  caption: "La légende et *la source*.",
+  class: "content-image"
+} %}
 

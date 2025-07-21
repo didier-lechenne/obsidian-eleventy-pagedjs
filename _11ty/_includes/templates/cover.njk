@@ -1,11 +1,9 @@
-
-<!-- _11ty/_layouts/cover.njk -->
 <section id="{{ p.fileSlug | cleanTitle | slug }}" 
-         style="{% if bgColor %}--bgColor:{{ bgColor }};{% endif %}" 
+         style="{% if p.data.bgColor %}--bg-color: {{ p.data.bgColor }};{% endif %}" 
          data-template="cover"
-         {% if show %}data-show="{{ show }}"{% endif %}
-         {% if toc %}data-toc="{{ toc }}"{% endif %}
-         class="{% if toc %}toc-{{ toc }}{% endif %} cover coverNJK">
+         {% if p.data.show %}data-show="{{ p.data.show }}"{% endif %}
+         {% if p.data.toc %}data-toc="{{ p.data.toc }}"{% endif %}
+         class="{% if p.data.toc %}toc-{{ p.data.toc }}{% endif %} {% if p.data.class %}{{ p.data.class }}{% endif %} cover marker">
 
   {{ p.templateContent | safe  }} 
 

@@ -5,12 +5,12 @@
 [data-template="columnGrid"] {
 	page: columnGrid;
 	page-break-before: always;
-	/* “reset” pagebox left margin : */
+	/* "reset" pagebox left margin : */
 
 }
 
 [data-template="columnGrid"]  {
-  --g-column-count: 12;
+  --g-column-count: var(--grid-col, 12);
 
   display: grid;
   grid-template-columns: repeat(var(--g-column-count), 1fr);
@@ -32,8 +32,8 @@
 
 [data-template="columnGrid"] .videofigure,
 [data-template="columnGrid"] .figure {
-	grid-column: var(--print-col, auto) / span var(--printwidth, 3);
-	align-self: var(--alignself, start);
+	grid-column: var(--print-col, auto) / span var(--print-width, 3);
+	align-self: var(--align-self, start);
 
     margin-top: 0 !important;
     margin-block-start: 0 !important;

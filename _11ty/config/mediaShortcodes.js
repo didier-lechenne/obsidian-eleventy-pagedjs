@@ -26,15 +26,16 @@ module.exports = function (eleventyConfig) {
   function generateStyles(config) {
     const cssVarMapping = {
       col: "--col",
-      printCol: "--printCol",
+      printCol: "--print-col",
       width: "--width",
-      printWidth: "--printWidth",
-      printRow: "--printRow",
-      printHeight: "--printHeight",
-      alignself: "--alignself",
-      imgX: "--imgX",
-      imgY: "--imgY",
-      imgW: "--imgW",
+      printWidth: "--print-width",
+      printRow: "--print-row",
+      printHeight: "--print-height",
+      alignSelf: "--align-self",
+      alignself: "--align-self", // Support des deux formats
+      imgX: "--img-x",
+      imgY: "--img-y",
+      imgW: "--img-w",
     };
 
     let styles = "";
@@ -160,7 +161,7 @@ module.exports = function (eleventyConfig) {
         return `<!-- ERROR: Image "${imageId}" non trouvée dans JSON -->`;
       }
     } else {
-      // FORMAT 2: {% image "images/photo.jpg", { id: "intro-domestique", printcol: 1 } %}
+      // FORMAT 2: {% image "images/photo.jpg", { id: "intro-domestique", printCol: 1 } %}
       imageId = options.id;
       const existingConfig = imageConfigs[imageId] || {};
 

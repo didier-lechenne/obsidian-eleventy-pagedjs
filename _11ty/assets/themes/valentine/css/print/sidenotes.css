@@ -1,6 +1,6 @@
-    .imagenote_wrapper {
+.imagenote_wrapper {
       display: block;
-      width: calc(var(--columnwidth)  * 3 + var(--gutter) * 2);
+      width: calc(var(--column-width)  * 3 + var(--gutter) * 2);
       padding: 0 var(--gutter) 0 1cm;    
       position: absolute;
       text-align-last: initial;
@@ -29,7 +29,7 @@
       float: none;
       display: block;
       margin: 0 0 1rem;
-      font-size: var(--fontCaptionSize);
+      font-size: var(--font-caption-size);
     }
     .imagenote > * {
       display: block;

@@ -8,9 +8,7 @@ const transformsConfig = require("./_11ty/config/transforms.js");
 const yamlPlugin = require("./_11ty/config/yaml.js");
 const config = require('./_11ty/config/siteData.js');
 
-
 module.exports = function (eleventyConfig) {
-
 
   eleventyConfig.addTransform("fixImagePaths", function(content, outputPath) {
     if (outputPath && outputPath.endsWith(".html")) {
@@ -24,15 +22,14 @@ module.exports = function (eleventyConfig) {
     return content;
   });
 
-
   eleventyConfig.on("afterBuild", () => {
     console.log("✅ Site généré avec succès (avec start) !");
   });
 
   // Copier les ressources depuis _11ty
   eleventyConfig.addPassthroughCopy({
-     [`${config.publicFolder}/images`]: "images"  ,
-     [`_11ty/assets/themes/${config.theme}`]: "assets"  ,
+    [`${config.publicFolder}/images`]: "images",
+    [`_11ty/assets/themes/${config.theme}`]: "assets",
     "_11ty/csspageweaver": "csspageweaver"
   });
 
@@ -59,11 +56,11 @@ module.exports = function (eleventyConfig) {
   });
 
   // === APPLIQUER LES CONFIGURATIONS ===
-// 1. PREPROCESSORS     (transforms.js)
-// 2. SHORTCODES        (mediaShortcodes.js)  
-// 3. RENDU MARKDOWN    
-// 4. TEMPLATE RENDERING
-// 5. TRANSFORMS        (transforms.js)
+  // 1. PREPROCESSORS     (preprocessor.js)
+  // 2. SHORTCODES        (mediaShortcodes.js)  
+  // 3. RENDU MARKDOWN    (markdown.js)
+  // 4. TEMPLATE RENDERING
+  // 5. TRANSFORMS        (transforms.js)
 
   // eleventyConfig.addPlugin(HtmlBasePlugin);
   eleventyConfig.addPlugin(yamlPlugin);
@@ -73,8 +70,6 @@ module.exports = function (eleventyConfig) {
   filtersConfig(eleventyConfig);
   shortcodesConfig(eleventyConfig);
   transformsConfig(eleventyConfig);
-
-  // passthroughConfig(eleventyConfig);
 
   // === CONFIGURATION SERVEUR DE DEV ===
   eleventyConfig.setServerOptions({
@@ -86,7 +81,6 @@ module.exports = function (eleventyConfig) {
       ".git/**",
       "**/.DS_Store"
     ]
-
   });
 
   // === CONFIGURATION DES DOSSIERS ===
