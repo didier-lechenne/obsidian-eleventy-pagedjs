@@ -35,6 +35,8 @@ section.introduction h2 {
   line-height: 33.6pt;
   font-weight: normal !important;
   text-align: center;
+
+  margin:0;
   /* supprime le folio */
   page: clean;
 }

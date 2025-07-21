@@ -92,6 +92,9 @@ section.default h2 {
   line-height: 33.6pt;
   font-weight: normal;
   text-align: center;
+
+  margin: 0;
+  padding: 0;
   /* supprime le folio */
   page: clean;
 }

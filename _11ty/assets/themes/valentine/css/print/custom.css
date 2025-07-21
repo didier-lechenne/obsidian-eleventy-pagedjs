@@ -1,17 +1,12 @@
 
 
 /* mettre les notes sur une colonn sur certaines page */
-[data-page-number="10"] .pagedjs_footnote_inner_content,
-[data-page-number="15"] .pagedjs_footnote_inner_content,
-[data-page-number="17"] .pagedjs_footnote_inner_content,
-[data-page-number="27"] .pagedjs_footnote_inner_content,
-[data-page-number="43"] .pagedjs_footnote_inner_content,
-[data-page-number="44"] .pagedjs_footnote_inner_content,
-[data-page-number="57"] .pagedjs_footnote_inner_content,
-[data-page-number="75"] .pagedjs_footnote_inner_content,
-[data-page-number="85"] .pagedjs_footnote_inner_content
+/*  ,  */
+[data-page-number="11"] .pagedjs_footnote_inner_content,
+[data-page-number="14"] .pagedjs_footnote_inner_content,
+[data-page-number="17"] .pagedjs_footnote_inner_content
  {
-	/* --g-column-count: 1 !important; */
+	--g-column-count: 1 !important;
 }
 
 

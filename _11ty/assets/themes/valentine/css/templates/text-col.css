@@ -14,7 +14,7 @@
   columns: var(--g-column-count);
   column-gap: var(--g-column-gutter);
 
-  /* column-fill: auto; */
+  column-fill: auto;
   /*columnn-fill: balance; */
 
   font-family: var(--labeur);
@@ -49,8 +49,7 @@
 [data-template="textCol"] p,
 [data-template="bibliographie"] p,
 .bibliographie p {
-  /* break-inside: avoid; */
-
+  break-inside: avoid;
   /* hyphens: none!important; */
   margin-top: 1ch;
   margin-bottom: 1ch;

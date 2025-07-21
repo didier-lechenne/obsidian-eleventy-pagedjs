@@ -1,7 +1,3 @@
-:root {
-
-}
-
 .figure,
 .videofigure {
   break-inside: avoid;
@@ -19,15 +15,7 @@ figcaption::before {
   content: "↑ ";
 }
 
-.default figure.full {
-  /* “reset” pagebox left margin : */
-  margin-left: calc(
-    -1 * (var(--pagedjs-margin-left) - var(--pagedjs-margin-right))
-  );
-  max-width: none;
-}
 
-.figcaption,
 figcaption {
   font-family: var(--labeur);
   font-size: var(--caption-size);
@@ -36,8 +24,7 @@ figcaption {
   padding: calc(1ch / 2) 0 0;
 }
 
-.figcaption strong em,
-.figcaption em strong,
+
 figcaption strong em,
 figcaption em strong {
   font-weight: var(--caption-bold-weight);

@@ -60,7 +60,7 @@
 ::footnote-marker {
   content: counter(footnote-marker) ". ";
   font-weight: var(--footNote-weight);
-  font-size: 80%;
+  /* font-size: 80%; */
 }
 
 

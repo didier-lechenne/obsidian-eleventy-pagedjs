@@ -124,14 +124,4 @@
 	align-self: var(--alignself, start);
 }
 
-.modularGrid figure figcaption {
-}
 
-.modularGrid h2 {
-	/* display: none; */
-	/* font-family: unset;
-		font-size: unset;
-		line-height: unset;
-		font-weight: unset;
-		text-align: unset; */
-}
