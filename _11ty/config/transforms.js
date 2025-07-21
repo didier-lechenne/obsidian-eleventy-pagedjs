@@ -12,54 +12,23 @@ module.exports = function (eleventyConfig) {
         return content;
       }
 
-      // Fonction pour protéger le contenu des attributs HTML
-      function replaceOutsideAttributes(content, searchRegex, replacement) {
-        // Regex pour matcher les balises HTML avec leurs attributs
-        const htmlTagRegex = /<[^>]+>/g;
-        let result = "";
-        let lastIndex = 0;
-        let match;
-
-        // Parcourir toutes les balises HTML
-        while ((match = htmlTagRegex.exec(content)) !== null) {
-          // Traiter le texte avant la balise
-          const beforeTag = content.slice(lastIndex, match.index);
-          result += beforeTag.replace(searchRegex, replacement);
-
-          // Ajouter la balise telle quelle (sans transformation)
-          result += match[0];
-
-          lastIndex = htmlTagRegex.lastIndex;
-        }
-
-        // Traiter le texte restant après la dernière balise
-        const remainingText = content.slice(lastIndex);
-        result += remainingText.replace(searchRegex, replacement);
-
-        return result;
-      }
-
-      // Appliquer les transformations en évitant les attributs HTML
-      content = replaceOutsideAttributes(
-        content,
+      // Plus besoin de protéger les alt, le preprocessor s'en charge !
+      content = content.replace(
         /\u00A0/g,
         '<span class="i_space non-breaking-space">&nbsp;</span>'
       );
 
-      content = replaceOutsideAttributes(
-        content,
+      content = content.replace(
         /\u202F/g,
         '<span class="i_space narrow-no-break-space">\u202F</span>'
       );
 
-      content = replaceOutsideAttributes(
-        content,
+      content = content.replace(
         /\u2009/g,
         '<span class="i_space thin-space">&thinsp;</span>'
       );
 
-      content = replaceOutsideAttributes(
-        content,
+      content = content.replace(
         /\u200A/g,
         '<span class="i_space hair-space">&hairsp;</span>'
       );
@@ -67,7 +36,6 @@ module.exports = function (eleventyConfig) {
       return content;
     }
   );
-
   // transformation APRES le rendu markdown cela concerne donc
   // dans cette configuration, ./index.html et ./print/index.html
   //

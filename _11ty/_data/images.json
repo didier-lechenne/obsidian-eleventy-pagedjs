@@ -1,12 +1,38 @@
 {
-  "img-intro": {
-    "id": "img-intro",
-    "caption": "Scan de carnet d’étude, *carte heuristique : domestique* <br/>Valentine Saint-Martin, octobre 2025.",
-    "src": "images/intro.jpg"
-  },
   "img_intro": {
     "id": "img_intro",
     "caption": "Scan de carnet d’étude, *carte heuristique : domestique* <br/>Valentine Saint-Martin, octobre 2025.",
     "src": "images/intro.jpg"
+  },
+  "  img_domesti": {
+    "id": "  img_domesti",
+    "caption": "   Scan de carnet d’étude, *carte heuristique : domestique* <br/>Valentine Saint-Martin, octobre 2025.",
+    "src": "images/domestique.png"
+  },
+  "  img_domestique": {
+    "id": "  img_domestique",
+    "caption": "Aménagement domestique de la cuisine moderne proposé par Catharine Beecher, privilégiant les systèmes de rangement et les plans de travail, *The American Woman's Home : or Principles of Domestic Science*, Ford and Company, 1869, p34.",
+    "src": "images/domestique.png"
+  },
+  "  img_reparer": {
+    "id": "  img_reparer",
+    "caption": "Ugo La Pietra, Recupero e reinvenzione, 1975.",
+    "src": "images/reparer1.png"
+  },
+  "nobody-at-table-edited_dithered": {
+    "id": "nobody-at-table-edited_dithered",
+    "caption": "La table chauffante électrique est équipée d’une couverture en laine des Abbruzzes de 240×240 cm. Photo : Marina Kálcheva. <br> Source : https://solar.lowtechmagazine.com.",
+    "col": "8",
+    "printCol": "1",
+    "width": "12",
+    "printWidth": "12",
+    "printRow": "1",
+    "printHeight": "10",
+    "alignself": "start",
+    "imgX": "-7.433808553971486",
+    "imgY": "0.26455026455026454",
+    "imgW": "114.74289656819494",
+    "class": "resizable",
+    "src": "images/nobody-at-table-edited_dithered.png"
   }
 }
