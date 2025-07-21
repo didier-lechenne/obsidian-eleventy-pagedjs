@@ -1,6 +1,7 @@
 // const { HtmlBasePlugin } = require("@11ty/eleventy");
 const collectionsConfig = require("./_11ty/config/collections.js");
 const markdownPlugin = require("./_11ty/config/markdown.js");
+const preprocessorConfig = require("./_11ty/config/preprocessor.js");
 const filtersConfig = require("./_11ty/config/filters.js");
 const shortcodesConfig = require("./_11ty/config/mediaShortcodes.js");
 const transformsConfig = require("./_11ty/config/transforms.js");
@@ -66,10 +67,11 @@ module.exports = function (eleventyConfig) {
 
   // eleventyConfig.addPlugin(HtmlBasePlugin);
   eleventyConfig.addPlugin(yamlPlugin);
+  preprocessorConfig(eleventyConfig);
   eleventyConfig.addPlugin(markdownPlugin);
   collectionsConfig(eleventyConfig);
   filtersConfig(eleventyConfig);
-    shortcodesConfig(eleventyConfig);
+  shortcodesConfig(eleventyConfig);
   transformsConfig(eleventyConfig);
 
   // passthroughConfig(eleventyConfig);

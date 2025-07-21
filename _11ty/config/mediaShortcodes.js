@@ -1,8 +1,10 @@
 const fs = require('fs');
 const markdownIt = require("markdown-it");
 const md = markdownIt({ 
-  html: true, 
-  typographer: true 
+  html: true,
+  breaks: true,    // ← CETTE OPTION MANQUE
+  linkify: false,
+  typographer: true,
 });
 
 module.exports = function(eleventyConfig) {
