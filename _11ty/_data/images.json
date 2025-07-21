@@ -45,7 +45,7 @@
     "imgY": -0.3821281599059374,
     "imgW": 106.41547861507128,
     "class": "resizable",
-    "caption": "Scan de carnet d'étude, *carte heuristique : domestique*, <br> Valentine Saint-Martin, octobre 2025",
+    "caption": "Scan de carnet d'étude, *carte heuristique : domestique*, <br> Valentine Saint-Martin, octobre 2025.",
     "src": "images/intro_domestique.png"
   },
   "intro-heritage": {
@@ -58,7 +58,7 @@
     "imgY": -2.281089036055926,
     "imgW": 103.1907671418873,
     "class": "resizable",
-    "caption": "Scan de carnet d'étude, *carte heuristique : héritage*, <br>Valentine Saint-Martin, octobre 2025",
+    "caption": "Scan de carnet d'étude, *carte heuristique : héritage*, <br>Valentine Saint-Martin, octobre 2025.",
     "src": "images/intro_heritage.png"
   },
   "intro-objet": {
@@ -71,7 +71,7 @@
     "imgY": -0.7368900091017321,
     "imgW": 100.61099796334013,
     "class": "resizable",
-    "caption": "Scan de carnet d'étude, carte heuristique, Valentine Saint-Martin, octobre 2025",
+    "caption": "Scan de carnet d'étude, carte heuristique, Valentine Saint-Martin, octobre 2025.",
     "src": "images/intro_objet.png"
   },
   "intro0": {
@@ -84,7 +84,7 @@
     "imgY": -0.9259259259259288,
     "imgW": 100.61099796334013,
     "class": "resizable",
-    "caption": "Capture d'écran de la vue graphique du coffre Obsidian mémoire_valentine, juin 2025",
+    "caption": "Capture d'écran de la vue graphique du coffre Obsidian mémoire_valentine, juin 2025.",
     "src": "images/intro0.png"
   },
   "lowtech2": {
@@ -97,7 +97,7 @@
     "imgY": -0.7077991452991441,
     "imgW": 100.82597872821906,
     "class": "resizable",
-    "caption": "Low-tech Magazine : la BD, Guillaume Lion, 2022",
+    "caption": "Low-tech Magazine : la BD, Guillaume Lion, 2022.",
     "src": "images/lowtech2.png"
   },
   "lowtech-distilateur": {
@@ -110,7 +110,7 @@
     "imgY": -0.7077991452991441,
     "imgW": 100.82597872821906,
     "class": "resizable",
-    "caption": "Distillateur solaire en plastique et sacs de sable, illustration Clément Gaillard",
+    "caption": "Distillateur solaire en plastique et sacs de sable, illustration Clément Gaillard.",
     "src": "images/lowtech_distilateur.png"
   },
   "siege": {
@@ -136,7 +136,7 @@
     "imgY": -0.11956385118149584,
     "imgW": 100.82597872821906,
     "class": "resizable",
-    "caption": "Carte sensible, Valentine Saint-Martin, 2022",
+    "caption": "Carte sensible, Valentine Saint-Martin, 2022.",
     "src": "images/carte_skate-02.jpg"
   },
   "carte-skate-03": {
@@ -149,7 +149,7 @@
     "imgY": -0.11956385118149584,
     "imgW": 100.82597872821906,
     "class": "resizable",
-    "caption": "Carte sensible, Valentine Saint-Martin, 2022",
+    "caption": "Carte sensible, Valentine Saint-Martin, 2022.",
     "src": "images/carte_skate-03.jpg"
   },
   "carte-skate-01": {
@@ -200,7 +200,7 @@
     "imgY": -41.11266728913787,
     "imgW": 201.0022271714922,
     "class": "resizable",
-    "caption": "Les terremblements / La communauté des cratères, Fantaisie, Matali Crasset",
+    "caption": "Les terremblements / La communauté des cratères, Fantaisie, Matali Crasset.",
     "src": "images/alternative_crasset.png"
   },
   "velo2": {
