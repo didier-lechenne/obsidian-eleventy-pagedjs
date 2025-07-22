@@ -15,7 +15,7 @@ export default class nrbPages extends Handler {
             const pageElement = section.closest('.pagedjs_blankpage_page');
             
             if (pageElement && bgColor) {
-                pageElement.style.setProperty('--bgColor', bgColor);
+                pageElement.style.setProperty('--bg-color', bgColor);
             }
         });
     }

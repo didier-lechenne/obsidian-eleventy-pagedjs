@@ -10,6 +10,11 @@
   @import "print/layout.css";
 
   /* ===================
+   VARIABLES GLOBALES
+   =================== */
+  @import "print/variables.css";
+
+  /* ===================
    LES GABARITS DE MISE EN PAGE
 =================== */
 
@@ -26,7 +31,6 @@
   /* ===================
 	MISE EN FORME
 =================== */
-  @import "print/variables.css";
   @import "print/base.css";
   @import "print/figures.css";
   @import "print/break.css";

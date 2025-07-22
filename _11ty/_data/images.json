@@ -299,5 +299,26 @@
     "class": "resizable",
     "caption": "Image de test",
     "src": "images/img_test.jpg"
+  },
+  "full-page-cover": {
+    "id": "full-page-cover",
+    "class": "cover",
+    "src": "images/archery-outdoors-women-dithered.png"
+  },
+  "full-page-spread": {
+    "id": "full-page-spread",
+    "class": "spread",
+    "src": "images/archery-outdoors-women-dithered.png",
+    "page": "spread"
+  },
+  "page-13": {
+    "id": "page-13",
+    "src": "images/archery-outdoors-women-dithered.png",
+    "page": 13
+  },
+  "page-test": {
+    "id": "page-test",
+    "class": "page",
+    "src": "images/archery-outdoors-women-dithered.png"
   }
 }

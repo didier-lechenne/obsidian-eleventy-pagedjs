@@ -1,9 +1,9 @@
 *,
 *:before,
 *:after {
-    box-sizing: border-box;
-    min-width: 0;
-    min-height: 0;
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 0;
 }
 
 body {
@@ -24,8 +24,6 @@ nav,
 section {
   display: block;
 }
-
-
 
 img {
   height: auto;
@@ -57,8 +55,6 @@ p {
 p:first-child {
   margin-top: 0;
 }
-
-
 
 .small-caps {
   font-variant-caps: all-small-caps;
@@ -97,6 +93,8 @@ section.default h2 {
   padding: 0;
   /* supprime le folio */
   page: clean;
+  /* demarre toujours sur une page de droite */
+  page-break-before: right;
 }
 
 blockquote {
@@ -191,8 +189,6 @@ sup {
   top: 0.25em;
   font-size: 70%;
 }
-
-
 
 .footnotes {
   display: none;

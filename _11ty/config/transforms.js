@@ -36,6 +36,9 @@ module.exports = function (eleventyConfig) {
       return content;
     }
   );
+
+
+
   // transformation APRES le rendu markdown cela concerne donc
   // dans cette configuration, ./index.html et ./print/index.html
   //
@@ -89,4 +92,8 @@ module.exports = function (eleventyConfig) {
       return content;
     }
   );
+
+
+
+
 };

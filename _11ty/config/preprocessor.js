@@ -36,19 +36,19 @@ module.exports = function (eleventyConfig) {
     return content;
   });
 
-  eleventyConfig.addPreprocessor("imgfull", "*", (data, content) => {
-    content = content.replace(
-      /\(\s*imgfull\s*:\s*([^\s]+)\s+page\s*:\s*([^)]+)\s*\)/g,
-      function (match, src, page) {
-        globalImageCounter++;
-        const cleanPage = page.trim();
-        return `<figure id="figure-${globalImageCounter}" class="full-page ${cleanPage}">
-          <img src="${src}">
-        </figure>`;
-      }
-    );
+  // eleventyConfig.addPreprocessor("imgfull", "*", (data, content) => {
+  //   content = content.replace(
+  //     /\(\s*imgfull\s*:\s*([^\s]+)\s+page\s*:\s*([^)]+)\s*\)/g,
+  //     function (match, src, page) {
+  //       globalImageCounter++;
+  //       const cleanPage = page.trim();
+  //       return `<figure id="figure-${globalImageCounter}" class="full-page ${cleanPage}">
+  //         <img src="${src}">
+  //       </figure>`;
+  //     }
+  //   );
 
-    return content;
-  });
+  //   return content;
+  // });
 
 };
