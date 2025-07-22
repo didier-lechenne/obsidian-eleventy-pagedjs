@@ -8,41 +8,46 @@
     }
 
     .insert.selected {
-        outline: 1px dashed var(--accent-color);
+        outline: 1px dashed var(--accentColor);
     }
 
     .resize.selected {
         background-color: hsla(16, 100%, 50%, 0.15);
     }
 
-    .insert.selected,
-    .resize.selected,
+    .insert.selected ,
+    .resize.selected ,
     .insert:hover,
     .resize:hover {
         background-color: hsla(16, 100%, 50%, 0.15);
     }
 
+
     /* Option 1 : Légende fixe en bas du conteneur */
-    .resize figcaption {
+     .resize figcaption {
         position: absolute;
         bottom: -20px;
         left: 0;
         right: 0;
         padding: 0.5em 0 0;
         margin: 0;
+        /* padding-top: var(--grid-row-gutter); */
         background: unset !important;
-    }
+        /* overflow: visible; */
+        /* La légende reste en bas, peu importe la position de l'image */
+    } 
 
     /* Option 2 : Légende qui suit l'image */
     .resize.with-following-caption {
-        overflow: visible;
+        overflow: visible; /* Permet à la légende de sortir du conteneur */
     }
 
     .resize.with-following-caption figcaption {
         position: absolute;
-        top: calc(var(--img-y) + var(--img-w) * 1%);
-        left: var(--img-x);
-        width: var(--img-w);
+        /* Position calculée en fonction de l'image */
+        top: calc(var(--imgY) + var(--imgW) * 1%);
+        left: var(--imgX);
+        width: var(--imgW);
         transform: translateY(100%);
     }
 

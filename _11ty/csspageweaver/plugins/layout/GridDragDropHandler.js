@@ -82,7 +82,7 @@ export class GridDragDropHandler {
                 content: '';
                 width: 16px;
                 height: 16px;
-                background-image: url('./svg/grip.svg');
+                background-image: url('/svg/grip.svg');
                 background-size: contain;
                 background-repeat: no-repeat;
                 background-position: center;
@@ -112,7 +112,7 @@ export class GridDragDropHandler {
                 content: '';
                 width: 16px;
                 height: 16px;
-                background-image: url('./svg/unfold-horizontal.svg');
+                background-image: url('/svg/unfold-horizontal.svg');
                 background-size: contain;
                 background-repeat: no-repeat;
                 background-position: center;
@@ -141,7 +141,7 @@ export class GridDragDropHandler {
                 content: '';
                 width: 16px;
                 height: 16px;
-                background-image: url('./svg/unfold-vertical.svg');
+                background-image: url('/svg/unfold-vertical.svg');
                 background-size: contain;
                 background-repeat: no-repeat;
                 background-position: center;
