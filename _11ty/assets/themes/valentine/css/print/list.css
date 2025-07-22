@@ -6,14 +6,14 @@
 }
 
 /* Base des listes - supprimer les puces par défaut */
-ul {
+.default ul {
   list-style-type: '\200B'; /* Caractère invisible */
   padding-inline-start: 0;
   margin-block-start: calc(1ch / 4);
   margin-block-end: calc(1ch / 4);
 }
 
-ul li {
+.default ul li {
   padding-top: calc(1ch / 4);
   padding-bottom: calc(1ch / 4);
   margin-inline-start: var(--list-indent);
@@ -22,14 +22,14 @@ ul li {
 }
 
 /* Masquer complètement les markers par défaut */
-ul li::marker {
+.default ul li::marker {
   color: transparent;
   content: '';
 }
 
 /* === BULLETS PERSONNALISÉS AVEC ::before === */
 
-ul li::before {
+.default ul li::before {
   content: '–';
   position: absolute;
   left: calc(-1 * var(--list-indent) + 0.0ch);
@@ -45,7 +45,7 @@ ul li::before {
 /* === VARIANTES PAR CLASSES === */
 
 /* Puces rondes */
-ul.round-bullets li::before {
+.default ul.round-bullets li::before {
   content: '';
   background-color: var(--list-marker-color);
   border-radius: 50%;
@@ -56,12 +56,12 @@ ul.round-bullets li::before {
 }
 
 /* Tirets longs */
-ul.em-dash li::before {
+.default ul.em-dash li::before {
   content: '—';
 }
 
 /* Puces carrées */
-ul.square-bullets li::before {
+.default ul.square-bullets li::before {
   content: '';
   background-color: var(--list-marker-color);
   border-radius: 0;
@@ -72,19 +72,19 @@ ul.square-bullets li::before {
 }
 
 /* Chevrons */
-ul.chevron li::before {
+.default ul.chevron li::before {
   content: '›';
   font-weight: bold;
 }
 
 /* Points triangulaires */
-ul.triangle li::before {
+.default ul.triangle li::before {
   content: '▸';
 }
 
 /* === NIVEAUX DE LISTES IMBRIQUÉES === */
 
 /* Niveau 1: tirets */
-ul li::before {
+.default ul li::before {
   content: '–';
 }

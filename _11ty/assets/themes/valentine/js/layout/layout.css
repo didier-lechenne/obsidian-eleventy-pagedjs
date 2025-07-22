@@ -1,17 +1,17 @@
 
 /* layout images mode */
-[data-mode="layout"] .figure::after {
+.figure::after {
   /* content: "";
   position: absolute;
   inset: 0;
   background: rgba(0,0,0, .15);
   pointer-events: none; */
 }
-[data-mode="layout"] .figure:not(.layouting) { 
+.figure:not(.layouting) { 
   cursor: help;
 }
 
-[data-mode="layout"] .figure:not(.layouting):hover::after { 
+.figure:not(.layouting):hover::after { 
   content: "Activate layout mode";
   position: absolute;
   top:1em; left: 1em; 
@@ -22,7 +22,7 @@
   padding: .1em .5em;
   font-size: 12px;
 }
-[data-mode="layout"] .figure:not(.layouting):hover .close { 
+.figure:not(.layouting):hover .close { 
   display: none;
 }
 

@@ -1,0 +1,24 @@
+{
+	"name": "layout",
+	"description": ".",
+	
+	"ui": {
+		"title": "layout",
+		"description": "",
+		"template": "template.html",
+		"toggle": true,
+		"shortcut": [
+			{
+				"active": true,
+				"keys": ["B", "L", "A", "N", "K" ],
+				"description": ""
+			}
+		]
+	},
+	"parameters": {
+		"sample": null
+	},
+	"script": "layout.js",
+	"hook": "hook-layout.js",
+	"stylesheet": "layout.css"
+}

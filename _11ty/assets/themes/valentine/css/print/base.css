@@ -82,6 +82,7 @@ main p {
   hyphenate-limit-chars: 6 3 3;
 }
 
+section.textCol h2,
 section.default h2 {
   font-family: var(--heading);
   font-size: 28pt;
@@ -93,9 +94,16 @@ section.default h2 {
   padding: 0;
   /* supprime le folio */
   page: clean;
+
+}
+
+
+
+section.default:not(.remerciements):not(.conclusion):not(.bibliographie) h2 {
   /* demarre toujours sur une page de droite */
   page-break-before: right;
 }
+
 
 blockquote {
   /* ────────────────────────────────────────

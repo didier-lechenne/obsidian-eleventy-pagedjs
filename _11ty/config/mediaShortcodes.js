@@ -6,6 +6,7 @@ const yaml = require('js-yaml');
 const config = yaml.load(fs.readFileSync('./_11ty/_data/config.yml', 'utf8'));
 
 const markdownIt = require("markdown-it");
+const markdownItFootnote = require("markdown-it-footnote");
 const md = markdownIt({
   html: true,
   breaks: true,
@@ -13,9 +14,11 @@ const md = markdownIt({
   typographer: true,
 });
 
+md.use(markdownItFootnote)
+  
+
+
 module.exports = function (eleventyConfig) {
-
-
 
   let globalImageCounter = 0;
   let globalFigureCounter = 0;
@@ -382,47 +385,44 @@ function generateHTML(type, config) {
   });
 
 
-eleventyConfig.addShortcode("markdown", function(file, options = {}) {
-    const filePath = path.join(`./${config.publicFolder}`, file);
+eleventyConfig.addAsyncShortcode("markdown", async function(file, options = {}) {
+  const filePath = path.join(`./${config.publicFolder}`, file);
+  
+  try {
+    const content = await fs.promises.readFile(filePath, 'utf8');
     
-    try {
-      const content = fs.readFileSync(filePath, 'utf8');
-      
-      // Construire les attributs HTML
-      let attributes = [];
-      
-      // Gérer les classes (combine "include" avec les classes personnalisées)
-      if (options.class) {
-        attributes.push(`class="include ${options.class}"`);
-      } else {
-        attributes.push('class="include"');
-      }
-      
-      // Gérer le style en échappant les guillemets
-      if (options.style) {
-        const escapedStyle = options.style.replace(/"/g, '&quot;');
-        attributes.push(`style="${escapedStyle}"`);
-      }
-      
-      if (options.id) {
-        attributes.push(`id="${options.id}"`);
-      }
-      
-      const attrString = attributes.join(' ');
-      
-      // Utiliser l'instance md déjà définie
-      const renderedContent = file.endsWith('.md') 
-        ? md.render(content)
-        : content;
-        
-      return `<div ${attrString}>${renderedContent}</div>`;
-      
-    } catch (error) {
-      console.error(`Erreur inclusion ${file}:`, error.message);
-      console.error(`Chemin tenté: ${filePath}`);
-      return `<div class="include error">❌ Erreur: impossible d'inclure ${file} (chemin: ${filePath})</div>`;
+    // Construire les attributs HTML
+    let attributes = [];
+    
+    if (options.class) {
+      attributes.push(`class="include ${options.class}"`);
+    } else {
+      attributes.push('class="include"');
     }
-  });
+    
+    if (options.style) {
+      const escapedStyle = options.style.replace(/"/g, '&quot;');
+      attributes.push(`style="${escapedStyle}"`);
+    }
+    
+    if (options.id) {
+      attributes.push(`id="${options.id}"`);
+    }
+    
+    const attrString = attributes.join(' ');
+    
+    // Rendre le markdown
+    const renderedContent = file.endsWith('.md') 
+      ? md.render(content)
+      : content;
+      
+    return `<div ${attrString}>${renderedContent}</div>`;
+    
+  } catch (error) {
+    console.error(`Erreur inclusion ${file}:`, error.message);
+    return `<div class="include error">❌ Erreur: ${file} non trouvé</div>`;
+  }
+});
 
 
 };
