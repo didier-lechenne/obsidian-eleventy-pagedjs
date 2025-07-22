@@ -74,6 +74,7 @@ module.exports = function (eleventyConfig) {
   // === CONFIGURATION SERVEUR DE DEV ===
   eleventyConfig.setServerOptions({
     port: 3000,
+    watch: ["_11ty/**/*", "valentine/**/*"],
     showAllHosts: true,
     domDiff: true,
     ignored: [

@@ -6,17 +6,7 @@ const config = yaml.load(fs.readFileSync('./_11ty/_data/config.yml', 'utf8'));
 
 module.exports = function(eleventyConfig) {
   
-  // Shortcode pour inclure des fichiers
-  eleventyConfig.addShortcode("include", function(filename) {
-    // Adapter le chemin pour la nouvelle structure
-    const includePath = path.join('./_11ty/includes', filename);
-    try {
-      return fs.readFileSync(includePath, 'utf8');
-    } catch (e) {
-      console.error(`Erreur inclusion ${filename}:`, e.message);
-      return `[Erreur: fichier ${filename} non trouvé]`;
-    }
-  });
+
   
   // Shortcode pour les liens internes (amélioré)
   eleventyConfig.addShortcode("link", function(page, text = null) {
