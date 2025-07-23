@@ -3,7 +3,7 @@
 	"description": ".",
 	
 	"ui": {
-		"title": "gridStudio",
+		"title": "Grid Studio",
 		"description": "Éditeur visuel interactif pour composer des éléments dans une grille.",
 		"template": "template.html",
 		"toggle": true

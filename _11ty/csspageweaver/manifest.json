@@ -1,5 +1,5 @@
 {
-    "plugins": [  "gridStudio", "inlineNotes",  "bgColor", "fullPage", "typeCraft", "invisibleSpaces",  "tableOfContent", "marginBox", "imposition", "spread", "previewPage",   "marker", "reloadInPlace"],
+    "plugins": [  "baseline", "gridStudio", "inlineNotes",  "bgColor", "fullPage", "typeCraft", "invisibleSpaces",  "tableOfContent", "marginBox", "imposition", "spread", "previewPage",   "marker", "reloadInPlace"],
     "pluginsParameters":{
 
         "reloadInPlace": {

@@ -74,7 +74,7 @@ export default class gridStudio extends Handler {
       // Activer les fonctionnalités
       this.gridHandler?.initializeDragDrop();
       this.dragZoomHandler?.initializeManipulator();
-      this.dragZoomHandler?.createControlsUI();
+      // this.dragZoomHandler?.createControlsUI();
       
       console.log('🎯 Composants gridStudio initialisés');
       

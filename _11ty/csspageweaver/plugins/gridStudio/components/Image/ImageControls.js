@@ -1,6 +1,7 @@
 // Classe pour la gestion des contrôles d'image
 class ImageControls {
     constructor(parent, img, onUpdate) {
+        console.log('ImageControls constructor:', {parent, img, onUpdate});
         this.parent = parent;
         this.img = img;
         this.onUpdate = onUpdate;
@@ -19,7 +20,6 @@ class ImageControls {
 
     init() {
         this.setupPositionControls();
-        this.setupPropertyControls();
         this.setupActionControls();
     }
 
@@ -28,34 +28,6 @@ class ImageControls {
             const element = document.querySelector(`#${pos.id}`);
             if (element) {
                 element.onclick = () => this.positionImage(pos.x, pos.y);
-            }
-        });
-    }
-
-    setupPropertyControls() {
-        const properties = [
-            { id: '#col', property: '--col' },
-            { id: '#width', property: '--width' },
-            { id: '#printcol', property: '--print-col' },
-            { id: '#printwidth', property: '--print-width' },
-            { id: '#printrow', property: '--print-row' },
-            { id: '#printheight', property: '--print-height' },
-            { id: '#align_self', property: '--alignself' },
-            { id: '#figcaption_arrow', property: '--figcaption_arrow' }
-        ];
-
-        properties.forEach(prop => {
-            const element = document.querySelector(prop.id);
-            if (element) {
-                const newElement = element.cloneNode(true);
-                element.parentNode.replaceChild(newElement, element);
-                
-                // Ajouter le nouvel event listener
-                newElement.addEventListener('change', (e) => {
-                    console.log(`Changing ${prop.property} for:`, this.parent.id);
-                    this.parent.style.setProperty(prop.property, e.target.value);
-                    this.onUpdate();
-                });
             }
         });
     }

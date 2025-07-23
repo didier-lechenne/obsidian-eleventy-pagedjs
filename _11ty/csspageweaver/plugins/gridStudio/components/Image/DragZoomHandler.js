@@ -14,7 +14,7 @@ class DragZoomHandler {
     }
 
     afterRendered(pages) {
-        this.createControlsUI();
+        
     }
 
     initializeManipulator() {
@@ -40,28 +40,9 @@ class DragZoomHandler {
         }
     }
 
-    createControlsUI() {
-        const html = this.getControlsHTML();
-        const interfaceHeader = document.querySelector("#interface-header");
-        if (!interfaceHeader) return;
 
-        const tabs = interfaceHeader.querySelectorAll(".tab");
-        const lastTab = tabs[tabs.length - 1];
-        if (lastTab) {
-            lastTab.insertAdjacentHTML("afterend", html);
-        }
-    }
 
-    getControlsHTML() {
-        return `
-        <div class="tab" id="position" data-shortCode="">
-            <input type="checkbox" id="rd1" name="rd" class="input-pgjs_Img">
-            <label class="tab-label" id="label_rd1" for="rd1" data-name="Layout"></label>
-            <div class="gjs-sm-properties tab-content">
-                <!-- Interface controls HTML -->
-            </div>
-        </div>`;
-    }
+
 }
 
 export { DragZoomHandler };

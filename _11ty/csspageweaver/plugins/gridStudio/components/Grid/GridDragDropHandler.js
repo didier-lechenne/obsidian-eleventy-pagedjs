@@ -31,9 +31,7 @@ export class GridDragDropHandler {
         console.log('🎯 GridDragDropHandler: Mode simplifié activé');
     }
 
-    isInModularGrid(element) {
-        return element.closest('.modularGrid') !== null;
-    }
+
 
     setupGlobalListeners() {
         // Utiliser mouseenter/mouseleave avec capture
@@ -46,58 +44,8 @@ export class GridDragDropHandler {
         console.log('🎧 Listeners optimisés configurés');
     }
 
-    /**
-     * Détermine la zone d'interaction basée sur la position de la souris
-     */
-    getInteractionZone(element, clientX, clientY) {
-        if (!this.isInModularGrid(element)) return null;
-        
-        const rect = element.getBoundingClientRect();
-        const x = clientX - rect.left;
-        const y = clientY - rect.top;
-        
-        const { edge, corner } = this.zones;
-        
-        // Détection des zones (priorité aux coins)
-        const isNearLeft = x <= edge;
-        const isNearRight = x >= rect.width - edge;
-        const isNearTop = y <= edge;
-        const isNearBottom = y >= rect.height - edge;
-        
-        // Coins diagonaux (priorité max)
-        if (isNearLeft && isNearTop) return 'nw-resize';     // Nord-Ouest
-        if (isNearRight && isNearTop) return 'ne-resize';    // Nord-Est  
-        if (isNearLeft && isNearBottom) return 'sw-resize';  // Sud-Ouest
-        if (isNearRight && isNearBottom) return 'se-resize'; // Sud-Est
-        
-        // Bords droits (largeur + position)
-        if (isNearLeft) return 'w-resize';   // Ouest (gauche)
-        if (isNearRight) return 'e-resize';  // Est (droite)
-        if (isNearTop) return 'n-resize';    // Nord (haut)
-        if (isNearBottom) return 's-resize'; // Sud (bas)
-        
-        // Zone centrale = déplacement
-        return 'move';
-    }
 
-    /**
-     * Met à jour le curseur selon la zone
-     */
-    updateCursor(element, zone) {
-        const cursors = {
-            'move': 'move',
-            'n-resize': 'ns-resize',
-            's-resize': 'ns-resize', 
-            'e-resize': 'ew-resize',
-            'w-resize': 'ew-resize',
-            'ne-resize': 'nesw-resize',
-            'nw-resize': 'nwse-resize',
-            'se-resize': 'nwse-resize', 
-            'sw-resize': 'nesw-resize'
-        };
-        
-        element.style.cursor = cursors[zone] || 'default';
-    }
+
 
     handleMouseEnter(e) {
         if (this.isResizing || !document.body.classList.contains('gridStudio')) return;
@@ -106,7 +54,7 @@ export class GridDragDropHandler {
         if (!e.target || e.target.nodeType !== Node.ELEMENT_NODE) return;
         
         const target = e.target.closest('.resize, .figure, .insert');
-        if (!target || e.target.closest('figcaption') || !this.isInModularGrid(target)) return;
+        if (!target || e.target.closest('figcaption') || !this.gridManager.isInModularGrid(target)) return;
         
         // Éviter les répétitions
         if (this.hoveredElement === target) return;
@@ -119,51 +67,12 @@ export class GridDragDropHandler {
         this.hoveredElement = target;
         target.classList.add('selected');
         
-        // Mettre à jour l'interface contextuelle
-        this.updateContextualUI(target);
+
     }
 
-    updateContextualUI(element) {
-        // Récupérer --align-self de l'élément
-        const alignValue = element.style.getPropertyValue('--align-self') || 'auto';
-        
-        // Mettre à jour le dropdown
-        const alignSelect = document.querySelector('#align_self');
-        if (alignSelect) {
-            // Force la mise à jour
-            alignSelect.value = alignValue;
-            alignSelect.selectedIndex = Array.from(alignSelect.options).findIndex(opt => opt.value === alignValue);
-            
-            // Configurer le listener pour cet élément spécifique
-            this.setupAlignSelfListener(element, alignSelect);
-            
-            console.log(`📍 Set select to: ${alignValue}, selectedIndex: ${alignSelect.selectedIndex}`);
-        }
-    }
+  
 
-    setupAlignSelfListener(element, selectElement) {
-        const elementId = element.getAttribute('data-unique-identifier');
-
-        // Éviter de recréer le listener si déjà configuré pour cet élément
-        if (selectElement._currentElementId === elementId) return;
-        
-        // Marquer l'élément lié
-        selectElement._currentElement = element;
-        
-        // Supprimer ancien listener sans cloner
-        if (selectElement._gridListener) {
-            selectElement.removeEventListener('change', selectElement._gridListener);
-        }
-        
-        // Nouveau listener
-        selectElement._gridListener = (e) => {
-            element.style.setProperty('--align-self', e.target.value);
-            console.log(`✅ Applied --align-self: ${e.target.value}`);
-            this.generateCodeForElement(element);
-        };
-        
-        selectElement.addEventListener('change', selectElement._gridListener);
-    }
+ 
 
     generateCodeForElement(element) {
         const manipulator = new ImageManipulator();
@@ -193,11 +102,8 @@ export class GridDragDropHandler {
         // Pas d'élément survolé = pas de traitement
         if (!this.hoveredElement) return;
         
-        // Mettre à jour curseur selon zone
-        const zone = this.getInteractionZone(this.hoveredElement, e.clientX, e.clientY);
-        if (zone) {
-            this.updateCursor(this.hoveredElement, zone);
-        }
+        // Déléguer au GridManager
+        this.gridManager.updateCursor(this.hoveredElement, e.clientX, e.clientY);
     }
 
     cleanupElement(element) {
@@ -208,10 +114,9 @@ export class GridDragDropHandler {
     handleMouseDown(e) {
         if (!document.body.classList.contains('gridStudio') || this.isResizing) return;
         
-        // Utiliser l'élément survolé au lieu de rechercher à nouveau
         if (!this.hoveredElement) return;
         
-        const zone = this.getInteractionZone(this.hoveredElement, e.clientX, e.clientY);
+        const zone = this.gridManager.getInteractionZone(this.hoveredElement, e.clientX, e.clientY);
         if (!zone) return;
         
         console.log('🎯 DÉBUT:', { element: this.hoveredElement.className, zone });
