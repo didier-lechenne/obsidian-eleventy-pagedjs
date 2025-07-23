@@ -1,5 +1,3 @@
-// components/CodeGen/index.js
-// Export principal du composant CodeGen
 
 export { CodeGenerator } from './CodeGenerator.js';
 

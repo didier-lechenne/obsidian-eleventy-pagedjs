@@ -64,13 +64,12 @@ class gridStudioPlugin {
        }
 
        try {
-           // ✅ Passer gridManager aux composants qui en ont besoin
            this.components.grid = new GridDragDropHandler(this.utils.gridManager);
            this.components.caption = new ImageGridCaptionHandler();
            this.components.codeGen = new CodeGenerator();
            this.components.image = new ImageManipulator(this.utils.gridManager);
 
-           // ✅ S'assurer que gridManager existe avant d'appeler ses méthodes
+           
            if (this.utils.gridManager && typeof this.utils.gridManager.setCodeGenerateCallback === 'function') {
                this.utils.gridManager.setCodeGenerateCallback(
                    (element) => this.components.image.generateCode(element, true)

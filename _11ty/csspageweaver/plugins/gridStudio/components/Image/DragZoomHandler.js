@@ -1,3 +1,6 @@
+
+import { ImageManipulator } from './ImageManipulator.js';
+
 class DragZoomHandler {
     constructor(chunker, polisher, caller) {
         // Compatibilité avec Paged.Handler si disponible

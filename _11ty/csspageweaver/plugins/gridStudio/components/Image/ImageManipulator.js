@@ -1,3 +1,8 @@
+
+import { ImageControls } from './ImageControls.js';
+import { CodeGenerator } from '../CodeGen/CodeGenerator.js';
+
+
 class ImageManipulator {
   constructor(gridManager = null) { 
     this.gridManager = gridManager; 
