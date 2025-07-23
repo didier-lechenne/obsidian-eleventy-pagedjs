@@ -2,25 +2,25 @@
 // Remplace l'ancien gridStudio.js
 
 // Import des composants via leurs index
-import GridComponent, { 
+import { 
     GridDragDropHandler,
     GRID_DEFAULTS,
     RESIZE_MODES 
 } from './components/grid/index.js';
 
-import ImageComponent, { 
+import { 
     ImageControls, 
     ImageManipulator, 
     DragZoomHandler,
     IMAGE_DEFAULTS
 } from './components/image/index.js';
 
-import CaptionComponent, { 
+import { 
     ImageGridCaptionHandler,
     CAPTION_BEHAVIORS 
 } from './components/caption/index.js';
 
-import CodeGenComponent, { 
+import { 
     CodeGenerator,
     SHORTCODE_TYPES 
 } from './components/codeGen/index.js';
@@ -46,7 +46,7 @@ class gridStudioPlugin {
         this.utils = {
             dom: new DOMHelpers(),
             grid: new GridCalculator(),
-            events: new EventManager()
+            // events: new EventManager()
         };
         
         this.isInitialized = false;
@@ -145,12 +145,6 @@ export {
     DragZoomHandler,
     CodeGenerator,
     ImageGridCaptionHandler,
-    
-    // Composants organisés
-    GridComponent,
-    ImageComponent, 
-    CaptionComponent,
-    CodeGenComponent,
     
     // Constantes utiles
     GRID_DEFAULTS,

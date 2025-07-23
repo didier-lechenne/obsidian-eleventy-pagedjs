@@ -19,7 +19,6 @@ export  class GridDragDropHandler {
             this.cleanup();
         }
         
-        this.addResizeStyles();
         this.setupGlobalListeners();
         this.setupHoverClass();
         this.isInitialized = true;
@@ -32,235 +31,6 @@ export  class GridDragDropHandler {
         return modularGrid !== null;
     }
 
-    addResizeStyles() {
-        if (document.querySelector('#grid-resize-styles')) return;
-
-        const style = document.createElement('style');
-        style.id = 'grid-resize-styles';
-        style.textContent = `
-
-        @media screen, pagedjs-ignore {
-            /* Conteneur avec poignées visibles seulement avec la classe .resizable */
-            .modularGrid .resizable {
-                position: relative;
-            }
-            
-            .modularGrid .resizable::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                pointer-events: none;
-                border: 1px dashed var(--accentColor, blue);
-                opacity: 0.7;
-                z-index: 1;
-                outline-offset: 20px;
-            }
-            
-            /* Poignée position (haut gauche) */
-            .modularGrid .resizable .position-handle {
-                position: absolute;
-                top: 5px;
-                left: 5px;
-                width: 24px;
-                height: 24px;
-                background: rgb(255,255,255);
-                color: white;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-weight: bold;
-                font-size: 12px;
-                cursor: move;
-                pointer-events: auto;
-                z-index: 15;
-            }
-            
-            .position-handle::before {
-                content: '';
-                width: 16px;
-                height: 16px;
-                background-image: url('/csspageweaver/plugins/gridStudio/svg/grip.svg');
-                background-size: contain;
-                background-repeat: no-repeat;
-                background-position: center;
-            }
-            
-            /* Poignée largeur (droite) */
-            .modularGrid .resizable .width-handle {
-                position: absolute;
-                top: 50%;
-                right: 5px;
-                width: 24px;
-                height: 24px;
-                background: rgb(255,255,255);
-                color: white;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-weight: bold;
-                font-size: 12px;
-                cursor: ew-resize;
-                transform: translateY(-50%);
-                pointer-events: auto;
-                z-index: 15;
-            }
-
-            .width-handle::before {
-                content: '';
-                width: 16px;
-                height: 16px;
-                background-image: url('/csspageweaver/plugins/gridStudio/svg/unfold-horizontal.svg');
-                background-size: contain;
-                background-repeat: no-repeat;
-                background-position: center;
-            }
-            
-            /* Poignée hauteur (bas) */
-            .modularGrid .resizable .height-handle {
-                position: absolute;
-                bottom: 5px;
-                left: 50%;
-                width: 24px;
-                height: 24px;
-                background:rgb(255,255,255);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-weight: bold;
-                font-size: 12px;
-                cursor: ns-resize;
-                transform: translateX(-50%);
-                pointer-events: auto;
-                z-index: 15;
-            }
-
-            .height-handle::before {
-                content: '';
-                width: 16px;
-                height: 16px;
-                background-image: url('/csspageweaver/plugins/gridStudio/svg/unfold-vertical.svg');
-                background-size: contain;
-                background-repeat: no-repeat;
-                background-position: center;
-            }
-
-            /* Poignée diagonale (coin bas droit) */
-            .modularGrid .resizable .both-handle {
-                position: absolute;
-                bottom: 5px;
-                right: 5px;
-                width: 24px;
-                height: 24px;
-                background:rgb(255, 255, 255);
-                color: white;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-weight: bold;
-                font-size: 12px;
-                cursor: nwse-resize;
-                pointer-events: auto;
-                z-index: 15;
-            }
-
-            .both-handle::before {
-                content: '';
-                width: 16px;
-                height: 16px;
-                background-image: url('./csspageweaver/plugins/gridStudio/svg/move-diagonal-2.svg');
-                background-size: contain;
-                background-repeat: no-repeat;
-                background-position: center;
-            }
-
-            /* États de redimensionnement */
-            body.grid-resizing {
-                user-select: none;
-            }
-            
-            body.grid-resizing * {
-                pointer-events: none;
-            }
-            
-            body.grid-resizing .resizable,
-            body.grid-resizing .resizable * {
-                pointer-events: auto;
-            }
-            
-            /* Animation pendant le déplacement */
-            .resizing {
-                opacity: 0.8;
-                z-index: 100;
-            }
-            
-            /* Debug info */
-            .resize-debug {
-                position: absolute;
-                top: -35px;
-                left: 5px;
-                background: rgba(0,0,0,0.9);
-                color: white;
-                padding: 4px 8px;
-                border-radius: 4px;
-                font-size: 11px;
-                pointer-events: none;
-                z-index: 20;
-                white-space: nowrap;
-                font-family: monospace;
-            }
-            
-            /* Mode layout uniquement */
-            body:not(.interface-preview) .modularGrid .resizable .position-handle,
-            body:not(.interface-preview) .modularGrid .resizable .width-handle,
-            body:not(.interface-preview) .modularGrid .resizable .height-handle,
-            body:not(.interface-preview) .modularGrid .resizable .both-handle {
-                display: flex !important;
-                opacity: 1;
-            }
-            
-            /* Masquer les poignées par défaut */
-
-
-            .position-handle,
-            .width-handle,
-            .height-handle,
-            .both-handle {
-                display: none !important;
-            }
-            
-            /* Debug : afficher temporairement toutes les poignées en mode layout */
-            body:not(.interface-preview) .modularGrid .resize .position-handle,
-            body:not(.interface-preview) .modularGrid .resize .width-handle,
-            body:not(.interface-preview) .modularGrid .resize .height-handle,
-            body:not(.interface-preview) .modularGrid .resize .both-handle,
-            body:not(.interface-preview) .modularGrid .figure .position-handle,
-            body:not(.interface-preview) .modularGrid .figure .width-handle,
-            body:not(.interface-preview) .modularGrid .figure .height-handle,
-            body:not(.interface-preview) .modularGrid .figure .both-handle,
-            body:not(.interface-preview) .modularGrid .insert .position-handle,
-            body:not(.interface-preview) .modularGrid .insert .width-handle,
-            body:not(.interface-preview) .modularGrid .insert .height-handle,
-            body:not(.interface-preview) .modularGrid .insert .both-handle {
-                display: flex ;
-                opacity: 0.7;
-            }
-            
-            /* Pleine visibilité au survol */
-            body:not(.interface-preview) .modularGrid .resizable .position-handle,
-            body:not(.interface-preview) .modularGrid .resizable .width-handle,
-            body:not(.interface-preview) .modularGrid .resizable .height-handle,
-            body:not(.interface-preview) .modularGrid .resizable .both-handle {
-                opacity: 1 !important;
-            }
-
-    }
-        `;
-        document.head.appendChild(style);
-    }
-
     setupHoverClass() {
         document.addEventListener('mouseover', (e) => {
             // Ne pas traiter les événements sur les légendes
@@ -268,13 +38,13 @@ export  class GridDragDropHandler {
             
             const target = e.target.closest('.resize, .figure, .insert');
             
-            // Vérifier si on est en mode layout ET dans une grille modulaire
+            // Vérifier si on est en mode gridStudio ET dans une grille modulaire
             if (target && 
-                document.body.dataset.mode === 'layout' && 
+                document.body.classList.contains('gridStudio') && 
                 !this.isResizing && 
                 this.isInModularGrid(target)) {
                 
-                target.classList.add('resizable');
+                target.classList.add('selected');
                 this.addHandlesIfNeeded(target);
             }
         });
@@ -285,7 +55,7 @@ export  class GridDragDropHandler {
             
             const target = e.target.closest('.resize, .figure, .insert');
             if (target && !this.isResizing && !target.contains(e.relatedTarget)) {
-                target.classList.remove('resizable');
+                target.classList.remove('selected');
             }
         });
     }
@@ -333,7 +103,7 @@ export  class GridDragDropHandler {
     }
 
     handleMouseDown(e) {
-        if (document.body.dataset.mode !== 'layout') return;
+        if (!document.body.classList.contains('gridStudio')) return;
 
         let resizeMode = null;
         let targetElement = null;
@@ -379,10 +149,10 @@ export  class GridDragDropHandler {
         this.startY = e.clientY;
 
         // Valeurs CSS actuelles
-this.startWidth = parseInt(this.currentElement.style.getPropertyValue('--print-width')) || 6;
-this.startHeight = parseInt(this.currentElement.style.getPropertyValue('--print-height')) || 3;
-this.startCol = parseInt(this.currentElement.style.getPropertyValue('--print-col')) || 1;
-this.startRow = parseInt(this.currentElement.style.getPropertyValue('--print-row')) || 1;
+        this.startWidth = parseInt(this.currentElement.style.getPropertyValue('--print-width')) || 6;
+        this.startHeight = parseInt(this.currentElement.style.getPropertyValue('--print-height')) || 3;
+        this.startCol = parseInt(this.currentElement.style.getPropertyValue('--print-col')) || 1;
+        this.startRow = parseInt(this.currentElement.style.getPropertyValue('--print-row')) || 1;
 
         // S'assurer que l'élément a les valeurs initiales définies
         if (!this.currentElement.style.getPropertyValue('--print-col')) {
@@ -409,7 +179,7 @@ this.startRow = parseInt(this.currentElement.style.getPropertyValue('--print-row
         // États visuels
         document.body.classList.add('grid-resizing');
         this.currentElement.classList.add('resizing');
-        this.currentElement.classList.add('resizable');
+        this.currentElement.classList.add('selected');
 
         // Debug visuel
         this.showDebugInfo();
@@ -523,7 +293,7 @@ this.startRow = parseInt(this.currentElement.style.getPropertyValue('--print-row
             // Permettre à resizable de disparaître après un délai
             setTimeout(() => {
                 if (currentElement && !currentElement.matches(':hover')) {
-                    currentElement.classList.remove('resizable');
+                    currentElement.classList.remove('selected');
                 }
             }, 1000);
         }
@@ -602,9 +372,9 @@ this.startRow = parseInt(this.currentElement.style.getPropertyValue('--print-row
         document.removeEventListener('mousemove', this.handleMouseMove, true);
         document.removeEventListener('mouseup', this.handleMouseUp, true);
         
-        // Supprimer toutes les classes resizable
-        document.querySelectorAll('.resizable').forEach(el => {
-            el.classList.remove('resizable');
+        // Supprimer toutes les classes selected
+        document.querySelectorAll('.selected').forEach(el => {
+            el.classList.remove('selected');
         });
         
         // Supprimer les poignées ajoutées
@@ -642,7 +412,7 @@ if (typeof Paged !== "undefined") {
 } else {
     // Mode écran
     document.addEventListener('DOMContentLoaded', () => {
-        if (document.body.dataset.mode === 'layout') {
+        if (document.body.classList.contains('gridStudio')) {
             const gridHandler = new GridDragDropHandler();
             gridHandler.initializeDragDrop();
         }

@@ -1,24 +1,24 @@
 @media screen, pagedjs-ignore {
     /* Styles pour les éléments en mode layout */
-    .layout .resize,
-    .layout figure,
-    .layout .insert {
+    .gridStudio .resize,
+    .gridStudio figure,
+    .gridStudio .insert {
         outline: 1px dashed blue;
         outline-offset: -2px;
     }
 
-    .layout .insert.selected {
+    .gridStudio .insert.selected {
         outline: 1px dashed var(--accentColor);
     }
 
-    .layout .resize.selected {
+    .gridStudio .resize.selected {
         background-color: hsla(16, 100%, 50%, 0.15);
     }
 
-    .layout .insert.selected ,
-    .layout .resize.selected ,
-    .layout .insert:hover,
-    .layout .resize:hover {
+    .gridStudio .insert.selected ,
+    .gridStudio .resize.selected ,
+    .gridStudio .insert:hover,
+    .gridStudio .resize:hover {
         background-color: hsla(16, 100%, 50%, 0.15);
     }
 
@@ -70,32 +70,32 @@
 
 
     /* Styles pour les éléments en mode preview ou hideMarker */
-    .layout.interface-preview .insert,
-    .layout.interface-preview .resize,
-    .layout.interface-preview figure,
-    .layout.preview .insert,
-    .layout.preview .resize,
-    .layout.preview figure,
-    .layout.hideMarker .insert,
-    .layout.hideMarker .insert::before,
-    .layout.hideMarker .insert::after,
-    .layout.hideMarker figure {
+    .gridStudio.interface-preview .insert,
+    .gridStudio.interface-preview .resize,
+    .gridStudio.interface-preview figure,
+    .gridStudio.preview .insert,
+    .gridStudio.preview .resize,
+    .gridStudio.preview figure,
+    .gridStudio.hideMarker .insert,
+    .gridStudio.hideMarker .insert::before,
+    .gridStudio.hideMarker .insert::after,
+    .gridStudio.hideMarker figure {
         background-color: unset;
         outline: unset;
     }
 
     /* Styles pour les éléments avec data-shortcode */
-    .layout [data-shortcode="insert"] .ui_arrow,
-    .layout [data-shortcode="insert"] .ui_screen,
-    .layout [data-shortcode="insert"] .ui_resize,
-    .layout [data-shortcode="figure"] .ui_arrow,
-    .layout [data-shortcode="figure"] .ui_row,
-    .layout [data-shortcode="figure"] .ui_resize,
-    .layout [data-shortcode="image"] .ui_arrow,
-    .layout [data-shortcode="image"] .ui_row,
-    .layout [data-shortcode="image"] .ui_resize,
-    .layout [data-shortcode="resize"] .ui_alignself,
-    .layout [data-shortcode="resize"] .ui_arrow {
+    .gridStudio [data-shortcode="insert"] .ui_arrow,
+    .gridStudio [data-shortcode="insert"] .ui_screen,
+    .gridStudio [data-shortcode="insert"] .ui_resize,
+    .gridStudio [data-shortcode="figure"] .ui_arrow,
+    .gridStudio [data-shortcode="figure"] .ui_row,
+    .gridStudio [data-shortcode="figure"] .ui_resize,
+    .gridStudio [data-shortcode="image"] .ui_arrow,
+    .gridStudio [data-shortcode="image"] .ui_row,
+    .gridStudio [data-shortcode="image"] .ui_resize,
+    .gridStudio [data-shortcode="resize"] .ui_alignself,
+    .gridStudio [data-shortcode="resize"] .ui_arrow {
         display: none;
     }
 
@@ -200,4 +200,222 @@
     .interface-preview figure::after {
         display: none;
     }
-}
+
+            /* Conteneur avec poignées visibles seulement avec la classe selected */
+            .modularGrid .selected {
+                position: relative;
+            }
+            
+            .modularGrid .selected::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                pointer-events: none;
+                border: 1px dashed var(--accentColor, blue);
+                opacity: 0.7;
+                z-index: 1;
+                outline-offset: 20px;
+            }
+            
+            /* Poignée position (haut gauche) */
+            .modularGrid .selected .position-handle {
+                position: absolute;
+                top: 5px;
+                left: 5px;
+                width: 24px;
+                height: 24px;
+                background: rgb(255,255,255);
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+                font-size: 12px;
+                cursor: move;
+                pointer-events: auto;
+                z-index: 15;
+            }
+            
+            .position-handle::before {
+                content: '';
+                width: 16px;
+                height: 16px;
+                background-image: url('/csspageweaver/plugins/gridStudio/assets/icons/svg/grip.svg');
+                background-size: contain;
+                background-repeat: no-repeat;
+                background-position: center;
+            }
+            
+            /* Poignée largeur (droite) */
+            .modularGrid .selected .width-handle {
+                position: absolute;
+                top: 50%;
+                right: 5px;
+                width: 24px;
+                height: 24px;
+                background: rgb(255,255,255);
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+                font-size: 12px;
+                cursor: ew-resize;
+                transform: translateY(-50%);
+                pointer-events: auto;
+                z-index: 15;
+            }
+
+            .width-handle::before {
+                content: '';
+                width: 16px;
+                height: 16px;
+                background-image: url('/csspageweaver/plugins/gridStudio/assets/icons/svg/unfold-horizontal.svg');
+                background-size: contain;
+                background-repeat: no-repeat;
+                background-position: center;
+            }
+            
+            /* Poignée hauteur (bas) */
+            .modularGrid .selected .height-handle {
+                position: absolute;
+                bottom: 5px;
+                left: 50%;
+                width: 24px;
+                height: 24px;
+                background:rgb(255,255,255);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+                font-size: 12px;
+                cursor: ns-resize;
+                transform: translateX(-50%);
+                pointer-events: auto;
+                z-index: 15;
+            }
+
+            .height-handle::before {
+                content: '';
+                width: 16px;
+                height: 16px;
+                background-image: url('/csspageweaver/plugins/gridStudio/assets/icons/svg/unfold-vertical.svg');
+                background-size: contain;
+                background-repeat: no-repeat;
+                background-position: center;
+            }
+
+            /* Poignée diagonale (coin bas droit) */
+            .modularGrid .selected .both-handle {
+                position: absolute;
+                bottom: 5px;
+                right: 5px;
+                width: 24px;
+                height: 24px;
+                background:rgb(255, 255, 255);
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+                font-size: 12px;
+                cursor: nwse-resize;
+                pointer-events: auto;
+                z-index: 15;
+            }
+
+            .both-handle::before {
+                content: '';
+                width: 16px;
+                height: 16px;
+                background-image: url('./csspageweaver/plugins/gridStudio/assets/icons/svg/move-diagonal-2.svg');
+                background-size: contain;
+                background-repeat: no-repeat;
+                background-position: center;
+            }
+
+            /* États de redimensionnement */
+            body.grid-resizing {
+                user-select: none;
+            }
+            
+            body.grid-resizing * {
+                pointer-events: none;
+            }
+            
+            body.grid-resizing .selected,
+            body.grid-resizing .selected * {
+                pointer-events: auto;
+            }
+            
+            /* Animation pendant le déplacement */
+            .resizing {
+                opacity: 0.8;
+                z-index: 100;
+            }
+            
+            /* Debug info */
+            .resize-debug {
+                position: absolute;
+                top: -35px;
+                left: 5px;
+                background: rgba(0,0,0,0.9);
+                color: white;
+                padding: 4px 8px;
+                border-radius: 4px;
+                font-size: 11px;
+                pointer-events: none;
+                z-index: 20;
+                white-space: nowrap;
+                font-family: monospace;
+            }
+            
+            /* Mode layout uniquement */
+            body:not(.interface-preview) .modularGrid .selected .position-handle,
+            body:not(.interface-preview) .modularGrid .selected .width-handle,
+            body:not(.interface-preview) .modularGrid .selected .height-handle,
+            body:not(.interface-preview) .modularGrid .selected .both-handle {
+                display: flex !important;
+                opacity: 1;
+            }
+            
+            /* Masquer les poignées par défaut */
+
+
+            .position-handle,
+            .width-handle,
+            .height-handle,
+            .both-handle {
+                display: none !important;
+            }
+            
+            /* Debug : afficher temporairement toutes les poignées en mode layout */
+            body:not(.interface-preview) .modularGrid .resize .position-handle,
+            body:not(.interface-preview) .modularGrid .resize .width-handle,
+            body:not(.interface-preview) .modularGrid .resize .height-handle,
+            body:not(.interface-preview) .modularGrid .resize .both-handle,
+            body:not(.interface-preview) .modularGrid .figure .position-handle,
+            body:not(.interface-preview) .modularGrid .figure .width-handle,
+            body:not(.interface-preview) .modularGrid .figure .height-handle,
+            body:not(.interface-preview) .modularGrid .figure .both-handle,
+            body:not(.interface-preview) .modularGrid .insert .position-handle,
+            body:not(.interface-preview) .modularGrid .insert .width-handle,
+            body:not(.interface-preview) .modularGrid .insert .height-handle,
+            body:not(.interface-preview) .modularGrid .insert .both-handle {
+                display: flex ;
+                opacity: 0.7;
+            }
+            
+            /* Pleine visibilité au survol */
+            body:not(.interface-preview) .modularGrid .selected .position-handle,
+            body:not(.interface-preview) .modularGrid .selected .width-handle,
+            body:not(.interface-preview) .modularGrid .selected .height-handle,
+            body:not(.interface-preview) .modularGrid .selected .both-handle {
+                opacity: 1 !important;
+            }
+
+    }
+      
