@@ -1,6 +1,6 @@
 
 import { ImageControls } from './ImageControls.js';
-import { CodeGenerator } from '../CodeGen/CodeGenerator.js';
+import { CodeGenerator } from '../codeGen/CodeGenerator.js';
 
 
 class ImageManipulator {

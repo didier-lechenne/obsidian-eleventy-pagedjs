@@ -10,19 +10,16 @@ import { DragZoomHandler } from "./components/image/index.js";
  * Gère le cycle de vie du plugin dans le contexte de PagedJS
  */
 
-
 export default class gridStudio extends Handler {
   constructor(chunker, polisher, caller) {
     super(chunker, polisher, caller);
     
-    // Instance principale du plugin
+    // ✅ CORRECTION: Instancier le plugin principal
+    this.gridStudioPlugin = new gridStudioPlugin();
     
+    // Références pour compatibilité
     this.gridHandler = null;
     this.dragZoomHandler = null;
-
-
-    //  this.gridHandler = new GridDragDropHandler();
-    // this.dragZoomHandler = new DragZoomHandler(chunker, polisher, caller);
 
     // État
     this.isInitialized = false;
@@ -74,7 +71,6 @@ export default class gridStudio extends Handler {
       // Activer les fonctionnalités
       this.gridHandler?.initializeDragDrop();
       this.dragZoomHandler?.initializeManipulator();
-      // this.dragZoomHandler?.createControlsUI();
       
       console.log('🎯 Composants gridStudio initialisés');
       

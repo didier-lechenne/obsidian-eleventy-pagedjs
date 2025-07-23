@@ -1,8 +1,7 @@
 // components/Grid/index.js
-// Export principal du composant Grid
+
 
 export { GridDragDropHandler } from './GridDragDropHandler.js';
-
 
 // Constantes spécifiques au Grid
 export const GRID_DEFAULTS = {

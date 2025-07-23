@@ -4,7 +4,7 @@
 import { 
    GridDragDropHandler,
    GRID_DEFAULTS,
-   RESIZE_MODES 
+   RESIZE_MODES
 } from './components/grid/index.js';
 
 import { 
@@ -14,14 +14,15 @@ import {
    IMAGE_DEFAULTS
 } from './components/image/index.js';
 
+// ✅ CORRECT : Import vers le bon dossier
 import { 
    ImageGridCaptionHandler,
    CAPTION_BEHAVIORS 
-} from './components/caption/index.js';
+} from './components/caption/index.js';  // ← Vers le dossier Caption
 
 import { 
    CodeGenerator,
-   SHORTCODE_TYPES 
+   SHORTCODE_TYPES
 } from './components/codeGen/index.js';
 
 import { 
@@ -158,7 +159,7 @@ export {
    ImageGridCaptionHandler,
    GridManager,
    
-   // Constantes utiles
+   // Constantes réexportées depuis les modules
    GRID_DEFAULTS,
    RESIZE_MODES,
    IMAGE_DEFAULTS,
