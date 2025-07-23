@@ -1,0 +1,14 @@
+{
+	"name": "gridStudio",
+	"description": ".",
+	
+	"ui": {
+		"title": "gridStudio",
+		"description": "Éditeur visuel interactif pour composer des éléments dans une grille.",
+		"template": "template.html",
+		"toggle": true
+	},
+	"script": "gridStudio.js",
+	"hook": "hook-gridStudio.js",
+	"stylesheet": "assets/gridStudio.css"
+}

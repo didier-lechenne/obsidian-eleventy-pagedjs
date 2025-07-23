@@ -1,0 +1,203 @@
+@media screen, pagedjs-ignore {
+    /* Styles pour les éléments en mode layout */
+    .layout .resize,
+    .layout figure,
+    .layout .insert {
+        outline: 1px dashed blue;
+        outline-offset: -2px;
+    }
+
+    .layout .insert.selected {
+        outline: 1px dashed var(--accentColor);
+    }
+
+    .layout .resize.selected {
+        background-color: hsla(16, 100%, 50%, 0.15);
+    }
+
+    .layout .insert.selected ,
+    .layout .resize.selected ,
+    .layout .insert:hover,
+    .layout .resize:hover {
+        background-color: hsla(16, 100%, 50%, 0.15);
+    }
+
+
+    /* Option 1 : Légende fixe en bas du conteneur */
+     .resize figcaption {
+        position: absolute;
+        bottom: -20px;
+        left: 0;
+        right: 0;
+        padding: 0.5em 0 0;
+        margin: 0;
+        /* padding-top: var(--grid-row-gutter); */
+        background: unset !important;
+        /* overflow: visible; */
+        /* La légende reste en bas, peu importe la position de l'image */
+    } 
+
+    /* Option 2 : Légende qui suit l'image */
+    .resize.with-following-caption {
+        overflow: visible; /* Permet à la légende de sortir du conteneur */
+    }
+
+    .resize.with-following-caption figcaption {
+        position: absolute;
+        /* Position calculée en fonction de l'image */
+        top: calc(var(--imgY) + var(--imgW) * 1%);
+        left: var(--imgX);
+        width: var(--imgW);
+        transform: translateY(100%);
+    }
+
+    /* Option 3 : Légende masquée lors du redimensionnement */
+    .resize.hide-caption-on-resize figcaption {
+        transition: opacity 0.3s;
+    }
+
+    .resize.hide-caption-on-resize.is-resizing figcaption {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    /* Option 4 : Légende externe au conteneur */
+    .resize.external-caption figcaption {
+        position: static;
+        margin-top: 1em;
+        /* La légende est complètement en dehors de la zone de redimensionnement */
+    }
+
+
+    /* Styles pour les éléments en mode preview ou hideMarker */
+    .layout.interface-preview .insert,
+    .layout.interface-preview .resize,
+    .layout.interface-preview figure,
+    .layout.preview .insert,
+    .layout.preview .resize,
+    .layout.preview figure,
+    .layout.hideMarker .insert,
+    .layout.hideMarker .insert::before,
+    .layout.hideMarker .insert::after,
+    .layout.hideMarker figure {
+        background-color: unset;
+        outline: unset;
+    }
+
+    /* Styles pour les éléments avec data-shortcode */
+    .layout [data-shortcode="insert"] .ui_arrow,
+    .layout [data-shortcode="insert"] .ui_screen,
+    .layout [data-shortcode="insert"] .ui_resize,
+    .layout [data-shortcode="figure"] .ui_arrow,
+    .layout [data-shortcode="figure"] .ui_row,
+    .layout [data-shortcode="figure"] .ui_resize,
+    .layout [data-shortcode="image"] .ui_arrow,
+    .layout [data-shortcode="image"] .ui_row,
+    .layout [data-shortcode="image"] .ui_resize,
+    .layout [data-shortcode="resize"] .ui_alignself,
+    .layout [data-shortcode="resize"] .ui_arrow {
+        display: none;
+    }
+
+    /* Styles pour les pseudo-éléments ::before */
+    #cover .insert::before,
+    #cover figure::before,
+    .modularGrid .insert::before,
+    .modularGrid figure::before,
+    .content figure::before {
+        /* content: "←";
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        opacity: 0;
+        background-color: red;
+        color: #fff;
+        padding: 2px 5px;
+        font-size: 14px;
+        z-index: 20000;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center; */
+    }
+
+    /* Styles pour les pseudo-éléments ::after */
+    #cover .insert::after,
+    #cover figure::after,
+    .modularGrid .insert::after,
+    .modularGrid figure::after,
+    .content figure::after {
+        /* content: "Press ⇧ key before hovering";
+        position: absolute;
+        top: 0px;
+        left: 0;
+        background-color: var(--accentColor);
+        color: black;
+        opacity: 0;
+        padding: 2px 5px;
+        z-index: 20000; */
+    }
+
+    /* Styles pour les pseudo-éléments ::after au survol */
+    #cover .insert.hover::after,
+    #cover figure.hover::after,
+    .modularGrid .insert.hover::after,
+    .modularGrid figure.hover::after,
+    .content figure.hover::after {
+        opacity: 1;
+    }
+
+    /* Styles pour les pseudo-éléments ::before au survol */
+    #cover .insert.hover::before,
+    #cover figure.hover::before,
+    .modularGrid .insert:hover::before,
+    .modularGrid figure:hover::before,
+    .content figure:hover::before {
+        opacity: 0;
+    }
+
+    /* Styles pour les pseudo-éléments ::before lorsqu'ils sont sélectionnés */
+    #cover .insert.selected::before,
+    #cover figure.selected::before,
+    .modularGrid .insert.selected::before,
+    .modularGrid figure.selected::before,
+    .content figure.selected::before {
+        opacity: 1;
+    }
+
+    /* Styles pour les éléments de positionnement relatif */
+    #cover .insert,
+    #cover figure,
+    .modularGrid .insert,
+    .modularGrid figure {
+        position: relative;
+    }
+
+    /* Styles pour les éléments enfants de .insert */
+    #cover .insert *,
+    .modularGrid .insert * {
+        pointer-events: none;
+        user-select: none;
+    }
+
+    /* Styles pour les paragraphes dans .insert */
+    #cover .insert p,
+    .modularGrid .insert p {
+        overflow: hidden;
+        /* white-space: nowrap; */
+    }
+
+    /* Styles pour masquer les pseudo-éléments dans certaines classes */
+    .hideMarker .insert::before,
+    .hideMarker .insert::after,
+    .hideMarker figure::before,
+    .hideMarker figure::after,
+    .interface-preview .insert::before,
+    .interface-preview .insert::after,
+    .interface-preview figure::before,
+    .interface-preview figure::after {
+        display: none;
+    }
+}
