@@ -1,7 +1,8 @@
 import { ImageManipulator } from '../image/ImageManipulator.js';
 
-export  class GridDragDropHandler {
-    constructor() {
+export class GridDragDropHandler {
+    constructor(gridManager = null) { 
+        this.gridManager = gridManager; 
         this.isResizing = false;
         this.currentElement = null;
         this.resizeMode = null;

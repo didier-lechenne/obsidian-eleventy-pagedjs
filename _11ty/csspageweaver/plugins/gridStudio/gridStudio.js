@@ -1,5 +1,4 @@
-// main.js - Point d'entrée principal du plugin gridStudio
-// Remplace l'ancien gridStudio.js
+// gridStudio.js - Point d'entrée principal du plugin gridStudio
 
 // Import des composants via leurs index
 import { 
@@ -65,16 +64,20 @@ class gridStudioPlugin {
        }
 
        try {
-           // Passer gridManager aux composants qui en ont besoin
+           // ✅ Passer gridManager aux composants qui en ont besoin
            this.components.grid = new GridDragDropHandler(this.utils.gridManager);
            this.components.caption = new ImageGridCaptionHandler();
            this.components.codeGen = new CodeGenerator();
            this.components.image = new ImageManipulator(this.utils.gridManager);
 
-           // Configurer les callbacks
-           this.utils.gridManager.setCodeGenerateCallback(
-               this.components.image.generateCode.bind(this.components.image)
-           );
+           // ✅ S'assurer que gridManager existe avant d'appeler ses méthodes
+           if (this.utils.gridManager && typeof this.utils.gridManager.setCodeGenerateCallback === 'function') {
+               this.utils.gridManager.setCodeGenerateCallback(
+                   (element) => this.components.image.generateCode(element, true)
+               );
+           } else {
+               console.warn('GridManager ou setCodeGenerateCallback non disponible');
+           }
 
            this.isInitialized = true;
            console.log('✅ gridStudioPlugin initialisé avec succès');

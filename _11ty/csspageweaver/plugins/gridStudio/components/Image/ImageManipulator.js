@@ -1,6 +1,6 @@
 class ImageManipulator {
-  constructor() {
-    this.currentImage = null;
+  constructor(gridManager = null) { 
+    this.gridManager = gridManager; 
     this.isDragging = false;
     this.prevX = 0;
     this.prevY = 0;

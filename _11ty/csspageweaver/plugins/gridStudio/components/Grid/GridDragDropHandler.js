@@ -1,10 +1,11 @@
 import { ImageManipulator } from '../image/ImageManipulator.js';
 
 export class GridDragDropHandler {
-    constructor() {
+    constructor(gridManager = null) { 
+        this.gridManager = gridManager; 
         this.isResizing = false;
         this.currentElement = null;
-        this.hoveredElement = null; // Nouvel état
+        this.hoveredElement = null;
         this.resizeMode = null;
         this.startX = 0;
         this.startY = 0;
