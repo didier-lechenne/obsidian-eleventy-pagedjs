@@ -5,10 +5,14 @@
 */
 
 
-
 :root {
-/* Color (HSL)  */
-  --color-marker: 16, 100%, 50%;
+  /* Variables couleurs complètes directement dans :root */
+  --g-color-line: hsla(16, 100%, 50%, 0.3);
+  --g-color-column: hsla(16, 100%, 50%, 0);
+  --g-color-gutter: hsla(16, 100%, 50%, 0.02);
+  --g-color-baseline: hsla(16, 100%, 50%, 0.1);
+  --g-color-row: hsla(16, 100%, 50%, 0);
+  
   --color-marginBox: #0000ff;
 }
 
@@ -26,27 +30,12 @@ pagedjs-ignore {
   /* General */
   --g-z_index: 2147483647;
 
-  /* Color (HSL) */
-  --g-color: var(--color-marker);
-  --g-opacity-baseline: 0.1;
-  --g-opacity-line: 0.5;
-  --g-opacity-column: 0;
-  --g-opacity-row: 0;
-  --g-opacity-gutter: 0.02;
-
   /* Baseline */
   --g-baseline-height: 8px;
   --g-baseline-start: 0px;
 
   /* Media Query String */
   --g-media_query: 'Base';
-
-  /* Colors */
-  --g-color-line: hsla(var(--g-color), var(--g-opacity-line));
-  --g-color-column: hsla(var(--g-color), var(--g-opacity-column));
-  --g-color-gutter: hsla(var(--g-color), var(--g-opacity-gutter));
-  --g-color-baseline: hsla(var(--g-color), var(--g-opacity-baseline));
-  --g-color-row: hsla(var(--g-color), var(--g-opacity-row));
 
   /* Gradient Helpers */
   --line-thickness: 1px;

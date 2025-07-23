@@ -1,57 +1,58 @@
 @media screen, pagedjs-ignore {
-    /* Styles pour les éléments en mode layout */
+    :root {
+        --grid-outline-color: blue;
+        --grid-selected-color: var(--accentColor, orange);
+        --grid-selected-bg: hsla(16, 100%, 50%, 0.15);
+        --grid-handle-size: 24px;
+        --grid-handle-bg: rgb(255, 255, 255);
+        --grid-edge-zone: 15px;
+        --grid-border-dash: 1px dashed;
+    }
+
+    /* === ÉLÉMENTS DE BASE === */
     .gridStudio .resize,
     .gridStudio figure,
     .gridStudio .insert {
-        outline: 1px dashed blue;
+        outline: var(--grid-border-dash) var(--grid-outline-color);
         outline-offset: -2px;
+        position: relative;
     }
 
     .gridStudio .insert.selected {
-        outline: 1px dashed var(--accentColor);
+        outline-color: var(--grid-selected-color);
     }
 
-    .gridStudio .resize.selected {
-        background-color: hsla(16, 100%, 50%, 0.15);
-    }
-
-    .gridStudio .insert.selected ,
-    .gridStudio .resize.selected ,
+    .gridStudio .resize.selected,
+    .gridStudio .insert.selected,
     .gridStudio .insert:hover,
     .gridStudio .resize:hover {
-        background-color: hsla(16, 100%, 50%, 0.15);
+        background-color: var(--grid-selected-bg);
     }
 
-
-    /* Option 1 : Légende fixe en bas du conteneur */
-     .resize figcaption {
+    /* === LÉGENDES === */
+    .resize figcaption {
         position: absolute;
         bottom: -20px;
         left: 0;
         right: 0;
         padding: 0.5em 0 0;
         margin: 0;
-        /* padding-top: var(--grid-row-gutter); */
         background: unset !important;
-        /* overflow: visible; */
-        /* La légende reste en bas, peu importe la position de l'image */
-    } 
+    }
 
-    /* Option 2 : Légende qui suit l'image */
+    /* Options légendes */
     .resize.with-following-caption {
-        overflow: visible; /* Permet à la légende de sortir du conteneur */
+        overflow: visible;
     }
 
     .resize.with-following-caption figcaption {
         position: absolute;
-        /* Position calculée en fonction de l'image */
-        top: calc(var(--imgY) + var(--imgW) * 1%);
-        left: var(--imgX);
-        width: var(--imgW);
+        top: calc(var(--img-y) + var(--img-w) * 1%);
+        left: var(--img-x);
+        width: var(--img-w);
         transform: translateY(100%);
     }
 
-    /* Option 3 : Légende masquée lors du redimensionnement */
     .resize.hide-caption-on-resize figcaption {
         transition: opacity 0.3s;
     }
@@ -61,15 +62,12 @@
         pointer-events: none;
     }
 
-    /* Option 4 : Légende externe au conteneur */
     .resize.external-caption figcaption {
         position: static;
         margin-top: 1em;
-        /* La légende est complètement en dehors de la zone de redimensionnement */
     }
 
-
-    /* Styles pour les éléments en mode preview ou hideMarker */
+    /* === MASQUER EN MODE PREVIEW === */
     .gridStudio.interface-preview .insert,
     .gridStudio.interface-preview .resize,
     .gridStudio.interface-preview figure,
@@ -77,14 +75,12 @@
     .gridStudio.preview .resize,
     .gridStudio.preview figure,
     .gridStudio.hideMarker .insert,
-    .gridStudio.hideMarker .insert::before,
-    .gridStudio.hideMarker .insert::after,
     .gridStudio.hideMarker figure {
         background-color: unset;
         outline: unset;
     }
 
-    /* Styles pour les éléments avec data-shortcode */
+    /* === MASQUER UI SELON SHORTCODE === */
     .gridStudio [data-shortcode="insert"] .ui_arrow,
     .gridStudio [data-shortcode="insert"] .ui_screen,
     .gridStudio [data-shortcode="insert"] .ui_resize,
@@ -99,97 +95,19 @@
         display: none;
     }
 
-    /* Styles pour les pseudo-éléments ::before */
-    #cover .insert::before,
-    #cover figure::before,
-    .modularGrid .insert::before,
-    .modularGrid figure::before,
-    .content figure::before {
-        /* content: "←";
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        opacity: 0;
-        background-color: red;
-        color: #fff;
-        padding: 2px 5px;
-        font-size: 14px;
-        z-index: 20000;
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center; */
-    }
-
-    /* Styles pour les pseudo-éléments ::after */
-    #cover .insert::after,
-    #cover figure::after,
-    .modularGrid .insert::after,
-    .modularGrid figure::after,
-    .content figure::after {
-        /* content: "Press ⇧ key before hovering";
-        position: absolute;
-        top: 0px;
-        left: 0;
-        background-color: var(--accentColor);
-        color: black;
-        opacity: 0;
-        padding: 2px 5px;
-        z-index: 20000; */
-    }
-
-    /* Styles pour les pseudo-éléments ::after au survol */
-    #cover .insert.hover::after,
-    #cover figure.hover::after,
-    .modularGrid .insert.hover::after,
-    .modularGrid figure.hover::after,
-    .content figure.hover::after {
-        opacity: 1;
-    }
-
-    /* Styles pour les pseudo-éléments ::before au survol */
-    #cover .insert.hover::before,
-    #cover figure.hover::before,
-    .modularGrid .insert:hover::before,
-    .modularGrid figure:hover::before,
-    .content figure:hover::before {
-        opacity: 0;
-    }
-
-    /* Styles pour les pseudo-éléments ::before lorsqu'ils sont sélectionnés */
-    #cover .insert.selected::before,
-    #cover figure.selected::before,
-    .modularGrid .insert.selected::before,
-    .modularGrid figure.selected::before,
-    .content figure.selected::before {
-        opacity: 1;
-    }
-
-    /* Styles pour les éléments de positionnement relatif */
-    #cover .insert,
-    #cover figure,
-    .modularGrid .insert,
-    .modularGrid figure {
-        position: relative;
-    }
-
-    /* Styles pour les éléments enfants de .insert */
-    #cover .insert *,
-    .modularGrid .insert * {
+    /* === ÉLÉMENTS ENFANTS === */
+    .modularGrid .insert *,
+    #cover .insert * {
         pointer-events: none;
         user-select: none;
     }
 
-    /* Styles pour les paragraphes dans .insert */
-    #cover .insert p,
-    .modularGrid .insert p {
+    .modularGrid .insert p,
+    #cover .insert p {
         overflow: hidden;
-        /* white-space: nowrap; */
     }
 
-    /* Styles pour masquer les pseudo-éléments dans certaines classes */
+    /* === MASQUER PSEUDO-ÉLÉMENTS === */
     .hideMarker .insert::before,
     .hideMarker .insert::after,
     .hideMarker figure::before,
@@ -201,221 +119,49 @@
         display: none;
     }
 
-            /* Conteneur avec poignées visibles seulement avec la classe selected */
-            .modularGrid .selected {
-                position: relative;
-            }
-            
-            .modularGrid .selected::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                pointer-events: none;
-                border: 1px dashed var(--accentColor, blue);
-                opacity: 0.7;
-                z-index: 1;
-                outline-offset: 20px;
-            }
-            
-            /* Poignée position (haut gauche) */
-            .modularGrid .selected .position-handle {
-                position: absolute;
-                top: 5px;
-                left: 5px;
-                width: 24px;
-                height: 24px;
-                background: rgb(255,255,255);
-                color: white;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-weight: bold;
-                font-size: 12px;
-                cursor: move;
-                pointer-events: auto;
-                z-index: 15;
-            }
-            
-            .position-handle::before {
-                content: '';
-                width: 16px;
-                height: 16px;
-                background-image: url('/csspageweaver/plugins/gridStudio/assets/icons/svg/grip.svg');
-                background-size: contain;
-                background-repeat: no-repeat;
-                background-position: center;
-            }
-            
-            /* Poignée largeur (droite) */
-            .modularGrid .selected .width-handle {
-                position: absolute;
-                top: 50%;
-                right: 5px;
-                width: 24px;
-                height: 24px;
-                background: rgb(255,255,255);
-                color: white;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-weight: bold;
-                font-size: 12px;
-                cursor: ew-resize;
-                transform: translateY(-50%);
-                pointer-events: auto;
-                z-index: 15;
-            }
-
-            .width-handle::before {
-                content: '';
-                width: 16px;
-                height: 16px;
-                background-image: url('/csspageweaver/plugins/gridStudio/assets/icons/svg/unfold-horizontal.svg');
-                background-size: contain;
-                background-repeat: no-repeat;
-                background-position: center;
-            }
-            
-            /* Poignée hauteur (bas) */
-            .modularGrid .selected .height-handle {
-                position: absolute;
-                bottom: 5px;
-                left: 50%;
-                width: 24px;
-                height: 24px;
-                background:rgb(255,255,255);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-weight: bold;
-                font-size: 12px;
-                cursor: ns-resize;
-                transform: translateX(-50%);
-                pointer-events: auto;
-                z-index: 15;
-            }
-
-            .height-handle::before {
-                content: '';
-                width: 16px;
-                height: 16px;
-                background-image: url('/csspageweaver/plugins/gridStudio/assets/icons/svg/unfold-vertical.svg');
-                background-size: contain;
-                background-repeat: no-repeat;
-                background-position: center;
-            }
-
-            /* Poignée diagonale (coin bas droit) */
-            .modularGrid .selected .both-handle {
-                position: absolute;
-                bottom: 5px;
-                right: 5px;
-                width: 24px;
-                height: 24px;
-                background:rgb(255, 255, 255);
-                color: white;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-weight: bold;
-                font-size: 12px;
-                cursor: nwse-resize;
-                pointer-events: auto;
-                z-index: 15;
-            }
-
-            .both-handle::before {
-                content: '';
-                width: 16px;
-                height: 16px;
-                background-image: url('./csspageweaver/plugins/gridStudio/assets/icons/svg/move-diagonal-2.svg');
-                background-size: contain;
-                background-repeat: no-repeat;
-                background-position: center;
-            }
-
-            /* États de redimensionnement */
-            body.grid-resizing {
-                user-select: none;
-            }
-            
-            body.grid-resizing * {
-                pointer-events: none;
-            }
-            
-            body.grid-resizing .selected,
-            body.grid-resizing .selected * {
-                pointer-events: auto;
-            }
-            
-            /* Animation pendant le déplacement */
-            .resizing {
-                opacity: 0.8;
-                z-index: 100;
-            }
-            
-            /* Debug info */
-            .resize-debug {
-                position: absolute;
-                top: -35px;
-                left: 5px;
-                background: rgba(0,0,0,0.9);
-                color: white;
-                padding: 4px 8px;
-                border-radius: 4px;
-                font-size: 11px;
-                pointer-events: none;
-                z-index: 20;
-                white-space: nowrap;
-                font-family: monospace;
-            }
-            
-            /* Mode layout uniquement */
-            body:not(.interface-preview) .modularGrid .selected .position-handle,
-            body:not(.interface-preview) .modularGrid .selected .width-handle,
-            body:not(.interface-preview) .modularGrid .selected .height-handle,
-            body:not(.interface-preview) .modularGrid .selected .both-handle {
-                display: flex !important;
-                opacity: 1;
-            }
-            
-            /* Masquer les poignées par défaut */
-
-
-            .position-handle,
-            .width-handle,
-            .height-handle,
-            .both-handle {
-                display: none !important;
-            }
-            
-            /* Debug : afficher temporairement toutes les poignées en mode layout */
-            body:not(.interface-preview) .modularGrid .resize .position-handle,
-            body:not(.interface-preview) .modularGrid .resize .width-handle,
-            body:not(.interface-preview) .modularGrid .resize .height-handle,
-            body:not(.interface-preview) .modularGrid .resize .both-handle,
-            body:not(.interface-preview) .modularGrid .figure .position-handle,
-            body:not(.interface-preview) .modularGrid .figure .width-handle,
-            body:not(.interface-preview) .modularGrid .figure .height-handle,
-            body:not(.interface-preview) .modularGrid .figure .both-handle,
-            body:not(.interface-preview) .modularGrid .insert .position-handle,
-            body:not(.interface-preview) .modularGrid .insert .width-handle,
-            body:not(.interface-preview) .modularGrid .insert .height-handle,
-            body:not(.interface-preview) .modularGrid .insert .both-handle {
-                display: flex ;
-                opacity: 0.7;
-            }
-            
-            /* Pleine visibilité au survol */
-            body:not(.interface-preview) .modularGrid .selected .position-handle,
-            body:not(.interface-preview) .modularGrid .selected .width-handle,
-            body:not(.interface-preview) .modularGrid .selected .height-handle,
-            body:not(.interface-preview) .modularGrid .selected .both-handle {
-                opacity: 1 !important;
-            }
-
+    /* === BORDURE SÉLECTION === */
+    .modularGrid .selected::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        border: var(--grid-border-dash) var(--grid-selected-color);
+        opacity: 0.7;
+        z-index: 1;
     }
-      
+
+    /* === ÉTATS DE REDIMENSIONNEMENT === */
+    body.grid-resizing {
+        user-select: none;
+    }
+    
+    body.grid-resizing * {
+        pointer-events: none;
+    }
+    
+    body.grid-resizing .selected,
+    body.grid-resizing .selected * {
+        pointer-events: auto;
+    }
+    
+    .resizing {
+        opacity: 0.8;
+        z-index: 100;
+    }
+
+    /* === DEBUG INFO === */
+    .resize-debug {
+        position: absolute;
+        top: -35px;
+        left: 5px;
+        background: rgba(0, 0, 0, 0.9);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        pointer-events: none;
+        z-index: 20;
+        white-space: nowrap;
+        font-family: monospace;
+    }
+}
