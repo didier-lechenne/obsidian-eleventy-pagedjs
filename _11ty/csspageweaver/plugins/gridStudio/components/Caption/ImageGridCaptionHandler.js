@@ -1,6 +1,6 @@
 // Extension pour gérer les légendes dans imagegrid lors du redimensionnement
 
-class ImageGridCaptionHandler {
+export class ImageGridCaptionHandler {
     constructor() {
         this.captionBehavior = 'fixed'; // 'fixed', 'follow', 'hide', 'external'
     }

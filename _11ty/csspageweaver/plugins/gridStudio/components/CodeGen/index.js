@@ -1,7 +1,7 @@
 // components/CodeGen/index.js
 // Export principal du composant CodeGen
 
-export { CodeGenerator } from './CodeGenerator.js';
+export { CodeGenerator  as default } from './CodeGenerator.js';
 
 // Types de shortcodes supportés
 export const SHORTCODE_TYPES = {

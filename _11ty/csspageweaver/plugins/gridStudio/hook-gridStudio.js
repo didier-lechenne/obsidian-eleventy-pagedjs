@@ -1,26 +1,29 @@
 // hook.js - Hook PagedJS pour le plugin gridStudio
 
-
 import { Handler } from "/csspageweaver/lib/paged.esm.js";
-import gridStudioPlugin from "./main.js";
-import { GridDragDropHandler } from "./components/Grid/index.js";
-import { DragZoomHandler } from "./components/Image/index.js";
+import { gridStudioPlugin } from "./gridStudio.js";
+import { GridDragDropHandler } from "./components/grid/index.js";
+import { DragZoomHandler } from "./components/image/index.js";
 
 /**
  * Handler principal pour l'intégration PagedJS
  * Gère le cycle de vie du plugin dans le contexte de PagedJS
  */
+
+
 export default class gridStudio extends Handler {
   constructor(chunker, polisher, caller) {
     super(chunker, polisher, caller);
     
     // Instance principale du plugin
     this.gridStudioPlugin = new gridStudioPlugin();
-    
+    this.gridHandler = new GridDragDropHandler();
     // Références pour compatibilité avec l'ancien code
     this.gridHandler = null;
     this.dragZoomHandler = null;
-    
+    //  this.gridHandler = new GridDragDropHandler();
+    // this.dragZoomHandler = new DragZoomHandler(chunker, polisher, caller);
+
     // État
     this.isInitialized = false;
     this.toggleHandler = null;

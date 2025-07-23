@@ -10,5 +10,5 @@
 	},
 	"script": "gridStudio.js",
 	"hook": "hook-gridStudio.js",
-	"stylesheet": "assets/gridStudio.css"
+	"stylesheet": "gridStudio.css"
 }

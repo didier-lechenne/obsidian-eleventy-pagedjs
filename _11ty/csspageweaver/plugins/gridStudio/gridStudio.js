@@ -6,29 +6,29 @@ import GridComponent, {
     GridDragDropHandler,
     GRID_DEFAULTS,
     RESIZE_MODES 
-} from './components/Grid/index.js';
+} from './components/grid/index.js';
 
 import ImageComponent, { 
     ImageControls, 
     ImageManipulator, 
     DragZoomHandler,
     IMAGE_DEFAULTS
-} from './components/Image/index.js';
+} from './components/image/index.js';
 
 import CaptionComponent, { 
     ImageGridCaptionHandler,
     CAPTION_BEHAVIORS 
-} from './components/Caption/index.js';
+} from './components/caption/index.js';
 
 import CodeGenComponent, { 
     CodeGenerator,
     SHORTCODE_TYPES 
-} from './components/CodeGen/index.js';
+} from './components/codeGen/index.js';
 
 // Import des utilitaires
 import { DOMHelpers } from './utils/dom-helpers.js';
 import { GridCalculator } from './utils/grid-calculator.js';
-import { EventManager } from './utils/event-manager.js';
+// import { EventManager } from './utils/event-manager.js';
 
 /**
  * Classe principale du plugin gridStudio

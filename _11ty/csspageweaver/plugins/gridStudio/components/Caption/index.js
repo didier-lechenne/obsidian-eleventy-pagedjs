@@ -27,3 +27,4 @@ export const CAPTION_SELECTORS = {
     wrapper: '.imagegrid-wrapper',
     resizing: '.is-resizing'
 };
+
