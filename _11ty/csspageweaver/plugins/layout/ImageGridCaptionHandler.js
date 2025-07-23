@@ -34,9 +34,9 @@ class ImageGridCaptionHandler {
         if (!img) return;
 
         // Récupérer les valeurs CSS
-        const imgY = parseFloat(parent.style.getPropertyValue('--imgY') || 0);
-        const imgW = parseFloat(parent.style.getPropertyValue('--imgW') || 100);
-        const imgX = parseFloat(parent.style.getPropertyValue('--imgX') || 0);
+        const imgY = parseFloat(parent.style.getPropertyValue('--img-y') || 0);
+        const imgW = parseFloat(parent.style.getPropertyValue('--img-w') || 100);
+        const imgX = parseFloat(parent.style.getPropertyValue('--img-x') || 0);
 
         // Calculer la position de la légende
         const imgHeight = img.offsetHeight;

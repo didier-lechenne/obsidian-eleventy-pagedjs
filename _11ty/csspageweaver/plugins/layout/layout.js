@@ -12,3 +12,4 @@ window.ImageControls = ImageControls;
 window.ImageManipulator = ImageManipulator;
 window.DragZoomHandler = DragZoomHandler;
 window.GridDragDropHandler = GridDragDropHandler;
+
