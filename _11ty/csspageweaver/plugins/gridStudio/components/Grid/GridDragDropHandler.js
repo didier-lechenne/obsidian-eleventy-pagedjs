@@ -55,8 +55,9 @@ export class GridDragDropHandler {
         if (!e.target || e.target.nodeType !== Node.ELEMENT_NODE) return;
         
         const target = e.target.closest('.resize, .figure, .insert');
-        if (!target || e.target.closest('figcaption') || !this.gridManager.isInModularGrid(target)) return;
-        
+
+        if (!target || e.target.closest('figcaption') || !this.isInModularGrid(target)) return;   
+             
         // Éviter les répétitions
         if (this.hoveredElement === target) return;
         
@@ -103,8 +104,8 @@ export class GridDragDropHandler {
         // Pas d'élément survolé = pas de traitement
         if (!this.hoveredElement) return;
         
-        // Déléguer au GridManager
-        this.gridManager.updateCursor(this.hoveredElement, e.clientX, e.clientY);
+        
+        this.updateCursor(this.hoveredElement, e.clientX, e.clientY);
     }
 
     cleanupElement(element) {
@@ -117,7 +118,7 @@ export class GridDragDropHandler {
         
         if (!this.hoveredElement) return;
         
-        const zone = this.gridManager.getInteractionZone(this.hoveredElement, e.clientX, e.clientY);
+        const zone = this.getInteractionZone(this.hoveredElement, e.clientX, e.clientY);
         if (!zone) return;
         
         console.log('🎯 DÉBUT:', { element: this.hoveredElement.className, zone });
