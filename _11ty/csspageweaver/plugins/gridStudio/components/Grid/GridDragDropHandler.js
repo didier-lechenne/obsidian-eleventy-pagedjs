@@ -57,33 +57,38 @@ export class GridDragDropHandler {
     console.log("🎧 Listeners optimisés configurés");
   }
 
-  handleMouseEnter(e) {
-    if (this.isResizing || !document.body.classList.contains("gridStudio"))
-      return;
+handleMouseEnter(e) {
+  if (this.isResizing || !document.body.classList.contains("gridStudio"))
+    return;
 
-    // Filtrer les événements non-Element
-    if (!e.target || e.target.nodeType !== Node.ELEMENT_NODE) return;
+  // Filtrer les événements non-Element
+  if (!e.target || e.target.nodeType !== Node.ELEMENT_NODE) return;
 
-    const target = e.target.closest(".resize, .figure, .insert");
+  const target = e.target.closest(".resize, .figure, .insert");
 
-    if (
-      !target ||
-      e.target.closest("figcaption") ||
-      !this.isInModularGrid(target)
-    )
-      return;
+  if (
+    !target ||
+    e.target.closest("figcaption") ||
+    !this.isInModularGrid(target)
+  )
+    return;
 
-    // Éviter les répétitions
-    if (this.hoveredElement === target) return;
+  // Éviter les répétitions
+  if (this.hoveredElement === target) return;
 
-    // Nettoyer l'ancien élément survolé
-    if (this.hoveredElement && this.hoveredElement !== target) {
-      this.cleanupElement(this.hoveredElement);
-    }
-
-    this.hoveredElement = target;
-    target.classList.add("selected");
+  // Nettoyer l'ancien élément survolé
+  if (this.hoveredElement && this.hoveredElement !== target) {
+    this.cleanupElement(this.hoveredElement);
   }
+
+  this.hoveredElement = target;
+  target.classList.add("selected");
+  
+  // ← AJOUTER CETTE LIGNE :
+  if (this.gridManager) {
+    this.gridManager.updateUI(target);
+  }
+}
 
   generateCodeForElement(element) {
     const manipulator = new ImageManipulator();

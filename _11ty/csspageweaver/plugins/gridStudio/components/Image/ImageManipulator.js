@@ -300,7 +300,7 @@ class ImageManipulator {
       { inputId: "printwidth", cssProperty: "--print-width" },
       { inputId: "printrow", cssProperty: "--print-row" },
       { inputId: "printheight", cssProperty: "--print-height" },
-      { inputId: "align_self", cssProperty: "--align-self" },
+      // { inputId: "align_self", cssProperty: "--align-self" },
       { inputId: "figcaption_arrow", cssProperty: "--figcaption_arrow" },
       { inputId: "zoom-grid-studio", cssProperty: "--img-w" },
     ];

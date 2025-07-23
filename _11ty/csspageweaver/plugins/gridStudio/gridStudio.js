@@ -14,11 +14,11 @@ import {
    IMAGE_DEFAULTS
 } from './components/image/index.js';
 
-// ✅ CORRECT : Import vers le bon dossier
+
 import { 
    ImageGridCaptionHandler,
    CAPTION_BEHAVIORS 
-} from './components/caption/index.js';  // ← Vers le dossier Caption
+} from './components/caption/index.js';  
 
 import { 
    CodeGenerator,
