@@ -33,12 +33,18 @@ import {
 import { DOMHelpers } from './utils/dom-helpers.js';
 import { GridCalculator } from './utils/grid-calculator.js';
 
+
+
+
 /**
 * Classe principale du plugin gridStudio
 * Orchestration des différents composants
 */
 class gridStudioPlugin {
    constructor() {
+       console.log('🏗️ gridStudioPlugin constructor START');
+       console.trace('📍 Appelé depuis:');
+       
        this.components = {
            grid: null,
            image: null,
@@ -46,13 +52,24 @@ class gridStudioPlugin {
            codeGen: null
        };
        
-       this.utils = {
-           dom: new DOMHelpers(),
-           grid: new GridCalculator(),
-           gridManager: new GridManager()
-       };
+       console.log('📦 Components initialisés');
+       
+       try {
+           console.log('🔧 Création utils...');
+           this.utils = {
+               dom: new DOMHelpers(),
+               grid: new GridCalculator(),
+               gridManager: new GridManager()
+           };
+           console.log('✅ this.utils créé:', this.utils);
+           
+       } catch (error) {
+           console.error('❌ Erreur dans constructeur utils:', error);
+           this.utils = {};
+       }
        
        this.isInitialized = false;
+       console.log('🏗️ gridStudioPlugin constructor END');
    }
 
    /**
@@ -77,7 +94,16 @@ class gridStudioPlugin {
                );
            } else {
                console.warn('GridManager ou setCodeGenerateCallback non disponible');
-           }
+               // Dans gridStudio.js, dans la méthode init()
+// console.log('🔍 Debug GridManager:');
+// console.log('this.utils:', this.utils);
+// console.log('this.utils.gridManager:', this.utils.gridManager);
+// console.log('typeof gridManager:', typeof this.utils.gridManager);
+// console.log('setCodeGenerateCallback existe?', 'setCodeGenerateCallback' in this.utils.gridManager);
+// console.log('Méthodes de gridManager:', Object.getOwnPropertyNames(this.utils.gridManager.constructor.prototype));
+           
+
+}
 
            this.isInitialized = true;
            console.log('✅ gridStudioPlugin initialisé avec succès');

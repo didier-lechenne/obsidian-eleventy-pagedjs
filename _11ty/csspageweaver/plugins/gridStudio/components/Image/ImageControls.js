@@ -2,6 +2,8 @@
 class ImageControls {
     constructor(parent, img, onUpdate) {
         console.log('ImageControls constructor:', {parent, img, onUpdate});
+        console.trace('📍 Appelé depuis:');
+        
         this.parent = parent;
         this.img = img;
         this.onUpdate = onUpdate;

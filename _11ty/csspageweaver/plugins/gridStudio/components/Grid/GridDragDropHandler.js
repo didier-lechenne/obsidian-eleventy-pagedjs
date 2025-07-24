@@ -29,6 +29,7 @@ export class GridDragDropHandler {
 
     this.setupGlobalListeners();
     this.isInitialized = true;
+    // console.log("🎯 GridDragDropHandler: Mode test (listeners désactivés)");
     console.log("🎯 GridDragDropHandler: Mode simplifié activé");
   }
 
@@ -84,11 +85,17 @@ handleMouseEnter(e) {
   this.hoveredElement = target;
   target.classList.add("selected");
   
-  // ← AJOUTER CETTE LIGNE :
+  
   if (this.gridManager) {
-    this.gridManager.updateUI(target);
+    this.gridManager.updateUI(target, e.shiftKey);
   }
 }
+
+
+
+
+
+
 
   generateCodeForElement(element) {
     const manipulator = new ImageManipulator();

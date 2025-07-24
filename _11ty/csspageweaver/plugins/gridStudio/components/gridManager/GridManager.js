@@ -1,4 +1,7 @@
 // components/gridManager/GridManager.js
+import { ImageControls } from '../image/ImageControls.js';
+import { ImageManipulator } from '../image/ImageManipulator.js';
+
 
 export class GridManager {
    constructor() {
@@ -111,18 +114,50 @@ export class GridManager {
        selectElement.addEventListener('change', selectElement._gridListener);
    }
 
-   updateUI(element) {
-       // Récupérer --align-self de l'élément
-       const alignValue = element.style.getPropertyValue('--align-self') || 'auto';
-       
-       // Mettre à jour le dropdown
-       const alignSelect = document.querySelector('#align_self');
-       if (alignSelect) {
-           alignSelect.value = alignValue;
-           this.setupAlignSelfListener(element, alignSelect);
-           console.log(`📍 Set select to: ${alignValue}`);
-       }
-   }
+updateUI(element, shiftPressed = false) {
+    // 1. Toujours faire align-self
+    const alignValue = element.style.getPropertyValue('--align-self') || 'auto';
+    const alignSelect = document.querySelector('#align_self');
+    if (alignSelect) {
+        alignSelect.value = alignValue;
+        this.setupAlignSelfListener(element, alignSelect);
+    }
+    
+    // 2. Si c'est une image, AUSSI faire l'interface image
+    if (shiftPressed && element.matches('figure.resize, .image, figure')) {
+        this.initImageControls(element);
+        console.log('🖼️ Interface image activée (Shift enfoncé)');
+    } else if (element.matches('figure.resize, .image, figure')) {
+        console.log('⌨️ Maintenez Shift pour l\'interface image');
+    }
+}
+
+
+
+initImageControls(element) {
+    console.log('🔍 initImageControls appelé avec:', element);
+    
+    const img = element.querySelector('img');
+    console.log('🔍 Image trouvée:', img);
+    
+    if (!img) {
+        console.log('❌ Pas d\'image trouvée');
+        return;
+    }
+    
+    console.log('🔧 Création ImageControls...');
+    
+    // Créer ImageControls
+    const controls = new ImageControls(element, img, () => {
+        const manipulator = new ImageManipulator();
+        manipulator.generateCode(element, true);
+    });
+    
+    console.log('✅ ImageControls créé:', controls);
+    console.log('🔍 controls.parent:', controls.parent);
+    
+    controls.init();
+}
 
    // === CALLBACKS ===
 

@@ -33,7 +33,10 @@ export default class gridStudio extends Handler {
    * Appelé avant le parsing du contenu
    */
   beforeParsed(content) {
-    this.cleanup();
+        if (this.gridStudioPlugin) {
+        this.gridStudioPlugin.deactivate();
+    }
+    // this.cleanup();
   }
 
   /**
@@ -67,15 +70,15 @@ export default class gridStudio extends Handler {
         this.polisher, 
         this.caller
       );
-      
-      // Activer les fonctionnalités
-      this.gridHandler?.initializeDragDrop();
       this.dragZoomHandler?.initializeManipulator();
+  
+      this.gridHandler?.initializeDragDrop();
+      
       
       console.log('🎯 Composants gridStudio initialisés');
       
     } catch (error) {
-      console.error('❌ Erreur lors de l\'initialisation des composants:', error);
+       console.error('❌ Erreur initialisation:', error);
     }
   }
 

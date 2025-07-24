@@ -21,7 +21,7 @@ class DragZoomHandler {
 
     initializeManipulator() {
         // Délégation d'événements sur document
-        document.addEventListener('mouseover', (e) => this.manipulator.handleMouseOver(e));
+        // document.addEventListener('mouseover', (e) => this.manipulator.handleMouseOver(e));
         document.addEventListener('mouseout', (e) => this.manipulator.handleMouseOut(e));
         document.addEventListener('mousedown', (e) => this.manipulator.handleDragStart(e));
         document.addEventListener('mousemove', (e) => this.manipulator.handleDragMove(e));
