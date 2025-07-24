@@ -15,7 +15,7 @@
                 height: calc(100% - 25px - 25px);
                 background: transparent;
                 border: 0px solid var(--accentColor, #0066cc);
-                /* cursor: move; */
+                cursor: move;
                 z-index: 100000;
                 pointer-events: auto;
                 display: flex;

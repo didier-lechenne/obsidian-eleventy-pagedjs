@@ -504,38 +504,72 @@ if (this.isShiftPressed) {
 
   // === ZOOM ET DÉPLACEMENT D'IMAGES ===
 
-  handleWheel(e) {
-    if (
-      !e.shiftKey ||
-      !e.target.tagName ||
-      e.target.tagName.toLowerCase() !== "img"
-    )
-      return;
+handleWheel(e) {
+  if (
+    !e.shiftKey ||
+    !e.target.tagName ||
+    e.target.tagName.toLowerCase() !== "img"
+  )
+    return;
 
-    e.preventDefault();
+  e.preventDefault();
 
-    const delta = Math.max(-1, Math.min(1, e.wheelDelta || -e.detail));
-    const scaleAmount = 1.0 + (delta * 5) / 90.0;
+  const delta = Math.max(-1, Math.min(1, e.wheelDelta || -e.detail));
+  const scaleAmount = 1.0 + (delta * 5) / 90.0;
+  const parent = e.target.closest(".resize, .figure, .insert");
 
-    this.zoomImage(
-      e.target,
-      scaleAmount,
-      e.layerX / e.target.width,
-      e.layerY / e.target.height
-    );
+  this.zoomImage(
+    e.target,
+    scaleAmount,
+    e.layerX / e.target.width,
+    e.layerY / e.target.height
+  );
 
-    // Curseur de zoom
+  // Curseur de zoom temporaire sur l'IMAGE seulement, pas sur le parent
+  if (parent) {
     e.target.style.cursor = delta > 0 ? "zoom-in" : "zoom-out";
-
-    clearTimeout(this.resetCursorTimeout);
-    this.resetCursorTimeout = setTimeout(() => {
-      e.target.style.cursor = "default";
-      const parent = e.target.closest("figure, .resize, .image");
-      if (parent) {
-        this.generateCodeForElement(parent);
-      }
-    }, 500);
+    // Marquer qu'on est en mode zoom pour éviter les conflits
+    parent.dataset.isZooming = "true";
   }
+
+  clearTimeout(this.resetCursorTimeout);
+  this.resetCursorTimeout = setTimeout(() => {
+    if (parent) {
+      // Enlever le flag de zoom et le curseur de l'image
+      delete parent.dataset.isZooming;
+      e.target.style.cursor = "";
+      
+      // Si l'élément est toujours survolé, recalculer le curseur approprié
+      if (this.hoveredElement === parent) {
+        // Obtenir la position actuelle de la souris via l'événement mousemove
+        // ou utiliser le centre comme fallback
+        const rect = parent.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        this.updateCursor(parent, centerX, centerY);
+      }
+    }
+    
+    const parentForCode = e.target.closest("figure, .resize, .image");
+    if (parentForCode) {
+      this.generateCodeForElement(parentForCode);
+    }
+  }, 300); // Délai réduit
+}
+
+refreshCursor(element, clientX = null, clientY = null) {
+  if (!element || !this.isInModularGrid(element)) return;
+  
+  if (clientX === null || clientY === null) {
+    // Utiliser le centre de l'élément comme position par défaut
+    const rect = element.getBoundingClientRect();
+    clientX = rect.left + rect.width / 2;
+    clientY = rect.top + rect.height / 2;
+  }
+  
+  this.updateCursor(element, clientX, clientY);
+}
 
   zoomImage(img, scaleAmount, relX, relY) {
     const parent = img.parentElement;
