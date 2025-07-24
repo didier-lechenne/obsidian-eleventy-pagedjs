@@ -20,7 +20,6 @@ export default class Layout extends Handler {
     setTimeout(() => {
       this.gridHandler.initializeDragDrop();
       this.dragZoomHandler.initializeManipulator();
-      this.dragZoomHandler.createControlsUI();
       this.isInitialized = true;
     }, 100);
 

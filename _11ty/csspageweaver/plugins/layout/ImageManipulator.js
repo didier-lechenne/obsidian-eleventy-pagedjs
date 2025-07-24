@@ -46,7 +46,7 @@ class ImageManipulator {
         if (!shortcodeInfo) return;
 
         const { parent, type } = shortcodeInfo;
-        parent.style.cursor = 'help';
+        // parent.style.cursor = 'help';
 
         if (!parent.classList.contains('selected')) {
             parent.classList.add('hover');
@@ -242,7 +242,7 @@ class ImageManipulator {
         // Reset du curseur après un délai
         clearTimeout(this.resetCursorTimeout);
         this.resetCursorTimeout = setTimeout(() => {
-            e.target.style.cursor = 'help';
+            // e.target.style.cursor = 'help';
             this.generateCode(e.target.closest('figure, .resize, .image'));
         }, 500);
     }

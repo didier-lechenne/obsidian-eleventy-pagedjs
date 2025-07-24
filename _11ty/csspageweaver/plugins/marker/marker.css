@@ -19,6 +19,7 @@
 @media screen,
 pagedjs-ignore {
   .marker,
+  .modularGrid,
   .pagedjs_area,
   .pagedjs_footnote_inner_content
    {
