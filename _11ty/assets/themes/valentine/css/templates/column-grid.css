@@ -1,11 +1,12 @@
 @page columnGrid {
-	/* margin: 2.2cm 1cm .8cm 7.5cm; */
+  page-break-before: always;
+  page-break-after: always;
 }
 
 [data-template="columnGrid"] {
 	page: columnGrid;
-	page-break-before: always;
-	/* "reset" pagebox left margin : */
+  page-break-before: always;
+  page-break-after: always;
 
 }
 

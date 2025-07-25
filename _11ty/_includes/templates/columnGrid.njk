@@ -3,6 +3,9 @@
          data-template="columnGrid"
          {% if p.data.show %}data-show="{{ p.data.show }}"{% endif %}
          {% if p.data.toc %}data-toc="{{ p.data.toc }}"{% endif %}
+         {% if p.data.pageMoveAfter %}data-page-move-after="{{ p.data.pageMoveAfter }}" {% endif %}
+         {% if p.data.pageMoveBefore %}data-page-move-before="{{ p.data.pageMoveBefore }}" {% endif %}
+
          class="{% if p.data.toc %}toc-{{ p.data.toc }}{% endif %} {% if p.data.class %}{{ p.data.class }}{% endif %} marker">
 
   {{ p.templateContent | safe }} 

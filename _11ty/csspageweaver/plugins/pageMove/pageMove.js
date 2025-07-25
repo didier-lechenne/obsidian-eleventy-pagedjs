@@ -3,178 +3,147 @@ import { Handler } from "/csspageweaver/lib/paged.esm.js";
 export default class pageMove extends Handler {
     constructor(chunker, polisher, caller) {
         super(chunker, polisher, caller);
-        this.moveRules = [];
+        this.moveOperations = [];
+        this.hasProcessed = false;
     }
 
-    beforeParsed(content) {
-        this.collectMoveRules(content);
+    afterPageLayout(pageElement, page, breakToken) {
+        const pageNumber = parseInt(pageElement.getAttribute("data-page-number"));
+        this.collectMoveRules(pageElement, pageNumber);
     }
 
-    afterRendered(pages) {
-        if (this.moveRules.length > 0) {
-            this.movePages();
-        }
+    collectMoveRules(pageElement, pageNumber) {
+        this.parseCSS(pageElement, pageNumber);
+        this.parseHTML(pageElement, pageNumber);
     }
 
-    collectMoveRules(content) {
-        this.parseCSS();
-        this.parseHTML(content);
-        
-        if (window.PageMoveConfig) {
-            this.moveRules.push(...window.PageMoveConfig);
-        }
-    }
-
-    parseCSS() {
+    parseCSS(pageElement, pageNumber) {
         try {
             Array.from(document.styleSheets).forEach(sheet => {
-                Array.from(sheet.cssRules).forEach(rule => {
-                    if (rule.style) {
-                        const moveAfter = rule.style.getPropertyValue('--page-move-after');
-                        const moveBefore = rule.style.getPropertyValue('--page-move-before');
-                        
-                        if (moveAfter) {
-                            this.moveRules.push({
-                                selector: rule.selectorText,
-                                direction: 'after',
-                                targetPage: parseInt(moveAfter)
-                            });
+                try {
+                    Array.from(sheet.cssRules).forEach(rule => {
+                        if (rule.style) {
+                            const moveAfter = rule.style.getPropertyValue('--page-move-after');
+                            const moveBefore = rule.style.getPropertyValue('--page-move-before');
+                            
+                            if ((moveAfter || moveBefore) && pageElement.querySelector(rule.selectorText)) {
+                                if (moveAfter) {
+                                    this.moveOperations.push({
+                                        sourcePage: pageNumber,
+                                        targetPage: parseInt(moveAfter) + 1
+                                    });
+                                }
+                                if (moveBefore) {
+                                    this.moveOperations.push({
+                                        sourcePage: pageNumber,
+                                        targetPage: parseInt(moveBefore)
+                                    });
+                                }
+                            }
                         }
-                        if (moveBefore) {
-                            this.moveRules.push({
-                                selector: rule.selectorText,
-                                direction: 'before',
-                                targetPage: parseInt(moveBefore)
-                            });
-                        }
-                    }
-                });
+                    });
+                } catch (e) {}
             });
         } catch (e) {}
     }
 
-    parseHTML(content) {
-        const doc = typeof content === 'string' ? 
-            new DOMParser().parseFromString(content, 'text/html') : document;
-            
+    parseHTML(pageElement, pageNumber) {
         // Attributs data-*
-        doc.querySelectorAll('[data-page-move-after]').forEach(el => {
-            this.moveRules.push({
-                element: el,
-                direction: 'after',
-                targetPage: parseInt(el.dataset.pageMoveAfter)
+        const elementsToMoveAfter = pageElement.querySelectorAll('[data-page-move-after]');
+        elementsToMoveAfter.forEach(element => {
+            const targetPageNum = parseInt(element.getAttribute('data-page-move-after'));
+            this.moveOperations.push({
+                sourcePage: pageNumber,
+                targetPage: targetPageNum + 1
             });
         });
-        
-        doc.querySelectorAll('[data-page-move-before]').forEach(el => {
-            this.moveRules.push({
-                element: el,
-                direction: 'before',
-                targetPage: parseInt(el.dataset.pageMoveBefore)
+
+        const elementsToMoveBefore = pageElement.querySelectorAll('[data-page-move-before]');
+        elementsToMoveBefore.forEach(element => {
+            const targetPageNum = parseInt(element.getAttribute('data-page-move-before'));
+            this.moveOperations.push({
+                sourcePage: pageNumber,
+                targetPage: targetPageNum
             });
         });
 
         // Styles inline
-        doc.querySelectorAll('[style*="--page-move-"]').forEach(el => {
-            const style = el.getAttribute('style');
+        pageElement.querySelectorAll('[style*="--page-move-"]').forEach(element => {
+            const style = element.getAttribute('style');
             const moveAfter = style.match(/--page-move-after:\s*(\d+)/);
             const moveBefore = style.match(/--page-move-before:\s*(\d+)/);
             
             if (moveAfter) {
-                this.moveRules.push({
-                    element: el,
-                    direction: 'after',
-                    targetPage: parseInt(moveAfter[1])
+                this.moveOperations.push({
+                    sourcePage: pageNumber,
+                    targetPage: parseInt(moveAfter[1]) + 1
                 });
             }
             if (moveBefore) {
-                this.moveRules.push({
-                    element: el,
-                    direction: 'before',  
+                this.moveOperations.push({
+                    sourcePage: pageNumber,
                     targetPage: parseInt(moveBefore[1])
                 });
             }
         });
     }
 
-    movePages() {
-        const pages = Array.from(document.querySelectorAll('.pagedjs_page'));
-        const moves = this.calculateMoves(pages);
-        
-        if (moves.length === 0) return;
-        
-        const movedPages = this.applyMoves(pages, moves);
-        this.updateDOM(movedPages);
-        this.updatePageNumbers();
-    }
-
-    calculateMoves(pages) {
-        const moves = [];
-        
-        this.moveRules.forEach(rule => {
-            const sourcePageIndex = this.findPageIndex(pages, rule);
-            
-            if (sourcePageIndex !== -1) {
-                moves.push({
-                    sourceIndex: sourcePageIndex,
-                    targetPage: rule.targetPage,
-                    direction: rule.direction
-                });
-            }
-        });
-        
-        return moves.sort((a, b) => a.targetPage - b.targetPage);
-    }
-
-    findPageIndex(pages, rule) {
-        if (rule.element) {
-            return pages.findIndex(page => page.contains(rule.element));
-        } else if (rule.selector) {
-            return pages.findIndex(page => page.querySelector(rule.selector));
+    afterRendered(pages) {
+        if (this.moveOperations.length > 0 && !this.hasProcessed) {
+            this.performMoves();
+            this.hasProcessed = true;
         }
-        return -1;
     }
 
-    applyMoves(pages, moves) {
-        const moved = [...pages];
+    performMoves() {
+        const groups = {};
+        this.moveOperations.forEach(op => {
+            if (!groups[op.targetPage]) groups[op.targetPage] = [];
+            groups[op.targetPage].push(op.sourcePage);
+        });
+
+        Object.entries(groups).forEach(([targetStart, sourcePages]) => {
+            const target = parseInt(targetStart);
+            sourcePages.sort((a, b) => a - b);
+            this.moveContentBlock(sourcePages, target);
+        });
+    }
+
+    moveContentBlock(sourcePages, targetStart) {
+        const savedContent = sourcePages.map(pageNum => {
+            const page = document.getElementById(`page-${pageNum}`);
+            const area = page?.querySelector('.pagedjs_area');
+            return area ? area.innerHTML : '';
+        });
+
+        const blockSize = sourcePages.length;
+        const minSource = Math.min(...sourcePages);
         
-        moves.forEach(move => {
-            const page = moved.splice(move.sourceIndex, 1)[0];
-            
-            let insertIndex;
-            if (move.direction === 'after') {
-                insertIndex = Math.min(move.targetPage, moved.length);
-            } else {
-                insertIndex = Math.max(0, move.targetPage - 1);
+        const contentToShift = [];
+        for (let i = targetStart; i < minSource; i++) {
+            const page = document.getElementById(`page-${i}`);
+            const area = page?.querySelector('.pagedjs_area');
+            if (area) {
+                contentToShift.push(area.innerHTML);
             }
-            
-            moved.splice(insertIndex, 0, page);
+        }
+        
+        contentToShift.forEach((content, index) => {
+            const newPosition = targetStart + blockSize + index;
+            const page = document.getElementById(`page-${newPosition}`);
+            const area = page?.querySelector('.pagedjs_area');
+            if (area) {
+                area.innerHTML = content;
+            }
         });
-        
-        return moved;
-    }
 
-    updateDOM(movedPages) {
-        const container = document.querySelector('.pagedjs_pages');
-        const fragment = document.createDocumentFragment();
-        
-        movedPages.forEach((page, index) => {
-            page.id = `page-${index + 1}`;
-            page.className = page.className.replace(/pagedjs_\w+_page/g, '');
-            
-            if (index === 0) page.classList.add('pagedjs_first_page');
-            page.classList.add(index % 2 === 0 ? 'pagedjs_right_page' : 'pagedjs_left_page');
-            
-            fragment.appendChild(page);
-        });
-        
-        container.innerHTML = '';
-        container.appendChild(fragment);
-    }
-
-    updatePageNumbers() {
-        document.querySelectorAll('.pagedjs_page').forEach((page, index) => {
-            page.style.setProperty('--pagedjs-page-counter', index + 1);
+        savedContent.forEach((content, index) => {
+            const targetPageNum = targetStart + index;
+            const page = document.getElementById(`page-${targetPageNum}`);
+            const area = page?.querySelector('.pagedjs_area');
+            if (area) {
+                area.innerHTML = content;
+            }
         });
     }
 }
