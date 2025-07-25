@@ -5,7 +5,8 @@ import {
     getShortcodeType, 
     getCSSProperties, 
     setCSSProperties,  
-    getGridConfig
+    getGridConfig,
+    getImageId
 } from './utils.js';
 
 export class imageHandler {

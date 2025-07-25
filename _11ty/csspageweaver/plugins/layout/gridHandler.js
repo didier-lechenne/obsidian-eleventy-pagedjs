@@ -142,7 +142,7 @@ export class gridHandler {
             document.dispatchEvent(new CustomEvent('gridResized', {
                 detail: { element: currentElement }
             }));
-            console.log('🎯 gridHandler: Événement gridResized émis');
+            // console.log('🎯 gridHandler: Événement gridResized émis');
 
             setTimeout(() => {
                 if (currentElement && !currentElement.matches(':hover')) {
