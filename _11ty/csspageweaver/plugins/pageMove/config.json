@@ -1,13 +1,6 @@
 {
 	"name": "pageMove",
 	"description": "Plugin de déplacement de pages avec --page-move-after et --page-move-before",
-	
-	"ui": {
-        "title": "Page Move",
-        "description": "Réordonnance les pages.",
-        "toggle": false
-	},
-
 
 	"hook": "hook-pageMove.js"
 }
