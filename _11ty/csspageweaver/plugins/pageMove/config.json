@@ -1,0 +1,13 @@
+{
+	"name": "pageMove",
+	"description": "Réorganiser les pages.",
+	
+	"ui": {
+		"title": "pageMove",
+		"description": "Réorganiser les pages."
+	
+	},
+
+
+	"hook": "hook-pageMove.js"
+}
