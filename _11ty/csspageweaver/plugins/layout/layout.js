@@ -1,6 +1,6 @@
 // layout.js - Point d'entrée principal du plugin layout
 
-import { gridHandler } from './ridHandler.js';
+import { gridHandler } from './gridHandler.js';
 import { imageHandler } from './imageHandler.js';
 import { codeGenerator } from './codeGenerator.js';
 import { Handler } from "/csspageweaver/lib/paged.esm.js";
