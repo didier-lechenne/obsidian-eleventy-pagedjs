@@ -1,11 +1,11 @@
 {
 	"name": "pageMove",
-	"description": "Réorganiser les pages.",
+	"description": "Plugin de déplacement de pages avec --page-move-after et --page-move-before",
 	
 	"ui": {
-		"title": "pageMove",
-		"description": "Réorganiser les pages."
-	
+        "title": "Page Move",
+        "description": "Réordonnance les pages.",
+        "toggle": false
 	},
 
 
