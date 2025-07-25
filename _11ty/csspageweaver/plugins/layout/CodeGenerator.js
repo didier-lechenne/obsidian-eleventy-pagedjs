@@ -7,6 +7,8 @@ export class codeGenerator {
     constructor() {
         this.turndownService = typeof TurndownService !== 'undefined' ? new TurndownService() : null;
         this.isInitialized = false;
+        this.lastCopyTime = 0;  // ✅ Throttling des copies
+        this.copyThrottle = 1000; // ✅ 1 seconde minimum entre copies
     }
 
     initialize() {
@@ -28,9 +30,37 @@ export class codeGenerator {
         }
     }
 
-    handleGenerateCode(e) {
+   handleGenerateCode(e) {
         const { element, shouldCopy = false } = e.detail;
-        this.generate(element, shouldCopy);
+        
+        // ✅ Vérifier si la copie est vraiment demandée et appropriée
+        const canCopy = shouldCopy && this.shouldAllowCopy();
+        
+        this.generate(element, canCopy);
+    }
+
+    shouldAllowCopy() {
+        const now = Date.now();
+        
+        // ✅ Throttling : éviter les copies trop fréquentes
+        if (now - this.lastCopyTime < this.copyThrottle) {
+            console.log('🚫 Copie throttlée (trop fréquente)');
+            return false;
+        }
+        
+        // ✅ Vérifier que le document a le focus
+        if (!document.hasFocus()) {
+            console.log('🚫 Copie ignorée (document pas en focus)');
+            return false;
+        }
+        
+        // ✅ Vérifier qu'on est dans un contexte sécurisé (HTTPS/localhost)
+        if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
+            console.log('🚫 Copie ignorée (contexte non-sécurisé)');
+            return false;
+        }
+        
+        return true;
     }
 
     handleCopyClick() {
@@ -56,6 +86,28 @@ export class codeGenerator {
         return code;
     }
 
+    async copyWithFeedback(code) {
+        try {
+            const success = await copyToClipboard(code);
+            if (success) {
+                this.lastCopyTime = Date.now();
+                console.log('✅ Code copié avec succès');
+            }
+        } catch (error) {
+            console.error('❌ Erreur lors de la copie:', error);
+        }
+    }
+
+    // ✅ Handler pour le bouton copier explicite
+    handleCopyClick() {
+        const content = document.querySelector('.cssoutput');
+        if (content && content.textContent) {
+            // ✅ Clic explicite → toujours autoriser la copie
+            this.copyWithFeedback(content.textContent);
+        }
+    }
+
+    
     generateInsertCode(element) {
         const classes = getCleanClasses(element);
         const styles = this.getInlineStyles(element);

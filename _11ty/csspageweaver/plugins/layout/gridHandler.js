@@ -4,7 +4,6 @@ import {
     isInModularGrid, 
     getGridConfig, 
     convertPixelsToGrid, 
-    constrainToGrid,
     getCursorForZone,
     cleanupElement,
     validateGridValues

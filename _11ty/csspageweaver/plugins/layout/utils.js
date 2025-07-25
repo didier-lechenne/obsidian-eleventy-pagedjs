@@ -99,19 +99,7 @@ export function convertGridToPixels(cols, rows, container, gridConfig) {
     };
 }
 
-export function constrainToGrid(col, row, width, height, gridConfig) {
-    const maxCol = Math.max(1, Math.min(gridConfig.cols - width + 1, col));
-    const maxRow = Math.max(1, Math.min(gridConfig.rows - height + 1, row));
-    const maxWidth = Math.max(1, Math.min(gridConfig.cols - col + 1, width));
-    const maxHeight = Math.max(1, Math.min(gridConfig.rows - row + 1, height));
 
-    return {
-        col: maxCol,
-        row: maxRow,
-        width: maxWidth,
-        height: maxHeight
-    };
-}
 
 /**
  * Helpers DOM et utilitaires

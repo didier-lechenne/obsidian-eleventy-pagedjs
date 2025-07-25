@@ -12,7 +12,7 @@
 	"parameters": {
 		"sample": null
 	},
-	"script": "layout.js",
+
 	"hook": "hook-layout.js",
 	"stylesheet": "layout.css"
 }

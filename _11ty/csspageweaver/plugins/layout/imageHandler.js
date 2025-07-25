@@ -1,12 +1,11 @@
-// imageHandler.js - Gestionnaire de manipulation d'images
+// imageHandler.js - Version optimisée avec setCSSProperties
 
 import { 
     findImageElement, 
     getShortcodeType, 
     getCSSProperties, 
-    setCSSProperties,
+    setCSSProperties,  // ✅ Maintenant utilisé partout !
     getImageId,
-    copyToClipboard,
     getGridConfig
 } from './utils.js';
 
@@ -72,7 +71,7 @@ export class imageHandler {
             }
         });
 
-        // Property controls
+        // ✅ Property controls - OPTIMISÉ avec setCSSProperties
         const properties = [
             { id: '#col', property: '--col' },
             { id: '#width', property: '--width' },
@@ -92,7 +91,11 @@ export class imageHandler {
                 
                 newElement.addEventListener('change', (e) => {
                     if (this.selectedElement) {
-                        this.selectedElement.style.setProperty(prop.property, e.target.value);
+                        // ✅ Utilisation de setCSSProperties au lieu de style.setProperty
+                        const propName = prop.property.replace('--', '');
+                        setCSSProperties(this.selectedElement, {
+                            [propName]: e.target.value
+                        });
                         this.generateCodeForElement(this.selectedElement);
                     }
                 });
@@ -160,8 +163,8 @@ export class imageHandler {
         
         this.updateUI(imgId, cssProps, img, type);
         
-        // Génère le code
-        this.generateCodeForElement(parent);
+        // Génère le code SANS copie automatique sur sélection
+        this.generateCodeForElement(parent, false);
     }
 
     updateGridConfig(section) {
@@ -247,14 +250,26 @@ export class imageHandler {
             this.currentImage.style.cursor = 'default';
             const parent = this.currentImage.closest('figure, .resize, .image');
             if (parent) {
-                this.generateCodeForElement(parent);
+                // Action explicite → copie automatique
+                this.generateCodeForElement(parent, true);
             }
         }
         this.currentImage = null;
     }
 
+    // ✅ OPTIMISÉ avec setCSSProperties
     translateImage(deltaX, deltaY) {
+        if (!this.currentImage) {
+            console.warn('⚠️ translateImage appelé sans currentImage défini');
+            return;
+        }
+
         const parent = this.currentImage.parentElement;
+        if (!parent) {
+            console.warn('⚠️ currentImage n\'a pas de parent');
+            return;
+        }
+
         const parentWidth = parent.offsetWidth;
         const parentHeight = parent.offsetHeight;
 
@@ -264,8 +279,11 @@ export class imageHandler {
         const newX = currentX + (deltaX / parentWidth * 100);
         const newY = currentY + (deltaY / parentHeight * 100);
 
-        parent.style.setProperty("--img-x", newX);
-        parent.style.setProperty("--img-y", newY);
+        // ✅ Utilisation de setCSSProperties au lieu de style.setProperty
+        setCSSProperties(parent, {
+            'img-x': newX,
+            'img-y': newY
+        });
     }
 
     handleWheel(e) {
@@ -286,11 +304,13 @@ export class imageHandler {
             e.target.style.cursor = '';
             const parent = e.target.closest('figure, .resize, .image');
             if (parent) {
-                this.generateCodeForElement(parent);
+                // Action explicite → copie automatique
+                this.generateCodeForElement(parent, true);
             }
         }, 300);
     }
 
+    // ✅ OPTIMISÉ avec setCSSProperties
     zoomImage(img, scaleAmount, relX, relY) {
         const parent = img.parentElement;
         const oldWidth = img.offsetWidth;
@@ -304,13 +324,15 @@ export class imageHandler {
         const parentHeight = parent.offsetHeight;
         
         const newWidthPercentage = (newWidth / parentWidth) * 100;
-        parent.style.setProperty("--img-w", newWidthPercentage);
-        
         const newLeftPercentage = ((-oldWidth * resizeFract * relX) + img.offsetLeft) / parentWidth * 100;
         const newTopPercentage = ((-oldHeight * resizeFract * relY) + img.offsetTop) / parentHeight * 100;
         
-        parent.style.setProperty("--img-x", newLeftPercentage);
-        parent.style.setProperty("--img-y", newTopPercentage);
+        // ✅ Utilisation de setCSSProperties au lieu de 3 style.setProperty
+        setCSSProperties(parent, {
+            'img-w': newWidthPercentage,
+            'img-x': newLeftPercentage,
+            'img-y': newTopPercentage
+        });
     }
 
     handleArrowKeys(e) {
@@ -332,13 +354,38 @@ export class imageHandler {
         const move = moves[e.key];
         if (move) {
             e.preventDefault();
-            this.translateImage(...move);
-            this.generateCodeForElement(selectedElement);
+            // Utiliser une méthode qui ne dépend pas de currentImage
+            this.translateImageForElement(selectedElement, ...move);
+            // Action explicite → copie automatique
+            this.generateCodeForElement(selectedElement, true);
         }
+    }
+
+    // ✅ NOUVELLE méthode optimisée avec setCSSProperties
+    translateImageForElement(element, deltaX, deltaY) {
+        const img = findImageElement(element);
+        if (!img) return;
+
+        const parent = img.parentElement;
+        const parentWidth = parent.offsetWidth;
+        const parentHeight = parent.offsetHeight;
+
+        const currentX = parseFloat(getComputedStyle(parent).getPropertyValue("--img-x")) || 0;
+        const currentY = parseFloat(getComputedStyle(parent).getPropertyValue("--img-y")) || 0;
+
+        const newX = currentX + (deltaX / parentWidth * 100);
+        const newY = currentY + (deltaY / parentHeight * 100);
+
+        // ✅ Utilisation de setCSSProperties
+        setCSSProperties(parent, {
+            'img-x': newX,
+            'img-y': newY
+        });
     }
 
     // === CONTRÔLES PANEL ===
 
+    // ✅ OPTIMISÉ avec setCSSProperties
     positionImage(alignX, alignY) {
         if (!this.selectedElement) return;
         
@@ -353,18 +400,26 @@ export class imageHandler {
         const imgX = (parentWidth - imgWidth) * alignX / parentWidth * 100;
         const imgY = (parentHeight - imgHeight) * alignY / parentHeight * 100;
 
-        this.selectedElement.style.setProperty('--img-x', imgX);
-        this.selectedElement.style.setProperty('--img-y', imgY);
-        this.generateCodeForElement(this.selectedElement);
+        // ✅ Utilisation de setCSSProperties au lieu de 2 style.setProperty
+        setCSSProperties(this.selectedElement, {
+            'img-x': imgX,
+            'img-y': imgY
+        });
+        
+        // Action explicite → copie automatique
+        this.generateCodeForElement(this.selectedElement, true);
     }
 
+    // ✅ OPTIMISÉ avec setCSSProperties
     fillBlock() {
         if (!this.selectedElement) return;
         
-        this.selectedElement.style.setProperty('--img-w', 100);
+        // ✅ Utilisation de setCSSProperties
+        setCSSProperties(this.selectedElement, { 'img-w': 100 });
         this.positionImage(0.5, 0.5);
     }
 
+    // ✅ OPTIMISÉ avec setCSSProperties
     adjustContent() {
         if (!this.selectedElement) return;
         
@@ -378,27 +433,32 @@ export class imageHandler {
         const newWidth = aspectRatio * parentHeight;
         const imgW = (newWidth / parentWidth) * 100;
         
-        this.selectedElement.style.setProperty('--img-w', imgW);
-        this.selectedElement.style.setProperty('--img-y', 0);
-        
         // Centre horizontalement
         const imgWidth = (parentWidth * imgW / 100);
         const imgX = (parentWidth - imgWidth) / 2 / parentWidth * 100;
-        this.selectedElement.style.setProperty('--img-x', imgX);
         
-        this.generateCodeForElement(this.selectedElement);
+        // ✅ Utilisation de setCSSProperties au lieu de 3 style.setProperty
+        setCSSProperties(this.selectedElement, {
+            'img-w': imgW,
+            'img-y': 0,
+            'img-x': imgX
+        });
+        
+        // Action explicite → copie automatique
+        this.generateCodeForElement(this.selectedElement, true);
     }
 
     // === GÉNÉRATION DE CODE ===
 
     handleGridResized(e) {
-        this.generateCodeForElement(e.detail.element);
+        // Action explicite → copie automatique
+        this.generateCodeForElement(e.detail.element, true);
     }
 
-    generateCodeForElement(element) {
-        // Émettre un événement pour que CodeGenerator puisse écouter
+    generateCodeForElement(element, shouldCopy = false) {
+        // Architecture événementielle préservée
         document.dispatchEvent(new CustomEvent('generateCode', {
-            detail: { element, shouldCopy: true }
+            detail: { element, shouldCopy }
         }));
     }
 

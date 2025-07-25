@@ -53,19 +53,54 @@ export default class Layout extends Handler {
     initializeLayoutToggle() {
         if (this.toggleHandler) return; // Éviter les doublons
 
-        const body = cssPageWeaver.ui.body;
-        const toggleInput = cssPageWeaver.ui.layout.toggleInput;
-
-        if (!body || !toggleInput) {
-            console.warn('⚠️ Interface toggle non trouvée');
-            return;
+        console.log('🎛️ Initialisation du toggle Layout...');
+        
+        // Vérifications avec fallbacks
+        let body = cssPageWeaver?.ui?.body;
+        let toggleInput = cssPageWeaver?.ui?.layout?.toggleInput;
+        
+        // Fallback pour body
+        if (!body) {
+            console.warn('⚠️ cssPageWeaver.ui.body non trouvé, utilisation de document.body');
+            body = document.body;
         }
+        
+        // Fallback pour toggleInput - chercher dans le DOM
+        if (!toggleInput) {
+            console.warn('⚠️ cssPageWeaver.ui.layout.toggleInput non trouvé, recherche dans le DOM...');
+            
+            // Essayer plusieurs sélecteurs possibles
+            const selectors = [
+                'input[data-plugin="layout"]',
+                '#layout-toggle',
+                'input[name="layout"]',
+                '.layout-toggle input',
+                '[data-toggle="layout"]'
+            ];
+            
+            for (const selector of selectors) {
+                toggleInput = document.querySelector(selector);
+                if (toggleInput) {
+                    console.log(`✅ Toggle trouvé avec sélecteur: ${selector}`);
+                    break;
+                }
+            }
+            
+            if (!toggleInput) {
+                console.error('❌ Aucun toggle trouvé - le mode layout ne pourra pas être activé');
+                return;
+            }
+        }
+
+        console.log('✅ Body et toggle trouvés');
 
         // Récupérer la préférence sauvegardée
         const preference = localStorage.getItem('layout') === 'true';
         
         body.classList.toggle('layout', preference);
         toggleInput.checked = preference;
+        
+        console.log(`🔧 État initial: layout=${body.classList.contains('layout')}`);
 
         // Créer le handler d'événement
         this.toggleHandler = (e) => {
@@ -78,6 +113,9 @@ export default class Layout extends Handler {
             } else {
                 console.log('🔴 Mode Layout désactivé');
             }
+            
+            // Debug: vérifier que la classe est bien appliquée
+            console.log('🔍 Classe layout présente:', body.classList.contains('layout'));
         };
         
         toggleInput.addEventListener("input", this.toggleHandler);
