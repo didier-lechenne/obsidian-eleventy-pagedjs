@@ -1,137 +1,160 @@
-        @media screen, pagedjs-ignore {
-            /* Élément sélectionnable - bordure fine uniquement */
-            .modularGrid .resizable {
-                position: relative;
-                outline: 1px solid var(--accentColor, #0066cc) !important;
-                outline-offset: -1px;
-            }
-            
-            /* Petit bouton de déplacement discret en haut à droite */
-            .move-button {
-                position: absolute;
-                top: 25px;
-                left: 25px;
-                width: calc(100% - 25px - 25px);
-                height: calc(100% - 25px - 25px);
-                background: transparent;
-                border: 0px solid var(--accentColor, #0066cc);
-                cursor: move;
-                z-index: 100000;
-                pointer-events: auto;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-              
-                /* border-radius: 0px;
+@media screen {
+  /* Élément sélectionnable - bordure fine uniquement */
+  .modularGrid .resizable {
+    position: relative;
+    outline: 1px solid var(--accentColor, #0066cc) !important;
+    outline-offset: -1px;
+  }
+
+  /* Petit bouton de déplacement discret en haut à droite */
+  .move-button {
+    position: absolute;
+    top: 25px;
+    left: 25px;
+    width: calc(100% - 25px - 25px);
+    height: calc(100% - 25px - 25px);
+    background: transparent;
+    border: 0px solid var(--accentColor, #0066cc);
+    cursor: move;
+    z-index: 100000;
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    /* border-radius: 0px;
                 font-size: 8px;
                 line-height: 1;
                 opacity: 0.8; */
-            }
-    
+  }
 
+  /* États de redimensionnement */
+  body.grid-resizing {
+    user-select: none;
+    cursor: inherit !important;
+  }
 
-            /* États de redimensionnement */
-            body.grid-resizing {
-                user-select: none;
-                cursor: inherit !important;
-            }
-            
-            body.grid-resizing * {
-                pointer-events: none !important;
-            }
-            
-            body.grid-resizing .resizable,
-            body.grid-resizing .resizable * {
-                pointer-events: auto !important;
-            }
-            
-            /* Pendant le redimensionnement */
-            .resizing {
-                outline-color: #ff6600 !important;
-                outline-width: 2px !important;
-                z-index: 1000;
-            }
-            
-            .resizing .move-button {
-                background: transparent;
-                border-color: white;
-            }
-            
-            .resizing .move-button::before {
-                color: white;
-            }
-            
-            /* Masquer le bouton par défaut */
-            .move-button {
-                display: none;
-            }
-            
-            /* Afficher en mode layout */
-            body.layout .modularGrid .resizable .move-button {
-                display: flex;
-            }
-            
-            /* Couleurs selon le type d'élément */
-            .modularGrid .resize.resizable {
-                outline-color: #ff6600 !important;
-            }
-            
-            .modularGrid .resize.resizable .move-button {
-                border-color: #ff6600;
-            }
-            
-            .modularGrid .resize.resizable .move-button::before {
-                color: #ff6600;
-            }
-            
-            .modularGrid .figure.resizable {
-                outline-color: #00cc66 !important;
-            }
-            
-            .modularGrid .figure.resizable .move-button {
-                border-color: #00cc66;
-            }
-            
-            .modularGrid .figure.resizable .move-button::before {
-                color: #00cc66;
-            }
-            
-            .modularGrid .insert.resizable {
-                outline-color: #9966cc !important;
-            }
-            
-            .modularGrid .insert.resizable .move-button {
-                border-color: #9966cc;
-            }
-            
-            .modularGrid .insert.resizable .move-button::before {
-                color: #9966cc;
-            }
-            
-         
-            
-            /* Afficher l'indicateur au survol (optionnel) */
-            body.layout .modularGrid .resizable:hover::after {
-                opacity: 1;
-            }
-       
+  body.grid-resizing * {
+    pointer-events: none !important;
+  }
 
+  body.grid-resizing .resizable,
+  body.grid-resizing .resizable * {
+    pointer-events: auto !important;
+  }
 
-    .layout .insert.selected {
-        outline: 1px dashed var(--accentColor);
-    }
+  /* Pendant le redimensionnement */
+  .resizing {
+    outline-color: #ff6600 !important;
+    outline-width: 2px !important;
+    z-index: 1000;
+  }
 
-    .layout .resize.selected {
-        background-color: hsla(16, 100%, 50%, 0.15);
-    }
+  .resizing .move-button {
+    background: transparent;
+    border-color: white;
+  }
 
-    .layout .insert.selected ,
-    .layout .resize.selected ,
-    .layout .insert:hover,
-    .layout .resize:hover {
-        background-color: hsla(16, 100%, 50%, 0.15);
-    }
+  .resizing .move-button::before {
+    color: white;
+  }
 
+  /* Masquer le bouton par défaut */
+  .move-button {
+    display: none;
+  }
 
+  /* Afficher en mode layout */
+  body.layout .modularGrid .resizable .move-button {
+    display: flex;
+  }
 
+  /* Couleurs selon le type d'élément */
+  .modularGrid .resize.resizable {
+    outline-color: #ff6600 !important;
+  }
+
+  .modularGrid .resize.resizable .move-button {
+    border-color: #ff6600;
+  }
+
+  .modularGrid .resize.resizable .move-button::before {
+    color: #ff6600;
+  }
+
+  .modularGrid .figure.resizable {
+    outline-color: #00cc66 !important;
+  }
+
+  .modularGrid .figure.resizable .move-button {
+    border-color: #00cc66;
+  }
+
+  .modularGrid .figure.resizable .move-button::before {
+    color: #00cc66;
+  }
+
+  .modularGrid .insert.resizable {
+    outline-color: #9966cc !important;
+  }
+
+  .modularGrid .insert.resizable .move-button {
+    border-color: #9966cc;
+  }
+
+  .modularGrid .insert.resizable .move-button::before {
+    color: #9966cc;
+  }
+
+  /* Afficher l'indicateur au survol (optionnel) */
+  body.layout .modularGrid .resizable:hover::after {
+    opacity: 1;
+  }
+
+  .layout .insert.selected {
+    outline: 1px dashed var(--accentColor);
+  }
+
+  .layout .resize.selected {
+    background-color: hsla(16, 100%, 50%, 0.15);
+  }
+
+  .layout .insert.selected,
+  .layout .resize.selected,
+  .layout .insert:hover,
+  .layout .resize:hover {
+    background-color: hsla(16, 100%, 50%, 0.15);
+  }
+
+  [type="checkbox"],
+  [type="radio"] {
+    box-sizing: border-box;
+    padding: 0;
+  }
+
+  .box {
+    /* background: #444; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #aaa;
+    font-size: 1.5rem;
+     user-select: none;
+  }
+
+  .box input[type="radio"] + label:hover::after {
+     background-color: var(--cssPageWeaver-color-accent-hover);
+    fill: var(--cssPageWeaver-color-accent-hover);
+  }
+
+  .box input[type="radio"] + label:hover::before {
+     background-color: var(--cssPageWeaver-color-accent-hover);
+  }
+
+  .box input[type="radio"] + label:before {
+    margin-right: 0ch !important;
+  }
+  .box input[type="radio"] + label {
+    margin-bottom: 0ch !important;
+  }
 }
