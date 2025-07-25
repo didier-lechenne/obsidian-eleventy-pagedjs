@@ -450,6 +450,7 @@ export class imageHandler {
     // === GÉNÉRATION DE CODE ===
 
     handleGridResized(e) {
+        // console.log('🎯 imageHandler: Événement gridResized reçu:', e.detail.element);
         // Action explicite → copie automatique
         this.generateCodeForElement(e.detail.element, true);
     }

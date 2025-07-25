@@ -136,10 +136,13 @@ export class gridHandler {
             currentElement.style.cursor = 'default';
             currentElement.dataset.resizeMode = 'hover';
 
+         
+
             // Émettre événement pour génération de code
-            currentElement.dispatchEvent(new CustomEvent('gridResized', {
+            document.dispatchEvent(new CustomEvent('gridResized', {
                 detail: { element: currentElement }
             }));
+            console.log('🎯 gridHandler: Événement gridResized émis');
 
             setTimeout(() => {
                 if (currentElement && !currentElement.matches(':hover')) {
