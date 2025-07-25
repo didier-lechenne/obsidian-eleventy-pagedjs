@@ -1,24 +1,64 @@
-// Classe pour la génération de code
-import { TurndownService } from './turndown.js';
+// codeGenerator.js - Générateur de shortcodes pour le plugin layout
 
-class CodeGenerator {
+import { TurndownService } from './lib/turndown.js';
+import { getCleanClasses, getRelativePath, copyToClipboard } from './utils.js';
+
+export class codeGenerator {
     constructor() {
         this.turndownService = typeof TurndownService !== 'undefined' ? new TurndownService() : null;
+        this.isInitialized = false;
     }
 
-    generate(parent) {
-        const isInsert = parent.classList.contains('insert');
+    initialize() {
+        if (this.isInitialized) return;
+
+        this.setupEventListeners();
+        this.isInitialized = true;
+        console.log('✅ codeGenerator: Génération de code activée');
+    }
+
+    setupEventListeners() {
+        // Écouter les événements de génération de code
+        document.addEventListener('generateCode', this.handleGenerateCode.bind(this));
         
-        if (isInsert) {
-            return this.generateInsertCode(parent);
-        } else {
-            return this.generateImageCode(parent);
+        // Bouton copier
+        const copyButton = document.querySelector('.copy .button');
+        if (copyButton) {
+            copyButton.addEventListener('click', this.handleCopyClick.bind(this));
         }
     }
 
-    generateInsertCode(parent) {
-        const classes = this.getCleanClasses(parent);
-        const styles = this.getInlineStyles(parent);
+    handleGenerateCode(e) {
+        const { element, shouldCopy = false } = e.detail;
+        this.generate(element, shouldCopy);
+    }
+
+    handleCopyClick() {
+        const content = document.querySelector('.cssoutput');
+        if (content) {
+            copyToClipboard(content.textContent);
+        }
+    }
+
+    generate(element, shouldCopy = false) {
+        if (!element) return '';
+
+        const isInsert = element.classList.contains('insert');
+        const code = isInsert ? this.generateInsertCode(element) : this.generateImageCode(element);
+        
+        this.displayCode(code);
+        
+        if (shouldCopy) {
+            copyToClipboard(code);
+        }
+
+        console.log('📝 Code généré:', code);
+        return code;
+    }
+
+    generateInsertCode(element) {
+        const classes = getCleanClasses(element);
+        const styles = this.getInlineStyles(element);
         
         const classPart = classes ? classes.split(' ').map(cls => `.${cls}`).join(' ') : '';
         const stylePart = styles ? `style="${styles}"` : '';
@@ -26,13 +66,13 @@ class CodeGenerator {
         return `{.insert ${classPart} ${stylePart}}`.trim();
     }
 
-    generateImageCode(parent) {
-        const type = this.getImageType(parent);
-        const img = parent.querySelector('img');
-        const url = img ? this.getRelativePath(img.src) : '';
-        const properties = this.getImageProperties(parent);
-        const classes = this.getCleanClasses(parent);
-        const caption = this.getCaption(parent);
+    generateImageCode(element) {
+        const type = this.getImageType(element);
+        const img = element.querySelector('img');
+        const url = img ? getRelativePath(img.src) : '';
+        const properties = this.getImageProperties(element);
+        const classes = getCleanClasses(element);
+        const caption = this.getCaption(element);
 
         let parts = [url];
         if (properties) parts.push(properties);
@@ -42,33 +82,25 @@ class CodeGenerator {
         return `(${type}: ${parts.join(' ')})`;
     }
 
-    getImageType(parent) {
-        if (parent.classList.contains('resize')) return 'imagegrid';
-        if (parent.classList.contains('image')) return 'image';
+    getImageType(element) {
+        if (element.classList.contains('resize')) return 'imagegrid';
+        if (element.classList.contains('image')) return 'image';
         return 'figure';
     }
 
-    getCleanClasses(parent) {
-        const exclude = ['selected', 'hover', 'cursor', 'figure', 'image', 'insert', 'resize', 'figmove', 'icono'];
-        return Array.from(parent.classList)
-            .filter(cls => !exclude.includes(cls))
-            .join(' ')
-            .trim();
-    }
-
-    getInlineStyles(parent) {
+    getInlineStyles(element) {
         const cssProps = {
-            '--print-width': parent.style.getPropertyValue('--print-width'),
-            '--print-height': parent.style.getPropertyValue('--print-height'),
-            '--align-self': parent.style.getPropertyValue('--align-self'), 
-            '--print-row': parent.style.getPropertyValue('--print-row'),
-            '--print-col': parent.style.getPropertyValue('--print-col'),
-            '--col': parent.style.getPropertyValue('--col'),
-            '--width': parent.style.getPropertyValue('--width'),
-            '--img-x': parent.style.getPropertyValue('--img-x'),
-            '--img-y': parent.style.getPropertyValue('--img-y'),
-            '--img-w': parent.style.getPropertyValue('--img-w'),
-            'cursor': parent.style.cursor
+            '--print-width': element.style.getPropertyValue('--print-width'),
+            '--print-height': element.style.getPropertyValue('--print-height'),
+            '--align-self': element.style.getPropertyValue('--align-self'), 
+            '--print-row': element.style.getPropertyValue('--print-row'),
+            '--print-col': element.style.getPropertyValue('--print-col'),
+            '--col': element.style.getPropertyValue('--col'),
+            '--width': element.style.getPropertyValue('--width'),
+            '--img-x': element.style.getPropertyValue('--img-x'),
+            '--img-y': element.style.getPropertyValue('--img-y'),
+            '--img-w': element.style.getPropertyValue('--img-w'),
+            'cursor': element.style.cursor
         };
         
         const styles = [];
@@ -81,12 +113,17 @@ class CodeGenerator {
         return styles.join('; ');
     }
 
-    getImageProperties(parent) {
-        const props = ['col', 'width', 'print-col', 'print-width', 'print-row', 'print-height', 'align-self', 'img-x', 'img-y', 'img-w'];
+    getImageProperties(element) {
+        const props = [
+            'col', 'width', 'print-col', 'print-width', 
+            'print-row', 'print-height', 'align-self', 
+            'img-x', 'img-y', 'img-w'
+        ];
+        
         const values = [];
         
         props.forEach(prop => {
-            const value = parent.style.getPropertyValue(`--${prop}`);
+            const value = element.style.getPropertyValue(`--${prop}`);
             if (value) {
                 values.push(`${prop}:${value}`);
             }
@@ -95,16 +132,16 @@ class CodeGenerator {
         return values.join(' ');
     }
 
-    getCaption(parent) {
-        const img = parent.querySelector('img');
+    getCaption(element) {
+        const img = element.querySelector('img');
         if (img && img.alt) {
             return img.alt;
         }
         
-        let figcaption = parent.querySelector('figcaption');
+        let figcaption = element.querySelector('figcaption');
         
         if (!figcaption) {
-            const nextElement = parent.nextElementSibling;
+            const nextElement = element.nextElementSibling;
             if (nextElement && nextElement.tagName.toLowerCase() === 'figcaption') {
                 figcaption = nextElement;
             }
@@ -114,25 +151,46 @@ class CodeGenerator {
 
         const clone = figcaption.cloneNode(true);
         
+        // Supprimer les éléments de référence
         const toRemove = clone.querySelectorAll('.figure_call_back, .figure_reference');
         toRemove.forEach(el => el.remove());
 
         if (this.turndownService) {
-            return this.turndownService.turndown(clone.innerHTML);
+            try {
+                return this.turndownService.turndown(clone.innerHTML);
+            } catch (error) {
+                console.warn('Erreur conversion Markdown:', error);
+                return clone.textContent.trim();
+            }
         } else {
             return clone.textContent.trim();
         }
     }
 
-    getRelativePath(url) {
-        try {
-            const urlObj = new URL(url);
-            let path = urlObj.pathname + urlObj.search + urlObj.hash;
-            return path.startsWith('/') ? path.substring(1) : path;
-        } catch {
-            return url;
+    displayCode(code) {
+        // Affiche le code dans l'interface
+        const showCode = document.querySelector("#showCode");
+        const cssOutput = document.querySelector(".cssoutput");
+        
+        if (showCode) showCode.value = code;
+        if (cssOutput) cssOutput.textContent = code;
+    }
+
+    cleanup() {
+        if (!this.isInitialized) return;
+
+        document.removeEventListener('generateCode', this.handleGenerateCode);
+        
+        const copyButton = document.querySelector('.copy .button');
+        if (copyButton) {
+            copyButton.removeEventListener('click', this.handleCopyClick);
         }
+
+        this.isInitialized = false;
+        console.log('🧹 codeGenerator nettoyé');
+    }
+
+    destroy() {
+        this.cleanup();
     }
 }
-
-export { CodeGenerator };

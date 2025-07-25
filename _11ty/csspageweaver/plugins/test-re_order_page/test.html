@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exemple - Réordonnancement de Pages PagedJS</title>
+    
+    <!-- PagedJS -->
+    <script src="https://unpkg.com/pagedjs/dist/paged.polyfill.js"></script>
+    
+    <!-- Plugin de réordonnancement -->
+    <script src="page-reorder-plugin.js"></script>
+    
+    <style>
+        /* === STYLES DE BASE === */
+        body {
+            font-family: Georgia, serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        @page {
+            size: A4;
+            margin: 2cm;
+            
+            @bottom-center {
+                content: "Page " counter(page);
+            }
+        }
+        
+        /* === STYLES DE CONTENU === */
+        .chapter {
+            page-break-before: always;
+            margin-bottom: 2em;
+        }
+        
+        .chapter h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 0.5em;
+        }
+        
+        .chapter p {
+            text-align: justify;
+            margin-bottom: 1em;
+        }
+        
+        /* === RÈGLES DE RÉORDONNANCEMENT CSS === */
+        
+        /* La conclusion (chapitre 4) doit apparaître après la page 2 */
+        .chapter-conclusion {
+            --page-move-after: 2;
+        }
+        
+        /* L'introduction (chapitre 1) doit rester en première position */
+        .chapter-intro {
+            --page-move-before: 1;
+        }
+        
+        /* Le chapitre technique doit être déplacé en dernier */
+        .chapter-technical {
+            --page-move-after: 10;
+        }
+    </style>
+</head>
+<body>
+    <!-- Configuration JavaScript alternative -->
+    <script>
+        window.PageReorderConfig = [
+            {
+                direction: 'after',
+                selector: '.chapter-appendix',
+                targetPage: 5
+            }
+        ];
+    </script>
+
+    <!-- === CONTENU DU DOCUMENT === -->
+    
+    <!-- Chapitre 1 : Introduction -->
+    <section class="chapter chapter-intro" data-page-move-before="1">
+        <h1>Chapitre 1 : Introduction</h1>
+        <p>
+            Ceci est le chapitre d'introduction de notre document. Il devrait normalement 
+            apparaître en premier, mais nous allons démontrer comment réorganiser les pages.
+        </p>
+        <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor 
+            incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis 
+            nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+        </p>
+        <p>
+            Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore 
+            eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, 
+            sunt in culpa qui officia deserunt mollit anim id est laborum.
+        </p>
+    </section>
+
+    <!-- Chapitre 2 : Développement -->
+    <section class="chapter chapter-development">
+        <h1>Chapitre 2 : Développement</h1>
+        <p>
+            Ce chapitre traite du développement principal du sujet. Il contient les 
+            informations essentielles et les arguments principaux.
+        </p>
+        <p>
+            Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium 
+            doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore 
+            veritatis et quasi architecto beatae vitae dicta sunt explicabo.
+        </p>
+        <p>
+            Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, 
+            sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
+        </p>
+        <p>
+            Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, 
+            adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et 
+            dolore magnam aliquam quaerat voluptatem.
+        </p>
+    </section>
+
+    <!-- Chapitre 3 : Analyse -->
+    <section class="chapter chapter-analysis">
+        <h1>Chapitre 3 : Analyse</h1>
+        <p>
+            Dans ce chapitre, nous analysons en détail les différents aspects du sujet.
+            Cette analyse nous permettra de tirer des conclusions importantes.
+        </p>
+        <p>
+            Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit 
+            laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum 
+            iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae 
+            consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?
+        </p>
+        <p>
+            At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis 
+            praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias 
+            excepturi sint occaecati cupiditate non provident.
+        </p>
+    </section>
+
+    <!-- Chapitre 4 : Conclusion (sera déplacé après page 2) -->
+    <section class="chapter chapter-conclusion">
+        <h1>Chapitre 4 : Conclusion</h1>
+        <p>
+            <strong>Note :</strong> Cette conclusion devrait normalement être en dernière position, 
+            mais grâce au plugin de réordonnancement, elle apparaîtra après la page 2.
+        </p>
+        <p>
+            En conclusion, nous avons pu démontrer l'efficacité de notre approche et 
+            les bénéfices qu'elle apporte. Les résultats obtenus dépassent nos attentes 
+            initiales.
+        </p>
+        <p>
+            Cette démonstration du plugin de réordonnancement montre comment on peut 
+            facilement réorganiser les pages d'un document PDF généré avec PagedJS.
+        </p>
+    </section>
+
+    <!-- Chapitre 5 : Aspects techniques (sera déplacé en dernier) -->
+    <section class="chapter chapter-technical">
+        <h1>Chapitre 5 : Aspects Techniques</h1>
+        <p>
+            Ce chapitre technique sera automatiquement déplacé en dernière position 
+            grâce à la règle CSS <code>--page-move-after: 10</code>.
+        </p>
+        <p>
+            Il contient des informations détaillées sur l'implémentation technique, 
+            les algorithmes utilisés et les spécifications du système.
+        </p>
+        <p>
+            Ces informations sont importantes mais peuvent être consultées en annexe 
+            pour ne pas interrompre le flux principal de lecture.
+        </p>
+    </section>
+
+    <!-- Appendice (contrôlé par JavaScript) -->
+    <section class="chapter chapter-appendix" data-chapter="appendix">
+        <h1>Appendice</h1>
+        <p>
+            Cet appendice sera repositionné grâce à la configuration JavaScript 
+            définie dans <code>window.PageReorderConfig</code>.
+        </p>
+        <p>
+            Il contient des informations supplémentaires, des tableaux de données, 
+            des références et des ressources additionnelles.
+        </p>
+    </section>
+
+    <!-- Instructions d'utilisation -->
+    <section class="chapter chapter-instructions">
+        <h1>Instructions d'utilisation</h1>
+        
+        <h2>1. Méthode CSS (recommandée)</h2>
+        <p>Utilisez les propriétés CSS personnalisées :</p>
+        <pre style="background: #f4f4f4; padding: 1em; border-radius: 4px;">
+.mon-chapitre {
+    --page-move-after: 3;  /* Déplacer après la page 3 */
+}
+
+.autre-chapitre {
+    --page-move-before: 1; /* Déplacer avant la page 1 */
+}</pre>
+
+        <h2>2. Méthode HTML (data attributes)</h2>
+        <p>Ajoutez des attributs data-* aux éléments :</p>
+        <pre style="background: #f4f4f4; padding: 1em; border-radius: 4px;">
+&lt;section class="chapter" data-page-move-after="2"&gt;
+    &lt;h1&gt;Ce chapitre apparaîtra après la page 2&lt;/h1&gt;
+&lt;/section&gt;</pre>
+
+        <h2>3. Méthode JavaScript (configuration globale)</h2>
+        <p>Définissez une configuration JavaScript :</p>
+        <pre style="background: #f4f4f4; padding: 1em; border-radius: 4px;">
+window.PageReorderConfig = [
+    {
+        direction: 'after',
+        selector: '.conclusion',
+        targetPage: 2
+    }
+];</pre>
+
+        <h2>4. Interface utilisateur</h2>
+        <p>
+            Une fois le document rendu, une interface de glisser-déposer apparaît 
+            dans le coin supérieur droit permettant de réorganiser interactivement 
+            les pages et d'exporter la configuration.
+        </p>
+    </section>
+
+    <!-- Script de démonstration -->
+    <script>
+        // Attendre que PagedJS soit prêt
+        window.addEventListener('load', () => {
+            console.log('📖 Document chargé - Le plugin de réordonnancement est actif');
+            
+            // Afficher les règles de réordonnancement détectées
+            setTimeout(() => {
+                console.log('🔄 Vérifiez l\'interface de réordonnancement dans le coin supérieur droit');
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
