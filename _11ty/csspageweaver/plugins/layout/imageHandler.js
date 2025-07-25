@@ -4,8 +4,7 @@ import {
     findImageElement, 
     getShortcodeType, 
     getCSSProperties, 
-    setCSSProperties,  // ✅ Maintenant utilisé partout !
-    getImageId,
+    setCSSProperties,  
     getGridConfig
 } from './utils.js';
 
@@ -71,7 +70,7 @@ export class imageHandler {
             }
         });
 
-        // ✅ Property controls - OPTIMISÉ avec setCSSProperties
+       
         const properties = [
             { id: '#col', property: '--col' },
             { id: '#width', property: '--width' },
@@ -91,7 +90,7 @@ export class imageHandler {
                 
                 newElement.addEventListener('change', (e) => {
                     if (this.selectedElement) {
-                        // ✅ Utilisation de setCSSProperties au lieu de style.setProperty
+                        
                         const propName = prop.property.replace('--', '');
                         setCSSProperties(this.selectedElement, {
                             [propName]: e.target.value
@@ -257,7 +256,7 @@ export class imageHandler {
         this.currentImage = null;
     }
 
-    // ✅ OPTIMISÉ avec setCSSProperties
+    
     translateImage(deltaX, deltaY) {
         if (!this.currentImage) {
             console.warn('⚠️ translateImage appelé sans currentImage défini');
@@ -279,7 +278,7 @@ export class imageHandler {
         const newX = currentX + (deltaX / parentWidth * 100);
         const newY = currentY + (deltaY / parentHeight * 100);
 
-        // ✅ Utilisation de setCSSProperties au lieu de style.setProperty
+       
         setCSSProperties(parent, {
             'img-x': newX,
             'img-y': newY
@@ -310,7 +309,7 @@ export class imageHandler {
         }, 300);
     }
 
-    // ✅ OPTIMISÉ avec setCSSProperties
+   
     zoomImage(img, scaleAmount, relX, relY) {
         const parent = img.parentElement;
         const oldWidth = img.offsetWidth;
@@ -361,7 +360,7 @@ export class imageHandler {
         }
     }
 
-    // ✅ NOUVELLE méthode optimisée avec setCSSProperties
+  
     translateImageForElement(element, deltaX, deltaY) {
         const img = findImageElement(element);
         if (!img) return;
@@ -376,7 +375,7 @@ export class imageHandler {
         const newX = currentX + (deltaX / parentWidth * 100);
         const newY = currentY + (deltaY / parentHeight * 100);
 
-        // ✅ Utilisation de setCSSProperties
+        
         setCSSProperties(parent, {
             'img-x': newX,
             'img-y': newY
@@ -385,7 +384,7 @@ export class imageHandler {
 
     // === CONTRÔLES PANEL ===
 
-    // ✅ OPTIMISÉ avec setCSSProperties
+   
     positionImage(alignX, alignY) {
         if (!this.selectedElement) return;
         
@@ -400,7 +399,7 @@ export class imageHandler {
         const imgX = (parentWidth - imgWidth) * alignX / parentWidth * 100;
         const imgY = (parentHeight - imgHeight) * alignY / parentHeight * 100;
 
-        // ✅ Utilisation de setCSSProperties au lieu de 2 style.setProperty
+       
         setCSSProperties(this.selectedElement, {
             'img-x': imgX,
             'img-y': imgY
@@ -410,16 +409,16 @@ export class imageHandler {
         this.generateCodeForElement(this.selectedElement, true);
     }
 
-    // ✅ OPTIMISÉ avec setCSSProperties
+   
     fillBlock() {
         if (!this.selectedElement) return;
         
-        // ✅ Utilisation de setCSSProperties
+        
         setCSSProperties(this.selectedElement, { 'img-w': 100 });
         this.positionImage(0.5, 0.5);
     }
 
-    // ✅ OPTIMISÉ avec setCSSProperties
+  
     adjustContent() {
         if (!this.selectedElement) return;
         
@@ -437,7 +436,7 @@ export class imageHandler {
         const imgWidth = (parentWidth * imgW / 100);
         const imgX = (parentWidth - imgWidth) / 2 / parentWidth * 100;
         
-        // ✅ Utilisation de setCSSProperties au lieu de 3 style.setProperty
+       
         setCSSProperties(this.selectedElement, {
             'img-w': imgW,
             'img-y': 0,

@@ -358,6 +358,7 @@ export class gridHandler {
             element.style.setProperty(prop, value);
         });
 
+        
         // Synchroniser figcaption si elle existe
         const figcaption = element.nextElementSibling;
         if (figcaption && figcaption.tagName.toLowerCase() === 'figcaption') {
