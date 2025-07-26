@@ -49,6 +49,27 @@ function createToc(config) {
 
   tocElementDiv.appendChild(tocUl)
 
+  // Fonction pour vérifier si un élément doit être ignoré
+  function shouldIgnoreElement(element) {
+    // Vérifier class="toc-ignore" sur l'élément
+    if (element.classList.contains('toc-ignore')) {
+      return true;
+    }
+    
+    // Vérifier data-toc="ignore" sur l'élément
+    if (element.getAttribute('data-toc') === 'ignore') {
+      return true;
+    }
+    
+    // Vérifier data-toc="ignore" sur les sections parentes
+    const parentSection = element.closest('section[data-toc="ignore"]');
+    if (parentSection) {
+      return true;
+    }
+    
+    return false;
+  }
+
   // add class to all title elements
   let tocElementNbr = 0
   for (var i = 0; i < titleElements.length; i++) {
@@ -56,11 +77,8 @@ function createToc(config) {
     let titleElement = content.querySelectorAll(titleElements[i])
 
     titleElement.forEach(function (element) {
-      // check if shouldbe shown
-      if (
-        !element.classList.contains('toc-ignore') || 
-        !element.classList.contains('toc-ignore')
-      ) {
+      // check if should be shown using the new function
+      if (!shouldIgnoreElement(element)) {
         // add classes to the element
         element.classList.add('title-element')
         element.setAttribute('data-title-level', titleHierarchy)

@@ -13,42 +13,10 @@ export default class pageMove extends Handler {
     }
 
     collectMoveRules(pageElement, pageNumber) {
-        this.parseCSS(pageElement, pageNumber);
         this.parseHTML(pageElement, pageNumber);
     }
 
-    parseCSS(pageElement, pageNumber) {
-        try {
-            Array.from(document.styleSheets).forEach(sheet => {
-                try {
-                    Array.from(sheet.cssRules).forEach(rule => {
-                        if (rule.style) {
-                            const moveAfter = rule.style.getPropertyValue('--page-move-after');
-                            const moveBefore = rule.style.getPropertyValue('--page-move-before');
-                            
-                            if ((moveAfter || moveBefore) && pageElement.querySelector(rule.selectorText)) {
-                                if (moveAfter) {
-                                    this.moveOperations.push({
-                                        sourcePage: pageNumber,
-                                        targetPage: parseInt(moveAfter) + 1
-                                    });
-                                }
-                                if (moveBefore) {
-                                    this.moveOperations.push({
-                                        sourcePage: pageNumber,
-                                        targetPage: parseInt(moveBefore)
-                                    });
-                                }
-                            }
-                        }
-                    });
-                } catch (e) {}
-            });
-        } catch (e) {}
-    }
-
     parseHTML(pageElement, pageNumber) {
-        // Attributs data-*
         const elementsToMoveAfter = pageElement.querySelectorAll('[data-page-move-after]');
         elementsToMoveAfter.forEach(element => {
             const targetPageNum = parseInt(element.getAttribute('data-page-move-after'));
@@ -67,7 +35,6 @@ export default class pageMove extends Handler {
             });
         });
 
-        // Styles inline
         pageElement.querySelectorAll('[style*="--page-move-"]').forEach(element => {
             const style = element.getAttribute('style');
             const moveAfter = style.match(/--page-move-after:\s*(\d+)/);
@@ -91,6 +58,7 @@ export default class pageMove extends Handler {
     afterRendered(pages) {
         if (this.moveOperations.length > 0 && !this.hasProcessed) {
             this.performMoves();
+            this.regenerateTOC();
             this.hasProcessed = true;
         }
     }
@@ -145,5 +113,44 @@ export default class pageMove extends Handler {
                 area.innerHTML = content;
             }
         });
+    }
+
+    regenerateTOC() {
+        setTimeout(() => {
+            const tocLinks = document.querySelectorAll('#list-toc-generated a[href^="#"]');
+            
+            tocLinks.forEach(link => {
+                const href = link.getAttribute('href');
+                const target = document.querySelector(href);
+                
+                if (target) {
+                    // Trouver dans quelle page est l'élément
+                    const page = target.closest('.pagedjs_page');
+                    if (page) {
+                        const pageNumber = page.getAttribute('data-page-number');
+                        
+                        // Remplacer target-counter par numéro réel
+                        const existingSpan = link.querySelector('.page-number');
+                        if (existingSpan) {
+                            existingSpan.textContent = pageNumber;
+                        } else {
+                            const span = document.createElement('span');
+                            span.className = 'page-number';
+                            span.textContent = pageNumber;
+                            span.style.float = 'right';
+                            link.appendChild(span);
+                        }
+                    }
+                }
+            });
+            
+            // Désactiver target-counter CSS
+            const style = document.createElement('style');
+            style.textContent = `
+                .toc-element a.toc-page-after::after { content: none !important; }
+                .toc-element a.toc-page-before::before { content: none !important; }
+            `;
+            document.head.appendChild(style);
+        }, 100);
     }
 }
