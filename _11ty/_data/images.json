@@ -311,11 +311,6 @@
     "src": "images/archery-outdoors-women-dithered.png",
     "page": "spread"
   },
-  "page-13": {
-    "id": "page-13",
-    "src": "images/archery-outdoors-women-dithered.png",
-    "page": 14
-  },
   "page-test": {
     "id": "page-test",
     "class": "page",
@@ -324,6 +319,21 @@
   "page-14": {
     "id": "page-14",
     "page": 14,
+    "src": "images/archery-outdoors-women-dithered.png"
+  },
+  "page-15": {
+    "id": "page-15",
+    "page": 15,
+    "src": "images/archery-outdoors-women-dithered.png"
+  },
+  "page-17": {
+    "id": "page-17",
+    "page": 17,
+    "src": "images/archery-outdoors-women-dithered.png"
+  },
+  "page-13": {
+    "id": "page-13",
+    "page": 13,
     "src": "images/archery-outdoors-women-dithered.png"
   }
 }
