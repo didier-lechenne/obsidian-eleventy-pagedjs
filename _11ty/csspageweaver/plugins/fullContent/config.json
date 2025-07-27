@@ -1,0 +1,10 @@
+{
+	"name": "Full Content",
+	"description": "Create full page elements and full spread elements in the flow of your book",
+	"licence": "MIT",
+	"author": ["Julie Blanc", "Didier Lechenne"],
+
+	"version": "2.0",
+	"hook": "fullContent.js",
+	"stylesheet": "fullContent.css"
+}

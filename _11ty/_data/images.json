@@ -314,11 +314,16 @@
   "page-13": {
     "id": "page-13",
     "src": "images/archery-outdoors-women-dithered.png",
-    "page": 13
+    "page": 14
   },
   "page-test": {
     "id": "page-test",
     "class": "page",
+    "src": "images/archery-outdoors-women-dithered.png"
+  },
+  "page-14": {
+    "id": "page-14",
+    "page": 14,
     "src": "images/archery-outdoors-women-dithered.png"
   }
 }

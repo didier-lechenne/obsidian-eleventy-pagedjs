@@ -58,7 +58,7 @@ export default class pageMove extends Handler {
     afterRendered(pages) {
         if (this.moveOperations.length > 0 && !this.hasProcessed) {
             this.performMoves();
-            this.regenerateTOC();
+            // this.regenerateTOC();
             this.hasProcessed = true;
         }
     }
@@ -115,42 +115,42 @@ export default class pageMove extends Handler {
         });
     }
 
-    regenerateTOC() {
-        setTimeout(() => {
-            const tocLinks = document.querySelectorAll('#list-toc-generated a[href^="#"]');
+    // regenerateTOC() {
+    //     setTimeout(() => {
+    //         const tocLinks = document.querySelectorAll('#list-toc-generated a[href^="#"]');
             
-            tocLinks.forEach(link => {
-                const href = link.getAttribute('href');
-                const target = document.querySelector(href);
+    //         tocLinks.forEach(link => {
+    //             const href = link.getAttribute('href');
+    //             const target = document.querySelector(href);
                 
-                if (target) {
-                    // Trouver dans quelle page est l'élément
-                    const page = target.closest('.pagedjs_page');
-                    if (page) {
-                        const pageNumber = page.getAttribute('data-page-number');
+    //             if (target) {
+    //                 // Trouver dans quelle page est l'élément
+    //                 const page = target.closest('.pagedjs_page');
+    //                 if (page) {
+    //                     const pageNumber = page.getAttribute('data-page-number');
                         
-                        // Remplacer target-counter par numéro réel
-                        const existingSpan = link.querySelector('.page-number');
-                        if (existingSpan) {
-                            existingSpan.textContent = pageNumber;
-                        } else {
-                            const span = document.createElement('span');
-                            span.className = 'page-number';
-                            span.textContent = pageNumber;
-                            span.style.float = 'right';
-                            link.appendChild(span);
-                        }
-                    }
-                }
-            });
+    //                     // Remplacer target-counter par numéro réel
+    //                     const existingSpan = link.querySelector('.page-number');
+    //                     if (existingSpan) {
+    //                         existingSpan.textContent = pageNumber;
+    //                     } else {
+    //                         const span = document.createElement('span');
+    //                         span.className = 'page-number';
+    //                         span.textContent = pageNumber;
+    //                         span.style.float = 'right';
+    //                         link.appendChild(span);
+    //                     }
+    //                 }
+    //             }
+    //         });
             
-            // Désactiver target-counter CSS
-            const style = document.createElement('style');
-            style.textContent = `
-                .toc-element a.toc-page-after::after { content: none !important; }
-                .toc-element a.toc-page-before::before { content: none !important; }
-            `;
-            document.head.appendChild(style);
-        }, 100);
-    }
+    //         // Désactiver target-counter CSS
+    //         const style = document.createElement('style');
+    //         style.textContent = `
+    //             .toc-element a.toc-page-after::after { content: none !important; }
+    //             .toc-element a.toc-page-before::before { content: none !important; }
+    //         `;
+    //         document.head.appendChild(style);
+    //     }, 100);
+    // }
 }

@@ -17,6 +17,7 @@
     left: calc(var(--pagedjs-margin-left)*-1);
     overflow: hidden;
   }
+
   .pagedjs_full-spread_content{
     margin: 0;
     width: calc(var(--pagedjs-pagebox-width)*2 + var(--bleed-images)*2);
