@@ -371,21 +371,30 @@ class FrenchExtension {
       span.parentNode.replaceChild(textNode, span);
     });
     
-    // Supprimer autres éléments ajoutés (guillemets, br)
-    const otherAddedElements = element.querySelectorAll('.editor-add:not(.i_space)');
-    otherAddedElements.forEach(el => el.remove());
-    
-    // Supprimer formatage Bold/Italic
-    const boldElements = element.querySelectorAll('strong, b');
-    boldElements.forEach(el => {
-      const textNode = document.createTextNode(el.textContent);
-      el.parentNode.replaceChild(textNode, el);
+    // Supprimer spans de guillemets mais garder le contenu
+    const quoteSpans = element.querySelectorAll('span.editor-add:not(.i_space)');
+    quoteSpans.forEach(span => {
+      while (span.firstChild) {
+        span.parentNode.insertBefore(span.firstChild, span);
+      }
+      span.parentNode.removeChild(span);
     });
     
-    const italicElements = element.querySelectorAll('em, i');
+    // Supprimer formatage Bold/Italic ajouté par l'éditeur uniquement
+    const boldElements = element.querySelectorAll('strong.editor-add, b.editor-add');
+    boldElements.forEach(el => {
+      while (el.firstChild) {
+        el.parentNode.insertBefore(el.firstChild, el);
+      }
+      el.parentNode.removeChild(el);
+    });
+    
+    const italicElements = element.querySelectorAll('em.editor-add, i.editor-add');
     italicElements.forEach(el => {
-      const textNode = document.createTextNode(el.textContent);
-      el.parentNode.replaceChild(textNode, el);
+      while (el.firstChild) {
+        el.parentNode.insertBefore(el.firstChild, el);
+      }
+      el.parentNode.removeChild(el);
     });
     
     // Normaliser les nœuds de texte
@@ -422,8 +431,9 @@ class UtilsExtension {
     
     if (!element) return;
     
-    // Utiliser innerHTML de l'élément pour garder le formatage
-    const markdown = this.toolbar.turndown.turndown(element.innerHTML);
+    // Reconstituer l'élément complet si scindé par PagedJS
+    const completeHTML = this.reconstructSplitElement(element);
+    const markdown = this.toolbar.turndown.turndown(completeHTML);
     
     navigator.clipboard.writeText(markdown).then(() => {
       this.toolbar.showCopyFeedback();
@@ -564,19 +574,14 @@ export class Toolbar {
 
     // Keep rules après l'initialisation
     this.turndown.keep(function(node) {
-      return node.nodeName === 'SPAN' && 
-             node.getAttribute('style') && 
-             node.getAttribute('style').includes('--ls:');
-    });
-    
-    this.turndown.keep(function(node) {
       return (node.nodeName === 'SPAN' && node.hasAttribute('style')) ||
-             (node.nodeName === 'BR' && (
-               node.classList.contains('breakpage') ||
-               node.classList.contains('breakcolumn') ||
-               node.classList.contains('breakscreen') ||
-               node.classList.contains('breakprint')
-             ));
+            (node.nodeName === 'SUP') ||
+            (node.nodeName === 'BR' && (
+              node.classList.contains('breakpage') ||
+              node.classList.contains('breakcolumn') ||
+              node.classList.contains('breakscreen') ||
+              node.classList.contains('breakprint')
+            ));
     });
   }
   

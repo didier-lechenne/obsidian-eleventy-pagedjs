@@ -166,6 +166,12 @@
 }
 
 
+[style^="--ls"] {
+    background: rgba(109, 168, 235, 0.205);
+}
+
+
+
 /* Responsive */
 @media (max-width: 768px) {
   .paged-editor-toolbar {
