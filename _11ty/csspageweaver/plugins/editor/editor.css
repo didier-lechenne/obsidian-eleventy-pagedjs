@@ -123,32 +123,6 @@
   background: rgba(74, 144, 226, 0.3);
 }
 
-
-/* Input letter-spacing */
-.toolbar-input-group {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 0 6px;
-}
-
-.toolbar-input-group label {
-  color: white;
-  font-size: 11px;
-}
-
-.toolbar-input-group input {
-  width: 40px;
-  padding: 2px 4px;
-  background: #34495e;
-  border: 1px solid #555;
-  border-radius: 2px;
-  color: white;
-  font-size: 11px;
-}
-
-
-
 /* Responsive */
 @media (max-width: 768px) {
   .paged-editor-toolbar {
