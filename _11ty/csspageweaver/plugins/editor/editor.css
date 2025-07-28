@@ -123,6 +123,49 @@
   background: rgba(74, 144, 226, 0.3);
 }
 
+
+
+.letter-spacing-input {
+  position: absolute;
+  z-index: 10000;
+  width: 60px;
+  padding: 6px 8px;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  background: #34495e;
+  color: white;
+  display: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+[data-command="letter-spacing"] {
+    font-size: 10px !important;
+}
+
+
+.letter-spacing-input:focus {
+  background: #3c5b7a;
+  transform: scale(1.05);
+}
+
+.letter-spacing-input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.paged-editor-toolbar button[data-command="letter-spacing"].active {
+  background: rgba(74, 144, 226, 0.8);
+}
+
+.paged-editor-toolbar button[data-command="letter-spacing"].editing {
+  background: rgba(39, 174, 96, 0.8);
+  color: white;
+}
+
+
 /* Responsive */
 @media (max-width: 768px) {
   .paged-editor-toolbar {

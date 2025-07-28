@@ -209,8 +209,12 @@ export default class Editor extends Handler {
         case 'c':
           if (event.shiftKey) {
             event.preventDefault();
-            this.toolbar.copySelectionAsMarkdown();
+            const utilsExt = this.toolbar.extensions.find(ext => ext.constructor.name === 'UtilsExtension');
+            if (utilsExt) {
+              utilsExt.copyElementAsMarkdown();
+            }
           }
+          break;
           break;
       }
     }
