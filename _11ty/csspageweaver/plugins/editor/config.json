@@ -1,0 +1,25 @@
+{
+	"name": "editor",
+	"description": "",
+	
+	"ui": {
+		"title": "editor",
+		"description": "",
+		"toggle": true,
+		"shortcut": [
+			{
+				"active": true,
+				"keys": ["B" ],
+				"description": ""
+			}
+		]
+	},
+	"parameters": {
+		"sample": null
+	},
+
+	"hook": "editor.js",
+	"stylesheet": "editor.css",
+	"script": "turndown.js"
+	
+}
