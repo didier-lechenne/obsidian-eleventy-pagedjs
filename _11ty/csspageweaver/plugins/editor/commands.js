@@ -38,6 +38,7 @@ export class Commands {
   wrapSelection(range, tagName) {
     const contents = range.extractContents();
     const wrapper = document.createElement(tagName);
+    wrapper.className = 'editor-add';
     wrapper.appendChild(contents);
     range.insertNode(wrapper);
     

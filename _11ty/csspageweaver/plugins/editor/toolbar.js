@@ -398,21 +398,6 @@ class UtilsExtension {
   constructor(toolbar) {
     this.toolbar = toolbar;
   }
-
-  convertNoteContentToMarkdown(htmlElement) {
-    const noteConverter = new window.TurndownService({
-      headingStyle: 'atx',
-      emDelimiter: '*',
-      strongDelimiter: '**',
-      linkStyle: 'inlined'
-    });
-    
-    let markdown = noteConverter.turndown(htmlElement.innerHTML);
-    markdown = markdown.replace(/\s+/g, ' ').trim();
-    markdown = markdown.replace(/\]/g, '\\]');
-    
-    return markdown;
-  }
   
   getButtons() {
     return [
@@ -437,9 +422,8 @@ class UtilsExtension {
     
     if (!element) return;
     
-    // Reconstituer l'élément complet s'il est scindé
-    const completeHTML = this.reconstructSplitElement(element);
-    const markdown = this.toolbar.turndown.turndown(completeHTML);
+    // Utiliser innerHTML de l'élément pour garder le formatage
+    const markdown = this.toolbar.turndown.turndown(element.innerHTML);
     
     navigator.clipboard.writeText(markdown).then(() => {
       this.toolbar.showCopyFeedback();
@@ -486,105 +470,115 @@ export class Toolbar {
     this.createToolbar();
   }
   
-setupTurndown() {
-  this.turndown = new window.TurndownService({
-    headingStyle: 'atx',
-    emDelimiter: '*',
-    strongDelimiter: '**',
-    linkStyle: 'inlined',
-    rules: {
-      // Règles pour les éléments Eleventy
-      smallcaps: {
-        filter: function (node) {
-          return node.nodeName === 'SPAN' && node.classList.contains('small-caps');
-        },
-        replacement: function (content) {
-          return `<smallcaps>${content}</smallcaps>`;
-        }
-      },
-      breakcolumnSpan: {
-        filter: function (node) {
-          return node.nodeName === 'SPAN' && node.classList.contains('breakcolumn');
-        },
-        replacement: function () {
-          return '<breakcolumn>';
-        }
-      },
-      letterSpacing: {
-        filter: function (node) {
-          return node.nodeName === 'SPAN' && 
-                 node.style.getPropertyValue('--ls') !== '';
-        },
-        replacement: function (content, node) {
-          const lsValue = node.style.getPropertyValue('--ls');
-          return `<span style="--ls:${lsValue}">${content}</span>`;
-        }
-      },
-      removeSpaceSpans: {
-        filter: function (node) {
-          return node.nodeName === 'SPAN' && 
-                node.className.includes('i_space');
-        },
-        replacement: function (content) {
-          return content;
-        }
-      },
-      lineBreak: {
-        filter: 'br',
-        replacement: function () {
-          return '<br/>';
-        }
-      },
-      footnoteCall: {
-        filter: function (node) {
-          return node.nodeName === 'A' && 
-                node.classList.contains('footnote') && 
-                node.hasAttribute('data-footnote-call');
-        },
-        replacement: function (content, node) {
-          const footnoteId = node.getAttribute('data-footnote-call') || node.getAttribute('data-ref');
-          const footnoteContent = document.querySelector(`#note-${footnoteId}`);
-          
-          if (footnoteContent) {
-            const utilsExt = new UtilsExtension(null);
-            const noteMarkdown = utilsExt.convertNoteContentToMarkdown(footnoteContent);
-            return `^[${noteMarkdown}]`;
-          }
-          
-          return `^[Note ${footnoteId.substring(0, 8)}]`;
-        }
-      },
-      footnoteDefinition: {
-        filter: function (node) {
-          return node.nodeName === 'SPAN' && 
-                node.classList.contains('footnote') && 
-                node.hasAttribute('id') && 
-                node.id.startsWith('note-');
-        },
-        replacement: function () {
-          return '';
-        }
-      }
-    }
-  }); // <- Fermeture du constructeur
+  setupTurndown() {
+    this.turndown = new window.TurndownService({
+      headingStyle: 'atx',
+      emDelimiter: '*',
+      strongDelimiter: '**',
+      linkStyle: 'inlined'
+    });
 
-  // Keep rules après l'initialisation
-  this.turndown.keep(function(node) {
-    return node.nodeName === 'SPAN' && 
-           node.getAttribute('style') && 
-           node.getAttribute('style').includes('--ls:');
-  });
-  
-  this.turndown.keep(function(node) {
-    return (node.nodeName === 'SPAN' && node.hasAttribute('style')) ||
-           (node.nodeName === 'BR' && (
-             node.classList.contains('breakpage') ||
-             node.classList.contains('breakcolumn') ||
-             node.classList.contains('breakscreen') ||
-             node.classList.contains('breakprint')
-           ));
-  });
-}
+    // Ajouter règles personnalisées sans écraser les règles par défaut
+    this.turndown.addRule('smallcaps', {
+      filter: function (node) {
+        return node.nodeName === 'SPAN' && node.classList.contains('small-caps');
+      },
+      replacement: function (content) {
+        return `<smallcaps>${content}</smallcaps>`;
+      }
+    });
+
+    this.turndown.addRule('breakcolumnSpan', {
+      filter: function (node) {
+        return node.nodeName === 'SPAN' && node.classList.contains('breakcolumn');
+      },
+      replacement: function () {
+        return '<breakcolumn>';
+      }
+    });
+
+    this.turndown.addRule('letterSpacing', {
+      filter: function (node) {
+        return node.nodeName === 'SPAN' && 
+               node.style.getPropertyValue('--ls') !== '';
+      },
+      replacement: function (content, node) {
+        const lsValue = node.style.getPropertyValue('--ls');
+        return `<span style="--ls:${lsValue}">${content}</span>`;
+      }
+    });
+
+    this.turndown.addRule('removeSpaceSpans', {
+      filter: function (node) {
+        return node.nodeName === 'SPAN' && 
+              node.className.includes('i_space');
+      },
+      replacement: function (content) {
+        return content;
+      }
+    });
+
+    this.turndown.addRule('lineBreak', {
+      filter: 'br',
+      replacement: function () {
+        return '<br/>';
+      }
+    });
+
+    this.turndown.addRule('footnoteCall', {
+      filter: function (node) {
+        return node.nodeName === 'A' && 
+              node.classList.contains('footnote') && 
+              node.hasAttribute('data-footnote-call');
+      },
+      replacement: function (content, node) {
+        const footnoteId = node.getAttribute('data-footnote-call') || node.getAttribute('data-ref');
+        const footnoteContent = document.querySelector(`#note-${footnoteId}`);
+        
+        if (footnoteContent) {
+          // Utiliser service global configuré
+          const noteMarkdown = window.mainTurndownService.turndown(footnoteContent.innerHTML)
+            .replace(/\s+/g, ' ').trim()
+            .replace(/\]/g, '\\]');
+          return `^[${noteMarkdown}]`;
+        }
+        
+        return `^[Note ${footnoteId.substring(0, 8)}]`;
+      }
+    });
+
+    this.turndown.addRule('footnoteDefinition', {
+      filter: function (node) {
+        return node.nodeName === 'SPAN' && 
+              node.classList.contains('footnote') && 
+              node.hasAttribute('id') && 
+              node.id.startsWith('note-');
+      },
+      replacement: function () {
+        return '';
+      }
+    });
+
+    // Stocker référence globale pour les règles
+    window.mainTurndownService = this.turndown;
+
+    // Keep rules après l'initialisation
+    this.turndown.keep(function(node) {
+      return node.nodeName === 'SPAN' && 
+             node.getAttribute('style') && 
+             node.getAttribute('style').includes('--ls:');
+    });
+    
+    this.turndown.keep(function(node) {
+      return (node.nodeName === 'SPAN' && node.hasAttribute('style')) ||
+             (node.nodeName === 'BR' && (
+               node.classList.contains('breakpage') ||
+               node.classList.contains('breakcolumn') ||
+               node.classList.contains('breakscreen') ||
+               node.classList.contains('breakprint')
+             ));
+    });
+  }
   
   registerExtensions() {
     this.extensions = [
