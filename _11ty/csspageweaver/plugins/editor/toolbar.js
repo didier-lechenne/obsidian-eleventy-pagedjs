@@ -216,6 +216,21 @@ class UtilsExtension {
   constructor(toolbar) {
     this.toolbar = toolbar;
   }
+
+    convertNoteContentToMarkdown(htmlElement) {
+    const noteConverter = new window.TurndownService({
+      headingStyle: 'atx',
+      emDelimiter: '*',
+      strongDelimiter: '**',
+      linkStyle: 'inlined'
+    });
+    
+    let markdown = noteConverter.turndown(htmlElement.innerHTML);
+    markdown = markdown.replace(/\s+/g, ' ').trim();
+    markdown = markdown.replace(/\]/g, '\\]');
+    
+    return markdown;
+  }
   
   getButtons() {
     return [
@@ -289,27 +304,95 @@ export class Toolbar {
     this.createToolbar();
   }
   
-  setupTurndown() {
-    this.turndown = new window.TurndownService({
-      rules: {
-        removeSpaceSpans: {
-          filter: function (node) {
-            return node.nodeName === 'SPAN' && 
-                   node.className.includes('i_space');
-          },
-          replacement: function (content) {
-            return content;
-          }
+setupTurndown() {
+  this.turndown = new window.TurndownService({
+    headingStyle: 'atx',
+    emDelimiter: '*',
+    strongDelimiter: '**',
+    linkStyle: 'inlined',
+    rules: {
+      // Règles pour les éléments Eleventy
+      smallcaps: {
+        filter: function (node) {
+          return node.nodeName === 'SPAN' && node.classList.contains('small-caps');
         },
-        lineBreak: {
-          filter: 'br',
-          replacement: function () {
-            return '<br/>';
+        replacement: function (content) {
+          return `<smallcaps>${content}</smallcaps>`;
+        }
+      },
+      breakcolumnSpan: {
+        filter: function (node) {
+          return node.nodeName === 'SPAN' && node.classList.contains('breakcolumn');
+        },
+        replacement: function () {
+          return '<breakcolumn>';
+        }
+      },
+      removeSpaceSpans: {
+        filter: function (node) {
+          return node.nodeName === 'SPAN' && 
+                node.className.includes('i_space');
+        },
+        replacement: function (content) {
+          return content;
+        }
+      },
+      lineBreak: {
+        filter: 'br',
+        replacement: function () {
+          return '<br/>';
+        }
+      },
+      footnoteCall: {
+        filter: function (node) {
+          return node.nodeName === 'A' && 
+                node.classList.contains('footnote') && 
+                node.hasAttribute('data-footnote-call');
+        },
+        replacement: function (content, node) {
+          const footnoteId = node.getAttribute('data-footnote-call') || node.getAttribute('data-ref');
+          const footnoteContent = document.querySelector(`#note-${footnoteId}`);
+          
+          if (footnoteContent) {
+            const utilsExt = new UtilsExtension(null);
+            const noteMarkdown = utilsExt.convertNoteContentToMarkdown(footnoteContent);
+            return `^[${noteMarkdown}]`;
           }
+          
+          return `^[Note ${footnoteId.substring(0, 8)}]`;
+        }
+      },
+      footnoteDefinition: {
+        filter: function (node) {
+          return node.nodeName === 'SPAN' && 
+                node.classList.contains('footnote') && 
+                node.hasAttribute('id') && 
+                node.id.startsWith('note-');
+        },
+        replacement: function () {
+          return '';
         }
       }
-    });
-  }
+    }
+  }); // <- Fermeture du constructeur
+
+  // Keep rules après l'initialisation
+  this.turndown.keep(function(node) {
+    return node.nodeName === 'SPAN' && 
+           node.getAttribute('style') && 
+           node.getAttribute('style').includes('--ls:');
+  });
+  
+  this.turndown.keep(function(node) {
+    return (node.nodeName === 'SPAN' && node.hasAttribute('style')) ||
+           (node.nodeName === 'BR' && (
+             node.classList.contains('breakpage') ||
+             node.classList.contains('breakcolumn') ||
+             node.classList.contains('breakscreen') ||
+             node.classList.contains('breakprint')
+           ));
+  });
+}
   
   registerExtensions() {
     this.extensions = [

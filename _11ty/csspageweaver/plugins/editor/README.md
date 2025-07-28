@@ -1,7 +1,6 @@
 # Plugin Editor pour PagedJS
 
 Plugin d'édition WYSIWYG Medium-like pour PagedJS avec support de la typographie française.
-
 ## Fonctionnalités
 
 - ✅ Édition inline des éléments HTML
@@ -10,7 +9,7 @@ Plugin d'édition WYSIWYG Medium-like pour PagedJS avec support de la typographi
 - ✅ Typographie française (espaces insécables, guillemets)
 - ✅ Copie Markdown avec reconstruction des éléments scindés
 - ✅ Reset sélectif des transformations
-- ✅ Support des footnotes
+- ✅ Support le contenu des footnotes
 
 ### Barre d'outils
 8 boutons disponibles :
@@ -31,14 +30,13 @@ Plugin d'édition WYSIWYG Medium-like pour PagedJS avec support de la typographi
 - `Ctrl+I` : Italic
 - `Ctrl+Shift+C` : Copie Markdown
 
-
-### Reset intelligent
+### Reset 
 Le bouton Reset supprime uniquement les éléments avec classe `editor-add` :
 - Espaces insécables/fines → espaces normaux
 - Guillemets ajoutés → supprimés
 - `<br>` ajoutés → supprimés
 - Formatage Bold/Italic → supprimé
-- 
+
 ## Gestion des éléments scindés
 
 Le plugin reconstitue automatiquement les éléments scindés par PagedJS lors de la copie Markdown :
@@ -56,17 +54,17 @@ La copie MD rassemble tous les fragments avec le même `data-ref`.
 
 ## Développement
 
-## Structure des fichiers
+### Structure des fichiers
 
 ```
 editor/
-├── editor.js               # Plugin principal 
-├── toolbar.js              # Système de toolbar avec extensions
-├── selection.js            # Gestion des sélections
-├── commands.js              # Commandes de formatage
-├── french-format.js        # Formatage typographique français
-├── turndown.js             # Bibliothèque conversion HTML→MD
-└── editor.css              # Styles interface
+├── editor.js               # Plugin principal
+├── toolbar.js              # Système de toolbar avec extensions 
+├── selection.js            # Gestion des sélections de texte
+├── commands.js             # Commandes de formatage
+├── french-format.js        # Formatage typographique français automatique
+├── turndown.js             # Bibliothèque conversion HTML→Markdown 
+├── editor.css              # Styles interface
 ```
 
 ### Ajouter une extension
@@ -99,6 +97,7 @@ this.extensions = [
 ```
 
 ### Customisation CSS
+
 Classes principales :
 - `.paged-editor-active` : Mode édition actif
 - `.paged-editor-content` : Éléments éditables

@@ -14,7 +14,7 @@ export default class Editor extends Handler {
     super(chunker, polisher, caller);
     
     this.options = {
-      selector: '[data-editable], .footnote',
+      selector: '[data-editable], .footnote, figcaption',
       autoTypography: true,
       shortcuts: true
     };
@@ -51,7 +51,7 @@ export default class Editor extends Handler {
       idCounter = 0;
       idPrefix = String.fromCharCode(sectionCounter + 97);
 
-      const selectors = '*:not(hgroup) p, *:not(hgroup) li, *:not(hgroup) h1, *:not(hgroup) h2, *:not(hgroup) h3, *:not(hgroup) h4, *:not(hgroup) h5, *:not(hgroup) h6, .footnote';
+      const selectors = '*:not(hgroup) p, *:not(hgroup) li, *:not(hgroup) h1, *:not(hgroup) h2, *:not(hgroup) h3, *:not(hgroup) h4, *:not(hgroup) h5, *:not(hgroup) h6, .footnote, figcaption';
       const targetElements = section.querySelectorAll(selectors);
 
       targetElements.forEach((element) => {
