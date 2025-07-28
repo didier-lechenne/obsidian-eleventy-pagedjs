@@ -14,7 +14,7 @@ export default class Editor extends Handler {
     super(chunker, polisher, caller);
     
     this.options = {
-      selector: '[data-editable]',
+      selector: '[data-editable], .footnote',
       autoTypography: true,
       shortcuts: true
     };
@@ -51,8 +51,8 @@ export default class Editor extends Handler {
       idCounter = 0;
       idPrefix = String.fromCharCode(sectionCounter + 97);
 
-      var selectors = '*:not(hgroup) p, *:not(hgroup) li, *:not(hgroup) h1, *:not(hgroup) h2, *:not(hgroup) h3, *:not(hgroup) h4, *:not(hgroup) h5, *:not(hgroup) h6';
-      var targetElements = section.querySelectorAll(selectors);
+      const selectors = '*:not(hgroup) p, *:not(hgroup) li, *:not(hgroup) h1, *:not(hgroup) h2, *:not(hgroup) h3, *:not(hgroup) h4, *:not(hgroup) h5, *:not(hgroup) h6, .footnote';
+      const targetElements = section.querySelectorAll(selectors);
 
       targetElements.forEach((element) => {
         idCounter++;
@@ -72,11 +72,20 @@ export default class Editor extends Handler {
   setupToggle() {
     var toggle = document.getElementById('editor-toggle');
     if (toggle) {
+      // Restaurer état depuis localStorage
+      const savedState = localStorage.getItem('editor-plugin-active');
+      if (savedState === 'true') {
+        toggle.checked = true;
+        this.activate();
+      }
+      
       toggle.addEventListener('change', (e) => {
         if (e.target.checked) {
           this.activate();
+          localStorage.setItem('editor-plugin-active', 'true');
         } else {
           this.deactivate();
+          localStorage.setItem('editor-plugin-active', 'false');
         }
       });
     }
@@ -107,6 +116,29 @@ export default class Editor extends Handler {
     document.addEventListener('keydown', this.handleKeyDown.bind(this));
     document.addEventListener('input', this.handleInput.bind(this));
     document.addEventListener('paste', this.handlePaste.bind(this));
+    document.addEventListener('focusin', this.handleFocusIn.bind(this));
+  }
+  
+  handleFocusIn(event) {
+    if (!this.isActive) return;
+    if (this.isInEditableElement(event.target)) {
+      // Créer une sélection au curseur
+      const selection = window.getSelection();
+      if (selection.rangeCount === 0) {
+        const range = document.createRange();
+        range.setStart(event.target, 0);
+        range.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+      
+      setTimeout(() => {
+        const currentSelection = this.selection.getCurrentSelection();
+        if (currentSelection) {
+          this.toolbar.show(currentSelection);
+        }
+      }, 10);
+    }
   }
   
   handleMouseUp(event) {
@@ -147,6 +179,7 @@ export default class Editor extends Handler {
   }
   
   handleInput(event) {
+    if (!this.isActive) return;
     if (!this.isInEditableElement(event.target)) return;
     
     if (this.options.autoTypography) {
@@ -184,15 +217,24 @@ export default class Editor extends Handler {
   }
   
   updateSelection() {
+    if (!this.isActive) return;
+    
     const selection = this.selection.getCurrentSelection();
     
-    if (selection && selection.isValid && this.isInEditableElement(selection.anchorNode)) {
-      this.currentSelection = selection;
-      this.toolbar.show(selection);
-    } else {
-      this.currentSelection = null;
-      this.toolbar.hide();
+    if (selection && this.isInEditableElement(selection.anchorNode)) {
+      // Afficher si sélection valide OU si curseur dans élément éditable ou footnote
+      const activeElement = document.activeElement;
+      if (selection.isValid || 
+          activeElement.hasAttribute('data-editable') || 
+          activeElement.classList.contains('footnote')) {
+        this.currentSelection = selection;
+        this.toolbar.show(selection);
+        return;
+      }
     }
+    
+    this.currentSelection = null;
+    this.toolbar.hide();
   }
   
   isInEditableElement(node) {
@@ -201,7 +243,7 @@ export default class Editor extends Handler {
     let element = node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
     
     while (element) {
-      if (this.editableElements && Array.from(this.editableElements).includes(element)) {
+      if (element.hasAttribute('data-editable') || element.classList.contains('footnote')) {
         return true;
       }
       element = element.parentElement;

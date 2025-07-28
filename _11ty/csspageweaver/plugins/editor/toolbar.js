@@ -57,6 +57,9 @@ class FrenchExtension {
       }),
       new ToolbarButton('br', '↵', 'Saut de ligne', () => {
         this.insertBreak();
+      }),
+      new ToolbarButton('reset', '⟲', 'Supprimer transformations', () => {
+        this.resetTransformations();
       })
     ];
   }
@@ -68,11 +71,12 @@ class FrenchExtension {
       range.deleteContents();
       
       const span = document.createElement('span');
-      span.className = 'i_space non-breaking-space';
+      span.className = 'i_space non-breaking-space editor-add';
       span.textContent = '\u00A0';
       
       range.insertNode(span);
-      range.collapse(false);
+      range.setStartAfter(span);
+      range.collapse(true);
       selection.removeAllRanges();
       selection.addRange(range);
     }
@@ -85,11 +89,12 @@ class FrenchExtension {
       range.deleteContents();
       
       const span = document.createElement('span');
-      span.className = 'i_space narrow-no-break-space';
+      span.className = 'i_space narrow-no-break-space editor-add';
       span.textContent = '\u202F';
       
       range.insertNode(span);
-      range.collapse(false);
+      range.setStartAfter(span);
+      range.collapse(true);
       selection.removeAllRanges();
       selection.addRange(range);
     }
@@ -103,10 +108,13 @@ class FrenchExtension {
       
       // Créer « + espace fine insécable avec span
       const fragment = document.createDocumentFragment();
-      fragment.appendChild(document.createTextNode(' «'));
+      const quote = document.createElement('span');
+      quote.className = 'editor-add';
+      quote.textContent = '«';
+      fragment.appendChild(quote);
       
       const span = document.createElement('span');
-      span.className = 'i_space narrow-no-break-space';
+      span.className = 'i_space narrow-no-break-space editor-add';
       span.textContent = '\u202F';
       fragment.appendChild(span);
       
@@ -127,11 +135,14 @@ class FrenchExtension {
       const fragment = document.createDocumentFragment();
       
       const span = document.createElement('span');
-      span.className = 'i_space narrow-no-break-space';
+      span.className = 'i_space narrow-no-break-space editor-add';
       span.textContent = '\u202F';
       fragment.appendChild(span);
       
-      fragment.appendChild(document.createTextNode('» '));
+      const quote = document.createElement('span');
+      quote.className = 'editor-add';
+      quote.textContent = '»';
+      fragment.appendChild(quote);
       
       range.insertNode(fragment);
       range.collapse(false);
@@ -146,12 +157,57 @@ class FrenchExtension {
       const range = selection.getRangeAt(0);
       range.deleteContents();
       const br = document.createElement('br');
+      br.className = 'editor-add';
       range.insertNode(br);
       range.setStartAfter(br);
       range.collapse(true);
       selection.removeAllRanges();
       selection.addRange(range);
     }
+  }
+  
+  resetTransformations() {
+    const selection = window.getSelection();
+    if (selection.rangeCount === 0) return;
+    
+    let element = selection.anchorNode;
+    if (element.nodeType === Node.TEXT_NODE) {
+      element = element.parentElement;
+    }
+    
+    // Trouver l'élément éditable parent
+    while (element && !element.hasAttribute('data-editable')) {
+      element = element.parentElement;
+    }
+    
+    if (!element) return;
+    
+    // Remplacer spans d'espaces par espaces normaux
+    const spaceSpans = element.querySelectorAll('span.i_space.editor-add');
+    spaceSpans.forEach(span => {
+      const textNode = document.createTextNode(' ');
+      span.parentNode.replaceChild(textNode, span);
+    });
+    
+    // Supprimer autres éléments ajoutés (guillemets, br)
+    const otherAddedElements = element.querySelectorAll('.editor-add:not(.i_space)');
+    otherAddedElements.forEach(el => el.remove());
+    
+    // Supprimer formatage Bold/Italic
+    const boldElements = element.querySelectorAll('strong, b');
+    boldElements.forEach(el => {
+      const textNode = document.createTextNode(el.textContent);
+      el.parentNode.replaceChild(textNode, el);
+    });
+    
+    const italicElements = element.querySelectorAll('em, i');
+    italicElements.forEach(el => {
+      const textNode = document.createTextNode(el.textContent);
+      el.parentNode.replaceChild(textNode, el);
+    });
+    
+    // Normaliser les nœuds de texte
+    element.normalize();
   }
 }
 
@@ -184,14 +240,39 @@ class UtilsExtension {
     
     if (!element) return;
     
-    const html = element.innerHTML;
-    const markdown = this.toolbar.turndown.turndown(html);
+    // Reconstituer l'élément complet s'il est scindé
+    const completeHTML = this.reconstructSplitElement(element);
+    const markdown = this.toolbar.turndown.turndown(completeHTML);
     
     navigator.clipboard.writeText(markdown).then(() => {
       this.toolbar.showCopyFeedback();
     }).catch(err => {
       console.error('Erreur copie:', err);
     });
+  }
+  
+  reconstructSplitElement(element) {
+    const dataRef = element.getAttribute('data-ref');
+    
+    // Si pas de data-ref, retourner l'élément seul
+    if (!dataRef) {
+      return element.innerHTML;
+    }
+    
+    // Trouver tous les fragments avec le même data-ref
+    const fragments = document.querySelectorAll(`[data-ref="${dataRef}"]`);
+    
+    if (fragments.length <= 1) {
+      return element.innerHTML;
+    }
+    
+    // Reconstituer dans l'ordre d'apparition
+    let completeContent = '';
+    fragments.forEach(fragment => {
+      completeContent += fragment.innerHTML;
+    });
+    
+    return completeContent;
   }
 }
 
@@ -291,10 +372,17 @@ export class Toolbar {
   
   positionToolbar(range) {
     const rect = range.getBoundingClientRect();
+    
+    // Vérifier si les coordonnées sont valides
+    if (rect.width === 0 && rect.height === 0) {
+      this.hide();
+      return;
+    }
+    
     const toolbarRect = this.element.getBoundingClientRect();
     
     let left = rect.left + (rect.width / 2) - (toolbarRect.width / 2);
-    let top = rect.top - toolbarRect.height - 10;
+    let top = rect.top - toolbarRect.height - 50;
     
     const margin = 10;
     if (left < margin) left = margin;
@@ -303,7 +391,7 @@ export class Toolbar {
     }
     
     if (top < margin) {
-      top = rect.bottom + 10;
+      top = rect.bottom + 20;
     }
     
     this.element.style.left = `${left + window.scrollX}px`;

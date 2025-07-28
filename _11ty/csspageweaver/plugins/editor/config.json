@@ -5,14 +5,8 @@
 	"ui": {
 		"title": "editor",
 		"description": "",
-		"toggle": true,
-		"shortcut": [
-			{
-				"active": true,
-				"keys": ["B" ],
-				"description": ""
-			}
-		]
+		"toggle": true
+
 	},
 	"parameters": {
 		"sample": null
