@@ -9,20 +9,17 @@ export class codeGenerator {
         this.isInitialized = false;
         this.lastCopyTime = 0;  
         this.copyThrottle = 1000; 
-}
+    }
+
     initialize() {
         if (this.isInitialized) return;
-
         this.setupEventListeners();
         this.isInitialized = true;
-        // console.log('✅ codeGenerator: Génération de code activée');
     }
 
     setupEventListeners() {
-        // Écouter les événements de génération de code
         document.addEventListener('generateCode', this.handleGenerateCode.bind(this));
         
-        // Bouton copier
         const copyButton = document.querySelector('.copy .button');
         if (copyButton) {
             copyButton.addEventListener('click', this.handleCopyClick.bind(this));
@@ -33,9 +30,6 @@ export class codeGenerator {
         const { element, shouldCopy = false } = e.detail;
         this.generate(element, shouldCopy);
     }
-
- 
-
 
     generate(element, shouldCopy = false) {
         if (!element) return '';
@@ -49,43 +43,88 @@ export class codeGenerator {
             copyToClipboard(code);
         }
 
-        // console.log('📝 Code généré:', code);
         return code;
     }
 
-
-    handleCopyClick() {
-        const content = document.querySelector('.cssoutput');
-        if (content) {
-            copyToClipboard(content.textContent);
-        }
-    }
-
-    
     generateInsertCode(element) {
         const classes = getCleanClasses(element);
-        const styles = this.getInlineStyles(element);
+        const properties = this.buildPropertiesObject(element);
         
-        const classPart = classes ? classes.split(' ').map(cls => `.${cls}`).join(' ') : '';
-        const stylePart = styles ? `style="${styles}"` : '';
+        if (classes) {
+            properties.class = `"${classes}"`;
+        }
         
-        return `{.insert ${classPart} ${stylePart}}`.trim();
+        const propertiesStr = this.formatPropertiesObject(properties);
+        return `{% insert ${propertiesStr} %}`;
     }
 
     generateImageCode(element) {
         const type = this.getImageType(element);
         const img = element.querySelector('img');
         const url = img ? getRelativePath(img.src) : '';
-        const properties = this.getImageProperties(element);
         const classes = getCleanClasses(element);
         const caption = this.getCaption(element);
+        const properties = this.buildPropertiesObject(element);
 
-        let parts = [url];
-        if (properties) parts.push(properties);
-        if (classes) parts.push(`class: ${classes}`);
-        if (caption) parts.push(`caption: "${caption}"`);
+        // Ajouter l'ID basé sur le nom du fichier
+        if (url) {
+            const filename = url.split('/').pop().split('.')[0];
+            properties.id = `"${filename}"`;
+        }
 
-        return `(${type}: ${parts.join(' ')})`;
+        // Ajouter la légende si elle existe
+        if (caption) {
+            properties.caption = `"${this.escapeQuotes(caption)}"`;
+        }
+
+        // Ajouter les classes
+        if (classes) {
+            properties.class = `"${classes}"`;
+        }
+
+        const propertiesStr = this.formatPropertiesObject(properties);
+        return `{% ${type} "${url}", ${propertiesStr} %}`;
+    }
+
+    buildPropertiesObject(element) {
+        const cssVarMapping = {
+            col: "--col",
+            printCol: "--print-col",
+            width: "--width",
+            printWidth: "--print-width",
+            printRow: "--print-row",
+            printHeight: "--print-height",
+            alignSelf: "--align-self",
+            alignself: "--align-self", 
+            imgX: "--img-x",
+            imgY: "--img-y",
+            imgW: "--img-w"
+        };
+
+        const properties = {};
+        
+        Object.entries(cssVarMapping).forEach(([key, cssVar]) => {
+            const value = element.style.getPropertyValue(cssVar);
+            if (value && value.trim()) {
+                if (key === 'alignSelf' || key === 'alignself') {
+                    properties[key] = `"${value.trim()}"`;
+                } else {
+                    properties[key] = parseFloat(value.trim()) || value.trim();
+                }
+            }
+        });
+
+        return properties;
+    }
+
+    formatPropertiesObject(properties) {
+        if (Object.keys(properties).length === 0) return '{}';
+
+        const entries = Object.entries(properties).map(([key, value]) => {
+            return `  ${key}: ${value}`;
+        });
+
+        return `{ \n${entries.join(',\n')}\n}`;
     }
 
     getImageType(element) {
@@ -94,6 +133,59 @@ export class codeGenerator {
         return 'figure';
     }
 
+    escapeQuotes(str) {
+        return str.replace(/"/g, '\\"');
+    }
+
+    getCaption(element) {
+        const img = element.querySelector('img');
+        if (img && img.alt) {
+            return img.alt;
+        }
+        
+        let figcaption = element.querySelector('figcaption');
+        
+        if (!figcaption) {
+            const nextElement = element.nextElementSibling;
+            if (nextElement && nextElement.tagName.toLowerCase() === 'figcaption') {
+                figcaption = nextElement;
+            }
+        }
+        
+        if (!figcaption || !figcaption.textContent.trim()) return '';
+
+        const clone = figcaption.cloneNode(true);
+        
+        const toRemove = clone.querySelectorAll('.figure_call_back, .figure_reference');
+        toRemove.forEach(el => el.remove());
+
+        if (this.turndownService) {
+            try {
+                return this.turndownService.turndown(clone.innerHTML);
+            } catch (error) {
+                return clone.textContent.trim();
+            }
+        } else {
+            return clone.textContent.trim();
+        }
+    }
+
+    handleCopyClick() {
+        const content = document.querySelector('.cssoutput');
+        if (content) {
+            copyToClipboard(content.textContent);
+        }
+    }
+
+    displayCode(code) {
+        const showCode = document.querySelector("#showCode");
+        const cssOutput = document.querySelector(".cssoutput");
+        
+        if (showCode) showCode.value = code;
+        if (cssOutput) cssOutput.textContent = code;
+    }
+
+    // Méthodes conservées pour compatibilité
     getInlineStyles(element) {
         const cssProps = {
             '--print-width': element.style.getPropertyValue('--print-width'),
@@ -138,50 +230,6 @@ export class codeGenerator {
         return values.join(' ');
     }
 
-    getCaption(element) {
-        const img = element.querySelector('img');
-        if (img && img.alt) {
-            return img.alt;
-        }
-        
-        let figcaption = element.querySelector('figcaption');
-        
-        if (!figcaption) {
-            const nextElement = element.nextElementSibling;
-            if (nextElement && nextElement.tagName.toLowerCase() === 'figcaption') {
-                figcaption = nextElement;
-            }
-        }
-        
-        if (!figcaption || !figcaption.textContent.trim()) return '';
-
-        const clone = figcaption.cloneNode(true);
-        
-        // Supprimer les éléments de référence
-        const toRemove = clone.querySelectorAll('.figure_call_back, .figure_reference');
-        toRemove.forEach(el => el.remove());
-
-        if (this.turndownService) {
-            try {
-                return this.turndownService.turndown(clone.innerHTML);
-            } catch (error) {
-                // console.warn('Erreur conversion Markdown:', error);
-                return clone.textContent.trim();
-            }
-        } else {
-            return clone.textContent.trim();
-        }
-    }
-
-    displayCode(code) {
-        // Affiche le code dans l'interface
-        const showCode = document.querySelector("#showCode");
-        const cssOutput = document.querySelector(".cssoutput");
-        
-        if (showCode) showCode.value = code;
-        if (cssOutput) cssOutput.textContent = code;
-    }
-
     cleanup() {
         if (!this.isInitialized) return;
 
@@ -193,7 +241,6 @@ export class codeGenerator {
         }
 
         this.isInitialized = false;
-        // console.log('🧹 codeGenerator nettoyé');
     }
 
     destroy() {

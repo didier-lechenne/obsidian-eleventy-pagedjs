@@ -16,11 +16,14 @@
 }
 
 @media screen, pagedjs-ignore {
-  
   body.no-marker .marker,
   body.no-marker .modularGrid,
   body.no-marker .pagedjs_area,
-  body.no-marker .pagedjs_footnote_inner_content {
+  body.no-marker .pagedjs_footnote_inner_content,
+  .interface-preview .marker,
+  .interface-preview .modularGrid,
+  .interface-preview .pagedjs_area,
+  .interface-preview .pagedjs_footnote_inner_content {
     background-image: none !important;
   }
 
@@ -32,7 +35,6 @@
     background-size:
       100% calc(100% + var(--g-row-gutter)),
       calc(100% + var(--g-column-gutter)) 100%;
-
 
     /* Baseline */
     --g-baseline-height: 8px;
