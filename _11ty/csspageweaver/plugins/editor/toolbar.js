@@ -56,33 +56,13 @@ class LetterSpacingExtension {
         "A ↔ A",
         "Lettrage (Letter-spacing)",
         () => {
-          this.toggleLetterSpacing();
+          this.toolbar.editor.commands.toggleLetterSpacing();
         }
       ),
     ];
   }
 
-  toggleLetterSpacing() {
-    // Si input actif, valider et fermer
-    if (this.input && this.input.style.display !== "none") {
-      this.hideLetterSpacingInput();
-      return;
-    }
 
-    const selection = window.getSelection();
-    if (selection.rangeCount === 0) return;
-
-    const range = selection.getRangeAt(0);
-
-    // Vérifier si déjà dans un span avec --ls
-    const existingSpan = this.findLetterSpacingSpan(range);
-
-    if (existingSpan) {
-      this.showLetterSpacingInput(existingSpan);
-    } else {
-      this.wrapWithLetterSpacing(range);
-    }
-  }
 
   findLetterSpacingSpan(range) {
     let container = range.commonAncestorContainer;
@@ -231,8 +211,9 @@ class LetterSpacingExtension {
 }
 
 // Extension pour espaces typographiques
-class SpacingExtension {
-  constructor(toolbar) {
+
+class SpacingExtension 
+{ constructor(toolbar) {
     this.toolbar = toolbar;
   }
 
