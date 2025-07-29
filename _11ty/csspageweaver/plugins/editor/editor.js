@@ -25,6 +25,9 @@ export default class Editor extends Handler {
     this.toolbar = null;
     this.selection = null;
     this.commands = null;
+
+    this.autoCopyTimeout = null;
+    this.autoCopyEnabled = true;
     
   }
   
@@ -277,4 +280,45 @@ export default class Editor extends Handler {
       element.innerHTML = content;
     }
   }
+
+updateSelection() {
+  if (!this.isActive) return;
+  
+  const selection = this.selection.getCurrentSelection();
+  
+  if (selection && this.isInEditableElement(selection.anchorNode)) {
+    // Afficher si sélection valide OU si curseur dans élément éditable ou footnote
+    const activeElement = document.activeElement;
+    if (selection.isValid || 
+        activeElement.hasAttribute('data-editable') || 
+        activeElement.classList.contains('footnote')) {
+      this.currentSelection = selection;
+      this.toolbar.show(selection);
+      
+      // Auto-copie si sélection de texte valide (pas juste curseur)
+      if (selection.isValid && selection.text.length > 0) {
+        this.autoCopyToClipboard();
+      }
+      
+      return;
+    }
+  }
+  
+  this.currentSelection = null;
+  this.toolbar.hide();
+}
+
+autoCopyToClipboard() {
+  // Délai pour éviter la copie répétée lors du drag
+  clearTimeout(this.autoCopyTimeout);
+  this.autoCopyTimeout = setTimeout(() => {
+    const utilsExt = this.toolbar.extensions.find(ext => ext.constructor.name === 'UtilsExtension');
+    if (utilsExt) {
+      utilsExt.copyElementAsMarkdown(true); // true = mode silencieux
+    }
+  }, 300);
+}
+
+
+
 }

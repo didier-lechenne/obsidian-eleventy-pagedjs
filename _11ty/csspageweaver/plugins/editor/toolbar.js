@@ -487,34 +487,37 @@ class UtilsExtension {
     ];
   }
 
-  copyElementAsMarkdown() {
-    const selection = window.getSelection();
-    if (selection.rangeCount === 0) return;
+    copyElementAsMarkdown(silent) {
+      if (typeof silent === 'undefined') silent = false;
+      const selection = window.getSelection();
+      if (selection.rangeCount === 0) return;
 
-    let element = selection.anchorNode;
-    if (element.nodeType === Node.TEXT_NODE) {
-      element = element.parentElement;
+      let element = selection.anchorNode;
+      if (element.nodeType === Node.TEXT_NODE) {
+        element = element.parentElement;
+      }
+
+      while (element && !element.hasAttribute("data-editable")) {
+        element = element.parentElement;
+      }
+
+      if (!element) return;
+
+      // Reconstituer l'élément complet si scindé par PagedJS
+      const completeHTML = this.reconstructSplitElement(element);
+      const markdown = this.toolbar.turndown.turndown(completeHTML);
+
+      navigator.clipboard
+        .writeText(markdown)
+        .then(() => {
+          if (!silent) {
+            this.toolbar.showCopyFeedback();
+          }
+        })
+        .catch((err) => {
+          console.error("Erreur copie:", err);
+        });
     }
-
-    while (element && !element.hasAttribute("data-editable")) {
-      element = element.parentElement;
-    }
-
-    if (!element) return;
-
-    // Reconstituer l'élément complet si scindé par PagedJS
-    const completeHTML = this.reconstructSplitElement(element);
-    const markdown = this.toolbar.turndown.turndown(completeHTML);
-
-    navigator.clipboard
-      .writeText(markdown)
-      .then(() => {
-        this.toolbar.showCopyFeedback();
-      })
-      .catch((err) => {
-        console.error("Erreur copie:", err);
-      });
-  }
 
   reconstructSplitElement(element) {
     const dataRef = element.getAttribute("data-ref");
