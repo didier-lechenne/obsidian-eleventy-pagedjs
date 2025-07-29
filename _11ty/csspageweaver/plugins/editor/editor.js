@@ -7,7 +7,6 @@ import { Handler } from '/csspageweaver/lib/paged.esm.js';
 import { Toolbar } from './toolbar.js';
 import { Selection } from './selection.js';
 import { Commands } from './commands.js';
-import { FrenchFormat } from './french-format.js';
 
 export default class Editor extends Handler {
   constructor(chunker, polisher, caller) {
@@ -15,7 +14,6 @@ export default class Editor extends Handler {
     
     this.options = {
       selector: '[data-editable], .footnote, figcaption',
-      autoTypography: true,
       shortcuts: true
     };
     
@@ -27,7 +25,7 @@ export default class Editor extends Handler {
     this.toolbar = null;
     this.selection = null;
     this.commands = null;
-    this.frenchFormat = null;
+    
   }
   
   beforeParsed(content) {
@@ -95,7 +93,7 @@ export default class Editor extends Handler {
     this.toolbar = new Toolbar(this);
     this.selection = new Selection(this);
     this.commands = new Commands(this);
-    this.frenchFormat = new FrenchFormat(this);
+    
   }
   
   setupEditableElements() {
@@ -114,7 +112,7 @@ export default class Editor extends Handler {
     document.addEventListener('mouseup', this.handleMouseUp.bind(this));
     document.addEventListener('keyup', this.handleKeyUp.bind(this));
     document.addEventListener('keydown', this.handleKeyDown.bind(this));
-    document.addEventListener('input', this.handleInput.bind(this));
+    // document.addEventListener('input', this.handleInput.bind(this));
     document.addEventListener('paste', this.handlePaste.bind(this));
     document.addEventListener('focusin', this.handleFocusIn.bind(this));
   }
@@ -173,19 +171,10 @@ export default class Editor extends Handler {
       this.handleShortcuts(event);
     }
     
-    if (this.options.autoTypography) {
-      this.frenchFormat.handleKeyDown(event);
-    }
+
   }
   
-  handleInput(event) {
-    if (!this.isActive) return;
-    if (!this.isInEditableElement(event.target)) return;
-    
-    if (this.options.autoTypography) {
-      this.frenchFormat.processInput(event);
-    }
-  }
+
   
   handlePaste(event) {
     if (!this.isInEditableElement(event.target)) return;

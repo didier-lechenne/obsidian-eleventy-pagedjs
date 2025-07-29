@@ -57,14 +57,7 @@ export class Selection {
     selection.addRange(range);
   }
   
-  selectElement(element) {
-    const range = document.createRange();
-    range.selectNodeContents(element);
-    
-    const selection = window.getSelection();
-    selection.removeAllRanges();
-    selection.addRange(range);
-  }
+
   
   getSelectionBounds() {
     const selection = window.getSelection();
@@ -74,40 +67,7 @@ export class Selection {
     return range.getBoundingClientRect();
   }
   
-  expandSelectionToWord() {
-    const selection = window.getSelection();
-    if (selection.rangeCount === 0) return;
-    
-    const range = selection.getRangeAt(0);
-    
-    // Étendre au début du mot
-    let startNode = range.startContainer;
-    let startOffset = range.startOffset;
-    
-    if (startNode.nodeType === Node.TEXT_NODE) {
-      const text = startNode.textContent;
-      while (startOffset > 0 && !/\s/.test(text[startOffset - 1])) {
-        startOffset--;
-      }
-    }
-    
-    // Étendre à la fin du mot
-    let endNode = range.endContainer;
-    let endOffset = range.endOffset;
-    
-    if (endNode.nodeType === Node.TEXT_NODE) {
-      const text = endNode.textContent;
-      while (endOffset < text.length && !/\s/.test(text[endOffset])) {
-        endOffset++;
-      }
-    }
-    
-    range.setStart(startNode, startOffset);
-    range.setEnd(endNode, endOffset);
-    
-    selection.removeAllRanges();
-    selection.addRange(range);
-  }
+
   
   isSelectionInEditableElement() {
     const selection = window.getSelection();

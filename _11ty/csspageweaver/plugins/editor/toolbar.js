@@ -3,7 +3,6 @@
  * @file Barre d'outils avec système d'extensions
  */
 
-
 // Classe de base pour les boutons
 class ToolbarButton {
   constructor(command, icon, title, action) {
@@ -14,7 +13,7 @@ class ToolbarButton {
   }
   
   render() {
-    return `<button data-command="${this.command}" title="${this.title}">${this.icon}</button>`;
+    return `<button data-command="${this.command}" data-tooltip="${this.title}">${this.icon}</button>`;
   }
 }
 
@@ -31,6 +30,12 @@ class FormattingExtension {
       }),
       new ToolbarButton('italic', '<em>I</em>', 'Italique (Ctrl+I)', () => {
         this.toolbar.editor.commands.toggleItalic();
+      }),
+      new ToolbarButton('smallcaps', 'ᴀᴀ', 'Petites capitales', () => {
+        this.toolbar.editor.commands.toggleSmallCaps();
+      }),
+      new ToolbarButton('superscript', 'x²', 'Exposant', () => {
+        this.toolbar.editor.commands.toggleSuperscript();
       })
     ];
   }
@@ -211,8 +216,8 @@ class LetterSpacingExtension {
   }
 }
 
-// Extension française
-class FrenchExtension {
+// Extension pour espaces typographiques
+class SpacingExtension {
   constructor(toolbar) {
     this.toolbar = toolbar;
   }
@@ -396,6 +401,24 @@ class FrenchExtension {
       }
       el.parentNode.removeChild(el);
     });
+
+    // Supprimer SmallCaps ajoutés par l'éditeur uniquement
+    const smallCapsElements = element.querySelectorAll('span.small-caps.editor-add');
+    smallCapsElements.forEach(el => {
+      while (el.firstChild) {
+        el.parentNode.insertBefore(el.firstChild, el);
+      }
+      el.parentNode.removeChild(el);
+    });
+
+    // Supprimer Superscript ajoutés par l'éditeur uniquement
+    const supElements = element.querySelectorAll('sup.editor-add');
+    supElements.forEach(el => {
+      while (el.firstChild) {
+        el.parentNode.insertBefore(el.firstChild, el);
+      }
+      el.parentNode.removeChild(el);
+    });
     
     // Normaliser les nœuds de texte
     element.normalize();
@@ -569,6 +592,13 @@ export class Toolbar {
       }
     });
 
+   this.turndown.addRule('superscript', {
+      filter: 'sup',
+      replacement: function (content) {
+        return `<sup>${content}</sup>`;
+      }
+    }); 
+
     // Stocker référence globale pour les règles
     window.mainTurndownService = this.turndown;
 
@@ -589,7 +619,7 @@ export class Toolbar {
     this.extensions = [
       new FormattingExtension(this),
       new LetterSpacingExtension(this),
-      new FrenchExtension(this),
+      new SpacingExtension(this),
       new UtilsExtension(this)
     ];
   }
@@ -700,22 +730,36 @@ export class Toolbar {
     
     const isBold = this.isFormatActive('bold', element);
     const isItalic = this.isFormatActive('italic', element);
+    const isSmallCaps = this.isFormatActive('smallcaps', element);
+    const isSuperscript = this.isFormatActive('superscript', element);
     const hasLetterSpacing = this.hasLetterSpacing(element);
     
     this.element.querySelector('[data-command="bold"]')?.classList.toggle('active', isBold);
     this.element.querySelector('[data-command="italic"]')?.classList.toggle('active', isItalic);
+    this.element.querySelector('[data-command="smallcaps"]')?.classList.toggle('active', isSmallCaps);
+    this.element.querySelector('[data-command="superscript"]')?.classList.toggle('active', isSuperscript);
     this.element.querySelector('[data-command="letter-spacing"]')?.classList.toggle('active', hasLetterSpacing);
   }
   
   isFormatActive(format, element) {
     const tags = {
       bold: ['B', 'STRONG'],
-      italic: ['I', 'EM']
+      italic: ['I', 'EM'],
+      smallcaps: ['SPAN'],
+      superscript: ['SUP']
     };
     
     let current = element;
     while (current && current !== document.body) {
-      if (tags[format] && tags[format].includes(current.tagName)) {
+      if (format === 'smallcaps') {
+        if (current.tagName === 'SPAN' && current.classList.contains('small-caps')) {
+          return true;
+        }
+      } else if (format === 'superscript') {
+        if (current.tagName === 'SUP') {
+          return true;
+        }
+      } else if (tags[format] && tags[format].includes(current.tagName)) {
         return true;
       }
       current = current.parentElement;

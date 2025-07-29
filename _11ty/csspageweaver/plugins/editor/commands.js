@@ -34,11 +34,37 @@ export class Commands {
       this.wrapSelection(range, 'em');
     }
   }
+
+  toggleSmallCaps() {
+    const selection = this.editor.selection.getCurrentSelection();
+    if (!selection || !selection.isValid) return;
+    
+    const range = selection.range;
+    
+    if (this.isWrappedInTag(range, ['SPAN'], 'small-caps')) {
+      this.unwrapTag(range, ['SPAN']);
+    } else {
+      this.wrapSelection(range, 'span', 'small-caps');
+    }
+  }
+
+  toggleSuperscript() {
+    const selection = this.editor.selection.getCurrentSelection();
+    if (!selection || !selection.isValid) return;
+    
+    const range = selection.range;
+    
+    if (this.isWrappedInTag(range, ['SUP'])) {
+      this.unwrapTag(range, ['SUP']);
+    } else {
+      this.wrapSelection(range, 'sup');
+    }
+  }
   
-  wrapSelection(range, tagName) {
+  wrapSelection(range, tagName, className = null) {
     const contents = range.extractContents();
     const wrapper = document.createElement(tagName);
-    wrapper.className = 'editor-add';
+    wrapper.className = className ? `${className} editor-add` : 'editor-add';
     wrapper.appendChild(contents);
     range.insertNode(wrapper);
     
@@ -80,7 +106,7 @@ export class Commands {
     }
   }
   
-  isWrappedInTag(range, tagNames) {
+  isWrappedInTag(range, tagNames, className = null) {
     let container = range.commonAncestorContainer;
     if (container.nodeType === Node.TEXT_NODE) {
       container = container.parentElement;
@@ -89,6 +115,9 @@ export class Commands {
     let current = container;
     while (current && current !== document.body) {
       if (tagNames.includes(current.tagName)) {
+        if (className) {
+          return current.classList.contains(className);
+        }
         return true;
       }
       current = current.parentElement;
