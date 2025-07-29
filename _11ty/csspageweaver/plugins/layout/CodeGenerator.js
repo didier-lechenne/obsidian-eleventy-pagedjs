@@ -66,12 +66,6 @@ export class codeGenerator {
         const caption = this.getCaption(element);
         const properties = this.buildPropertiesObject(element);
 
-        // Ajouter l'ID basé sur le nom du fichier
-        if (url) {
-            const filename = url.split('/').pop().split('.')[0];
-            properties.id = `"${filename}"`;
-        }
-
         // Ajouter la légende si elle existe
         if (caption) {
             properties.caption = `"${this.escapeQuotes(caption)}"`;

@@ -15,8 +15,9 @@ const md = markdownIt({
 });
 
 md.use(markdownItFootnote)
-  
 
+// OPTION : Désactiver la sauvegarde JSON
+const ENABLE_JSON_SAVE = false; // Passer à true pour réactiver
 
 module.exports = function (eleventyConfig) {
 
@@ -29,8 +30,6 @@ module.exports = function (eleventyConfig) {
   // Cache pour les configurations d'images
   let imageConfigs = {};
   let configHasChanged = false;
-
-
 
   function getImageConfig(imageId, overrides = {}) {
     const baseConfig = imageConfigs[imageId] || {};
@@ -78,7 +77,6 @@ function generateHTML(type, config) {
   }
 
   // Incrémenter le compteur pour tous les types qui en ont besoin
-  
   if (['image', 'imagegrid', 'fullpage', 'figure'].includes(type)) {
     globalElementCounter++;
   }
@@ -98,7 +96,6 @@ function generateHTML(type, config) {
         output += `<figcaption class="figcaption figcaption-${globalElementCounter}" ${styleAttr}>${captionHTML}</figcaption>`;
       }
       return output;
-
 
     case "fullpage":
       return `<figure data-id="${id}" id="figure-${globalElementCounter}" class="full-page ${classAttr}"${styleAttr}>
@@ -140,22 +137,27 @@ function generateHTML(type, config) {
     globalImageCounter = 0;
     globalElementCounter = 0;
 
-    try {
-      imageConfigs = JSON.parse(
-        fs.readFileSync("_11ty/_data/images.json", "utf8")
-      );
-      console.log(
-        `✅ ${Object.keys(imageConfigs).length} configs d'images chargées`
-      );
-    } catch (e) {
+    if (ENABLE_JSON_SAVE) {
+      try {
+        imageConfigs = JSON.parse(
+          fs.readFileSync("_11ty/_data/images.json", "utf8")
+        );
+        console.log(
+          `✅ ${Object.keys(imageConfigs).length} configs d'images chargées`
+        );
+      } catch (e) {
+        imageConfigs = {};
+        console.log("📝 Nouveau fichier images.json sera créé");
+      }
+    } else {
       imageConfigs = {};
-      console.log("📝 Nouveau fichier images.json sera créé");
+      console.log("🚫 Sauvegarde JSON désactivée");
     }
     configHasChanged = false;
   });
 
   eleventyConfig.on("eleventy.after", () => {
-    if (configHasChanged) {
+    if (configHasChanged && ENABLE_JSON_SAVE) {
       fs.writeFileSync(
         "_11ty/_data/images.json",
         JSON.stringify(imageConfigs, null, 2)
@@ -167,13 +169,11 @@ function generateHTML(type, config) {
   eleventyConfig.addShortcode("image", function (firstParam, options = {}) {
     let config, imageId;
 
-    // DÉTECTION DU FORMAT D'APPEL
     if (
       typeof firstParam === "string" &&
       !firstParam.includes("/") &&
       !firstParam.includes(".")
     ) {
-      // FORMAT 1: {% image "intro-domestique" %}
       imageId = firstParam;
       config = getImageConfig(imageId, options);
 
@@ -181,19 +181,18 @@ function generateHTML(type, config) {
         return `<!-- ERROR: Image "${imageId}" non trouvée dans JSON -->`;
       }
     } else {
-      // FORMAT 2: {% image "images/photo.jpg", { id: "intro-domestique", printCol: 1 } %}
       imageId = options.id;
       const existingConfig = imageConfigs[imageId] || {};
 
       config = {
-        ...existingConfig, // Config JSON existante
-        ...options, // Nouvelles valeurs
-        src: firstParam, // Force le nouveau src
+        ...existingConfig,
+        ...options,
+        src: firstParam,
       };
 
-      // SAUVEGARDE DANS LE JSON
       if (
         imageId &&
+        ENABLE_JSON_SAVE &&
         JSON.stringify(existingConfig) !== JSON.stringify(config)
       ) {
         imageConfigs[imageId] = { ...config };
@@ -230,6 +229,7 @@ function generateHTML(type, config) {
 
       if (
         imageId &&
+        ENABLE_JSON_SAVE &&
         JSON.stringify(existingConfig) !== JSON.stringify(config)
       ) {
         imageConfigs[imageId] = { ...config };
@@ -266,6 +266,7 @@ function generateHTML(type, config) {
 
       if (
         imageId &&
+        ENABLE_JSON_SAVE &&
         JSON.stringify(existingConfig) !== JSON.stringify(config)
       ) {
         imageConfigs[imageId] = { ...config };
@@ -302,6 +303,7 @@ function generateHTML(type, config) {
 
       if (
         imageId &&
+        ENABLE_JSON_SAVE &&
         JSON.stringify(existingConfig) !== JSON.stringify(config)
       ) {
         imageConfigs[imageId] = { ...config };
@@ -338,6 +340,7 @@ function generateHTML(type, config) {
 
       if (
         imageId &&
+        ENABLE_JSON_SAVE &&
         JSON.stringify(existingConfig) !== JSON.stringify(config)
       ) {
         imageConfigs[imageId] = { ...config };
@@ -351,7 +354,6 @@ function generateHTML(type, config) {
   eleventyConfig.addShortcode("fullpage", function (firstParam, options = {}) {
     let config, itemId;
 
-    // Format 1: {% monShortcode "mon-id" %}
     if (
       typeof firstParam === "string" &&
       !firstParam.includes("/") &&
@@ -364,7 +366,6 @@ function generateHTML(type, config) {
         return `<!-- ERROR: Item "${itemId}" non trouvé dans JSON -->`;
       }
     } else {
-      // Format 2: {% monShortcode "chemin/fichier.ext", { id: "mon-id", propriete: "valeur" } %}
       itemId = options.id;
       const existingConfig = imageConfigs[itemId] || {};
 
@@ -374,60 +375,50 @@ function generateHTML(type, config) {
         src: firstParam,
       };
 
-      // Sauvegarde dans le JSON si l'ID existe et a changé
-      if (itemId && JSON.stringify(existingConfig) !== JSON.stringify(config)) {
+      if (itemId && ENABLE_JSON_SAVE && JSON.stringify(existingConfig) !== JSON.stringify(config)) {
         imageConfigs[itemId] = { ...config };
         configHasChanged = true;
       }
     }
 
-    // Générer le HTML personnalisé
     return generateHTML("fullpage", config);
   });
 
-
-eleventyConfig.addAsyncShortcode("markdown", async function(file, options = {}) {
-  const filePath = path.join(`./${config.publicFolder}`, file);
-  
-  try {
-    const content = await fs.promises.readFile(filePath, 'utf8');
+  eleventyConfig.addAsyncShortcode("markdown", async function(file, options = {}) {
+    const filePath = path.join(`./${config.publicFolder}`, file);
     
-    // Construire les attributs HTML
-    let attributes = [];
-    
-    if (options.class) {
-      attributes.push(`class="include ${options.class}"`);
-    } else {
-      attributes.push('class="include"');
-    }
-    
-    if (options.style) {
-      const escapedStyle = options.style.replace(/"/g, '&quot;');
-      attributes.push(`style="${escapedStyle}"`);
-    }
-    
-    if (options.id) {
-      attributes.push(`id="${options.id}"`);
-    }
-    
-    const attrString = attributes.join(' ');
-    
-    // Rendre le markdown
-    const renderedContent = file.endsWith('.md') 
-      ? md.render(content)
-      : content;
+    try {
+      const content = await fs.promises.readFile(filePath, 'utf8');
       
-    return `<div ${attrString}>${renderedContent}</div>`;
-    
-  } catch (error) {
-    console.error(`Erreur inclusion ${file}:`, error.message);
-    return `<div class="include error">❌ Erreur: ${file} non trouvé</div>`;
-  }
-});
-
+      let attributes = [];
+      
+      if (options.class) {
+        attributes.push(`class="include ${options.class}"`);
+      } else {
+        attributes.push('class="include"');
+      }
+      
+      if (options.style) {
+        const escapedStyle = options.style.replace(/"/g, '&quot;');
+        attributes.push(`style="${escapedStyle}"`);
+      }
+      
+      if (options.id) {
+        attributes.push(`id="${options.id}"`);
+      }
+      
+      const attrString = attributes.join(' ');
+      
+      const renderedContent = file.endsWith('.md') 
+        ? md.render(content)
+        : content;
+        
+      return `<div ${attrString}>${renderedContent}</div>`;
+      
+    } catch (error) {
+      console.error(`Erreur inclusion ${file}:`, error.message);
+      return `<div class="include error">❌ Erreur: ${file} non trouvé</div>`;
+    }
+  });
 
 };
-
-
-
-

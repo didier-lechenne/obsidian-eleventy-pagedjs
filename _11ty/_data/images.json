@@ -19,7 +19,6 @@
     "caption": "Ugo La Pietra, Recupero e reinvenzione, 1975.",
     "src": "images/reparer1.png"
   },
-
   "intro-domestique": {
     "id": "intro-domestique",
     "printCol": 1,
@@ -253,14 +252,14 @@
     "width": 12,
     "printWidth": 12,
     "printRow": 1,
-    "printHeight": 10,
+    "printHeight": 9,
     "alignself": "start",
-    "imgX": -7.433808553971486,
-    "imgY": 0.26455026455026454,
-    "imgW": 114.74289656819494,
     "class": "resizable",
     "src": "images/nobody-at-table-edited_dithered.png",
-    "alignSelf": "start"
+    "alignSelf": "start",
+    "imgX": -1.967306450441911,
+    "imgY": 0,
+    "imgW": 103.93461290088382
   },
   "  img_reparer": {
     "id": "  img_reparer",
