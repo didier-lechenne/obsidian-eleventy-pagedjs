@@ -7,7 +7,7 @@
     "clean": "rimraf .cache _site",
     "start:screen": "cross-env ELEVENTY_ENV=dev npx eleventy --serve ",
     "start:print": "npx eleventy --serve --config=.eleventyPrint.js",
-    "start": "cross-env  ELEVENTY_ENV=dev npx eleventy --serve --config=.eleventyStart.js ",
+    "start": "npm run clean && cross-env  ELEVENTY_ENV=dev npx eleventy --serve --config=.eleventyStart.js ",
     "build:screen": "cross-env ELEVENTY_ENV=prod npx eleventy --config=.eleventy.js",
     "build:print": "cross-env ELEVENTY_ENV=prod npx eleventy --config=.eleventyStart.js",
     "build": "npm run clean && npm run build:print",

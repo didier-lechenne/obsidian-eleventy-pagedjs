@@ -6,7 +6,7 @@ gridColGutter: 3mm
 gridRowGutter: 3mm
 toc: ignore
 show: print
-draft: true
+draft: false
 class: modularGrid
 ---
 

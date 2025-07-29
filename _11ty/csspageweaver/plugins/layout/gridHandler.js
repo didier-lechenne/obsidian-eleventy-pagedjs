@@ -366,11 +366,12 @@ export class gridHandler {
         const figcaption = element.nextElementSibling;
         if (figcaption && figcaption.tagName.toLowerCase() === 'figcaption') {
             updates.forEach(([prop, value]) => {
-                if (prop === '--print-row') {
-                    figcaption.style.setProperty(prop, value + height);
-                } else {
-                    figcaption.style.setProperty(prop, value);
-                }
+                figcaption.style.setProperty(prop, value);
+                // if (prop === '--print-row') {
+                //     figcaption.style.setProperty(prop, value + height);
+                // } else {
+                //     figcaption.style.setProperty(prop, value);
+                // }
             });
         }
     }

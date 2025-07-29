@@ -9,9 +9,9 @@
   page-break-after: always;
 
   --g-column-count: var(--grid-col, 12);
-  --g-column-gutter: var(--grid-col-gutter, var(--gutter));
+  --g-column-gutter: var(--grid-col-gutter, 0mm);
   --g-row-count: var(--grid-row, 10);
-  --g-row-gutter: var(--grid-row-gutter, var(--gutter));
+  --g-row-gutter: var(--grid-row-gutter, 0mm);
 
   display: grid;
   grid-template-columns: repeat(var(--g-column-count), 1fr);
@@ -99,7 +99,7 @@
 [data-template="modularGrid"] figcaption,
 .modularGrid figcaption {
   grid-column: var(--print-col, auto) / span var(--print-width, 12);
-  grid-row: calc(var(--print-row) + var(--print-height)) / span 1;
+  grid-row: calc( var(--print-row) + var(--print-height) ) / span 1;
   position: relative;
   width: 100%;
 }

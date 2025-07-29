@@ -46,7 +46,7 @@ module.exports = function (eleventyConfig) {
       printRow: "--print-row",
       printHeight: "--print-height",
       alignSelf: "--align-self",
-      alignself: "--align-self", // Support des deux formats
+      alignself: "--align-self", 
       imgX: "--img-x",
       imgY: "--img-y",
       imgW: "--img-w",
@@ -101,7 +101,7 @@ function generateHTML(type, config) {
 
 
     case "fullpage":
-      return `<figure data-id="${id}" id="figure-${globalElementCounter}" class="$ full-page ${classAttr}"${styleAttr}>
+      return `<figure data-id="${id}" id="figure-${globalElementCounter}" class="full-page ${classAttr}"${styleAttr}>
         <img src="${config.src}" alt="${cleanAlt}">
       </figure>`;
 
