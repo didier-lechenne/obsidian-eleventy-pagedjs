@@ -6,4 +6,5 @@
 	"version": 2,
 	"repository": "https://gitlab.com/nicolastaf/pagedjs-reload-in-place",
 	"hook": "reloadInPlace.js"
+
 }

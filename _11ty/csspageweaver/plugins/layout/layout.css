@@ -1,4 +1,14 @@
 @media screen {
+
+
+  .layout .gridStudio  {
+      display: block;
+  }
+
+  .gridStudio  {
+        display: none;
+    }
+
   /* Élément sélectionnable - bordure fine uniquement */
   .modularGrid .resizable {
     position: relative;

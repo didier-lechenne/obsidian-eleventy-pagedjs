@@ -31,9 +31,9 @@
 
   /* STYLE ----------------------------------- */
   :root {
-    --cssPageWeaver-font: 'ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;';
-    --cssPageWeaver-size: 16px;
-    --cssPageWeaver-fixed: 30px;
+    --cssPageWeaver-font: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+    --cssPageWeaver-size: 16px ;
+    --cssPageWeaver-fixed: 30px ;
 
     /* --cssPageWeaver-color-border: #8fb6b0;
         --cssPageWeaver-color-accent: #EE6C4D;
@@ -98,15 +98,22 @@
   }
 
   csspageweaver-gui {
-    font-family: var(--cssPageWeaver-font);
-    color: var(--cssPageWeaver-color-text);
-    font-size: var(--cssPageWeaver-size);
+    font-family: var(--cssPageWeaver-font) !important;
+    color: var(--cssPageWeaver-color-text)!important;
+    font-size: var(--cssPageWeaver-size)!important;
   }
 
   csspageweaver-gui label,
   csspageweaver-gui button {
     cursor: pointer !important;
   }
+
+  #panel-open,
+  #panel-closed{
+    font-size: 32px !important;
+    user-select: none;
+  }
+
 
   #cssPageWeaver_toggle-panel + label {
     position: fixed;

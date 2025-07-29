@@ -9,7 +9,7 @@ Adapted for this project */
 :root {
     --color-background: #efefef;
     --color-pageSheet: #cfcfcf;
-    --color-pageBox: violet;
+    --color-pageBox: blue;
     --color-paper: white;
     --pagedjs-crop-color: #000;
     --pagedjs-crop-stroke: 1px;

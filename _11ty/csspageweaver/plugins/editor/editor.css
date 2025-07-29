@@ -29,8 +29,8 @@
   --editor-tooltip-padding: 4px 8px;
   
   /* Tailles */
-  --editor-button-min-width: 32px;
-  --editor-button-height: 32px;
+  --editor-button-min-width: 18px;
+  --editor-button-height: 18px;
   --editor-input-width: 60px;
   --editor-z-index: 9999;
   --editor-tooltip-z-index: 10000;
@@ -63,7 +63,11 @@
 }
 
 .paged-editor-active .small-caps,
-.paged-editor-active sup
+.paged-editor-active sup,
+.paged-editor-active br,
+.paged-editor-active figcaption .small-caps,
+.paged-editor-active figcaption sup,
+.paged-editor-active figcaption br
 {
   background-color: var(--editor-primary-highlight);
 }

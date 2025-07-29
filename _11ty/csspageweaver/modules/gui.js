@@ -244,7 +244,7 @@ class CssPageWeaver_GUI extends HTMLElement {
 
 		const openSpan = document.createElement('span');
 		openSpan.id = 'panel-open';
-		openSpan.textContent = '−';
+		openSpan.textContent = '×';
 
 		const closedSpan = document.createElement('span');
 		closedSpan.id = 'panel-closed';
