@@ -21,7 +21,7 @@ export default class Layout extends Handler {
         this.toggleHandler = null;
         this.fileTitle = cssPageWeaver.docTitle;
         
-        console.log('🚀 Layout Plugin: Initialisation...');
+        // console.log('🚀 Layout Plugin: Initialisation...');
     }
 
     beforeParsed(content) {
@@ -34,7 +34,7 @@ export default class Layout extends Handler {
             this.initializeHandlers();
             this.initializeLayoutToggle();
             this.isInitialized = true;
-            console.log('✅ Layout Plugin: Prêt');
+            // console.log('✅ Layout Plugin: Prêt');
         }, 100);
     }
 
@@ -44,16 +44,16 @@ export default class Layout extends Handler {
             this.imageHandler.initialize();
             this.codeGenerator.initialize();
             
-            console.log('🎯 Tous les handlers sont initialisés');
+            // console.log('🎯 Tous les handlers sont initialisés');
         } catch (error) {
-            console.error('❌ Erreur initialisation handlers:', error);
+            // console.error('❌ Erreur initialisation handlers:', error);
         }
     }
 
     initializeLayoutToggle() {
         if (this.toggleHandler) return; // Éviter les doublons
 
-        console.log('🎛️ Initialisation du toggle Layout...');
+   
         
         // Vérifications avec fallbacks
         let body = cssPageWeaver?.ui?.body;
@@ -61,13 +61,13 @@ export default class Layout extends Handler {
         
         // Fallback pour body
         if (!body) {
-            console.warn('⚠️ cssPageWeaver.ui.body non trouvé, utilisation de document.body');
+            // console.warn('⚠️ cssPageWeaver.ui.body non trouvé, utilisation de document.body');
             body = document.body;
         }
         
         // Fallback pour toggleInput - chercher dans le DOM
         if (!toggleInput) {
-            console.warn('⚠️ cssPageWeaver.ui.layout.toggleInput non trouvé, recherche dans le DOM...');
+            // console.warn('⚠️ cssPageWeaver.ui.layout.toggleInput non trouvé, recherche dans le DOM...');
             
             // Essayer plusieurs sélecteurs possibles
             const selectors = [
@@ -81,18 +81,18 @@ export default class Layout extends Handler {
             for (const selector of selectors) {
                 toggleInput = document.querySelector(selector);
                 if (toggleInput) {
-                    console.log(`✅ Toggle trouvé avec sélecteur: ${selector}`);
+                    // console.log(`✅ Toggle trouvé avec sélecteur: ${selector}`);
                     break;
                 }
             }
             
             if (!toggleInput) {
-                console.error('❌ Aucun toggle trouvé - le mode layout ne pourra pas être activé');
+                // console.error('❌ Aucun toggle trouvé - le mode layout ne pourra pas être activé');
                 return;
             }
         }
 
-        console.log('✅ Body et toggle trouvés');
+
 
         // Récupérer la préférence sauvegardée
         const preference = localStorage.getItem('layout') === 'true';
@@ -100,7 +100,7 @@ export default class Layout extends Handler {
         body.classList.toggle('layout', preference);
         toggleInput.checked = preference;
         
-        console.log(`🔧 État initial: layout=${body.classList.contains('layout')}`);
+        // console.log(`🔧 État initial: layout=${body.classList.contains('layout')}`);
 
         // Créer le handler d'événement
         this.toggleHandler = (e) => {
@@ -109,17 +109,17 @@ export default class Layout extends Handler {
             localStorage.setItem('layout', isEnabled);
             
             if (isEnabled) {
-                console.log('🟢 Mode Layout activé');
+                // console.log('🟢 Mode Layout activé');
             } else {
-                console.log('🔴 Mode Layout désactivé');
+                // console.log('🔴 Mode Layout désactivé');
             }
             
-            // Debug: vérifier que la classe est bien appliquée
-            console.log('🔍 Classe layout présente:', body.classList.contains('layout'));
+            
+            // console.log('🔍 Classe layout présente:', body.classList.contains('layout'));
         };
         
         toggleInput.addEventListener("input", this.toggleHandler);
-        console.log('🎛️ Toggle Layout configuré');
+        // console.log('🎛️ Toggle Layout configuré');
     }
 
     cleanup() {
@@ -146,10 +146,10 @@ export default class Layout extends Handler {
             }
 
             this.isInitialized = false;
-            console.log('🧹 Layout Plugin nettoyé');
+            // console.log('🧹 Layout Plugin nettoyé');
             
         } catch (error) {
-            console.error('❌ Erreur lors du nettoyage:', error);
+            // console.error('❌ Erreur lors du nettoyage:', error);
         }
     }
 
@@ -160,7 +160,7 @@ export default class Layout extends Handler {
         if (this.imageHandler) this.imageHandler.destroy();
         if (this.codeGenerator) this.codeGenerator.destroy();
         
-        console.log('💥 Layout Plugin détruit');
+        // console.log('💥 Layout Plugin détruit');
     }
 }
 

@@ -143,7 +143,7 @@ export async function copyToClipboard(text) {
         
         return true;
     } catch (err) {
-        console.error('Failed to copy:', err);
+        // console.error('Failed to copy:', err);
         
         // Fallback pour les anciens navigateurs
         const input = document.querySelector('#showCode');

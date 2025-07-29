@@ -35,7 +35,7 @@ export class gridHandler {
         
         this.setupEventListeners();
         this.isInitialized = true;
-        console.log('✅ gridHandler: Zones de redimensionnement activées');
+        // console.log('✅ gridHandler: Zones de redimensionnement activées');
     }
 
     setupEventListeners() {

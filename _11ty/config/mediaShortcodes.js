@@ -85,22 +85,23 @@ function generateHTML(type, config) {
 
   switch (type) {
     case "image":
-      return `<figure data-id="${id}" id="image-${globalElementCounter}" class="${globalElementCounter} figure image${classAttr}"${styleAttr}>
+      return `<figure data-id="${id}" id="image-${globalElementCounter}" class=" figure image${classAttr}"${styleAttr}>
         <img src="${config.src}" alt="${cleanAlt}" >
         ${captionHTML ? `<figcaption class="figcaption">${captionHTML}</figcaption>` : ""}
       </figure>`;
 
     case "imagegrid":
-      let output = `<figure data-id="${id}" class="${globalElementCounter} resize${classAttr}" id="figure-${globalElementCounter}"${styleAttr}>
+      let output = `<figure data-id="${id}" class=" resize${classAttr}" id="figure-${globalElementCounter}"${styleAttr}>
         <img src="${config.src}" alt="${cleanAlt}" >
       </figure>`;
       if (captionHTML) {
-        output += `<figcaption class="figcaption figcaption-${globalElementCounter}">${captionHTML}</figcaption>`;
+        output += `<figcaption class="figcaption figcaption-${globalElementCounter}" ${styleAttr}>${captionHTML}</figcaption>`;
       }
       return output;
 
+
     case "fullpage":
-      return `<figure data-id="${id}" id="figure-${globalElementCounter}" class="${globalElementCounter} full-page ${classAttr}"${styleAttr}>
+      return `<figure data-id="${id}" id="figure-${globalElementCounter}" class="$ full-page ${classAttr}"${styleAttr}>
         <img src="${config.src}" alt="${cleanAlt}">
       </figure>`;
 

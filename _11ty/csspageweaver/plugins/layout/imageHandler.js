@@ -39,7 +39,7 @@ export class imageHandler {
     this.setupEventListeners();
     this.setupPanelControls();
     this.isInitialized = true;
-    console.log("✅ imageHandler: Manipulation d'images activée");
+    // console.log("✅ imageHandler: Manipulation d'images activée");
   }
 
   setupEventListeners() {
@@ -259,13 +259,13 @@ export class imageHandler {
 
   translateImage(deltaX, deltaY) {
     if (!this.currentImage) {
-      console.warn("⚠️ translateImage appelé sans currentImage défini");
+      // console.warn("⚠️ translateImage appelé sans currentImage défini");
       return;
     }
 
     const parent = this.currentImage.parentElement;
     if (!parent) {
-      console.warn("⚠️ currentImage n'a pas de parent");
+      // console.warn("⚠️ currentImage n'a pas de parent");
       return;
     }
 
@@ -338,7 +338,7 @@ export class imageHandler {
     const newTopPercentage =
       ((-oldHeight * resizeFract * relY + img.offsetTop) / parentHeight) * 100;
 
-    // ✅ Utilisation de setCSSProperties au lieu de 3 style.setProperty
+    
     setCSSProperties(parent, {
       "img-w": newWidthPercentage,
       "img-x": newLeftPercentage,
@@ -366,7 +366,11 @@ export class imageHandler {
     const move = moves[e.key];
     if (move) {
       e.preventDefault();
-      this.translateImageForElement(selectedElement, ...move);
+      const img = findImageElement(selectedElement);
+      if (img) {
+        this.currentImage = img;
+        this.translateImage(...move);
+      }
       this.generateCodeForElement(selectedElement, true);
       return;
     }
@@ -411,27 +415,27 @@ export class imageHandler {
     }
   }
 
-  translateImageForElement(element, deltaX, deltaY) {
-    const img = findImageElement(element);
-    if (!img) return;
+  // translateImageForElement(element, deltaX, deltaY) {
+  //   const img = findImageElement(element);
+  //   if (!img) return;
 
-    const parent = img.parentElement;
-    const parentWidth = parent.offsetWidth;
-    const parentHeight = parent.offsetHeight;
+  //   const parent = img.parentElement;
+  //   const parentWidth = parent.offsetWidth;
+  //   const parentHeight = parent.offsetHeight;
 
-    const currentX =
-      parseFloat(getComputedStyle(parent).getPropertyValue("--img-x")) || 0;
-    const currentY =
-      parseFloat(getComputedStyle(parent).getPropertyValue("--img-y")) || 0;
+  //   const currentX =
+  //     parseFloat(getComputedStyle(parent).getPropertyValue("--img-x")) || 0;
+  //   const currentY =
+  //     parseFloat(getComputedStyle(parent).getPropertyValue("--img-y")) || 0;
 
-    const newX = currentX + (deltaX / parentWidth) * 100;
-    const newY = currentY + (deltaY / parentHeight) * 100;
+  //   const newX = currentX + (deltaX / parentWidth) * 100;
+  //   const newY = currentY + (deltaY / parentHeight) * 100;
 
-    setCSSProperties(parent, {
-      "img-x": newX,
-      "img-y": newY,
-    });
-  }
+  //   setCSSProperties(parent, {
+  //     "img-x": newX,
+  //     "img-y": newY,
+  //   });
+  // }
 
   // === CONTRÔLES PANEL ===
 

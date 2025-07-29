@@ -7,16 +7,15 @@ export class codeGenerator {
     constructor() {
         this.turndownService = typeof TurndownService !== 'undefined' ? new TurndownService() : null;
         this.isInitialized = false;
-        this.lastCopyTime = 0;  // ✅ Throttling des copies
-        this.copyThrottle = 1000; // ✅ 1 seconde minimum entre copies
-    }
-
+        this.lastCopyTime = 0;  
+        this.copyThrottle = 1000; 
+}
     initialize() {
         if (this.isInitialized) return;
 
         this.setupEventListeners();
         this.isInitialized = true;
-        console.log('✅ codeGenerator: Génération de code activée');
+        // console.log('✅ codeGenerator: Génération de code activée');
     }
 
     setupEventListeners() {
@@ -30,45 +29,13 @@ export class codeGenerator {
         }
     }
 
-   handleGenerateCode(e) {
+    handleGenerateCode(e) {
         const { element, shouldCopy = false } = e.detail;
-        
-        // ✅ Vérifier si la copie est vraiment demandée et appropriée
-        const canCopy = shouldCopy && this.shouldAllowCopy();
-        
-        this.generate(element, canCopy);
+        this.generate(element, shouldCopy);
     }
 
-    shouldAllowCopy() {
-        const now = Date.now();
-        
-        // ✅ Throttling : éviter les copies trop fréquentes
-        if (now - this.lastCopyTime < this.copyThrottle) {
-            console.log('🚫 Copie throttlée (trop fréquente)');
-            return false;
-        }
-        
-        // ✅ Vérifier que le document a le focus
-        if (!document.hasFocus()) {
-            console.log('🚫 Copie ignorée (document pas en focus)');
-            return false;
-        }
-        
-        // ✅ Vérifier qu'on est dans un contexte sécurisé (HTTPS/localhost)
-        if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
-            console.log('🚫 Copie ignorée (contexte non-sécurisé)');
-            return false;
-        }
-        
-        return true;
-    }
+ 
 
-    handleCopyClick() {
-        const content = document.querySelector('.cssoutput');
-        if (content) {
-            copyToClipboard(content.textContent);
-        }
-    }
 
     generate(element, shouldCopy = false) {
         if (!element) return '';
@@ -82,28 +49,15 @@ export class codeGenerator {
             copyToClipboard(code);
         }
 
-        console.log('📝 Code généré:', code);
+        // console.log('📝 Code généré:', code);
         return code;
     }
 
-    async copyWithFeedback(code) {
-        try {
-            const success = await copyToClipboard(code);
-            if (success) {
-                this.lastCopyTime = Date.now();
-                console.log('✅ Code copié avec succès');
-            }
-        } catch (error) {
-            console.error('❌ Erreur lors de la copie:', error);
-        }
-    }
 
-    // ✅ Handler pour le bouton copier explicite
     handleCopyClick() {
         const content = document.querySelector('.cssoutput');
-        if (content && content.textContent) {
-            // ✅ Clic explicite → toujours autoriser la copie
-            this.copyWithFeedback(content.textContent);
+        if (content) {
+            copyToClipboard(content.textContent);
         }
     }
 
@@ -211,7 +165,7 @@ export class codeGenerator {
             try {
                 return this.turndownService.turndown(clone.innerHTML);
             } catch (error) {
-                console.warn('Erreur conversion Markdown:', error);
+                // console.warn('Erreur conversion Markdown:', error);
                 return clone.textContent.trim();
             }
         } else {
@@ -239,7 +193,7 @@ export class codeGenerator {
         }
 
         this.isInitialized = false;
-        console.log('🧹 codeGenerator nettoyé');
+        // console.log('🧹 codeGenerator nettoyé');
     }
 
     destroy() {
