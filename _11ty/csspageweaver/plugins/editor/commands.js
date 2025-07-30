@@ -61,25 +61,52 @@ export class Commands {
   }
   
   toggleLetterSpacing() {
-    // Si input actif, valider et fermer
-    if (this.input && this.input.style.display !== "none") {
-      this.hideLetterSpacingInput();
-      return;
+    // Déléguer à l'extension LetterSpacing via la toolbar
+    const letterSpacingExt = this.editor.toolbar.extensions.find(
+      ext => ext.constructor.name === 'LetterSpacingExtension'
+    );
+    
+    if (letterSpacingExt) {
+      letterSpacingExt.handleLetterSpacingToggle();
     }
+  }
+
+  // Méthodes utilitaires pour le letter-spacing (déplacées depuis l'extension)
+  findLetterSpacingSpan(range) {
+    let container = range.commonAncestorContainer;
+    if (container.nodeType === Node.TEXT_NODE) {
+      container = container.parentElement;
+    }
+
+    let current = container;
+    while (current && current !== document.body) {
+      if (
+        current.tagName === "SPAN" &&
+        current.style.getPropertyValue("--ls") !== ""
+      ) {
+        return current;
+      }
+      current = current.parentElement;
+    }
+
+    return null;
+  }
+
+  wrapWithLetterSpacing(range) {
+    const contents = range.extractContents();
+    const span = document.createElement("span");
+    span.style.setProperty("--ls", "0");
+    span.className = "editor-add";
+    span.appendChild(contents);
+
+    range.insertNode(span);
+    range.selectNodeContents(span);
 
     const selection = window.getSelection();
-    if (selection.rangeCount === 0) return;
+    selection.removeAllRanges();
+    selection.addRange(range);
 
-    const range = selection.getRangeAt(0);
-
-    // Vérifier si déjà dans un span avec --ls
-    const existingSpan = this.findLetterSpacingSpan(range);
-
-    if (existingSpan) {
-      this.showLetterSpacingInput(existingSpan);
-    } else {
-      this.wrapWithLetterSpacing(range);
-    }
+    return span;
   }
 
   wrapSelection(range, tagName, className = null) {

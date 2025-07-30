@@ -15,7 +15,7 @@ class: modularGrid
 
 
 
- {% imagegrid "images/img_test.jpg", { 
+ {% grid "images/img_test.jpg", { 
   id: "img_test",
   printCol: 1,
   printWidth: 7,

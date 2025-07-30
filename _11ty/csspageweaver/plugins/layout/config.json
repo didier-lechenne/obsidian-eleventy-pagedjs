@@ -13,6 +13,6 @@
 		"sample": null
 	},
 
-	"hook": "hook-layout.js",
+	"hook": "layout.js",
 	"stylesheet": "layout.css"
 }

@@ -1,22 +1,41 @@
 @media screen {
 
-
-  .layout .gridStudio  {
-      display: block;
+  .layout .ui-layout {
+    display: block;
   }
 
-  .gridStudio  {
-        display: none;
-    }
+  .ui-layout {
+    display: none;
+  }
 
-  /* Élément sélectionnable - bordure fine uniquement */
-  .modularGrid .resizable {
+  /* === ÉLÉMENTS DATA-GRID === */
+  
+  /* Sélecteur unifié pour tous les éléments data-grid */
+  .modularGrid [data-grid] {
     position: relative;
+  }
+
+  /* État redimensionnable - bordure fine */
+  .modularGrid [data-grid].resizable {
     outline: 1px solid var(--accentColor, #0066cc) !important;
     outline-offset: -1px;
   }
 
-  /* Petit bouton de déplacement discret en haut à droite */
+  /* Couleurs par type d'élément */
+  .modularGrid [data-grid="content"].resizable {
+    outline-color: #ff6600 !important;
+  }
+
+  .modularGrid [data-grid="image"].resizable {
+    outline-color: #00cc66 !important;
+  }
+
+  .modularGrid [data-grid="insert"].resizable {
+    outline-color: #9966cc !important;
+  }
+
+  /* === BOUTON DE DÉPLACEMENT === */
+  
   .move-button {
     position: absolute;
     top: 25px;
@@ -31,14 +50,46 @@
     display: flex;
     align-items: center;
     justify-content: center;
-
-    /* border-radius: 0px;
-                font-size: 8px;
-                line-height: 1;
-                opacity: 0.8; */
   }
 
-  /* États de redimensionnement */
+  /* Masquer par défaut */
+  .move-button {
+    display: none;
+  }
+
+  /* Afficher en mode layout sur éléments resizable */
+  body.layout .modularGrid [data-grid].resizable .move-button {
+    display: flex;
+  }
+
+  /* Couleurs du bouton selon le type */
+  .modularGrid [data-grid="content"].resizable .move-button {
+    border-color: #ff6600;
+  }
+
+  .modularGrid [data-grid="content"].resizable .move-button::before {
+    color: #ff6600;
+  }
+
+  .modularGrid [data-grid="image"].resizable .move-button {
+    border-color: #00cc66;
+  }
+
+  .modularGrid [data-grid="image"].resizable .move-button::before {
+    color: #00cc66;
+  }
+
+  .modularGrid [data-grid="insert"].resizable .move-button {
+    border-color: #9966cc;
+  }
+
+  .modularGrid [data-grid="insert"].resizable .move-button::before {
+    color: #9966cc;
+  }
+
+  /* === ÉTATS DE REDIMENSIONNEMENT === */
+  
+  /* Pendant le redimensionnement */
   body.grid-resizing {
     user-select: none;
     cursor: inherit !important;
@@ -48,94 +99,50 @@
     pointer-events: none !important;
   }
 
-  body.grid-resizing .resizable,
-  body.grid-resizing .resizable * {
+  body.grid-resizing [data-grid],
+  body.grid-resizing [data-grid] * {
     pointer-events: auto !important;
   }
 
-  /* Pendant le redimensionnement */
-  .resizing {
+  /* Élément en cours de redimensionnement */
+  .modularGrid [data-grid].resizing {
     outline-color: #ff6600 !important;
     outline-width: 2px !important;
     z-index: 1000;
   }
 
-  .resizing .move-button {
+  .modularGrid [data-grid].resizing .move-button {
     background: transparent;
     border-color: white;
   }
 
-  .resizing .move-button::before {
+  .modularGrid [data-grid].resizing .move-button::before {
     color: white;
   }
 
-  /* Masquer le bouton par défaut */
-  .move-button {
-    display: none;
-  }
-
-  /* Afficher en mode layout */
-  body.layout .modularGrid .resizable .move-button {
-    display: flex;
-  }
-
-  /* Couleurs selon le type d'élément */
-  .modularGrid .resize.resizable {
-    outline-color: #ff6600 !important;
-  }
-
-  .modularGrid .resize.resizable .move-button {
-    border-color: #ff6600;
-  }
-
-  .modularGrid .resize.resizable .move-button::before {
-    color: #ff6600;
-  }
-
-  .modularGrid .figure.resizable {
-    outline-color: #00cc66 !important;
-  }
-
-  .modularGrid .figure.resizable .move-button {
-    border-color: #00cc66;
-  }
-
-  .modularGrid .figure.resizable .move-button::before {
-    color: #00cc66;
-  }
-
-  .modularGrid .insert.resizable {
-    outline-color: #9966cc !important;
-  }
-
-  .modularGrid .insert.resizable .move-button {
-    border-color: #9966cc;
-  }
-
-  .modularGrid .insert.resizable .move-button::before {
-    color: #9966cc;
-  }
-
-  /* Afficher l'indicateur au survol (optionnel) */
-  body.layout .modularGrid .resizable:hover::after {
-    opacity: 1;
-  }
-
-  .layout .insert.selected {
+  /* === ÉTATS DE SÉLECTION === */
+  
+  .layout [data-grid="insert"].selected {
     outline: 1px dashed var(--accentColor);
   }
 
-  .layout .resize.selected {
+  .layout [data-grid="content"].selected,
+  .layout [data-grid="image"].selected {
     background-color: hsla(16, 100%, 50%, 0.15);
   }
 
-  .layout .insert.selected,
-  .layout .resize.selected,
-  .layout .insert:hover,
-  .layout .resize:hover {
+  .layout [data-grid="insert"].selected,
+  .layout [data-grid="content"].selected,
+  .layout [data-grid="image"].selected,
+  .layout [data-grid="insert"]:hover,
+  .layout [data-grid="content"]:hover,
+  .layout [data-grid="image"]:hover {
     background-color: hsla(16, 100%, 50%, 0.15);
   }
 
+  /* === INTERFACE UTILISATEUR === */
+  
+  /* Styles pour les contrôles (inchangés) */
   [type="checkbox"],
   [type="radio"] {
     box-sizing: border-box;
@@ -143,28 +150,35 @@
   }
 
   .box {
-    /* background: #444; */
     display: flex;
     align-items: center;
     justify-content: center;
     color: #aaa;
     font-size: 1.5rem;
-     user-select: none;
+    user-select: none;
   }
 
   .box input[type="radio"] + label:hover::after {
-     background-color: var(--cssPageWeaver-color-accent-hover);
+    background-color: var(--cssPageWeaver-color-accent-hover);
     fill: var(--cssPageWeaver-color-accent-hover);
   }
 
   .box input[type="radio"] + label:hover::before {
-     background-color: var(--cssPageWeaver-color-accent-hover);
+    background-color: var(--cssPageWeaver-color-accent-hover);
   }
 
   .box input[type="radio"] + label:before {
     margin-right: 0ch !important;
   }
+
   .box input[type="radio"] + label {
     margin-bottom: 0ch !important;
   }
+
+  /* === AFFICHAGE DE L'INDICATEUR AU SURVOL === */
+  
+  body.layout .modularGrid [data-grid].resizable:hover::after {
+    opacity: 1;
+  }
+
 }

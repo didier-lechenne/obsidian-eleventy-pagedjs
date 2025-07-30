@@ -77,7 +77,7 @@ function generateHTML(type, config) {
   }
 
   // Incrémenter le compteur pour tous les types qui en ont besoin
-  if (['image', 'imagegrid', 'fullpage', 'figure'].includes(type)) {
+  if (['image', 'grid', 'fullpage', 'figure'].includes(type)) {
     globalElementCounter++;
   }
 
@@ -88,8 +88,8 @@ function generateHTML(type, config) {
         ${captionHTML ? `<figcaption class="figcaption">${captionHTML}</figcaption>` : ""}
       </figure>`;
 
-    case "imagegrid":
-      let output = `<figure data-id="${id}" class=" resize${classAttr}" id="figure-${globalElementCounter}"${styleAttr}>
+    case "grid":
+      let output = `<figure data-id="${id}" data-grid="image" class="${classAttr}" id="figure-${globalElementCounter}"${styleAttr}>
         <img src="${config.src}" alt="${cleanAlt}" >
       </figure>`;
       if (captionHTML) {
@@ -203,7 +203,7 @@ function generateHTML(type, config) {
     return generateHTML("image", config);
   });
 
-  eleventyConfig.addShortcode("imagegrid", function (firstParam, options = {}) {
+  eleventyConfig.addShortcode("grid", function (firstParam, options = {}) {
     let config, imageId;
 
     if (
@@ -237,7 +237,7 @@ function generateHTML(type, config) {
       }
     }
 
-    return generateHTML("imagegrid", config);
+    return generateHTML("grid", config);
   });
 
   eleventyConfig.addShortcode("video", function (firstParam, options = {}) {
@@ -385,7 +385,10 @@ function generateHTML(type, config) {
   });
 
   eleventyConfig.addAsyncShortcode("markdown", async function(file, options = {}) {
-    const filePath = path.join(`./${config.publicFolder}`, file);
+    const cleanFile = file.replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
+    const filePath = path.join(`./${config.publicFolder}`, cleanFile);
+
+    console.log("Myurl=" + cleanFile);
     
     try {
       const content = await fs.promises.readFile(filePath, 'utf8');
@@ -393,10 +396,8 @@ function generateHTML(type, config) {
       let attributes = [];
       
       if (options.class) {
-        attributes.push(`class="include ${options.class}"`);
-      } else {
-        attributes.push('class="include"');
-      }
+        attributes.push(`class="${options.class}"`);
+      } 
       
       if (options.style) {
         const escapedStyle = options.style.replace(/"/g, '&quot;');
@@ -409,15 +410,15 @@ function generateHTML(type, config) {
       
       const attrString = attributes.join(' ');
       
-      const renderedContent = file.endsWith('.md') 
+      const renderedContent = cleanFile.endsWith('.md') 
         ? md.render(content)
         : content;
         
-      return `<div ${attrString}>${renderedContent}</div>`;
+      return `<div data-grid="markdown" data-md="${cleanFile}" ${attrString}>${renderedContent}</div>`;
       
     } catch (error) {
-      console.error(`Erreur inclusion ${file}:`, error.message);
-      return `<div class="include error">❌ Erreur: ${file} non trouvé</div>`;
+      console.error(`Erreur inclusion ${cleanFile}:`, error.message);
+      return `<div class="include error">❌ Erreur: ${cleanFile} non trouvé</div>`;
     }
   });
 

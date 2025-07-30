@@ -8,7 +8,7 @@
 		"shortcut": [
 			{
 				"active": true,
-				"tutorial": true,
+				"tutorial": false,
 				"keys": ["ctrlKey", "m"]
 			}
 		]

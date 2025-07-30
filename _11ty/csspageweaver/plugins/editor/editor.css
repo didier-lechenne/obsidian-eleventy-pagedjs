@@ -6,40 +6,40 @@
   --editor-primary-border: rgba(74, 144, 226, 0.2);
   --editor-primary-selection: rgba(74, 144, 226, 0.3);
   --editor-primary-highlight: rgba(109, 168, 235, 0.205);
-  
+
   /* Couleurs toolbar */
   --editor-toolbar-bg: #2c3e50;
   --editor-toolbar-input-bg: #34495e;
   --editor-toolbar-input-focus: #3c5b7a;
   --editor-success-color: rgba(39, 174, 96, 0.8);
-  
+
   /* Couleurs tooltip */
   --editor-tooltip-bg: rgba(0, 0, 0, 0.8);
   --editor-tooltip-text: rgba(255, 255, 255, 0.6);
-  
+
   /* Rayons de bordure */
   --editor-border-radius: 2px;
   --editor-toolbar-radius: 6px;
   --editor-button-radius: 4px;
-  
+
   /* Espacement */
   --editor-toolbar-padding: 6px;
   --editor-toolbar-gap: 2px;
   --editor-button-padding: 8px 10px;
   --editor-tooltip-padding: 4px 8px;
-  
+
   /* Tailles */
   --editor-button-min-width: 18px;
   --editor-button-height: 18px;
   --editor-input-width: 60px;
   --editor-z-index: 9999;
   --editor-tooltip-z-index: 10000;
-  
+
   /* Transitions */
   --editor-transition-fast: 0.15s ease;
   --editor-transition-normal: 0.2s ease;
   --editor-transition-duration: 0.3s;
-  
+
   /* Polices */
   --editor-font-size: 14px;
   --editor-font-weight: 500;
@@ -47,11 +47,11 @@
   --editor-quotes-font: "Times New Roman", serif;
   --editor-special-font-size: 16px;
   --editor-letter-spacing-font-size: 10px;
-  
+
   /* Ombres */
   --editor-toolbar-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   --editor-input-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  
+
   /* Responsive breakpoint */
   --editor-mobile-breakpoint: 768px;
 }
@@ -62,13 +62,34 @@
   cursor: text;
 }
 
+/* Mode preview : masquer TOUS les effets d'édition - marche pas */
+/* body.interface-preview .small-caps,
+body.interface-preview sup,
+body.interface-preview br,
+body.interface-preview figcaption .small-caps,
+body.interface-preview figcaption sup,
+body.interface-preview figcaption br,
+body.interface-preview .paged-editor-active .paged-editor-content,
+body.interface-preview .paged-editor-active .paged-editor-content:focus,
+body.interface-preview .paged-editor-toolbar,
+body.interface-preview .paged-editor-toolbar.visible,
+body.interface-preview [style*="--ls"] {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  transition: none !important;
+  visibility: hidden !important;
+} */
+
+
+
+/* Règles normales mode édition */
 .paged-editor-active .small-caps,
 .paged-editor-active sup,
 .paged-editor-active br,
 .paged-editor-active figcaption .small-caps,
 .paged-editor-active figcaption sup,
-.paged-editor-active figcaption br
-{
+.paged-editor-active figcaption br {
   background-color: var(--editor-primary-highlight);
 }
 
@@ -142,8 +163,13 @@
 }
 
 @keyframes success-pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
 }
 
 /* Boutons spéciaux */
@@ -186,7 +212,7 @@
 }
 
 .paged-editor-toolbar button[data-tooltip]:hover::before {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -25px;
   left: 50%;
@@ -239,7 +265,7 @@
     padding: 4px;
     gap: 1px;
   }
-  
+
   .paged-editor-toolbar button {
     padding: 6px 8px;
     font-size: 13px;
