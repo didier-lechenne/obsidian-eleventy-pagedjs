@@ -211,42 +211,88 @@ function generateHTML(type, config) {
     return generateHTML("image", config);
   });
 
-  eleventyConfig.addShortcode("grid", function (firstParam, options = {}) {
-    let config, imageId;
+eleventyConfig.addAsyncShortcode("grid", async function (firstParam, options = {}) {
+  let imageConfig, itemId;
 
-    if (
-      typeof firstParam === "string" &&
-      !firstParam.includes("/") &&
-      !firstParam.includes(".")
-    ) {
-      imageId = firstParam;
-      config = getImageConfig(imageId, options);
+  // Détection automatique du type de contenu
+  const isMarkdownFile = firstParam.endsWith('.md');
+  const isImageFile = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(firstParam);
 
-      if (!config.src) {
-        return `<!-- ERROR: Image "${imageId}" non trouvée dans JSON -->`;
+  if (isMarkdownFile) {
+    // Traitement markdown - copie de la logique du shortcode markdown
+    let parsedOptions = {};
+    if (typeof options === 'string') {
+      try {
+        const cleanString = options.replace(/,(\s*[}\]])/g, '$1');
+        parsedOptions = Function(`"use strict"; return (${cleanString})`)();
+      } catch (e) {
+        parsedOptions = {};
       }
     } else {
-      imageId = options.id;
-      const existingConfig = imageConfigs[imageId] || {};
+      parsedOptions = options || {};
+    }
 
-      config = {
+    const cleanFile = firstParam.replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
+    const filePath = path.join(`./${config.publicFolder}`, cleanFile);
+    
+    try {
+      const content = await fs.promises.readFile(filePath, 'utf8');
+      globalElementCounter++;
+      
+      const styleAttr = generateStyles(parsedOptions);
+      const classAttr = parsedOptions.class ? ` class="${parsedOptions.class}"` : "";
+      const idAttr = parsedOptions.id ? ` id="${parsedOptions.id}"` : ` id="markdown-${globalElementCounter}"`;
+      
+      const renderedContent = cleanFile.endsWith('.md') ? md.render(content) : content;
+      return `<div data-grid="markdown" data-md="${cleanFile}"${idAttr}${classAttr}${styleAttr}>${renderedContent}</div>`;
+      
+    } catch (error) {
+      console.error(`Erreur inclusion ${cleanFile}:`, error.message);
+      return `<div class="include error">❌ Erreur: ${cleanFile} non trouvé</div>`;
+    }
+
+  } else if (isImageFile || firstParam.includes('/') || firstParam.includes('.')) {
+    // Traitement comme image (URL ou chemin)
+    
+    if (typeof firstParam === "string" && !firstParam.includes("/") && !firstParam.includes(".")) {
+      // ID référence dans JSON
+      itemId = firstParam;
+      imageConfig = getImageConfig(itemId, options);
+
+      if (!imageConfig.src) {
+        return `<!-- ERROR: Image "${itemId}" non trouvée dans JSON -->`;
+      }
+    } else {
+      // URL/chemin direct
+      itemId = options.id;
+      const existingConfig = imageConfigs[itemId] || {};
+
+      imageConfig = {
         ...existingConfig,
         ...options,
         src: firstParam,
       };
 
-      if (
-        imageId &&
-        ENABLE_JSON_SAVE &&
-        JSON.stringify(existingConfig) !== JSON.stringify(config)
-      ) {
-        imageConfigs[imageId] = { ...config };
+      if (itemId && ENABLE_JSON_SAVE && JSON.stringify(existingConfig) !== JSON.stringify(imageConfig)) {
+        imageConfigs[itemId] = { ...imageConfig };
         configHasChanged = true;
       }
     }
 
-    return generateHTML("grid", config);
-  });
+    return generateHTML("grid", imageConfig);
+    
+  } else {
+    // Fallback: traitement comme référence d'image
+    itemId = firstParam;
+    imageConfig = getImageConfig(itemId, options);
+
+    if (!imageConfig.src) {
+      return `<!-- ERROR: Item "${itemId}" non trouvé dans JSON -->`;
+    }
+
+    return generateHTML("grid", imageConfig);
+  }
+});
 
   // Nouveau shortcode pour les éléments de contenu
   eleventyConfig.addShortcode("resize", function (options = {}) {

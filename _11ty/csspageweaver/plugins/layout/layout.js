@@ -811,7 +811,7 @@ buildPropertiesObject(element) {
     const value = element.style.getPropertyValue(cssVar);
     if (value && value.trim()) {
       if (key === 'alignSelf') {
-        properties[key] = value.trim(); // Sans guillemets
+        properties[key] = `"${value.trim()}"`; // Ajoute les guillemets
       } else {
         properties[key] = parseFloat(value.trim()) || value.trim();
       }
