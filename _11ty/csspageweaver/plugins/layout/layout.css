@@ -1,5 +1,4 @@
 @media screen {
-
   .layout .ui-layout {
     display: block;
   }
@@ -9,7 +8,7 @@
   }
 
   /* === ÉLÉMENTS DATA-GRID === */
-  
+
   /* Sélecteur unifié pour tous les éléments data-grid */
   .modularGrid [data-grid] {
     position: relative;
@@ -17,7 +16,7 @@
 
   /* État redimensionnable - bordure fine */
   .modularGrid [data-grid].resizable {
-    outline: 1px solid var(--accentColor, #0066cc) !important;
+    outline: 1px solid var(--cssPageWeaver-color-accent) !important;
     outline-offset: -1px;
   }
 
@@ -34,8 +33,27 @@
     outline-color: #9966cc !important;
   }
 
+  .element-info {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+  }
+
+  #label_rd1::after {
+    content: attr(data-name);
+    margin-left: 0em;
+    font-weight: bold;
+    color: var(--cssPageWeaver-color-accent);
+  }
+
+  #position::after {
+    content: "Type: " attr(data-shortcode);
+    font-size: 0.9em;
+    color: var(--cssPageWeaver-color-accent);
+  }
+
   /* === BOUTON DE DÉPLACEMENT === */
-  
+
   .move-button {
     position: absolute;
     top: 25px;
@@ -88,7 +106,7 @@
   }
 
   /* === ÉTATS DE REDIMENSIONNEMENT === */
-  
+
   /* Pendant le redimensionnement */
   body.grid-resizing {
     user-select: none;
@@ -121,7 +139,7 @@
   }
 
   /* === ÉTATS DE SÉLECTION === */
-  
+
   .layout [data-grid="insert"].selected {
     outline: 1px dashed var(--accentColor);
   }
@@ -141,7 +159,7 @@
   }
 
   /* === INTERFACE UTILISATEUR === */
-  
+
   /* Styles pour les contrôles (inchangés) */
   [type="checkbox"],
   [type="radio"] {
@@ -176,193 +194,185 @@
   }
 
   /* === AFFICHAGE DE L'INDICATEUR AU SURVOL === */
-  
+
   body.layout .modularGrid [data-grid].resizable:hover::after {
     opacity: 1;
   }
 
-
-
   @page modularGrid {
-}
+  }
 
-[data-template="modularGrid"],
-.modularGrid {
-  page: modularGrid;
+  [data-template="modularGrid"],
+  .modularGrid {
+    page: modularGrid;
 
-  page-break-before: always;
-  page-break-after: always;
+    page-break-before: always;
+    page-break-after: always;
 
-  --g-column-count: var(--grid-col, 12);
-  --g-column-gutter: var(--grid-col-gutter, 0mm);
-  --g-row-count: var(--grid-row, 10);
-  --g-row-gutter: var(--grid-row-gutter, 0mm);
+    --g-column-count: var(--grid-col, 12);
+    --g-column-gutter: var(--grid-col-gutter, 0mm);
+    --g-row-count: var(--grid-row, 10);
+    --g-row-gutter: var(--grid-row-gutter, 0mm);
 
-  display: grid;
-  grid-template-columns: repeat(var(--g-column-count), 1fr);
-  grid-template-rows: repeat(var(--g-row-count), 1fr);
-  column-gap: var(--g-column-gutter);
-  row-gap: var(--g-row-gutter);
-  height: calc(
-    var(--pagedjs-height) - var(--pagedjs-margin-top) -
-      var(--pagedjs-margin-bottom) - var(--pagedjs-bleed-top) -
-      var(--pagedjs-bleed-bottom)
-  );
-  min-height: 0;
-  padding-top: 0;
-  padding-bottom: 0;
-}
+    display: grid;
+    grid-template-columns: repeat(var(--g-column-count), 1fr);
+    grid-template-rows: repeat(var(--g-row-count), 1fr);
+    column-gap: var(--g-column-gutter);
+    row-gap: var(--g-row-gutter);
+    height: calc(
+      var(--pagedjs-height) - var(--pagedjs-margin-top) -
+        var(--pagedjs-margin-bottom) - var(--pagedjs-bleed-top) -
+        var(--pagedjs-bleed-bottom)
+    );
+    min-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
 
-.modularGrid .pagedjs_full-page_content {
-  left: calc((var(--pagedjs-margin-left) + 6mm) * -1) !important;
-  width: calc(var(--pagedjs-pagebox-width) + 6mm + 6mm) !important;
-}
+  .modularGrid .pagedjs_full-page_content {
+    left: calc((var(--pagedjs-margin-left) + 6mm) * -1) !important;
+    width: calc(var(--pagedjs-pagebox-width) + 6mm + 6mm) !important;
+  }
 
-/* === ÉLÉMENTS DATA-GRID GÉNÉRIQUES === */
+  /* === ÉLÉMENTS DATA-GRID GÉNÉRIQUES === */
 
-.modularGrid [data-grid] {
-  grid-column: var(--print-col, auto) / span var(--print-width, 3);
-  grid-row: var(--print-row, auto) / span var(--print-height, 3);
-  position: relative;
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  max-width: unset;
-}
+  .modularGrid [data-grid] {
+    grid-column: var(--print-col, auto) / span var(--print-width, 3);
+    grid-row: var(--print-row, auto) / span var(--print-height, 3);
+    position: relative;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    max-width: unset;
+  }
 
-/* === ÉLÉMENTS DE CONTENU === */
+  /* === ÉLÉMENTS DE CONTENU === */
 
+  .modularGrid [data-grid="content"] h1,
+  .modularGrid [data-grid="content"] h2,
+  .modularGrid [data-grid="content"] h3,
+  .modularGrid [data-grid="content"] h4,
+  .modularGrid [data-grid="content"] div,
+  .modularGrid [data-grid="content"] p,
+  .modularGrid [data-grid="content"] blockquote,
+  .modularGrid .insert h1,
+  .modularGrid .insert h2,
+  .modularGrid .insert h3,
+  .modularGrid .insert h4,
+  .modularGrid .insert div,
+  .modularGrid .insert p,
+  .modularGrid .insert blockquote {
+    align-self: var(--align-self, start);
+    flex-grow: 1;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
 
+  [data-template="modularGrid"] [data-grid="content"] p,
+  [data-template="modularGrid"] .insert p,
+  .modularGrid [data-grid="content"] p,
+  .modularGrid .insert p {
+    margin-top: 0em;
+    margin-bottom: 0em;
+  }
 
-.modularGrid [data-grid="content"] h1,
-.modularGrid [data-grid="content"] h2,
-.modularGrid [data-grid="content"] h3,
-.modularGrid [data-grid="content"] h4,
-.modularGrid [data-grid="content"] div,
-.modularGrid [data-grid="content"] p,
-.modularGrid [data-grid="content"] blockquote,
-.modularGrid .insert h1,
-.modularGrid .insert h2,
-.modularGrid .insert h3,
-.modularGrid .insert h4,
-.modularGrid .insert div,
-.modularGrid .insert p,
-.modularGrid .insert blockquote {
-  align-self: var(--align-self, start);
-  flex-grow: 1;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-}
+  [data-template="modularGrid"] [data-grid="content"] p:last-child,
+  [data-template="modularGrid"] .insert p:last-child,
+  .modularGrid [data-grid="content"] p:last-child,
+  .modularGrid .insert p:last-child {
+    margin-bottom: 0;
+  }
 
-[data-template="modularGrid"] [data-grid="content"] p,
-[data-template="modularGrid"] .insert p,
-.modularGrid [data-grid="content"] p,
-.modularGrid .insert p {
-  margin-top: 0em;
-  margin-bottom: 0em;
-}
+  /* === ÉLÉMENTS MARKDOWN === */
 
-[data-template="modularGrid"] [data-grid="content"] p:last-child,
-[data-template="modularGrid"] .insert p:last-child,
-.modularGrid [data-grid="content"] p:last-child,
-.modularGrid .insert p:last-child {
-  margin-bottom: 0;
-}
+  .modularGrid [data-grid="markdown"] > * {
+    align-self: var(--align-self, start);
+    margin: 0;
+    padding: 0;
+  }
 
-/* === ÉLÉMENTS MARKDOWN === */
+  /* === ÉLÉMENTS D'IMAGES === */
 
+  [data-template="modularGrid"] [data-grid="image"],
+  [data-template="modularGrid"] figure,
+  .modularGrid [data-grid="image"],
+  .modularGrid figure {
+    grid-column: var(--print-col, auto) / span var(--print-width, 3);
+    grid-row: var(--print-row, auto) / span var(--print-height, 1);
+    align-self: var(--align-self, start);
+    overflow: hidden;
+    position: relative;
+    margin-top: 0 !important;
+    margin-block-start: 0 !important;
+    margin-bottom: 0 !important;
+    margin-block-end: 0 !important;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    max-width: unset;
+  }
 
+  [data-template="modularGrid"] figcaption,
+  .modularGrid figcaption {
+    grid-column: var(--print-col, auto) / span var(--print-width, 12);
+    grid-row: calc(var(--print-row) + var(--print-height)) / span 1;
+    position: relative;
+    width: 100%;
+  }
 
+  .hideMarker .modularGrid [data-grid="image"],
+  .hideMarker .modularGrid figure {
+    background-color: unset;
+  }
 
+  [data-template="modularGrid"] [data-grid="image"] img,
+  [data-template="modularGrid"] figure img,
+  .modularGrid [data-grid="image"] img,
+  .modularGrid figure img {
+    height: auto;
+    position: absolute;
+    border-style: none;
+    break-inside: avoid;
+    max-width: unset;
 
-.modularGrid [data-grid="markdown"] > * {
-  align-self: var(--align-self, start);
-  margin: 0;
-  padding: 0;
-}
+    left: calc(var(--img-x, 0) * 1%);
+    top: calc(var(--img-y, 0) * 1%);
+    width: calc(var(--img-w, 100) * 1%);
 
-/* === ÉLÉMENTS D'IMAGES === */
+    align-self: var(--align-self, start);
+  }
 
-[data-template="modularGrid"] [data-grid="image"],
-[data-template="modularGrid"] figure,
-.modularGrid [data-grid="image"],
-.modularGrid figure {
-  grid-column: var(--print-col, auto) / span var(--print-width, 3);
-  grid-row: var(--print-row, auto) / span var(--print-height, 1);
-  align-self: var(--align-self, start);
-  overflow: hidden;
-  position: relative;
-  margin-top: 0 !important;
-  margin-block-start: 0 !important;
-  margin-bottom: 0 !important;
-  margin-block-end: 0 !important;
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  max-width: unset;
-}
+  /* === CLASSES SPÉCIFIQUES === */
 
-[data-template="modularGrid"] figcaption,
-.modularGrid figcaption {
-  grid-column: var(--print-col, auto) / span var(--print-width, 12);
-  grid-row: calc( var(--print-row) + var(--print-height) ) / span 1;
-  position: relative;
-  width: 100%;
-}
+  /* Figure mobile (legacy) */
+  .modularGrid .figmove {
+    position: absolute;
+    z-index: 10;
+  }
 
-.hideMarker .modularGrid [data-grid="image"],
-.hideMarker .modularGrid figure {
-  background-color: unset;
-}
+  /* Full page */
+  .modularGrid .full-page {
+    grid-column: 1 / -1;
+    grid-row: 1 / -1;
+  }
 
-[data-template="modularGrid"] [data-grid="image"] img,
-[data-template="modularGrid"] figure img,
-.modularGrid [data-grid="image"] img,
-.modularGrid figure img {
-  height: auto;
-  position: absolute;
-  border-style: none;
-  break-inside: avoid;
-  max-width: unset;
+  /* Video */
+  .modularGrid [data-grid="content"].video video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 
-  left: calc(var(--img-x, 0) * 1%);
-  top: calc(var(--img-y, 0) * 1%);
-  width: calc(var(--img-w, 100) * 1%);
-
-  align-self: var(--align-self, start);
-}
-
-/* === CLASSES SPÉCIFIQUES === */
-
-/* Figure mobile (legacy) */
-.modularGrid .figmove {
-  position: absolute;
-  z-index: 10;
-}
-
-/* Full page */
-.modularGrid .full-page {
-  grid-column: 1 / -1;
-  grid-row: 1 / -1;
-}
-
-/* Video */
-.modularGrid [data-grid="content"].video video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* Image notes */
-.modularGrid .imagenote {
-  grid-column: auto;
-  grid-row: auto;
-  width: auto;
-  height: auto;
-}
+  /* Image notes */
+  .modularGrid .imagenote {
+    grid-column: auto;
+    grid-row: auto;
+    width: auto;
+    height: auto;
+  }
 }

@@ -80,6 +80,19 @@ export default class Layout extends Handler {
         document.addEventListener('wheel', this.handleWheel.bind(this), { passive: false });
         document.addEventListener('keydown', this.handleKeyDown.bind(this));
         document.addEventListener('keyup', this.handleKeyUp.bind(this));
+
+        document.addEventListener('click', this.handleClick.bind(this), true);
+    }
+
+    handleClick(e) {
+        if (!document.body.classList.contains('layout')) return;
+        
+        const element = this.getGridElement(e.target);
+        if (element && this.isInModularGrid(element)) {
+            e.preventDefault();
+            e.stopPropagation();
+            this.selectElement(element);
+        }
     }
 
     // Détection d'éléments data-grid dans le DOM
@@ -132,9 +145,10 @@ export default class Layout extends Handler {
         if (!element.classList.contains('selected')) {
             element.classList.add('hover');
         }
+        this.selectElement(element);
 
         // Sélection avec Shift+survol
-        if (e.shiftKey) {
+        if (e.shiftKey || true) {
             this.selectElement(element);
         }
     }
@@ -163,6 +177,10 @@ export default class Layout extends Handler {
             this.cleanupElement(this.state.hoveredElement);
             this.state.hoveredElement = null;
         }
+        // const alignSelect = document.querySelector('#align-self');
+        // if (alignSelect) alignSelect.value = 'auto';
+
+        // this.updateUI(null);
     }
 
     // Sélectionne un élément pour édition
@@ -601,7 +619,7 @@ export default class Layout extends Handler {
             { id: '#printwidth', property: '--print-width' },
             { id: '#printrow', property: '--print-row' },
             { id: '#printheight', property: '--print-height' },
-            { id: '#align_self', property: '--align-self' },
+            { id: '#align-self', property: '--align-self' },
             { id: '#figcaption_arrow', property: '--figcaption_arrow' }
         ];
 
@@ -690,28 +708,34 @@ export default class Layout extends Handler {
 
     // Met à jour l'interface utilisateur selon l'élément sélectionné
     updateUI(element) {
-        const cssProperties = this.getCSSProperties(element);
-        const imgId = this.getImageId(element);
-        const type = element.dataset.grid;
-
-        // Met à jour les valeurs des inputs
-        Object.entries(cssProperties).forEach(([key, value]) => {
-            const input = document.querySelector(`#${key}`);
-            if (input) {
-                if (input.tagName === 'SELECT') {
-                    input.value = value || input.options[0].value;
-                } else {
-                    input.value = Number(value) || 0;
-                }
-            }
-        });
-
-        // Met à jour les labels d'identification
         const label = document.querySelector('#label_rd1');
-        if (label) label.setAttribute('data-name', `#${type}_${imgId}`);
-
         const position = document.querySelector('#position');
-        if (position) position.setAttribute('data-shortcode', type);
+        
+        if (element) {
+            const cssProperties = this.getCSSProperties(element);
+            const elementId = element.getAttribute('data-id') || element.id || '0';
+            const type = element.dataset.grid;
+
+            // Met à jour les inputs
+            Object.entries(cssProperties).forEach(([key, value]) => {
+                const input = document.querySelector(`#${key}`);
+                if (input) {
+                    if (input.tagName === 'SELECT') {
+                        input.value = value || input.options[0].value;
+                    } else {
+                        input.value = Number(value) || 0;
+                    }
+                }
+            });
+
+            // Met à jour les labels
+            if (label) label.setAttribute('data-name', `${elementId}`);
+            if (position) position.setAttribute('data-shortcode', type);
+        } else {
+            // Cas null - vide les informations
+            if (label) label.setAttribute('data-name', '');
+            if (position) position.setAttribute('data-shortcode', '');
+        }
     }
 
     // === GÉNÉRATION DE CODE ===
@@ -791,35 +815,35 @@ export default class Layout extends Handler {
     }
 
     // Construit l'objet des propriétés CSS à exporter
-buildPropertiesObject(element) {
-  const cssVarMapping = {
-    col: '--col',
-    printCol: '--print-col',
-    width: '--width',
-    printWidth: '--print-width',
-    printRow: '--print-row',
-    printHeight: '--print-height',
-    alignSelf: '--align-self',
-    imgX: '--img-x',
-    imgY: '--img-y',
-    imgW: '--img-w'
-  };
+    buildPropertiesObject(element) {
+    const cssVarMapping = {
+        col: '--col',
+        printCol: '--print-col',
+        width: '--width',
+        printWidth: '--print-width',
+        printRow: '--print-row',
+        printHeight: '--print-height',
+        alignSelf: '--align-self',
+        imgX: '--img-x',
+        imgY: '--img-y',
+        imgW: '--img-w'
+    };
 
-  const properties = {};
+    const properties = {};
 
-  Object.entries(cssVarMapping).forEach(([key, cssVar]) => {
-    const value = element.style.getPropertyValue(cssVar);
-    if (value && value.trim()) {
-      if (key === 'alignSelf') {
-        properties[key] = `"${value.trim()}"`; // Ajoute les guillemets
-      } else {
-        properties[key] = parseFloat(value.trim()) || value.trim();
-      }
+    Object.entries(cssVarMapping).forEach(([key, cssVar]) => {
+        const value = element.style.getPropertyValue(cssVar);
+        if (value && value.trim()) {
+        if (key === 'alignSelf') {
+            properties[key] = `"${value.trim()}"`; // Ajoute les guillemets
+        } else {
+            properties[key] = parseFloat(value.trim()) || value.trim();
+        }
+        }
+    });
+
+    return properties;
     }
-  });
-
-  return properties;
-}
 
     // Formate l'objet des propriétés en syntaxe readable
     formatPropertiesObject(properties) {
@@ -1168,6 +1192,8 @@ buildPropertiesObject(element) {
             document.removeEventListener('wheel', this.handleWheel, { passive: false });
             document.removeEventListener('keydown', this.handleKeyDown);
             document.removeEventListener('keyup', this.handleKeyUp);
+
+            document.removeEventListener('click', this.handleClick, true);
 
             // Nettoie les timeouts
             if (this.resetCursorTimeout) {

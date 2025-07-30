@@ -49,10 +49,6 @@
 
 /* === ÉLÉMENTS DE CONTENU === */
 
-.modularGrid [data-grid="content"],
-.modularGrid .insert {
-  /* Hérite des styles génériques data-grid */
-}
 
 .modularGrid [data-grid="content"] h1,
 .modularGrid [data-grid="content"] h2,
