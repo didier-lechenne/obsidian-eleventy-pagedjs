@@ -45,19 +45,23 @@ module.exports = function (eleventyConfig) {
       printRow: "--print-row",
       printHeight: "--print-height",
       alignSelf: "--align-self",
-      alignself: "--align-self", 
       imgX: "--img-x",
       imgY: "--img-y",
       imgW: "--img-w",
       page: "--pagedjs-full-page"
     };
 
-    let styles = "";
-    Object.entries(config).forEach(([key, value]) => {
-      if (cssVarMapping[key] && value !== undefined) {
+  let styles = "";
+  Object.entries(config).forEach(([key, value]) => {
+    if (cssVarMapping[key] && value !== undefined) {
+      // Gestion spéciale pour alignSelf
+      if (key === 'alignSelf' && typeof value === 'string') {
+        styles += `${cssVarMapping[key]}: ${value}; `;
+      } else {
         styles += `${cssVarMapping[key]}: ${value}; `;
       }
-    });
+    }
+  });
     return styles ? ` style="${styles}"` : "";
   }
 
@@ -83,7 +87,7 @@ function generateHTML(type, config) {
 
   switch (type) {
     case "image":
-      return `<figure data-id="${id}" id="image-${globalElementCounter}" class=" figure image${classAttr}"${styleAttr}>
+      return `<figure data-id="${id}" data-grid="image" id="image-${globalElementCounter}" class="figure image${classAttr}"${styleAttr}>
         <img src="${config.src}" alt="${cleanAlt}" >
         ${captionHTML ? `<figcaption class="figcaption">${captionHTML}</figcaption>` : ""}
       </figure>`;
@@ -97,8 +101,13 @@ function generateHTML(type, config) {
       }
       return output;
 
+    case "resize":
+      return `<div data-id="${id}" data-grid="content" class="${classAttr}" id="content-${globalElementCounter}"${styleAttr}>
+        <!-- Contenu à insérer -->
+      </div>`;
+
     case "fullpage":
-      return `<figure data-id="${id}" id="figure-${globalElementCounter}" class="full-page ${classAttr}"${styleAttr}>
+      return `<figure data-id="${id}" data-grid="image" id="figure-${globalElementCounter}" class="full-page ${classAttr}"${styleAttr}>
         <img src="${config.src}" alt="${cleanAlt}">
       </figure>`;
 
@@ -106,20 +115,20 @@ function generateHTML(type, config) {
       return `<span class="spanMove figure_call" id="fig-${globalElementCounter}-call">
         [<a href="#fig-${globalElementCounter}">fig. ${globalElementCounter}</a>]
       </span>
-      <span class="figure figmove${classAttr}" id="fig-${globalElementCounter}"${styleAttr}>
+      <span class="figure figmove${classAttr}" data-grid="image" id="fig-${globalElementCounter}"${styleAttr}>
         <img src="${config.src}" alt="${cleanAlt}" >
         ${captionHTML ? `<span class="figcaption"><span class="figure_reference">[fig. ${globalElementCounter}]</span> ${captionHTML}</span>` : ""}
       </span>`;
 
     case "imagenote":
-      return `<span class="imagenote sideNote${classAttr}"${styleAttr}>
+      return `<span class="imagenote sideNote${classAttr}" data-grid="image"${styleAttr}>
         <img src="${config.src}" alt="${cleanAlt}" >
         ${captionHTML ? `<span class="caption">${captionHTML}</span>` : ""}
       </span>`;
 
     case "video":
       const posterAttr = config.poster ? ` poster="${config.poster}"` : "";
-      return `<figure class="video${classAttr}"${styleAttr}>
+      return `<figure class="video${classAttr}" data-grid="content"${styleAttr}>
         <video controls${posterAttr}>
           <source src="${config.src}">
         </video>
@@ -238,6 +247,28 @@ function generateHTML(type, config) {
     }
 
     return generateHTML("grid", config);
+  });
+
+  // Nouveau shortcode pour les éléments de contenu
+  eleventyConfig.addShortcode("resize", function (options = {}) {
+    globalElementCounter++;
+    const config = {
+      ...options,
+      id: options.id || `content_${globalElementCounter}`
+    };
+
+    return generateHTML("resize", config);
+  });
+
+  // Nouveau shortcode pour les éléments de contenu
+  eleventyConfig.addShortcode("resize", function (options = {}) {
+    globalElementCounter++;
+    const config = {
+      ...options,
+      id: options.id || `content_${globalElementCounter}`
+    };
+
+    return generateHTML("resize", config);
   });
 
   eleventyConfig.addShortcode("video", function (firstParam, options = {}) {
@@ -384,7 +415,21 @@ function generateHTML(type, config) {
     return generateHTML("fullpage", config);
   });
 
-  eleventyConfig.addAsyncShortcode("markdown", async function(file, options = {}) {
+  eleventyConfig.addAsyncShortcode("markdown", async function(file, optionsString) {
+    // Parse manual pour supporter les trailing commas
+    let options = {};
+    if (typeof optionsString === 'string') {
+      try {
+        // Nettoie les trailing commas
+        const cleanString = optionsString.replace(/,(\s*[}\]])/g, '$1');
+        options = Function(`"use strict"; return (${cleanString})`)();
+      } catch (e) {
+        console.warn('Erreur parsing options markdown:', e.message);
+        options = {};
+      }
+    } else if (typeof optionsString === 'object') {
+      options = optionsString || {};
+    }
     const cleanFile = file.replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
     const filePath = path.join(`./${config.publicFolder}`, cleanFile);
 
@@ -393,28 +438,17 @@ function generateHTML(type, config) {
     try {
       const content = await fs.promises.readFile(filePath, 'utf8');
       
-      let attributes = [];
+      globalElementCounter++;
       
-      if (options.class) {
-        attributes.push(`class="${options.class}"`);
-      } 
-      
-      if (options.style) {
-        const escapedStyle = options.style.replace(/"/g, '&quot;');
-        attributes.push(`style="${escapedStyle}"`);
-      }
-      
-      if (options.id) {
-        attributes.push(`id="${options.id}"`);
-      }
-      
-      const attrString = attributes.join(' ');
+      const styleAttr = generateStyles(options);
+      const classAttr = options.class ? ` class="${options.class}"` : "";
+      const idAttr = options.id ? ` id="${options.id}"` : ` id="markdown-${globalElementCounter}"`;
       
       const renderedContent = cleanFile.endsWith('.md') 
         ? md.render(content)
         : content;
         
-      return `<div data-grid="markdown" data-md="${cleanFile}" ${attrString}>${renderedContent}</div>`;
+      return `<div data-grid="markdown" data-md="${cleanFile}"${idAttr}${classAttr}${styleAttr}>${renderedContent}</div>`;
       
     } catch (error) {
       console.error(`Erreur inclusion ${cleanFile}:`, error.message);

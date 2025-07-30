@@ -745,16 +745,16 @@ export default class Layout extends Handler {
 
     // Génère le shortcode pour les zones d'insertion
     generateMarkdownCode(element) {
-        const classes = this.getCleanClasses(element);
-        const properties = this.buildPropertiesObject(element);
-        const markdown = element.getAttribute('data-md') || '';
+    const classes = this.getCleanClasses(element);
+    const properties = this.buildPropertiesObject(element);
+    const markdown = element.getAttribute('data-md') || '';
 
-        if (classes) {
-            properties.class = `"${classes}"`;
-        }
+    if (classes) {
+        properties.class = `"${classes}"`;
+    }
 
-        const propertiesStr = this.formatPropertiesObject(properties);
-        return `{% markdown "${markdown}", ${propertiesStr} %}`;
+    const propertiesStr = this.formatPropertiesObject(properties);
+    return `{% markdown "${markdown}", ${propertiesStr} %}`;
     }
 
     // Génère le shortcode pour les images
@@ -791,35 +791,35 @@ export default class Layout extends Handler {
     }
 
     // Construit l'objet des propriétés CSS à exporter
-    buildPropertiesObject(element) {
-        const cssVarMapping = {
-            col: '--col',
-            printCol: '--print-col',
-            width: '--width',
-            printWidth: '--print-width',
-            printRow: '--print-row',
-            printHeight: '--print-height',
-            alignSelf: '--align-self',
-            imgX: '--img-x',
-            imgY: '--img-y',
-            imgW: '--img-w'
-        };
+buildPropertiesObject(element) {
+  const cssVarMapping = {
+    col: '--col',
+    printCol: '--print-col',
+    width: '--width',
+    printWidth: '--print-width',
+    printRow: '--print-row',
+    printHeight: '--print-height',
+    alignSelf: '--align-self',
+    imgX: '--img-x',
+    imgY: '--img-y',
+    imgW: '--img-w'
+  };
 
-        const properties = {};
+  const properties = {};
 
-        Object.entries(cssVarMapping).forEach(([key, cssVar]) => {
-            const value = element.style.getPropertyValue(cssVar);
-            if (value && value.trim()) {
-                if (key === 'alignSelf') {
-                    properties[key] = `"${value.trim()}"`;
-                } else {
-                    properties[key] = parseFloat(value.trim()) || value.trim();
-                }
-            }
-        });
-
-        return properties;
+  Object.entries(cssVarMapping).forEach(([key, cssVar]) => {
+    const value = element.style.getPropertyValue(cssVar);
+    if (value && value.trim()) {
+      if (key === 'alignSelf') {
+        properties[key] = value.trim(); // Sans guillemets
+      } else {
+        properties[key] = parseFloat(value.trim()) || value.trim();
+      }
     }
+  });
+
+  return properties;
+}
 
     // Formate l'objet des propriétés en syntaxe readable
     formatPropertiesObject(properties) {
