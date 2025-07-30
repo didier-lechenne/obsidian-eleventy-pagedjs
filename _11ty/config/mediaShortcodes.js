@@ -45,6 +45,8 @@ module.exports = function (eleventyConfig) {
       printRow: "--print-row",
       printHeight: "--print-height",
       alignSelf: "--align-self",
+      alignself: "--align-self",
+      "align-self": "--align-self",
       imgX: "--img-x",
       imgY: "--img-y",
       imgW: "--img-w",
@@ -53,16 +55,13 @@ module.exports = function (eleventyConfig) {
 
   let styles = "";
   Object.entries(config).forEach(([key, value]) => {
-    if (cssVarMapping[key] && value !== undefined) {
-      // Gestion spéciale pour alignSelf
-      if (key === 'alignSelf' && typeof value === 'string') {
-        styles += `${cssVarMapping[key]}: ${value}; `;
-      } else {
-        styles += `${cssVarMapping[key]}: ${value}; `;
-      }
+    if (cssVarMapping[key] && value !== undefined && value !== null && value !== "") {
+      // Nettoie les guillemets si présents
+      const cleanValue = typeof value === 'string' ? value.replace(/^["']|["']$/g, '') : value;
+      styles += `${cssVarMapping[key]}: ${cleanValue}; `;
     }
   });
-    return styles ? ` style="${styles}"` : "";
+  return styles ? ` style="${styles}"` : "";
   }
 
 function generateHTML(type, config) {
