@@ -43,179 +43,180 @@ class FormattingExtension {
 
 // Extension pour le lettrage (letter-spacing)
 // Extension pour le lettrage (letter-spacing)
-  class LetterSpacingExtension {
-    constructor(toolbar) {
-      this.toolbar = toolbar;
-      this.currentSpan = null;
-      this.input = null;
-    }
+class LetterSpacingExtension {
+  constructor(toolbar) {
+    this.toolbar = toolbar;
+    this.currentSpan = null;
+    this.input = null;
+  }
 
-    getButtons() {
-      return [
-        new ToolbarButton(
-          "letter-spacing",
-          "A ↔ A",
-          "Lettrage (Letter-spacing)",
-          () => {
-            this.handleLetterSpacingToggle();
-          }
-        ),
-      ];
-    }
-
-    handleLetterSpacingToggle() {
-      // Si input actif, valider et fermer
-      if (this.input && this.input.style.display !== "none") {
-        this.hideLetterSpacingInput();
-        return;
-      }
-
-      const selection = window.getSelection();
-      if (selection.rangeCount === 0) return;
-
-      const range = selection.getRangeAt(0);
-
-      // Vérifier si déjà dans un span avec --ls
-      const existingSpan = this.toolbar.editor.commands.findLetterSpacingSpan(range);
-
-      if (existingSpan) {
-        this.showLetterSpacingInput(existingSpan);
-      } else {
-        const newSpan = this.toolbar.editor.commands.wrapWithLetterSpacing(range);
-        this.showLetterSpacingInput(newSpan);
-      }
-    }
-
-    findLetterSpacingSpan(range) {
-      return this.toolbar.editor.commands.findLetterSpacingSpan(range);
-    }
-
-   
-
-    showLetterSpacingInput(span) {
-      this.currentSpan = span;
-
-      // Créer ou réutiliser l'input
-      if (!this.input) {
-        this.createLetterSpacingInput();
-      }
-
-      // Récupérer la valeur actuelle
-      const currentValue = span.style.getPropertyValue("--ls") || "0";
-      this.input.value = currentValue;
-
-      // Changer le bouton LS en validation
-      const lsButton = this.toolbar.element.querySelector(
-        '[data-command="letter-spacing"]'
-      );
-      if (lsButton) {
-        lsButton.innerHTML = "✓";
-        lsButton.title = "Valider letter-spacing (Entrée)";
-        lsButton.classList.add("editing");
-      }
-
-      // Positionner l'input près de la toolbar
-      this.positionInput();
-      this.input.style.display = "block";
-      this.input.focus();
-      this.input.select();
-    }
-
-    createLetterSpacingInput() {
-      this.input = document.createElement("input");
-      this.input.type = "number";
-      this.input.step = "1";
-      this.input.className = "letter-spacing-input";
-
-      // Events
-      this.input.addEventListener("input", (e) => {
-        if (this.currentSpan) {
-          const value = e.target.value;
-          this.currentSpan.style.setProperty("--ls", value);
-          this.toolbar.editor.triggerAutoCopy();
+  getButtons() {
+    return [
+      new ToolbarButton(
+        "letter-spacing",
+        "A ↔ A",
+        "Lettrage (Letter-spacing)",
+        () => {
+          this.handleLetterSpacingToggle();
         }
-      });
+      ),
+    ];
+  }
 
-      this.input.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === "Escape") {
-          this.hideLetterSpacingInput();
-        }
-      });
-
-      this.input.addEventListener("blur", () => {
-        // Délai plus long et vérifier si on reste dans la toolbar/input
-        setTimeout(() => {
-          const activeElement = document.activeElement;
-          if (
-            activeElement !== this.input &&
-            !this.toolbar.element.contains(activeElement)
-          ) {
-            this.hideLetterSpacingInput();
-          }
-        }, 200);
-      });
-
-      document.body.appendChild(this.input);
+  handleLetterSpacingToggle() {
+    // Si input actif, valider et fermer
+    if (this.input && this.input.style.display !== "none") {
+      this.hideLetterSpacingInput();
+      return;
     }
 
-    positionInput() {
-      if (!this.toolbar.element || !this.input) return;
+    const selection = window.getSelection();
+    if (selection.rangeCount === 0) return;
 
-      const toolbarRect = this.toolbar.element.getBoundingClientRect();
-      this.input.style.left = `${toolbarRect.right + 10 + window.scrollX}px`;
-      this.input.style.top = `${toolbarRect.top + window.scrollY}px`;
-    }
+    const range = selection.getRangeAt(0);
 
-    hideLetterSpacingInput() {
-      if (this.input) {
-        this.input.style.display = "none";
-      }
-      this.toolbar.editor.triggerAutoCopy();
+    // Vérifier si déjà dans un span avec --ls
+    const existingSpan =
+      this.toolbar.editor.commands.findLetterSpacingSpan(range);
 
-      // Restaurer le bouton LS
-      const lsButton = this.toolbar.element.querySelector(
-        '[data-command="letter-spacing"]'
-      );
-      if (lsButton) {
-        lsButton.innerHTML = "A ↔ A";
-        lsButton.title = "Lettrage (Letter-spacing)";
-        lsButton.classList.remove("editing");
-      }
-
-      this.currentSpan = null;
-
-      // Masquer la toolbar maintenant
-      this.toolbar.isVisible = false;
-      this.toolbar.element.classList.remove("visible");
-    }
-
-    triggerAutoCopy() {
-      clearTimeout(this.autoCopyTimeout);
-      this.autoCopyTimeout = setTimeout(() => {
-        const utilsExt = this.toolbar.extensions.find(ext => ext.constructor.name === 'UtilsExtension');
-        if (utilsExt) {
-          utilsExt.copyElementAsMarkdown(true);
-        }
-      }, 300);
-    }
-
-    // Méthode pour nettoyer lors du reset
-    resetLetterSpacing(element) {
-      const letterSpacingSpans = element.querySelectorAll('span[style*="--ls"]');
-      letterSpacingSpans.forEach((span) => {
-        if (span.classList.contains("editor-add")) {
-          // Remplacer par le contenu
-          const textNode = document.createTextNode(span.textContent);
-          span.parentNode.replaceChild(textNode, span);
-        }
-      });
+    if (existingSpan) {
+      this.showLetterSpacingInput(existingSpan);
+    } else {
+      const newSpan = this.toolbar.editor.commands.wrapWithLetterSpacing(range);
+      this.showLetterSpacingInput(newSpan);
     }
   }
 
+  findLetterSpacingSpan(range) {
+    return this.toolbar.editor.commands.findLetterSpacingSpan(range);
+  }
+
+  showLetterSpacingInput(span) {
+    this.currentSpan = span;
+
+    // Créer ou réutiliser l'input
+    if (!this.input) {
+      this.createLetterSpacingInput();
+    }
+
+    // Récupérer la valeur actuelle
+    const currentValue = span.style.getPropertyValue("--ls") || "0";
+    this.input.value = currentValue;
+
+    // Changer le bouton LS en validation
+    const lsButton = this.toolbar.element.querySelector(
+      '[data-command="letter-spacing"]'
+    );
+    if (lsButton) {
+      lsButton.innerHTML = "✓";
+      lsButton.title = "Valider letter-spacing (Entrée)";
+      lsButton.classList.add("editing");
+    }
+
+    // Positionner l'input près de la toolbar
+    this.positionInput();
+    this.input.style.display = "block";
+    this.input.focus();
+    this.input.select();
+  }
+
+  createLetterSpacingInput() {
+    this.input = document.createElement("input");
+    this.input.type = "number";
+    this.input.step = "1";
+    this.input.className = "letter-spacing-input";
+
+    // Events
+    this.input.addEventListener("input", (e) => {
+      if (this.currentSpan) {
+        const value = e.target.value;
+        this.currentSpan.style.setProperty("--ls", value);
+        this.toolbar.editor.triggerAutoCopy();
+      }
+    });
+
+    this.input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === "Escape") {
+        this.hideLetterSpacingInput();
+      }
+    });
+
+    this.input.addEventListener("blur", () => {
+      // Délai plus long et vérifier si on reste dans la toolbar/input
+      setTimeout(() => {
+        const activeElement = document.activeElement;
+        if (
+          activeElement !== this.input &&
+          !this.toolbar.element.contains(activeElement)
+        ) {
+          this.hideLetterSpacingInput();
+        }
+      }, 200);
+    });
+
+    document.body.appendChild(this.input);
+  }
+
+  positionInput() {
+    if (!this.toolbar.element || !this.input) return;
+
+    const toolbarRect = this.toolbar.element.getBoundingClientRect();
+    this.input.style.left = `${toolbarRect.right + 10 + window.scrollX}px`;
+    this.input.style.top = `${toolbarRect.top + window.scrollY}px`;
+  }
+
+  hideLetterSpacingInput() {
+    if (this.input) {
+      this.input.style.display = "none";
+    }
+    this.toolbar.editor.triggerAutoCopy();
+
+    // Restaurer le bouton LS
+    const lsButton = this.toolbar.element.querySelector(
+      '[data-command="letter-spacing"]'
+    );
+    if (lsButton) {
+      lsButton.innerHTML = "A ↔ A";
+      lsButton.title = "Lettrage (Letter-spacing)";
+      lsButton.classList.remove("editing");
+    }
+
+    this.currentSpan = null;
+
+    // Masquer la toolbar maintenant
+    this.toolbar.isVisible = false;
+    this.toolbar.element.classList.remove("visible");
+  }
+
+  triggerAutoCopy() {
+    clearTimeout(this.autoCopyTimeout);
+    this.autoCopyTimeout = setTimeout(() => {
+      const utilsExt = this.toolbar.extensions.find(
+        (ext) => ext.constructor.name === "UtilsExtension"
+      );
+      if (utilsExt) {
+        utilsExt.copyElementAsMarkdown(true);
+      }
+    }, 300);
+  }
+
+  // Méthode pour nettoyer lors du reset
+  resetLetterSpacing(element) {
+    const letterSpacingSpans = element.querySelectorAll('span[style*="--ls"]');
+    letterSpacingSpans.forEach((span) => {
+      if (span.classList.contains("editor-add")) {
+        // Remplacer par le contenu
+        const textNode = document.createTextNode(span.textContent);
+        span.parentNode.replaceChild(textNode, span);
+      }
+    });
+  }
+}
+
 // Extension pour espaces typographiques
 
-class SpacingExtension 
-{ constructor(toolbar) {
+class SpacingExtension {
+  constructor(toolbar) {
     this.toolbar = toolbar;
   }
 
@@ -233,12 +234,22 @@ class SpacingExtension
       new ToolbarButton("quote-close", "»", "Guillemet fermant", () => {
         this.insertClosingQuote();
       }),
-      new ToolbarButton("quote-en-open", '"', "Guillemet ouvrant anglais", () => {
+      new ToolbarButton(
+        "quote-en-open",
+        '"',
+        "Guillemet ouvrant anglais",
+        () => {
           this.insertEnglishOpeningQuote();
-      }),
-      new ToolbarButton( "quote-en-close", '"', "Guillemet fermant anglais", () => {
+        }
+      ),
+      new ToolbarButton(
+        "quote-en-close",
+        '"',
+        "Guillemet fermant anglais",
+        () => {
           this.insertEnglishClosingQuote();
-      }),
+        }
+      ),
       new ToolbarButton("br", "↵", "Saut de ligne", () => {
         this.insertBreak();
       }),
@@ -355,11 +366,11 @@ class SpacingExtension
     if (selection.rangeCount > 0) {
       const range = selection.getRangeAt(0);
       range.deleteContents();
-      
-      const quote = document.createElement('span');
-      quote.className = 'editor-add';
-      quote.textContent = '“';
-      
+
+      const quote = document.createElement("span");
+      quote.className = "editor-add";
+      quote.textContent = "“";
+
       range.insertNode(quote);
       range.setStartAfter(quote);
       range.collapse(true);
@@ -373,11 +384,11 @@ class SpacingExtension
     if (selection.rangeCount > 0) {
       const range = selection.getRangeAt(0);
       range.deleteContents();
-      
-      const quote = document.createElement('span');
-      quote.className = 'editor-add';
-      quote.textContent = '”';
-      
+
+      const quote = document.createElement("span");
+      quote.className = "editor-add";
+      quote.textContent = "”";
+
       range.insertNode(quote);
       range.setStartAfter(quote);
       range.collapse(true);
@@ -385,7 +396,6 @@ class SpacingExtension
       selection.addRange(range);
     }
   }
-
 
   resetTransformations() {
     const selection = window.getSelection();
@@ -490,7 +500,7 @@ class UtilsExtension {
   }
 
   copyElementAsMarkdown(silent) {
-    if (typeof silent === 'undefined') silent = false;
+    if (typeof silent === "undefined") silent = false;
     const selection = window.getSelection();
     if (selection.rangeCount === 0) return;
 
@@ -509,7 +519,7 @@ class UtilsExtension {
     // Trouver le parent blockquote/figure/etc si existe
     let containerElement = element.parentElement;
     while (containerElement && containerElement !== document.body) {
-      if (['BLOCKQUOTE'].includes(containerElement.tagName)) {
+      if (["BLOCKQUOTE"].includes(containerElement.tagName)) {
         element = containerElement;
         break;
       }
@@ -532,30 +542,29 @@ class UtilsExtension {
       });
   }
 
-reconstructSplitElement(element) {
-  const dataRef = element.getAttribute("data-ref");
+  reconstructSplitElement(element) {
+    const dataRef = element.getAttribute("data-ref");
 
-  if (!dataRef) {
-    return element.outerHTML; // Changé de innerHTML
+    if (!dataRef) {
+      return element.outerHTML; // Changé de innerHTML
+    }
+
+    const fragments = document.querySelectorAll(`[data-ref="${dataRef}"]`);
+
+    if (fragments.length <= 1) {
+      return element.outerHTML; // Changé de innerHTML
+    }
+
+    // Pour éléments scindés, reconstituer avec balises
+    const firstFragment = fragments[0];
+    let completeContent = "";
+    fragments.forEach((fragment) => {
+      completeContent += fragment.innerHTML;
+    });
+
+    const tagName = firstFragment.tagName.toLowerCase();
+    return `<${tagName}>${completeContent}</${tagName}>`;
   }
-
-  const fragments = document.querySelectorAll(`[data-ref="${dataRef}"]`);
-
-  if (fragments.length <= 1) {
-    return element.outerHTML; // Changé de innerHTML
-  }
-
-  // Pour éléments scindés, reconstituer avec balises
-  const firstFragment = fragments[0];
-  let completeContent = "";
-  fragments.forEach((fragment) => {
-    completeContent += fragment.innerHTML;
-  });
-
-  const tagName = firstFragment.tagName.toLowerCase();
-  return `<${tagName}>${completeContent}</${tagName}>`;
-}
-
 }
 
 export class Toolbar {
@@ -630,7 +639,6 @@ export class Toolbar {
       },
     });
 
-
     this.turndown.addRule("footnoteCall", {
       filter: function (node) {
         return (
@@ -651,7 +659,7 @@ export class Toolbar {
             .turndown(footnoteContent.innerHTML)
             .replace(/\s+/g, " ")
             .trim();
-            // .replace(/\]/g, "\\]"); // LIGNE SUPPRIMÉE
+          // .replace(/\]/g, "\\]"); // LIGNE SUPPRIMÉE
           return `^[${noteMarkdown}]`;
         }
 
@@ -683,23 +691,23 @@ export class Toolbar {
     // Redéfinir la fonction d'échappement pour exclure les crochets
     this.turndown.escape = function (string) {
       var customEscapes = [
-        [/\\/g, '\\\\'],
-        [/\*/g, '\\*'],
-        [/^-/g, '\\-'],
-        [/^\+ /g, '\\+ '],
-        [/^(=+)/g, '\\$1'],
-        [/^(#{1,6}) /g, '\\$1 '],
-        [/`/g, '\\`'],
-        [/^~~~/g, '\\~~~'],
+        [/\\/g, "\\\\"],
+        [/\*/g, "\\*"],
+        [/^-/g, "\\-"],
+        [/^\+ /g, "\\+ "],
+        [/^(=+)/g, "\\$1"],
+        [/^(#{1,6}) /g, "\\$1 "],
+        [/`/g, "\\`"],
+        [/^~~~/g, "\\~~~"],
         // [/\[/g, '\\['], // SUPPRIMÉ pour éviter \[
         // [/\]/g, '\\]'], // SUPPRIMÉ pour éviter \]
-        [/^>/g, '\\>'],
-        [/_/g, '\\_'],
-        [/^(\d+)\. /g, '$1\\. ']
+        [/^>/g, "\\>"],
+        [/_/g, "\\_"],
+        [/^(\d+)\. /g, "$1\\. "],
       ];
 
       return customEscapes.reduce(function (accumulator, escape) {
-        return accumulator.replace(escape[0], escape[1])
+        return accumulator.replace(escape[0], escape[1]);
       }, string);
     };
 
@@ -718,9 +726,6 @@ export class Toolbar {
             node.classList.contains("breakprint")))
       );
     });
-
-
-
   }
 
   registerExtensions() {

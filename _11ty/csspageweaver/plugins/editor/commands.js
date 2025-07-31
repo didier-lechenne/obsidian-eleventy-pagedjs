@@ -59,13 +59,13 @@ export class Commands {
       this.wrapSelection(range, "sup");
     }
   }
-  
+
   toggleLetterSpacing() {
     // Déléguer à l'extension LetterSpacing via la toolbar
     const letterSpacingExt = this.editor.toolbar.extensions.find(
-      ext => ext.constructor.name === 'LetterSpacingExtension'
+      (ext) => ext.constructor.name === "LetterSpacingExtension"
     );
-    
+
     if (letterSpacingExt) {
       letterSpacingExt.handleLetterSpacingToggle();
     }
@@ -110,17 +110,17 @@ export class Commands {
   }
 
   wrapSelection(range, tagName, className = null) {
-      const contents = range.extractContents();
-      const wrapper = document.createElement(tagName);
-      wrapper.className = className ? `${className} editor-add` : "editor-add";
-      wrapper.appendChild(contents);
-      range.insertNode(wrapper);
+    const contents = range.extractContents();
+    const wrapper = document.createElement(tagName);
+    wrapper.className = className ? `${className} editor-add` : "editor-add";
+    wrapper.appendChild(contents);
+    range.insertNode(wrapper);
 
-      // Maintenir la sélection
-      range.selectNodeContents(wrapper);
-      const selection = window.getSelection();
-      selection.removeAllRanges();
-      selection.addRange(range);
+    // Maintenir la sélection
+    range.selectNodeContents(wrapper);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
   }
 
   unwrapTag(range, tagNames) {

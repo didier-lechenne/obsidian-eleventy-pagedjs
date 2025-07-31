@@ -3,24 +3,24 @@
  * @file Plugin éditeur Medium-like pour PagedJS avec formatage français
  * @author Editor Plugin
  */
-import { Handler } from '/csspageweaver/lib/paged.esm.js';
-import { Toolbar } from './toolbar.js';
-import { Selection } from './selection.js';
-import { Commands } from './commands.js';
+import { Handler } from "/csspageweaver/lib/paged.esm.js";
+import { Toolbar } from "./toolbar.js";
+import { Selection } from "./selection.js";
+import { Commands } from "./commands.js";
 
 export default class Editor extends Handler {
   constructor(chunker, polisher, caller) {
     super(chunker, polisher, caller);
-    
+
     this.options = {
-      selector: '[data-editable], .footnote, figcaption',
-      shortcuts: true
+      selector: "[data-editable], .footnote, figcaption",
+      shortcuts: true,
     };
-    
+
     this.isActive = false;
     this.editableElements = [];
     this.currentSelection = null;
-    
+
     // Modules
     this.toolbar = null;
     this.selection = null;
@@ -28,105 +28,96 @@ export default class Editor extends Handler {
 
     this.autoCopyTimeout = null;
     this.autoCopyEnabled = true;
-
-
-    
-    
   }
-  
+
   beforeParsed(content) {
     this.assignEditableIds(content);
     this.initModules();
     this.setupEventListeners();
   }
-  
+
   afterRendered() {
     this.setupEditableElements();
     this.setupToggle();
-    
   }
-  
+
   assignEditableIds(content) {
-    var sections = content.querySelectorAll('section');
+    var sections = content.querySelectorAll("section");
     var sectionCounter = 0;
     var idCounter = 0;
-    var idPrefix = 'a';
+    var idPrefix = "a";
 
     sections.forEach((section) => {
       idCounter = 0;
       idPrefix = String.fromCharCode(sectionCounter + 97);
 
-      const selectors = '*:not(hgroup) p, *:not(hgroup) li, *:not(hgroup) h1, *:not(hgroup) h2, *:not(hgroup) h3, *:not(hgroup) h4, *:not(hgroup) h5, *:not(hgroup) h6, .footnote, figcaption';
+      const selectors =
+        "*:not(hgroup) p, *:not(hgroup) li, *:not(hgroup) h1, *:not(hgroup) h2, *:not(hgroup) h3, *:not(hgroup) h4, *:not(hgroup) h5, *:not(hgroup) h6, .footnote, figcaption";
       const targetElements = section.querySelectorAll(selectors);
 
       targetElements.forEach((element) => {
         idCounter++;
         var editableId = `${idPrefix}${idCounter}`;
-        element.setAttribute('editable-id', editableId);
+        element.setAttribute("editable-id", editableId);
         this.assignEditableCapabilities(element);
       });
 
       sectionCounter++;
     });
   }
-  
+
   assignEditableCapabilities(element) {
-    element.setAttribute('data-editable', '');
+    element.setAttribute("data-editable", "");
   }
-  
+
   setupToggle() {
-    var toggle = document.getElementById('editor-toggle');
+    var toggle = document.getElementById("editor-toggle");
     if (toggle) {
       // Restaurer état depuis localStorage
-      const savedState = localStorage.getItem('editor-plugin-active');
-      if (savedState === 'true') {
+      const savedState = localStorage.getItem("editor-plugin-active");
+      if (savedState === "true") {
         toggle.checked = true;
         this.activate();
       }
-      
-      toggle.addEventListener('change', (e) => {
+
+      toggle.addEventListener("change", (e) => {
         if (e.target.checked) {
           this.activate();
-          localStorage.setItem('editor-plugin-active', 'true');
+          localStorage.setItem("editor-plugin-active", "true");
         } else {
           this.deactivate();
-          localStorage.setItem('editor-plugin-active', 'false');
+          localStorage.setItem("editor-plugin-active", "false");
         }
       });
     }
   }
-  
+
   initModules() {
     this.toolbar = new Toolbar(this);
     this.selection = new Selection(this);
     this.commands = new Commands(this);
-    
   }
-  
+
   setupEditableElements() {
     this.editableElements = document.querySelectorAll(this.options.selector);
-    
-    this.editableElements.forEach(element => {
+
+    this.editableElements.forEach((element) => {
       element.contentEditable = true;
-      element.classList.add('paged-editor-content');
+      element.classList.add("paged-editor-content");
       element.spellcheck = false;
-      element.autocorrect = 'off';
-      element.autocapitalize = 'off';
+      element.autocorrect = "off";
+      element.autocapitalize = "off";
     });
   }
 
-
-
   setupEventListeners() {
-    document.addEventListener('mouseup', this.handleMouseUp.bind(this));
-    document.addEventListener('keyup', this.handleKeyUp.bind(this));
-    document.addEventListener('keydown', this.handleKeyDown.bind(this));
+    document.addEventListener("mouseup", this.handleMouseUp.bind(this));
+    document.addEventListener("keyup", this.handleKeyUp.bind(this));
+    document.addEventListener("keydown", this.handleKeyDown.bind(this));
     // document.addEventListener('input', this.handleInput.bind(this));
-    document.addEventListener('paste', this.handlePaste.bind(this));
-    document.addEventListener('focusin', this.handleFocusIn.bind(this));
+    document.addEventListener("paste", this.handlePaste.bind(this));
+    document.addEventListener("focusin", this.handleFocusIn.bind(this));
   }
-  
-
 
   handleFocusIn(event) {
     if (!this.isActive) return;
@@ -140,7 +131,7 @@ export default class Editor extends Handler {
         selection.removeAllRanges();
         selection.addRange(range);
       }
-      
+
       setTimeout(() => {
         const currentSelection = this.selection.getCurrentSelection();
         if (currentSelection) {
@@ -149,15 +140,15 @@ export default class Editor extends Handler {
       }, 10);
     }
   }
-  
+
   handleMouseUp(event) {
     this.debouncedUpdateSelection();
   }
-  
+
   debouncedUpdateSelection = this.debounce(() => {
     this.updateSelection();
   }, 100);
-  
+
   debounce(func, wait) {
     let timeout;
     return function executedFunction(...args) {
@@ -169,45 +160,45 @@ export default class Editor extends Handler {
       timeout = setTimeout(later, wait);
     };
   }
-  
+
   handleKeyUp(event) {
     if (this.isNavigationKey(event.keyCode)) return;
     setTimeout(() => this.updateSelection(), 10);
   }
-  
+
   handleKeyDown(event) {
     if (!this.isInEditableElement(event.target)) return;
-    
+
     if (this.options.shortcuts) {
       this.handleShortcuts(event);
     }
-    
-
   }
-  
+
   handlePaste(event) {
     if (!this.isInEditableElement(event.target)) return;
-    
+
     event.preventDefault();
-    const text = event.clipboardData.getData('text/plain');
+    const text = event.clipboardData.getData("text/plain");
     this.commands.insertText(text);
   }
-  
+
   handleShortcuts(event) {
     if (event.ctrlKey || event.metaKey) {
       switch (event.key.toLowerCase()) {
-        case 'b':
+        case "b":
           event.preventDefault();
           this.commands.toggleBold();
           break;
-        case 'i':
+        case "i":
           event.preventDefault();
           this.commands.toggleItalic();
           break;
-        case 'c':
+        case "c":
           if (event.shiftKey) {
             event.preventDefault();
-            const utilsExt = this.toolbar.extensions.find(ext => ext.constructor.name === 'UtilsExtension');
+            const utilsExt = this.toolbar.extensions.find(
+              (ext) => ext.constructor.name === "UtilsExtension"
+            );
             if (utilsExt) {
               utilsExt.copyElementAsMarkdown();
             }
@@ -217,69 +208,74 @@ export default class Editor extends Handler {
       }
     }
   }
-  
+
   updateSelection() {
     if (!this.isActive) return;
-    
+
     const selection = this.selection.getCurrentSelection();
-    
+
     if (selection && this.isInEditableElement(selection.anchorNode)) {
       // Afficher si sélection valide OU si curseur dans élément éditable ou footnote
       const activeElement = document.activeElement;
-      if (selection.isValid || 
-          activeElement.hasAttribute('data-editable') || 
-          activeElement.classList.contains('footnote')) {
+      if (
+        selection.isValid ||
+        activeElement.hasAttribute("data-editable") ||
+        activeElement.classList.contains("footnote")
+      ) {
         this.currentSelection = selection;
         this.toolbar.show(selection);
         return;
       }
     }
-    
+
     this.currentSelection = null;
     this.toolbar.hide();
   }
-  
+
   isInEditableElement(node) {
     if (!node) return false;
-    
+
     let element = node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
-    
+
     while (element) {
-      if (element.hasAttribute('data-editable') || element.classList.contains('footnote')) {
+      if (
+        element.hasAttribute("data-editable") ||
+        element.classList.contains("footnote")
+      ) {
         return true;
       }
       element = element.parentElement;
     }
-    
+
     return false;
   }
-  
+
   isNavigationKey(keyCode) {
     return [37, 38, 39, 40, 16, 17, 18].includes(keyCode);
   }
-  
+
   activate() {
     this.isActive = true;
-    document.body.classList.add('paged-editor-active');
+    document.body.classList.add("paged-editor-active");
   }
-  
+
   deactivate() {
     this.isActive = false;
     this.toolbar.hide();
-    document.body.classList.remove('paged-editor-active');
-    
+    document.body.classList.remove("paged-editor-active");
+
     // Nettoyer les éléments éditables
-    this.editableElements.forEach(element => {
+    this.editableElements.forEach((element) => {
       element.contentEditable = false;
-      element.classList.remove('paged-editor-content');
+      element.classList.remove("paged-editor-content");
     });
   }
-  
+
   getContent(selector) {
     const element = document.querySelector(selector || this.options.selector);
-    return element ? element.innerHTML : '';
+    return element ? element.innerHTML : "";
   }
-  
+
   setContent(content, selector) {
     const element = document.querySelector(selector || this.options.selector);
     if (element) {
@@ -287,29 +283,29 @@ export default class Editor extends Handler {
     }
   }
 
-
-
   updateSelection() {
     if (!this.isActive) return;
-    
+
     const selection = this.selection.getCurrentSelection();
-    
+
     if (selection && this.isInEditableElement(selection.anchorNode)) {
       // Afficher si sélection valide OU si curseur dans élément éditable ou footnote
       const activeElement = document.activeElement;
-      if (selection.isValid || 
-          activeElement.hasAttribute('data-editable') || 
-          activeElement.classList.contains('footnote')) {
+      if (
+        selection.isValid ||
+        activeElement.hasAttribute("data-editable") ||
+        activeElement.classList.contains("footnote")
+      ) {
         this.currentSelection = selection;
         this.toolbar.show(selection);
-        
+
         // Auto-copie TOUJOURS quand dans un élément éditable
         this.autoCopyToClipboard();
-        
+
         return;
       }
     }
-    
+
     this.currentSelection = null;
     this.toolbar.hide();
   }
@@ -318,13 +314,12 @@ export default class Editor extends Handler {
     // Délai pour éviter la copie répétée lors du drag
     clearTimeout(this.autoCopyTimeout);
     this.autoCopyTimeout = setTimeout(() => {
-      const utilsExt = this.toolbar.extensions.find(ext => ext.constructor.name === 'UtilsExtension');
+      const utilsExt = this.toolbar.extensions.find(
+        (ext) => ext.constructor.name === "UtilsExtension"
+      );
       if (utilsExt) {
         utilsExt.copyElementAsMarkdown(true); // true = mode silencieux
       }
     }, 300);
   }
-
-
-
 }

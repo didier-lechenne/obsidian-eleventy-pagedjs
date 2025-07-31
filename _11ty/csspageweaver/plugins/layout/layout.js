@@ -1,13 +1,14 @@
 import { Handler } from "/csspageweaver/lib/paged.esm.js";
-import { TurndownService } from './lib/turndown.js';
+import { TurndownService } from './turndown.js';
 
 export default class Layout extends Handler {
     constructor(chunker, polisher, caller) {
         super(chunker, polisher, caller);
         
-        // Service de conversion HTML → Markdown pour les légendes
-        this.turndownService = typeof TurndownService !== 'undefined' ? new TurndownService() : null;
         
+        this.turndownService = this.setupTurndown();
+       
+
         // État centralisé du plugin
         this.state = {
             selectedElement: null,      // Élément actuellement sélectionné
@@ -40,6 +41,34 @@ export default class Layout extends Handler {
             { id: "bottom_right", x: 1, y: 1 }
         ];
     }
+
+setupTurndown() {
+    const turndown = new TurndownService({
+        headingStyle: 'atx',
+        emDelimiter: '*',
+        strongDelimiter: '**',
+        linkStyle: 'inlined'
+    });
+
+    // Règle pour préserver <br/>
+    turndown.addRule('lineBreak', {
+        filter: 'br',
+        replacement: function() {
+            return '<br/>';
+        }
+    });
+
+    // Règle pour préserver <em> comme *italique*
+    turndown.addRule('emphasis', {
+        filter: ['em', 'i'],
+        replacement: function(content) {
+            if (!content.trim()) return '';
+            return `*${content}*`;
+        }
+    });
+
+    return turndown;
+}
 
     // === CYCLE DE VIE DU PLUGIN ===
 
@@ -1055,47 +1084,48 @@ export default class Layout extends Handler {
     }
 
     // Extrait et formate la légende d'une image
-    getCaption(element) {
-        const img = element.querySelector('img');
-        if (img && img.alt) {
-            return img.alt;
-        }
-        
-        let figcaption = element.querySelector('figcaption');
-        
-        if (!figcaption) {
-            const nextElement = element.nextElementSibling;
-            if (nextElement && nextElement.tagName.toLowerCase() === 'figcaption') {
-                figcaption = nextElement;
-            }
-        }
-        
-        if (!figcaption || !figcaption.textContent.trim()) return '';
 
-        const clone = figcaption.cloneNode(true);
-        
-        // Supprime les éléments de référence technique
-        const toRemove = clone.querySelectorAll('.figure_call_back, .figure_reference');
-        toRemove.forEach(el => el.remove());
 
-        // Utilise Turndown pour convertir HTML → Markdown si disponible
-        if (this.turndownService) {
-            try {
-                return this.turndownService.turndown(clone.innerHTML);
-            } catch (error) {
-                return clone.textContent.trim();
-            }
-        } else {
-            return clone.textContent.trim();
+// Dans layout.js - remplace getCaption()
+
+getCaption(element) {
+    const img = element.querySelector('img');
+    if (img && img.alt) {
+        return img.alt;
+    }
+    
+    let figcaption = element.querySelector('figcaption');
+    if (!figcaption) {
+        const nextElement = element.nextElementSibling;
+        if (nextElement && nextElement.tagName.toLowerCase() === 'figcaption') {
+            figcaption = nextElement;
+        }
+    }
+    
+    if (!figcaption) return '';
+
+    const clone = figcaption.cloneNode(true);
+    const toRemove = clone.querySelectorAll('.figure_call_back, .figure_reference');
+    toRemove.forEach(el => el.remove());
+
+    // Utilise le Turndown configuré de ce plugin
+    if (this.turndownService) {
+        try {
+            return this.turndownService.turndown(clone.innerHTML);
+        } catch (error) {
+            console.warn('Erreur Turndown:', error);
+            return '';
         }
     }
 
+    return '';
+}
     // Échappe les guillemets dans les chaînes
     escapeQuotes(str) {
         return str.replace(/"/g, '\\"');
     }
 
-    // Copie du texte vers le presse-papiers avec feedback visuel
+    // Copie du texte vers le presse-papiers 
     async copyToClipboard(text) {
         try {
             await navigator.clipboard.writeText(text);
