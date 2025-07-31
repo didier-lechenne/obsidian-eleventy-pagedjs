@@ -619,7 +619,7 @@ export default class Layout extends Handler {
             { id: '#printwidth', property: '--print-width' },
             { id: '#printrow', property: '--print-row' },
             { id: '#printheight', property: '--print-height' },
-            { id: '#align-self', property: '--align-self' },
+            { id: '#alignself', property: '--align-self' },
             { id: '#figcaption_arrow', property: '--figcaption_arrow' }
         ];
 

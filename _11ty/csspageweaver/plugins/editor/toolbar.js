@@ -90,9 +90,7 @@ class FormattingExtension {
       return this.toolbar.editor.commands.findLetterSpacingSpan(range);
     }
 
-    wrapWithLetterSpacing(range) {
-      return this.toolbar.editor.commands.wrapWithLetterSpacing(range);
-    }
+   
 
     showLetterSpacingInput(span) {
       this.currentSpan = span;
@@ -608,6 +606,7 @@ export class Toolbar {
       },
     });
 
+
     this.turndown.addRule("footnoteCall", {
       filter: function (node) {
         return (
@@ -623,12 +622,12 @@ export class Toolbar {
         const footnoteContent = document.querySelector(`#note-${footnoteId}`);
 
         if (footnoteContent) {
-          // Utiliser service global configuré
+          // Utiliser service global configuré SANS échapper les crochets
           const noteMarkdown = window.mainTurndownService
             .turndown(footnoteContent.innerHTML)
             .replace(/\s+/g, " ")
-            .trim()
-            .replace(/\]/g, "\\]");
+            .trim();
+            // .replace(/\]/g, "\\]"); // LIGNE SUPPRIMÉE
           return `^[${noteMarkdown}]`;
         }
 
@@ -656,6 +655,29 @@ export class Toolbar {
         return `<sup>${content}</sup>`;
       },
     });
+
+    // Redéfinir la fonction d'échappement pour exclure les crochets
+    this.turndown.escape = function (string) {
+      var customEscapes = [
+        [/\\/g, '\\\\'],
+        [/\*/g, '\\*'],
+        [/^-/g, '\\-'],
+        [/^\+ /g, '\\+ '],
+        [/^(=+)/g, '\\$1'],
+        [/^(#{1,6}) /g, '\\$1 '],
+        [/`/g, '\\`'],
+        [/^~~~/g, '\\~~~'],
+        // [/\[/g, '\\['], // SUPPRIMÉ pour éviter \[
+        // [/\]/g, '\\]'], // SUPPRIMÉ pour éviter \]
+        [/^>/g, '\\>'],
+        [/_/g, '\\_'],
+        [/^(\d+)\. /g, '$1\\. ']
+      ];
+
+      return customEscapes.reduce(function (accumulator, escape) {
+        return accumulator.replace(escape[0], escape[1])
+      }, string);
+    };
 
     // Stocker référence globale pour les règles
     window.mainTurndownService = this.turndown;

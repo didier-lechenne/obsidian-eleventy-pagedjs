@@ -16,10 +16,10 @@
 }
 
 @media screen, pagedjs-ignore {
-  body.no-marker .marker,
-  body.no-marker .modularGrid,
-  body.no-marker .pagedjs_area,
-  body.no-marker .pagedjs_footnote_inner_content,
+  .no-marker .marker,
+  .no-marker .modularGrid,
+  .no-marker .pagedjs_area,
+  .no-marker .pagedjs_footnote_inner_content,
   .interface-preview .marker,
   .interface-preview .modularGrid,
   .interface-preview .pagedjs_area,

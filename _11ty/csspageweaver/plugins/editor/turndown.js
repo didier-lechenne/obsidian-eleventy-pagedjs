@@ -1,4 +1,4 @@
-var TurndownService = (function () {
+export var TurndownService = (function () {
   'use strict';
 
   function extend (destination) {

@@ -100,11 +100,6 @@ function generateHTML(type, config) {
       }
       return output;
 
-    case "resize":
-      return `<div data-id="${id}" data-grid="content" class="${classAttr}" id="content-${globalElementCounter}"${styleAttr}>
-        <!-- Contenu à insérer -->
-      </div>`;
-
     case "fullpage":
       return `<figure data-id="${id}" data-grid="image" id="figure-${globalElementCounter}" class="full-page ${classAttr}"${styleAttr}>
         <img src="${config.src}" alt="${cleanAlt}">
@@ -294,27 +289,7 @@ eleventyConfig.addAsyncShortcode("grid", async function (firstParam, options = {
   }
 });
 
-  // Nouveau shortcode pour les éléments de contenu
-  eleventyConfig.addShortcode("resize", function (options = {}) {
-    globalElementCounter++;
-    const config = {
-      ...options,
-      id: options.id || `content_${globalElementCounter}`
-    };
 
-    return generateHTML("resize", config);
-  });
-
-  // Nouveau shortcode pour les éléments de contenu
-  eleventyConfig.addShortcode("resize", function (options = {}) {
-    globalElementCounter++;
-    const config = {
-      ...options,
-      id: options.id || `content_${globalElementCounter}`
-    };
-
-    return generateHTML("resize", config);
-  });
 
   eleventyConfig.addShortcode("video", function (firstParam, options = {}) {
     let config, imageId;
