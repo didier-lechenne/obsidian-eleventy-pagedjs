@@ -132,6 +132,7 @@ class FormattingExtension {
         if (this.currentSpan) {
           const value = e.target.value;
           this.currentSpan.style.setProperty("--ls", value);
+          this.toolbar.editor.triggerAutoCopy();
         }
       });
 
@@ -169,6 +170,7 @@ class FormattingExtension {
       if (this.input) {
         this.input.style.display = "none";
       }
+      this.toolbar.editor.triggerAutoCopy();
 
       // Restaurer le bouton LS
       const lsButton = this.toolbar.element.querySelector(
@@ -185,6 +187,16 @@ class FormattingExtension {
       // Masquer la toolbar maintenant
       this.toolbar.isVisible = false;
       this.toolbar.element.classList.remove("visible");
+    }
+
+    triggerAutoCopy() {
+      clearTimeout(this.autoCopyTimeout);
+      this.autoCopyTimeout = setTimeout(() => {
+        const utilsExt = this.toolbar.extensions.find(ext => ext.constructor.name === 'UtilsExtension');
+        if (utilsExt) {
+          utilsExt.copyElementAsMarkdown(true);
+        }
+      }, 300);
     }
 
     // Méthode pour nettoyer lors du reset
@@ -477,61 +489,73 @@ class UtilsExtension {
     ];
   }
 
-    copyElementAsMarkdown(silent) {
-      if (typeof silent === 'undefined') silent = false;
-      const selection = window.getSelection();
-      if (selection.rangeCount === 0) return;
+  copyElementAsMarkdown(silent) {
+    if (typeof silent === 'undefined') silent = false;
+    const selection = window.getSelection();
+    if (selection.rangeCount === 0) return;
 
-      let element = selection.anchorNode;
-      if (element.nodeType === Node.TEXT_NODE) {
-        element = element.parentElement;
+    let element = selection.anchorNode;
+    if (element.nodeType === Node.TEXT_NODE) {
+      element = element.parentElement;
+    }
+
+    // Chercher l'élément éditable
+    while (element && !element.hasAttribute("data-editable")) {
+      element = element.parentElement;
+    }
+
+    if (!element) return;
+
+    // Trouver le parent blockquote/figure/etc si existe
+    let containerElement = element.parentElement;
+    while (containerElement && containerElement !== document.body) {
+      if (['BLOCKQUOTE'].includes(containerElement.tagName)) {
+        element = containerElement;
+        break;
       }
-
-      while (element && !element.hasAttribute("data-editable")) {
-        element = element.parentElement;
-      }
-
-      if (!element) return;
-
-      // Reconstituer l'élément complet si scindé par PagedJS
-      const completeHTML = this.reconstructSplitElement(element);
-      const markdown = this.toolbar.turndown.turndown(completeHTML);
-
-      navigator.clipboard
-        .writeText(markdown)
-        .then(() => {
-          if (!silent) {
-            this.toolbar.showCopyFeedback();
-          }
-        })
-        .catch((err) => {
-          console.error("Erreur copie:", err);
-        });
+      containerElement = containerElement.parentElement;
     }
 
-  reconstructSplitElement(element) {
-    const dataRef = element.getAttribute("data-ref");
+    // Reconstituer l'élément complet si scindé par PagedJS
+    const completeHTML = this.reconstructSplitElement(element);
+    const markdown = this.toolbar.turndown.turndown(completeHTML);
 
-    // Si pas de data-ref, retourner l'élément seul
-    if (!dataRef) {
-      return element.innerHTML;
-    }
-
-    // Trouver tous les fragments avec le même data-ref
-    const fragments = document.querySelectorAll(`[data-ref="${dataRef}"]`);
-
-    if (fragments.length <= 1) {
-      return element.innerHTML;
-    }
-
-    // Reconstituer dans l'ordre d'apparition
-    let completeContent = "";
-    fragments.forEach((fragment) => {
-      completeContent += fragment.innerHTML;
-    });
-
-    return completeContent;
+    navigator.clipboard
+      .writeText(markdown)
+      .then(() => {
+        if (!silent) {
+          this.toolbar.showCopyFeedback();
+        }
+      })
+      .catch((err) => {
+        console.error("Erreur copie:", err);
+      });
   }
+
+reconstructSplitElement(element) {
+  const dataRef = element.getAttribute("data-ref");
+
+  if (!dataRef) {
+    return element.outerHTML; // Changé de innerHTML
+  }
+
+  const fragments = document.querySelectorAll(`[data-ref="${dataRef}"]`);
+
+  if (fragments.length <= 1) {
+    return element.outerHTML; // Changé de innerHTML
+  }
+
+  // Pour éléments scindés, reconstituer avec balises
+  const firstFragment = fragments[0];
+  let completeContent = "";
+  fragments.forEach((fragment) => {
+    completeContent += fragment.innerHTML;
+  });
+
+  const tagName = firstFragment.tagName.toLowerCase();
+  return `<${tagName}>${completeContent}</${tagName}>`;
+}
+
 }
 
 export class Toolbar {
@@ -694,6 +718,9 @@ export class Toolbar {
             node.classList.contains("breakprint")))
       );
     });
+
+
+
   }
 
   registerExtensions() {

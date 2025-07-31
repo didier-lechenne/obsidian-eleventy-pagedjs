@@ -28,6 +28,9 @@ export default class Editor extends Handler {
 
     this.autoCopyTimeout = null;
     this.autoCopyEnabled = true;
+
+
+    
     
   }
   
@@ -40,6 +43,7 @@ export default class Editor extends Handler {
   afterRendered() {
     this.setupEditableElements();
     this.setupToggle();
+    
   }
   
   assignEditableIds(content) {
@@ -110,7 +114,9 @@ export default class Editor extends Handler {
       element.autocapitalize = 'off';
     });
   }
-  
+
+
+
   setupEventListeners() {
     document.addEventListener('mouseup', this.handleMouseUp.bind(this));
     document.addEventListener('keyup', this.handleKeyUp.bind(this));
@@ -120,6 +126,8 @@ export default class Editor extends Handler {
     document.addEventListener('focusin', this.handleFocusIn.bind(this));
   }
   
+
+
   handleFocusIn(event) {
     if (!this.isActive) return;
     if (this.isInEditableElement(event.target)) {
@@ -176,8 +184,6 @@ export default class Editor extends Handler {
     
 
   }
-  
-
   
   handlePaste(event) {
     if (!this.isInEditableElement(event.target)) return;
@@ -281,43 +287,43 @@ export default class Editor extends Handler {
     }
   }
 
-updateSelection() {
-  if (!this.isActive) return;
-  
-  const selection = this.selection.getCurrentSelection();
-  
-  if (selection && this.isInEditableElement(selection.anchorNode)) {
-    // Afficher si sélection valide OU si curseur dans élément éditable ou footnote
-    const activeElement = document.activeElement;
-    if (selection.isValid || 
-        activeElement.hasAttribute('data-editable') || 
-        activeElement.classList.contains('footnote')) {
-      this.currentSelection = selection;
-      this.toolbar.show(selection);
-      
-      // Auto-copie si sélection de texte valide (pas juste curseur)
-      if (selection.isValid && selection.text.length > 0) {
-        this.autoCopyToClipboard();
-      }
-      
-      return;
-    }
-  }
-  
-  this.currentSelection = null;
-  this.toolbar.hide();
-}
 
-autoCopyToClipboard() {
-  // Délai pour éviter la copie répétée lors du drag
-  clearTimeout(this.autoCopyTimeout);
-  this.autoCopyTimeout = setTimeout(() => {
-    const utilsExt = this.toolbar.extensions.find(ext => ext.constructor.name === 'UtilsExtension');
-    if (utilsExt) {
-      utilsExt.copyElementAsMarkdown(true); // true = mode silencieux
+
+  updateSelection() {
+    if (!this.isActive) return;
+    
+    const selection = this.selection.getCurrentSelection();
+    
+    if (selection && this.isInEditableElement(selection.anchorNode)) {
+      // Afficher si sélection valide OU si curseur dans élément éditable ou footnote
+      const activeElement = document.activeElement;
+      if (selection.isValid || 
+          activeElement.hasAttribute('data-editable') || 
+          activeElement.classList.contains('footnote')) {
+        this.currentSelection = selection;
+        this.toolbar.show(selection);
+        
+        // Auto-copie TOUJOURS quand dans un élément éditable
+        this.autoCopyToClipboard();
+        
+        return;
+      }
     }
-  }, 300);
-}
+    
+    this.currentSelection = null;
+    this.toolbar.hide();
+  }
+
+  autoCopyToClipboard() {
+    // Délai pour éviter la copie répétée lors du drag
+    clearTimeout(this.autoCopyTimeout);
+    this.autoCopyTimeout = setTimeout(() => {
+      const utilsExt = this.toolbar.extensions.find(ext => ext.constructor.name === 'UtilsExtension');
+      if (utilsExt) {
+        utilsExt.copyElementAsMarkdown(true); // true = mode silencieux
+      }
+    }, 300);
+  }
 
 
 
