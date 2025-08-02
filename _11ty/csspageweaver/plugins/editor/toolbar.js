@@ -735,9 +735,13 @@ export class Toolbar {
     // Keep rules après l'initialisation
     this.turndown.keep(function (node) {
       return (
-        (node.nodeName === "SPAN" && 
-	node.style.getPropertyValue("--ls"))  ||
+        // Spans with CSS custom property --ls
+        (node.nodeName === "SPAN" && node.style.getPropertyValue("--ls")) ||
+        // Superscript elements
         node.nodeName === "SUP" ||
+        // All span elements (this makes the first condition redundant)
+        node.nodeName === "SPAN" ||
+        // Break elements with specific classes
         (node.nodeName === "BR" &&
           (node.classList.contains("breakpage") ||
             node.classList.contains("breakcolumn") ||
@@ -745,8 +749,6 @@ export class Toolbar {
             node.classList.contains("breakprint")))
       );
     });
-
-    
   }
 
   registerExtensions() {

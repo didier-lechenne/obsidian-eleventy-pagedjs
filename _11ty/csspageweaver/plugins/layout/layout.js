@@ -787,7 +787,7 @@ setupTurndown() {
                 code = this.generateContentCode(element);
         }
 
-        this.displayCode(code);
+//         this.displayCode(code);
 
         if (shouldCopy) {
             this.copyToClipboard(code);
