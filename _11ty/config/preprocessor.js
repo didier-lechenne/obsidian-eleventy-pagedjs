@@ -5,39 +5,23 @@ module.exports = function (eleventyConfig) {
     globalImageCounter = 0;
   });
 
-
-  eleventyConfig.addPreprocessor("notes", "*", (data, content) => {
-    content = content.replace(/\(notes?\s*:\s*"(.*?)"\s*\)/gs, "^[$1]");
-    return content;
-  });
-
-  eleventyConfig.addPreprocessor("break", "*", (data, content) => {
+    eleventyConfig.addPreprocessor("break", "*", (data, content) => {
     content = content.replace(
       /<br\s+class=["']breakcolumn["'](\s*\/?)>/gi,
-      '<span class="breakcolumn"></span>'
+      '<span class="breakcolumn">BREAK</span>'
     );
 
     content = content.replace(
       /<breakcolumn>/gi,
-      '<span class="breakcolumn"></span>'
+      '<span class="breakcolumn">BREAK</span>'
     );
 
-    content = content.replace(/<breakpage>/gi, '<br class="breakpage">');
+//     content = content.replace(/<breakpage>/gi, '<br class="breakpage">');
 
     return content;
   });
 
-  eleventyConfig.addPreprocessor("smallcaps", "*", (data, content) => {
-    // Transformer <smallcaps>XXX</smallcaps> en <span class="smallcaps">XXX</span>
-    content = content.replace(
-      /<smallcaps>(.*?)<\/smallcaps>/gi,
-      '<span class="small-caps">$1</span>'
-    );
-
-    return content;
-  });
-
-  eleventyConfig.addPreprocessor("textCol", "*", (data, content) => {
+ eleventyConfig.addPreprocessor("textCol", "*", (data, content) => {
     // Transforme <textCol gridCol="12" gridColGutter="3mm"></textCol>
     // en HTML avec classes CSS appropriées
     
@@ -65,6 +49,25 @@ module.exports = function (eleventyConfig) {
     return content;
   });
   
+
+  eleventyConfig.addPreprocessor("notes", "*", (data, content) => {
+    content = content.replace(/\(notes?\s*:\s*"(.*?)"\s*\)/gs, "^[$1]");
+    return content;
+  });
+
+
+
+  eleventyConfig.addPreprocessor("smallcaps", "*", (data, content) => {
+    // Transformer <smallcaps>XXX</smallcaps> en <span class="smallcaps">XXX</span>
+    content = content.replace(
+      /<smallcaps>(.*?)<\/smallcaps>/gi,
+      '<span class="small-caps">$1</span>'
+    );
+
+    return content;
+  });
+
+ 
 
 
 };

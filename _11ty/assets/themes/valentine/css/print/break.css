@@ -12,8 +12,6 @@
   height: auto;
 }
 
-
-
 .breakprint {
   height: 0;
   page-break-before: always;
@@ -23,8 +21,7 @@
   display: none;
 }
 
-
-  br + *,
-  [data-previous-break-after="column"]{
+br + *,
+[data-previous-break-after="column"] {
   margin-top: 0ch !important;
-  }
+}

@@ -1,65 +1,65 @@
 :root {
-  /* Couleurs principales */
-  --editor-primary-color: #4a90e2;
-  --editor-primary-hover: rgba(74, 144, 226, 0.8);
-  --editor-primary-light: rgba(74, 144, 226, 0.05);
-  --editor-primary-border: rgba(74, 144, 226, 0.2);
-  --editor-primary-selection: rgba(74, 144, 226, 0.3);
-  --editor-primary-highlight: rgba(109, 168, 235, 0.205);
-
-  /* Couleurs toolbar */
-  --editor-toolbar-bg: #2c3e50;
-  --editor-toolbar-input-bg: #34495e;
-  --editor-toolbar-input-focus: #3c5b7a;
-  --editor-success-color: rgba(39, 174, 96, 0.8);
-
-  /* Couleurs tooltip */
-  --editor-tooltip-bg: rgba(0, 0, 0, 0.8);
-  --editor-tooltip-text: rgba(255, 255, 255, 0.6);
-
-  /* Rayons de bordure */
-  --editor-border-radius: 2px;
-  --editor-toolbar-radius: 6px;
-  --editor-button-radius: 4px;
-
-  /* Espacement */
-  --editor-toolbar-padding: 6px;
-  --editor-toolbar-gap: 2px;
-  --editor-button-padding: 8px 10px;
-  --editor-tooltip-padding: 4px 8px;
-
-  /* Tailles */
-  --editor-button-min-width: 18px;
-  --editor-button-height: 18px;
-  --editor-input-width: 60px;
-  --editor-z-index: 9999;
-  --editor-tooltip-z-index: 10000;
-
-  /* Transitions */
-  --editor-transition-fast: 0.15s ease;
-  --editor-transition-normal: 0.2s ease;
-  --editor-transition-duration: 0.3s;
-
-  /* Polices */
-  --editor-font-size: 14px;
-  --editor-font-weight: 500;
-  --editor-tooltip-font-size: 12px;
-  --editor-quotes-font: "Times New Roman", serif;
-  --editor-special-font-size: 16px;
-  --editor-letter-spacing-font-size: 10px;
-
-  /* Ombres */
-  --editor-toolbar-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  --editor-input-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-
-  /* Responsive breakpoint */
-  --editor-mobile-breakpoint: 768px;
+	/* Couleurs principales */
+	--editor-primary-color: #4a90e2;
+	--editor-primary-hover: rgba(74, 144, 226, 0.8);
+	--editor-primary-light: rgba(74, 144, 226, 0.05);
+	--editor-primary-border: rgba(74, 144, 226, 0.2);
+	--editor-primary-selection: rgba(74, 144, 226, 0.3);
+	--editor-primary-highlight: rgba(109, 168, 235, 0.205);
+	
+	/* Couleurs toolbar */
+	--editor-toolbar-bg: #2c3e50;
+	--editor-toolbar-input-bg: #34495e;
+	--editor-toolbar-input-focus: #3c5b7a;
+	--editor-success-color: rgba(39, 174, 96, 0.8);
+	
+	/* Couleurs tooltip */
+	--editor-tooltip-bg: rgba(0, 0, 0, 0.8);
+	--editor-tooltip-text: rgba(255, 255, 255, 0.6);
+	
+	/* Rayons de bordure */
+	--editor-border-radius: 2px;
+	--editor-toolbar-radius: 6px;
+	--editor-button-radius: 4px;
+	
+	/* Espacement */
+	--editor-toolbar-padding: 6px;
+	--editor-toolbar-gap: 2px;
+	--editor-button-padding: 8px 10px;
+	--editor-tooltip-padding: 4px 8px;
+	
+	/* Tailles */
+	--editor-button-min-width: 18px;
+	--editor-button-height: 18px;
+	--editor-input-width: 60px;
+	--editor-z-index: 9999;
+	--editor-tooltip-z-index: 10000;
+	
+	/* Transitions */
+	--editor-transition-fast: 0.15s ease;
+	--editor-transition-normal: 0.2s ease;
+	--editor-transition-duration: 0.3s;
+	
+	/* Polices */
+	--editor-font-size: 14px;
+	--editor-font-weight: 500;
+	--editor-tooltip-font-size: 12px;
+	--editor-quotes-font: "Times New Roman", serif;
+	--editor-special-font-size: 16px;
+	--editor-letter-spacing-font-size: 10px;
+	
+	/* Ombres */
+	--editor-toolbar-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+	--editor-input-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+	
+	/* Responsive breakpoint */
+	--editor-mobile-breakpoint: 768px;
 }
 
 /* Éléments éditables */
 .paged-editor-content {
-  outline: none;
-  cursor: text;
+	outline: none;
+	cursor: text;
 }
 
 /* Mode preview : masquer TOUS les effets d'édition - marche pas */
@@ -73,11 +73,11 @@ body.interface-preview .paged-editor-active .paged-editor-content,
 body.interface-preview .paged-editor-active .paged-editor-content:focus,
 body.interface-preview .paged-editor-toolbar,
 body.interface-preview [style*="--ls"] {
-  background-color: transparent !important;
-  box-shadow: none !important;
-  border-radius: 0 !important;
-  transition: none !important;
-  /* visibility: hidden !important; */
+	background-color: transparent !important;
+	box-shadow: none !important;
+	border-radius: 0 !important;
+	transition: none !important;
+	/* visibility: hidden !important; */
 }
 
 
@@ -91,191 +91,193 @@ body.interface-preview [style*="--ls"] {
 .paged-editor-active figcaption .small-caps,
 .paged-editor-active figcaption sup,
 .paged-editor-active figcaption br {
-  background-color: var(--editor-primary-highlight);
+	background-color: var(--editor-primary-highlight);
 }
 
 .paged-editor-active .paged-editor-content {
-  border-radius: var(--editor-border-radius);
-  transition: all var(--editor-transition-normal);
+	border-radius: var(--editor-border-radius);
+	transition: all var(--editor-transition-normal);
 }
 
 .paged-editor-active .paged-editor-content:focus {
-  background-color: var(--editor-primary-light);
-  box-shadow: inset 0 0 0 1px var(--editor-primary-border);
+	background-color: var(--editor-primary-light);
+	box-shadow: inset 0 0 0 1px var(--editor-primary-border);
 }
 
 body.interface-preview .paged-editor-toolbar.visible,
 body.interface-preview .paged-editor-content:focus {
-  visibility: hidden !important;
+	visibility: hidden !important;
 }
 
 /* Toolbar */
 .paged-editor-toolbar {
-  position: absolute;
-  z-index: var(--editor-z-index);
-  background: var(--editor-toolbar-bg);
-  border-radius: var(--editor-toolbar-radius);
-  box-shadow: var(--editor-toolbar-shadow);
-  padding: var(--editor-toolbar-padding);
-  display: flex;
-  gap: var(--editor-toolbar-gap);
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(-10px);
-  transition: all var(--editor-transition-normal);
+	position: absolute;
+	z-index: var(--editor-z-index);
+	background: var(--editor-toolbar-bg);
+	border-radius: var(--editor-toolbar-radius);
+	box-shadow: var(--editor-toolbar-shadow);
+	padding: var(--editor-toolbar-padding);
+	display: flex;
+	gap: var(--editor-toolbar-gap);
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(-10px);
+	transition: all var(--editor-transition-normal);
 }
 
 .paged-editor-toolbar.visible {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
+	opacity: 1;
+	visibility: visible;
+	transform: translateY(0);
 }
 
 /* Boutons toolbar */
 .paged-editor-toolbar button {
-  background: transparent;
-  border: none;
-  color: white;
-  padding: var(--editor-button-padding);
-  border-radius: var(--editor-button-radius);
-  cursor: pointer;
-  font-size: var(--editor-font-size);
-  font-weight: var(--editor-font-weight);
-  transition: all var(--editor-transition-fast);
-  min-width: var(--editor-button-min-width);
-  height: var(--editor-button-height);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+	background: transparent;
+	border: none;
+	color: white;
+	padding: var(--editor-button-padding);
+	border-radius: var(--editor-button-radius);
+	cursor: pointer;
+	font-size: var(--editor-font-size);
+	font-weight: var(--editor-font-weight);
+	transition: all var(--editor-transition-fast);
+	min-width: var(--editor-button-min-width);
+	height: var(--editor-button-height);
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .paged-editor-toolbar button:hover {
-  background: rgba(255, 255, 255, 0.1);
-  transform: scale(1.05);
+	background: rgba(255, 255, 255, 0.1);
+	transform: scale(1.05);
 }
 
 .paged-editor-toolbar button:active {
-  transform: scale(0.95);
+	transform: scale(0.95);
 }
 
 .paged-editor-toolbar button.active {
-  background: var(--editor-primary-hover);
-  color: white;
+	background: var(--editor-primary-hover);
+	color: white;
 }
 
 .paged-editor-toolbar button.success {
-  background: var(--editor-success-color);
-  animation: success-pulse var(--editor-transition-duration) ease;
+	background: var(--editor-success-color);
+	animation: success-pulse var(--editor-transition-duration) ease;
 }
 
 @keyframes success-pulse {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
+	0%,
+	100% {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(1.1);
+	}
 }
 
 /* Boutons spéciaux */
 .paged-editor-toolbar button[data-command="quotes"] {
-  font-family: var(--editor-quotes-font);
-  font-size: var(--editor-special-font-size);
+	font-family: var(--editor-quotes-font);
+	font-size: var(--editor-special-font-size);
 }
 
 .paged-editor-toolbar button[data-command="copy-md"] {
-  font-size: var(--editor-special-font-size);
+	font-size: var(--editor-special-font-size);
 }
 
 .paged-editor-toolbar button[data-command="letter-spacing"] {
-  font-size: var(--editor-letter-spacing-font-size) !important;
+	font-size: var(--editor-letter-spacing-font-size) !important;
 }
 
 .paged-editor-toolbar button[data-command="letter-spacing"].active {
-  background: var(--editor-primary-hover);
+	background: var(--editor-primary-hover);
 }
 
 .paged-editor-toolbar button[data-command="letter-spacing"].editing {
-  background: var(--editor-success-color);
-  color: white;
+	background: var(--editor-success-color);
+	color: white;
 }
 
 /* Tooltips */
 .paged-editor-toolbar button[data-tooltip]:hover::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: -35px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--editor-tooltip-bg);
-  color: white;
-  padding: var(--editor-tooltip-padding);
-  border-radius: var(--editor-button-radius);
-  font-size: var(--editor-tooltip-font-size);
-  white-space: nowrap;
-  z-index: var(--editor-tooltip-z-index);
+	content: attr(data-tooltip);
+	position: absolute;
+	bottom: -35px;
+	left: 50%;
+	transform: translateX(-50%);
+	background: var(--editor-tooltip-bg);
+	color: white;
+	padding: var(--editor-tooltip-padding);
+	border-radius: var(--editor-button-radius);
+	font-size: var(--editor-tooltip-font-size);
+	white-space: nowrap;
+	z-index: var(--editor-tooltip-z-index);
 }
 
 .paged-editor-toolbar button[data-tooltip]:hover::before {
-  content: "";
-  position: absolute;
-  bottom: -25px;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 5px solid transparent;
-  border-bottom-color: var(--editor-tooltip-bg);
-  z-index: var(--editor-tooltip-z-index);
+	content: "";
+	position: absolute;
+	bottom: -25px;
+	left: 50%;
+	transform: translateX(-50%);
+	border: 5px solid transparent;
+	border-bottom-color: var(--editor-tooltip-bg);
+	z-index: var(--editor-tooltip-z-index);
 }
 
 /* Sélection personnalisée */
 .paged-editor-content ::selection {
-  background: var(--editor-primary-selection);
+	background: var(--editor-primary-selection);
 }
 
 /* Input letter-spacing */
 .letter-spacing-input {
-  position: absolute;
-  z-index: var(--editor-tooltip-z-index);
-  width: var(--editor-input-width);
-  padding: var(--editor-toolbar-gap) 8px;
-  border: none;
-  border-radius: var(--editor-toolbar-radius);
-  font-size: var(--editor-tooltip-font-size);
-  font-weight: var(--editor-font-weight);
-  background: var(--editor-toolbar-input-bg);
-  color: white;
-  display: none;
-  box-shadow: var(--editor-input-shadow);
-  outline: none;
-  transition: all var(--editor-transition-fast);
+	position: absolute;
+	z-index: var(--editor-tooltip-z-index);
+	width: var(--editor-input-width);
+	padding: var(--editor-toolbar-gap) 8px;
+	border: none;
+	border-radius: var(--editor-toolbar-radius);
+	font-size: var(--editor-tooltip-font-size);
+	font-weight: var(--editor-font-weight);
+	background: var(--editor-toolbar-input-bg);
+	color: white;
+	display: none;
+	box-shadow: var(--editor-input-shadow);
+	outline: none;
+	transition: all var(--editor-transition-fast);
 }
 
 .letter-spacing-input:focus {
-  background: var(--editor-toolbar-input-focus);
-  transform: scale(1.05);
+	background: var(--editor-toolbar-input-focus);
+	transform: scale(1.05);
 }
 
 .letter-spacing-input::placeholder {
-  color: var(--editor-tooltip-text);
+	color: var(--editor-tooltip-text);
 }
 
 /* Highlight letter-spacing */
 [style^="--ls"] {
-  background: var(--editor-primary-highlight);
+	background: var(--editor-primary-highlight);
 }
+
+
 
 /* Responsive */
 @media (max-width: 768px) {
-  .paged-editor-toolbar {
-    padding: 4px;
-    gap: 1px;
-  }
-
-  .paged-editor-toolbar button {
-    padding: 6px 8px;
-    font-size: 13px;
-    min-width: 28px;
-    height: 28px;
-  }
+	.paged-editor-toolbar {
+		padding: 4px;
+		gap: 1px;
+	}
+	
+	.paged-editor-toolbar button {
+		padding: 6px 8px;
+		font-size: 13px;
+		min-width: 28px;
+		height: 28px;
+	}
 }

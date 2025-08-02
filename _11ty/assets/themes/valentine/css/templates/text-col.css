@@ -25,7 +25,7 @@
 .textCol {
   --g-column-count: var(--grid-col, 0);
   --g-column-gutter: var(--grid-col-gutter, var(--gutter));
-  columns: var(--g-column-count);
+  column-count: var(--g-column-count);
   column-gap: var(--g-column-gutter);
   column-fill: auto;
   display: inline-block;
