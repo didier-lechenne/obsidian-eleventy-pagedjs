@@ -63,7 +63,7 @@
 }
 
 /* Mode preview : masquer TOUS les effets d'édition - marche pas */
-/* body.interface-preview .small-caps,
+body.interface-preview .small-caps,
 body.interface-preview sup,
 body.interface-preview br,
 body.interface-preview figcaption .small-caps,
@@ -72,14 +72,15 @@ body.interface-preview figcaption br,
 body.interface-preview .paged-editor-active .paged-editor-content,
 body.interface-preview .paged-editor-active .paged-editor-content:focus,
 body.interface-preview .paged-editor-toolbar,
-body.interface-preview .paged-editor-toolbar.visible,
 body.interface-preview [style*="--ls"] {
   background-color: transparent !important;
   box-shadow: none !important;
   border-radius: 0 !important;
   transition: none !important;
-  visibility: hidden !important;
-} */
+  /* visibility: hidden !important; */
+}
+
+
 
 
 
@@ -101,6 +102,11 @@ body.interface-preview [style*="--ls"] {
 .paged-editor-active .paged-editor-content:focus {
   background-color: var(--editor-primary-light);
   box-shadow: inset 0 0 0 1px var(--editor-primary-border);
+}
+
+body.interface-preview .paged-editor-toolbar.visible,
+body.interface-preview .paged-editor-content:focus {
+  visibility: hidden !important;
 }
 
 /* Toolbar */

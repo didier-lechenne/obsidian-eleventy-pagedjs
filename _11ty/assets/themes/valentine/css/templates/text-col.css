@@ -7,23 +7,31 @@
 [data-template="bibliographie"],
 .bibliographie {
   page: textCol;
-    page-break-before: always;
+  page-break-before: always;
   page-break-after: always;
 
   --g-column-count: var(--grid-col, 2);
   --g-column-gutter: var(--grid-col-gutter, var(--gutter));
-
   columns: var(--g-column-count);
   column-gap: var(--g-column-gutter);
-
   column-fill: auto;
   /*columnn-fill: balance; */
 
   font-family: var(--labeur);
   font-size: 9pt;
   line-height: 12pt;
-
 }
+
+.textCol {
+  --g-column-count: var(--grid-col, 0);
+  --g-column-gutter: var(--grid-col-gutter, var(--gutter));
+  columns: var(--g-column-count);
+  column-gap: var(--g-column-gutter);
+  column-fill: auto;
+  display: inline-block;
+  /*columnn-fill: balance; */
+}
+
 
 [data-template="textCol"] h2,
 [data-template="bibliographie"] h2,

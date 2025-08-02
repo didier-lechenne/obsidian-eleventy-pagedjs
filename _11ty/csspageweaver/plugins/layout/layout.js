@@ -54,7 +54,7 @@ setupTurndown() {
     turndown.addRule('lineBreak', {
         filter: 'br',
         replacement: function() {
-            return '<br/>';
+            return ' <br/>';
         }
     });
 
@@ -886,13 +886,13 @@ setupTurndown() {
     }
 
     // Affiche le code généré dans l'interface
-    displayCode(code) {
-        const showCode = document.querySelector('#showCode');
-        const cssOutput = document.querySelector('.cssoutput');
+    // displayCode(code) {
+    //     const showCode = document.querySelector('#showCode');
+    //     const cssOutput = document.querySelector('.cssoutput');
 
-        if (showCode) showCode.value = code;
-        if (cssOutput) cssOutput.textContent = code;
-    }
+    //     if (showCode) showCode.value = code;
+    //     if (cssOutput) cssOutput.textContent = code;
+    // }
 
     // === UTILITAIRES ===
 
@@ -1083,44 +1083,37 @@ setupTurndown() {
         return match ? match[0] : '0';
     }
 
-    // Extrait et formate la légende d'une image
+    // la légende d'une image
 
-
-// Dans layout.js - remplace getCaption()
-
-getCaption(element) {
-    const img = element.querySelector('img');
-    if (img && img.alt) {
-        return img.alt;
-    }
-    
-    let figcaption = element.querySelector('figcaption');
-    if (!figcaption) {
-        const nextElement = element.nextElementSibling;
-        if (nextElement && nextElement.tagName.toLowerCase() === 'figcaption') {
-            figcaption = nextElement;
+    getCaption(element) {
+        // Cherche d'abord figcaption
+        let figcaption = element.nextElementSibling;
+        if (figcaption && figcaption.tagName.toLowerCase() === 'figcaption') {
+            const clone = figcaption.cloneNode(true);
+            const toRemove = clone.querySelectorAll('.figure_call_back, .figure_reference');
+            toRemove.forEach(el => el.remove());
+            
+            if (this.turndownService) {
+                try {
+                    return this.turndownService.turndown(clone.innerHTML);
+                } catch (error) {
+                    console.warn('Erreur Turndown:', error);
+                }
+            }
         }
-    }
-    
-    if (!figcaption) return '';
-
-    const clone = figcaption.cloneNode(true);
-    const toRemove = clone.querySelectorAll('.figure_call_back, .figure_reference');
-    toRemove.forEach(el => el.remove());
-
-    // Utilise le Turndown configuré de ce plugin
-    if (this.turndownService) {
-        try {
-            return this.turndownService.turndown(clone.innerHTML);
-        } catch (error) {
-            console.warn('Erreur Turndown:', error);
-            return '';
+        
+        // Fallback sur img.alt
+        const img = element.querySelector('img');
+        if (img && img.alt) {
+            return img.alt;
         }
+        
+        return '';
     }
 
-    return '';
-}
-    // Échappe les guillemets dans les chaînes
+
+
+    
     escapeQuotes(str) {
         return str.replace(/"/g, '\\"');
     }

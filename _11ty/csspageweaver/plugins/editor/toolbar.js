@@ -588,6 +588,24 @@ export class Toolbar {
       linkStyle: "inlined",
     });
 
+    this.turndown.addRule("textCol", {
+      filter: function (node) {
+        return node.nodeName === "SPAN" && node.classList.contains("textCol");
+      },
+      replacement: function (content, node) {
+        const gridCol = node.style.getPropertyValue("--grid-col") || "12";
+        const gridColGutter =
+          node.style.getPropertyValue("--grid-col-gutter") || "";
+
+        let attributes = `gridCol="${gridCol}"`;
+        if (gridColGutter) {
+          attributes += ` gridColGutter="${gridColGutter}"`;
+        }
+
+        return `<textCol ${attributes}>\n${content}\n</textCol>`;
+      },
+    });
+
     // Ajouter règles personnalisées sans écraser les règles par défaut
     this.turndown.addRule("smallcaps", {
       filter: function (node) {
@@ -635,7 +653,7 @@ export class Toolbar {
     this.turndown.addRule("lineBreak", {
       filter: "br",
       replacement: function () {
-        return "<br/>";
+        return " <br/>\n";
       },
     });
 
@@ -717,7 +735,8 @@ export class Toolbar {
     // Keep rules après l'initialisation
     this.turndown.keep(function (node) {
       return (
-        (node.nodeName === "SPAN" && node.hasAttribute("style")) ||
+        (node.nodeName === "SPAN" && 
+	node.style.getPropertyValue("--ls"))  ||
         node.nodeName === "SUP" ||
         (node.nodeName === "BR" &&
           (node.classList.contains("breakpage") ||
@@ -726,6 +745,8 @@ export class Toolbar {
             node.classList.contains("breakprint")))
       );
     });
+
+    
   }
 
   registerExtensions() {
