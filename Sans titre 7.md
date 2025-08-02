@@ -1,1 +1,3 @@
-<textCol gridCol="3" gridColGutter="0mm">ALLO : Il a d’abord fallu qu’une entreprise décide d’investir dans la création de ce produit. Plusieurs équipes ont étudié les habitudes de consommation. estimé les volumes à vendre, travaillé la recette et le gout, calculé la marge… Un designer a dessiné sa forme et des ingénieurs ont défini le type de plastique. Puis, dans une usine de</textCol>
+<textCol gridCol="3" gridColGutter="0mm">
+ALLO : Il a d’abord fallu qu’une entreprise décide d’investir dans la création de ce produit. Plusieurs équipes ont étudié les habitudes de consommation. estimé les volumes à vendre, travaillé la recette et le gout, calculé la marge… Un designer a dessiné sa forme et des ingénieurs ont défini le type de plastique. Puis, dans une usine de
+</textCol>
