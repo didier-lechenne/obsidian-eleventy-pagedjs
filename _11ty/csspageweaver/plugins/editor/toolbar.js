@@ -588,21 +588,31 @@ export class Toolbar {
       linkStyle: "inlined",
     });
 
-	this.turndown.addRule("breakcolumnSpan", {
-	filter: function (node) {
-	return node.nodeName === "SPAN" && node.className.includes("breakcolumn");
-	},
-	replacement: function (content, node) {
-	return "<breakcolumn>";
-	},
-	});
+//     this.turndown.addRule("breakcolumnSpan", {
+//       filter: function (node) {
+//         return (
+//           node.nodeName === "SPAN" && node.className.includes("breakcolumn")
+//         );
+//       },
+//       replacement: function (content, node) {
+//         return "<breakcolumn>";
+//       },
+//     });
+
+    this.turndown.remove(function (node) {
+      return node.nodeName === "SPAN" && node.className.includes("breakcolumn");
+    });
 
     this.turndown.addRule("textCol", {
       filter: function (node) {
         return node.nodeName === "SPAN" && node.classList.contains("textCol");
       },
       replacement: function (content, node) {
-	console.log("textCol: " + content);
+        // Remplacer spans breakcolumn dans le contenu
+        let processedContent = content.replace(
+          /<span[^>]*class="[^"]*breakcolumn[^"]*"[^>]*><\/span>/g,
+          "<breakcolumn>"
+        );
 
         const gridCol = node.style.getPropertyValue("--grid-col") || "12";
         const gridColGutter =
@@ -613,7 +623,7 @@ export class Toolbar {
           attributes += ` gridColGutter="${gridColGutter}"`;
         }
 
-        return `<textCol ${attributes}>\n${content}\n</textCol>`;
+        return `<textCol ${attributes}>\n${processedContent}\n</textCol>`;
       },
     });
 
@@ -737,10 +747,10 @@ export class Toolbar {
       return (
         (node.nodeName === "SPAN" && node.style.getPropertyValue("--ls")) ||
         node.nodeName === "SUP" ||
-//         node.nodeName === "SPAN" ||  
+        //         node.nodeName === "SPAN" ||
         (node.nodeName === "BR" &&
           (node.classList.contains("breakpage") ||
-         //    node.classList.contains("breakcolumn") ||
+            //    node.classList.contains("breakcolumn") ||
             node.classList.contains("breakscreen") ||
             node.classList.contains("breakprint")))
       );
