@@ -588,11 +588,22 @@ export class Toolbar {
       linkStyle: "inlined",
     });
 
+	this.turndown.addRule("breakcolumnSpan", {
+	filter: function (node) {
+	return node.nodeName === "SPAN" && node.className.includes("breakcolumn");
+	},
+	replacement: function (content, node) {
+	return "<breakcolumn>";
+	},
+	});
+
     this.turndown.addRule("textCol", {
       filter: function (node) {
         return node.nodeName === "SPAN" && node.classList.contains("textCol");
       },
       replacement: function (content, node) {
+	console.log("textCol: " + content);
+
         const gridCol = node.style.getPropertyValue("--grid-col") || "12";
         const gridColGutter =
           node.style.getPropertyValue("--grid-col-gutter") || "";
@@ -615,17 +626,6 @@ export class Toolbar {
       },
       replacement: function (content) {
         return `<smallcaps>${content}</smallcaps>`;
-      },
-    });
-
-    this.turndown.addRule("breakcolumnSpan", {
-      filter: function (node) {
-        return (
-          node.nodeName === "SPAN" && node.classList.contains("breakcolumn")
-        );
-      },
-      replacement: function () {
-        return "<breakcolumn>";
       },
     });
 
@@ -735,16 +735,12 @@ export class Toolbar {
     // Keep rules après l'initialisation
     this.turndown.keep(function (node) {
       return (
-        // Spans with CSS custom property --ls
         (node.nodeName === "SPAN" && node.style.getPropertyValue("--ls")) ||
-        // Superscript elements
         node.nodeName === "SUP" ||
-        // All span elements (this makes the first condition redundant)
-        node.nodeName === "SPAN" ||
-        // Break elements with specific classes
+//         node.nodeName === "SPAN" ||  
         (node.nodeName === "BR" &&
           (node.classList.contains("breakpage") ||
-            node.classList.contains("breakcolumn") ||
+         //    node.classList.contains("breakcolumn") ||
             node.classList.contains("breakscreen") ||
             node.classList.contains("breakprint")))
       );
