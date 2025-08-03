@@ -1,3 +1,5 @@
+import { UNICODE_CHARS } from './unicode.js';
+
 /**
  * @name Toolbar
  * @file Barre d'outils avec système d'extensions
@@ -230,28 +232,12 @@ class SpacingExtension {
       new ToolbarButton("nnbsp", "⸱", "Espace insécable fine", () => {
         this.insertNarrowNonBreakingSpace();
       }),
-      new ToolbarButton("quote-open", "«", "Guillemet ouvrant", () => {
-        this.insertOpeningQuote();
+      new ToolbarButton("quotes-fr", `${UNICODE_CHARS.LAQUO} ${UNICODE_CHARS.RAQUO}`, "Guillemets français", () => {
+        this.toggleFrenchQuotes();
       }),
-      new ToolbarButton("quote-close", "»", "Guillemet fermant", () => {
-        this.insertClosingQuote();
+      new ToolbarButton("quotes-en", `${UNICODE_CHARS.LDQUO} ${UNICODE_CHARS.RDQUO}`, "Guillemets anglais", () => {
+        this.toggleEnglishQuotes();
       }),
-      new ToolbarButton(
-        "quote-en-open",
-        '"',
-        "Guillemet ouvrant anglais",
-        () => {
-          this.insertEnglishOpeningQuote();
-        }
-      ),
-      new ToolbarButton(
-        "quote-en-close",
-        '"',
-        "Guillemet fermant anglais",
-        () => {
-          this.insertEnglishClosingQuote();
-        }
-      ),
       new ToolbarButton("br", "↵", "Saut de ligne", () => {
         this.insertBreak();
       }),
@@ -269,7 +255,7 @@ class SpacingExtension {
 
       const span = document.createElement("span");
       span.className = "i_space non-breaking-space editor-add";
-      span.textContent = "\u00A0";
+      span.textContent = UNICODE_CHARS.NO_BREAK_SPACE;
 
       range.insertNode(span);
       range.setStartAfter(span);
@@ -287,7 +273,7 @@ class SpacingExtension {
 
       const span = document.createElement("span");
       span.className = "i_space narrow-no-break-space editor-add";
-      span.textContent = "\u202F";
+      span.textContent = UNICODE_CHARS.NO_BREAK_THIN_SPACE;
 
       range.insertNode(span);
       range.setStartAfter(span);
@@ -297,7 +283,7 @@ class SpacingExtension {
     }
   }
 
-  insertOpeningQuote() {
+  insertFrenchOpeningQuote() {
     const selection = window.getSelection();
     if (selection.rangeCount > 0) {
       const range = selection.getRangeAt(0);
@@ -305,14 +291,15 @@ class SpacingExtension {
 
       // Créer « + espace fine insécable avec span
       const fragment = document.createDocumentFragment();
+      
       const quote = document.createElement("span");
       quote.className = "editor-add";
-      quote.textContent = "«";
+      quote.textContent = UNICODE_CHARS.LAQUO;
       fragment.appendChild(quote);
 
       const span = document.createElement("span");
       span.className = "i_space narrow-no-break-space editor-add";
-      span.textContent = "\u202F";
+      span.textContent = UNICODE_CHARS.NO_BREAK_THIN_SPACE;
       fragment.appendChild(span);
 
       range.insertNode(fragment);
@@ -322,7 +309,7 @@ class SpacingExtension {
     }
   }
 
-  insertClosingQuote() {
+  insertFrenchClosingQuote() {
     const selection = window.getSelection();
     if (selection.rangeCount > 0) {
       const range = selection.getRangeAt(0);
@@ -333,31 +320,16 @@ class SpacingExtension {
 
       const span = document.createElement("span");
       span.className = "i_space narrow-no-break-space editor-add";
-      span.textContent = "\u202F";
+      span.textContent = UNICODE_CHARS.NO_BREAK_THIN_SPACE;
       fragment.appendChild(span);
 
       const quote = document.createElement("span");
       quote.className = "editor-add";
-      quote.textContent = "»";
+      quote.textContent = UNICODE_CHARS.RAQUO;
       fragment.appendChild(quote);
 
       range.insertNode(fragment);
       range.collapse(false);
-      selection.removeAllRanges();
-      selection.addRange(range);
-    }
-  }
-
-  insertBreak() {
-    const selection = window.getSelection();
-    if (selection.rangeCount > 0) {
-      const range = selection.getRangeAt(0);
-      range.deleteContents();
-      const br = document.createElement("br");
-      br.className = "editor-add";
-      range.insertNode(br);
-      range.setStartAfter(br);
-      range.collapse(true);
       selection.removeAllRanges();
       selection.addRange(range);
     }
@@ -371,7 +343,7 @@ class SpacingExtension {
 
       const quote = document.createElement("span");
       quote.className = "editor-add";
-      quote.textContent = "“";
+      quote.textContent = UNICODE_CHARS.LDQUO;
 
       range.insertNode(quote);
       range.setStartAfter(quote);
@@ -389,7 +361,7 @@ class SpacingExtension {
 
       const quote = document.createElement("span");
       quote.className = "editor-add";
-      quote.textContent = "”";
+      quote.textContent = UNICODE_CHARS.RDQUO;
 
       range.insertNode(quote);
       range.setStartAfter(quote);
@@ -399,10 +371,228 @@ class SpacingExtension {
     }
   }
 
-  // Dans toolbar.js, classe SpacingExtension
+  toggleFrenchQuotes() {
+    const selection = this.toolbar.editor.selection.getCurrentSelection();
+    if (!selection || !selection.isValid) return;
+
+    const range = selection.range;
+
+    // Vérifier si déjà entouré de guillemets français
+    if (this.isWrappedInFrenchQuotes(range)) {
+      this.unwrapFrenchQuotes(range);
+    } else {
+      this.wrapWithFrenchQuotes(range);
+    }
+  }
+
+  toggleEnglishQuotes() {
+    const selection = this.toolbar.editor.selection.getCurrentSelection();
+    if (!selection || !selection.isValid) return;
+
+    const range = selection.range;
+
+    // Vérifier si déjà entouré de guillemets anglais
+    if (this.isWrappedInEnglishQuotes(range)) {
+      this.unwrapEnglishQuotes(range);
+    } else {
+      this.wrapWithEnglishQuotes(range);
+    }
+  }
+
+  wrapWithFrenchQuotes(range) {
+    const contents = range.extractContents();
+    const wrapper = document.createDocumentFragment();
+
+    // Guillemet ouvrant
+    const openQuote = document.createElement("span");
+    openQuote.className = "editor-add french-quote-open";
+    openQuote.textContent = UNICODE_CHARS.LAQUO;
+    wrapper.appendChild(openQuote);
+
+    // Espace fine
+    const openSpace = document.createElement("span");
+    openSpace.className = "i_space narrow-no-break-space editor-add";
+    openSpace.textContent = UNICODE_CHARS.NO_BREAK_THIN_SPACE;
+    wrapper.appendChild(openSpace);
+
+    // Contenu
+    wrapper.appendChild(contents);
+
+    // Espace fine
+    const closeSpace = document.createElement("span");
+    closeSpace.className = "i_space narrow-no-break-space editor-add";
+    closeSpace.textContent = UNICODE_CHARS.NO_BREAK_THIN_SPACE;
+    wrapper.appendChild(closeSpace);
+
+    // Guillemet fermant
+    const closeQuote = document.createElement("span");
+    closeQuote.className = "editor-add french-quote-close";
+    closeQuote.textContent = UNICODE_CHARS.RAQUO;
+    wrapper.appendChild(closeQuote);
+
+    range.insertNode(wrapper);
+    range.selectNodeContents(wrapper);
+
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+
+  wrapWithEnglishQuotes(range) {
+    const contents = range.extractContents();
+    const wrapper = document.createDocumentFragment();
+
+    // Guillemet ouvrant anglais
+    const openQuote = document.createElement("span");
+    openQuote.className = "editor-add english-quote-open";
+    openQuote.textContent = UNICODE_CHARS.LDQUO;
+    wrapper.appendChild(openQuote);
+
+    // Contenu
+    wrapper.appendChild(contents);
+
+    // Guillemet fermant anglais
+    const closeQuote = document.createElement("span");
+    closeQuote.className = "editor-add english-quote-close";
+    closeQuote.textContent = UNICODE_CHARS.RDQUO;
+    wrapper.appendChild(closeQuote);
+
+    range.insertNode(wrapper);
+    range.selectNodeContents(wrapper);
+
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+
+  isWrappedInFrenchQuotes(range) {
+    const container = range.commonAncestorContainer;
+    const parent = container.nodeType === Node.TEXT_NODE ? container.parentElement : container;
+    
+    // Chercher les éléments précédents et suivants pour détecter les guillemets français
+    return this.hasAdjacentFrenchQuotes(parent, range);
+  }
+
+  isWrappedInEnglishQuotes(range) {
+    const container = range.commonAncestorContainer;
+    const parent = container.nodeType === Node.TEXT_NODE ? container.parentElement : container;
+    
+    // Chercher les éléments précédents et suivants pour détecter les guillemets anglais
+    return this.hasAdjacentEnglishQuotes(parent, range);
+  }
+
+  hasAdjacentFrenchQuotes(element, range) {
+    const walker = document.createTreeWalker(
+      element,
+      NodeFilter.SHOW_ELEMENT,
+      null,
+      false
+    );
+
+    let hasOpenQuote = false;
+    let hasCloseQuote = false;
+    let foundStart = false;
+
+    while (walker.nextNode()) {
+      const node = walker.currentNode;
+      
+      if (node.classList && node.classList.contains('french-quote-open') && 
+          node.textContent === UNICODE_CHARS.LAQUO) {
+        if (!foundStart) hasOpenQuote = true;
+      }
+      
+      if (range.intersectsNode(node)) {
+        foundStart = true;
+      }
+      
+      if (foundStart && node.classList && node.classList.contains('french-quote-close') && 
+          node.textContent === UNICODE_CHARS.RAQUO) {
+        hasCloseQuote = true;
+        break;
+      }
+    }
+
+    return hasOpenQuote && hasCloseQuote;
+  }
+
+  hasAdjacentEnglishQuotes(element, range) {
+    const walker = document.createTreeWalker(
+      element,
+      NodeFilter.SHOW_ELEMENT,
+      null,
+      false
+    );
+
+    let hasOpenQuote = false;
+    let hasCloseQuote = false;
+    let foundStart = false;
+
+    while (walker.nextNode()) {
+      const node = walker.currentNode();
+      
+      if (node.classList && node.classList.contains('english-quote-open') && 
+          node.textContent === UNICODE_CHARS.LDQUO) {
+        if (!foundStart) hasOpenQuote = true;
+      }
+      
+      if (range.intersectsNode(node)) {
+        foundStart = true;
+      }
+      
+      if (foundStart && node.classList && node.classList.contains('english-quote-close') && 
+          node.textContent === UNICODE_CHARS.RDQUO) {
+        hasCloseQuote = true;
+        break;
+      }
+    }
+
+    return hasOpenQuote && hasCloseQuote;
+  }
+
+  unwrapFrenchQuotes(range) {
+    const container = range.commonAncestorContainer;
+    const parent = container.nodeType === Node.TEXT_NODE ? container.parentElement : container;
+    
+    // Supprimer tous les éléments de guillemets français autour de la sélection
+    const quotesToRemove = parent.querySelectorAll('.french-quote-open, .french-quote-close, .i_space.editor-add');
+    quotesToRemove.forEach(quote => {
+      if (quote.parentNode) {
+        quote.parentNode.removeChild(quote);
+      }
+    });
+    
+    parent.normalize();
+  }
+
+  unwrapEnglishQuotes(range) {
+    const container = range.commonAncestorContainer;
+    const parent = container.nodeType === Node.TEXT_NODE ? container.parentElement : container;
+    
+    // Supprimer tous les éléments de guillemets anglais autour de la sélection
+    const quotesToRemove = parent.querySelectorAll('.english-quote-open, .english-quote-close');
+    quotesToRemove.forEach(quote => {
+      if (quote.parentNode) {
+        quote.parentNode.removeChild(quote);
+      }
+    });
+    
+    parent.normalize();
+  }
+    const selection = window.getSelection();
+    if (selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+      range.deleteContents();
+      const br = document.createElement("br");
+      br.className = "editor-add";
+      range.insertNode(br);
+      range.setStartAfter(br);
+      range.collapse(true);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+  }
 
   resetTransformations() {
-
     const selection = window.getSelection();
     if (selection.rangeCount === 0) return;
 
@@ -436,12 +626,11 @@ class SpacingExtension {
       span.parentNode.replaceChild(textNode, span);
     });
 
-    // 4. Supprimer les autres spans ajoutés par l'éditeur (mais pas les guillemets déjà traités)
+    // 4. Supprimer les autres spans ajoutés par l'éditeur
     const otherSpans = element.querySelectorAll(
       "span.editor-add:not(.i_space)"
     );
     otherSpans.forEach((span) => {
-      // Vérifier que ce n'est pas un guillemet déjà traité
       if (!this.isQuoteSpan(span)) {
         while (span.firstChild) {
           span.parentNode.insertBefore(span.firstChild, span);
@@ -450,104 +639,24 @@ class SpacingExtension {
       }
     });
 
-    // 5. Supprimer formatage Bold/Italic ajouté par l'éditeur uniquement
-    const boldElements = element.querySelectorAll(
-      "strong.editor-add, b.editor-add"
-    );
-    boldElements.forEach((el) => {
-      while (el.firstChild) {
-        el.parentNode.insertBefore(el.firstChild, el);
-      }
-      el.parentNode.removeChild(el);
-    });
-
-    const italicElements = element.querySelectorAll(
-      "em.editor-add, i.editor-add"
-    );
-    italicElements.forEach((el) => {
-      while (el.firstChild) {
-        el.parentNode.insertBefore(el.firstChild, el);
-      }
-      el.parentNode.removeChild(el);
-    });
-
-    // 6. Supprimer SmallCaps ajoutés par l'éditeur uniquement
-    const smallCapsElements = element.querySelectorAll(
-      "span.small-caps.editor-add"
-    );
-    smallCapsElements.forEach((el) => {
-      while (el.firstChild) {
-        el.parentNode.insertBefore(el.firstChild, el);
-      }
-      el.parentNode.removeChild(el);
-    });
-
-    // 7. Supprimer Superscript ajoutés par l'éditeur uniquement
-    const supElements = element.querySelectorAll("sup.editor-add");
-    supElements.forEach((el) => {
-      while (el.firstChild) {
-        el.parentNode.insertBefore(el.firstChild, el);
-      }
-      el.parentNode.removeChild(el);
-    });
-
-    // 8. Supprimer les <br> ajoutés par l'éditeur
-    const brElements = element.querySelectorAll("br.editor-add");
-    brElements.forEach((br) => {
-      br.parentNode.removeChild(br);
-    });
-
-    // 9. Normaliser les nœuds de texte
-    element.normalize();
-  }
-
-  resetFrenchQuotes(element) {
-    // Rechercher tous les patterns de guillemets français
-    // Pattern 1: « + espace fine (guillemet ouvrant)
-    this.removeFrenchQuotePattern(element, "«", "\u202F");
-
-    // Pattern 2: espace fine + » (guillemet fermant)
-    this.removeFrenchQuotePattern(element, "\u202F", "»");
-  }
-
-  removeFrenchQuotePattern(element, firstChar, secondChar) {
-    // Approche plus simple et robuste
-    const allSpans = element.querySelectorAll("span.editor-add");
-    const spansToRemove = [];
-
-    for (let i = 0; i < allSpans.length - 1; i++) {
-      const currentSpan = allSpans[i];
-      const nextSpan = allSpans[i + 1];
-
-      // Vérifier si les spans sont adjacents (frères directs)
-      if (currentSpan.nextSibling === nextSpan) {
-        // Pattern « + espace fine
-        if (
-          currentSpan.textContent === firstChar &&
-          nextSpan.textContent === secondChar
-        ) {
-          spansToRemove.push(currentSpan);
-          spansToRemove.push(nextSpan);
+    // 5. Supprimer formatage Bold/Italic/SmallCaps/Superscript/br ajoutés par l'éditeur
+    ['strong.editor-add', 'b.editor-add', 'em.editor-add', 'i.editor-add', 
+     'span.small-caps.editor-add', 'sup.editor-add', 'br.editor-add'].forEach(selector => {
+      const elements = element.querySelectorAll(selector);
+      elements.forEach((el) => {
+        if (el.tagName === 'BR') {
+          el.parentNode.removeChild(el);
+        } else {
+          while (el.firstChild) {
+            el.parentNode.insertBefore(el.firstChild, el);
+          }
+          el.parentNode.removeChild(el);
         }
-      }
-    }
-
-    // Supprimer les spans identifiés
-    spansToRemove.forEach((span) => {
-      if (span.parentNode) {
-        span.parentNode.removeChild(span);
-      }
+      });
     });
-  }
 
-  resetEnglishQuotes(element) {
-    // Supprimer les guillemets anglais ajoutés par l'éditeur
-    const englishQuoteSpans = element.querySelectorAll("span.editor-add");
-    englishQuoteSpans.forEach((span) => {
-      if (span.textContent === '"' || span.textContent === '"') {
-        span.parentNode.removeChild(span);
-      }
-    });
+    // 6. Normaliser les nœuds de texte
+    element.normalize();
   }
 
   resetAllQuotes(element) {
@@ -559,15 +668,19 @@ class SpacingExtension {
       const span = allEditorSpans[i];
       const content = span.textContent;
 
-      // Identifier les guillemets et espaces typographiques
+      // Identifier les guillemets et espaces typographiques en utilisant les constantes
+      // ou par leurs classes
       if (
-        content === "«" ||
-        content === "»" ||
-        content === '“' ||
-        content === '”' ||
-        content === "\u202F"
+        content === UNICODE_CHARS.LAQUO ||
+        content === UNICODE_CHARS.RAQUO ||
+        content === UNICODE_CHARS.LDQUO ||
+        content === UNICODE_CHARS.RDQUO ||
+        content === UNICODE_CHARS.NO_BREAK_THIN_SPACE ||
+        span.classList.contains('french-quote-open') ||
+        span.classList.contains('french-quote-close') ||
+        span.classList.contains('english-quote-open') ||
+        span.classList.contains('english-quote-close')
       ) {
-        // espace fine insécable
         spansToRemove.push(span);
       }
     }
@@ -582,7 +695,14 @@ class SpacingExtension {
 
   isQuoteSpan(span) {
     const text = span.textContent;
-    return text === "«" || text === "»" || text === '"' || text === '"';
+    return text === UNICODE_CHARS.LAQUO || 
+           text === UNICODE_CHARS.RAQUO || 
+           text === UNICODE_CHARS.LDQUO || 
+           text === UNICODE_CHARS.RDQUO ||
+           span.classList.contains('french-quote-open') ||
+           span.classList.contains('french-quote-close') ||
+           span.classList.contains('english-quote-open') ||
+           span.classList.contains('english-quote-close');
   }
 }
 
