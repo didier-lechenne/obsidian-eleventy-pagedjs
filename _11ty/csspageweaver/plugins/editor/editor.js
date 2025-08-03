@@ -258,7 +258,7 @@ export default class Editor extends Handler {
     }, 300);
   }
 
-  // === NOUVELLES MÉTHODES POUR L'EXPORT TEMPS RÉEL ===
+  // === MÉTHODES POUR L'EXPORT TEMPS RÉEL ===
 
   enableRealtimeExport(callback, delay = 300) {
     this.realtimeExport.enabled = true;
