@@ -28,6 +28,14 @@ export default class Editor extends Handler {
 
     this.autoCopyTimeout = null;
     this.autoCopyEnabled = true;
+
+    // Export temps réel
+    this.realtimeExport = {
+      enabled: false,
+      callback: null,
+      debounceDelay: 300
+    };
+    this.exportTimeout = null;
   }
 
   beforeParsed(content) {
@@ -114,7 +122,6 @@ export default class Editor extends Handler {
     document.addEventListener("mouseup", this.handleMouseUp.bind(this));
     document.addEventListener("keyup", this.handleKeyUp.bind(this));
     document.addEventListener("keydown", this.handleKeyDown.bind(this));
-    // document.addEventListener('input', this.handleInput.bind(this));
     document.addEventListener("paste", this.handlePaste.bind(this));
     document.addEventListener("focusin", this.handleFocusIn.bind(this));
   }
@@ -204,7 +211,6 @@ export default class Editor extends Handler {
             }
           }
           break;
-          break;
       }
     }
   }
@@ -224,6 +230,13 @@ export default class Editor extends Handler {
       ) {
         this.currentSelection = selection;
         this.toolbar.show(selection);
+
+        // Auto-copie TOUJOURS quand dans un élément éditable
+        this.autoCopyToClipboard();
+
+        // Déclencher l'export temps réel
+        this.triggerRealtimeExport();
+
         return;
       }
     }
@@ -231,6 +244,56 @@ export default class Editor extends Handler {
     this.currentSelection = null;
     this.toolbar.hide();
   }
+
+  autoCopyToClipboard() {
+    // Délai pour éviter la copie répétée lors du drag
+    clearTimeout(this.autoCopyTimeout);
+    this.autoCopyTimeout = setTimeout(() => {
+      const utilsExt = this.toolbar.extensions.find(
+        (ext) => ext.constructor.name === "UtilsExtension"
+      );
+      if (utilsExt) {
+        utilsExt.copyElementAsMarkdown(true); // true = mode silencieux
+      }
+    }, 300);
+  }
+
+  // === NOUVELLES MÉTHODES POUR L'EXPORT TEMPS RÉEL ===
+
+  enableRealtimeExport(callback, delay = 300) {
+    this.realtimeExport.enabled = true;
+    this.realtimeExport.callback = callback;
+    this.realtimeExport.debounceDelay = delay;
+  }
+
+  disableRealtimeExport() {
+    this.realtimeExport.enabled = false;
+    this.realtimeExport.callback = null;
+    clearTimeout(this.exportTimeout);
+  }
+
+  triggerRealtimeExport() {
+    if (!this.realtimeExport.enabled || !this.realtimeExport.callback) return;
+
+    // Debounce pour éviter trop d'appels
+    clearTimeout(this.exportTimeout);
+    this.exportTimeout = setTimeout(() => {
+      const utilsExt = this.toolbar.extensions.find(
+        ext => ext.constructor.name === "UtilsExtension"
+      );
+      
+      if (utilsExt) {
+        const activeElement = document.activeElement;
+        if (activeElement && this.isInEditableElement(activeElement)) {
+          // Générer le markdown de l'élément actuel
+          const markdown = utilsExt.generateMarkdownFromElement(activeElement);
+          this.realtimeExport.callback(markdown, activeElement);
+        }
+      }
+    }, this.realtimeExport.debounceDelay);
+  }
+
+  // === MÉTHODES EXISTANTES ===
 
   isInEditableElement(node) {
     if (!node) return false;
@@ -269,6 +332,9 @@ export default class Editor extends Handler {
       element.contentEditable = false;
       element.classList.remove("paged-editor-content");
     });
+
+    // Désactiver l'export temps réel
+    this.disableRealtimeExport();
   }
 
   getContent(selector) {
@@ -281,45 +347,5 @@ export default class Editor extends Handler {
     if (element) {
       element.innerHTML = content;
     }
-  }
-
-  updateSelection() {
-    if (!this.isActive) return;
-
-    const selection = this.selection.getCurrentSelection();
-
-    if (selection && this.isInEditableElement(selection.anchorNode)) {
-      // Afficher si sélection valide OU si curseur dans élément éditable ou footnote
-      const activeElement = document.activeElement;
-      if (
-        selection.isValid ||
-        activeElement.hasAttribute("data-editable") ||
-        activeElement.classList.contains("footnote")
-      ) {
-        this.currentSelection = selection;
-        this.toolbar.show(selection);
-
-        // Auto-copie TOUJOURS quand dans un élément éditable
-        this.autoCopyToClipboard();
-
-        return;
-      }
-    }
-
-    this.currentSelection = null;
-    this.toolbar.hide();
-  }
-
-  autoCopyToClipboard() {
-    // Délai pour éviter la copie répétée lors du drag
-    clearTimeout(this.autoCopyTimeout);
-    this.autoCopyTimeout = setTimeout(() => {
-      const utilsExt = this.toolbar.extensions.find(
-        (ext) => ext.constructor.name === "UtilsExtension"
-      );
-      if (utilsExt) {
-        utilsExt.copyElementAsMarkdown(true); // true = mode silencieux
-      }
-    }, 300);
   }
 }

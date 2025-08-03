@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Turndown Plugin Confluence to GFM Demo</title>
+<meta name="viewport" content="width=device-width">
+<style>
+  * {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0 auto;
+    font-family: courier, monospace, sans-serif;
+    line-height: 1.3125;
+    color: #333;
+  }
+
+  header {
+    padding: 0.5em;
+    background-color: #fff;
+    text-align: center;
+  }
+
+  footer {
+    font-size: 0.875em;
+    text-align: center;
+    color: #666;
+  }
+
+  h1,
+  label[for="input"],
+  label[for="output"] {
+    margin: 0;
+    font-size: 1em;
+    font-weight: 700;
+    letter-spacing: 0.0625em;
+    text-transform: uppercase;
+  }
+
+  label[for="input"],
+  label[for="output"] {
+    font-weight: 400;
+  }
+
+  .source-link {
+    font-size: 0.875em;
+  }
+
+  .row:before,
+  .row:after {
+    content: " ";
+    display: table;
+  }
+
+  .row:after {
+    clear: both;
+  }
+
+  .row {
+    *zoom: 1;
+  }
+
+  .col,
+  .form-group {
+    padding: 0 0.5em;
+  }
+
+  @media (min-width: 36em) {
+    .col {
+      float: left;
+      width: 50%;
+    }
+  }
+
+  textarea {
+    width: 100%;
+    height: 36em;
+    margin: 0;
+    padding: 0.5em;
+    overflow: auto;
+    border: 1px solid;
+    background-color: #fff;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    color: inherit;
+  }
+
+  #input {
+    background-color: #333;
+    color: #fff;
+    border: none;
+  }
+
+  select {
+    display: block;
+    width: 100%;
+    font-size: inherit;
+  }
+
+  .form-group {
+    display: inline-block;
+  }
+
+  .form-group label {
+    font-size: 0.875em;
+  }
+</style>
+<script src="https://unpkg.com/turndown/dist/turndown.js"></script>
+<script src="https://unpkg.com/@guyplusplus/turndown-plugin-gfm/dist/turndown-plugin-gfm.js"></script>
+<script src="https://unpkg.com/turndown-plugin-confluence-to-gfm/dist/turndown-plugin-confluence-to-gfm.js"></script>
+</head>
+<body>
+<header>
+  <h1>Turndown Plugin Confluence to GFM Demo</h1>
+  <a class="source-link" href="https://github.com/guyplusplus/turndown-plugin-confluence-to-gfm">Source on GitHub</a>
+</header>
+<div class="row">
+  <div class="col">
+    <label for="input">HTML</label>
+    <textarea cols="100" rows=10 id="input">&lt;div id=&quot;main-content&quot; class=&quot;wiki-content group&quot;&gt;
+      &lt;h1 id=&quot;ConfluenceToGFM-DemoPage-TurndownPluginConfluencetoGFMDemo&quot;&gt;Turndown Plugin Confluence to GFM Demo&lt;/h1&gt;&lt;p&gt;This demonstrates &lt;a href=&quot;https://github.com/domchristie/turndown&quot; class=&quot;external-link&quot; rel=&quot;nofollow&quot;&gt;turndown&lt;/a&gt; &ndash; an HTML to Markdown converter in JavaScript with additional support for Confluence GFM via the &lt;a href=&quot;https://github.com/guyplusplus/turndown-plugin-confluence-to-gfm&quot; class=&quot;external-link&quot; rel=&quot;nofollow&quot;&gt;turndown-plugin-confluence-to-gfm&lt;/a&gt; plugin.&lt;/p&gt;&lt;h2 id=&quot;ConfluenceToGFM-DemoPage-Usage&quot;&gt;Usage&lt;/h2&gt;&lt;div class=&quot;code panel pdl&quot; style=&quot;border-width: 1px;&quot;&gt;&lt;div class=&quot;codeContent panelContent pdl&quot;&gt;
+&lt;pre class=&quot;syntaxhighlighter-pre&quot; data-syntaxhighlighter-params=&quot;brush: js; gutter: false; theme: Confluence&quot; data-theme=&quot;Confluence&quot;&gt;var turndownService = new TurndownService()
+TurndownPluginGfmService.gfm(turndownService)
+TurndownPluginConfluenceToGfmService.confluenceGfm(turndownService)
+console.log(turndownService.turndown(&amp;#39;&amp;lt;img class=&amp;quot;emoticon emoticon-laugh&amp;quot; data-emoji-id=&amp;quot;1f600&amp;quot; data-emoji-shortname=&amp;quot;:grinning:&amp;quot; data-emoji-fallback=&amp;quot;😀&amp;quot; src=&amp;quot;images/icons/emoticons/biggrin.png&amp;quot; width=&amp;quot;16&amp;quot; height=&amp;quot;16&amp;quot; data-emoticon-name=&amp;quot;laugh&amp;quot; alt=&amp;quot;(big grin)&amp;quot;/&amp;gt;&amp;#39;))&lt;/pre&gt;
+&lt;/div&gt;&lt;/div&gt;&lt;p&gt;It aims to be &lt;a href=&quot;http://commonmark.org/&quot; class=&quot;external-link&quot; rel=&quot;nofollow&quot;&gt;CommonMark&lt;/a&gt; compliant, and includes options to style the output. These options include:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;p&gt;code block (indented or fenced)&lt;/p&gt;&lt;/li&gt;&lt;li&gt;&lt;p&gt;task list (- [ ] or - [x])&lt;/p&gt;&lt;/li&gt;&lt;li&gt;&lt;p&gt;emoji (such as :smile:)&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;
+      &lt;/div&gt;</textarea>
+  </div>
+  <div class="col">
+    <label for="output">GFM (GitHub Flavored Markdown)</label>
+    <textarea readonly cols="100" rows=10 id="output"></textarea>
+  </div>
+</div>
+
+<div class="row">
+  <form method="get" action="/turndown" id="options">
+    <div class="form-group">
+      <label for="headingStyle">Heading style</label>
+      <select name="headingStyle" id="headingStyle">
+        <option value="setext">setext</option>
+        <option value="atx">atx</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="hr">Horizontal rule</label>
+      <select name="hr" id="hr">
+        <option value="* * *">* * *</option>
+        <option value="- - -">- - -</option>
+        <option value="_ _ _">_ _ _</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="bulletListMarker">Bullet</label>
+      <select name="bulletListMarker" id="bulletListMarker">
+        <option value="*">*</option>
+        <option value="-">-</option>
+        <option value="+">+</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="codeBlockStyle">Code block style</label>
+      <select name="codeBlockStyle" id="codeBlockStyle">
+        <option value="indented">indented</option>
+        <option value="fenced">fenced</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="fence">Fence</label>
+      <select name="fence" id="fence">
+        <option value="```">```</option>
+        <option value="~~~">~~~</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="emDelimiter">Em delimiter</label>
+      <select name="emDelimiter" id="emDelimiter">
+        <option value="_">_</option>
+        <option value="*">*</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="strongDelimiter">Strong delimiter</label>
+      <select name="strongDelimiter" id="strongDelimiter">
+        <option value="**">**</option>
+        <option value="__">__</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="linkStyle">Link style</label>
+      <select name="linkStyle" id="linkStyle">
+        <option value="inlined">inlined</option>
+        <option value="referenced">referenced</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="linkReferenceStyle">Link reference style</label>
+      <select name="linkReferenceStyle" id="linkReferenceStyle">
+        <option value="full">full</option>
+        <option value="collapsed">collapsed</option>
+        <option value="shortcut">shortcut</option>
+      </select>
+    </div>
+  </form>
+</div>
+
+<footer><p>Turndown is copyright © 2017 <a href="http://www.domchristie.co.uk/">Dom Christie</a> and is released under the MIT license</p></footer>
+<script>
+  ;(function () {
+    var input = document.getElementById('input')
+    var output = document.getElementById('output')
+    var optionsForm = document.getElementById('options')
+    var turndownService = new window.TurndownService(options())
+    TurndownPluginGfmService.gfm(turndownService)
+    TurndownPluginConfluenceToGfmService.confluenceGfm(turndownService)
+
+    input.addEventListener('input', update)
+
+    optionsForm.addEventListener('change', function () {
+      turndownService = new window.TurndownService(options())
+      TurndownPluginGfmService.gfm(turndownService)
+      TurndownPluginConfluenceToGfmService.confluenceGfm(turndownService)
+      update()
+    })
+
+    update()
+
+    function update () {
+      output.value = turndownService.turndown(input.value)
+    }
+
+    function options () {
+      var opts = {}
+      var inputs = optionsForm.getElementsByTagName('select')
+      for (var i = 0; i < inputs.length; i++) {
+        var input = inputs[i]
+        opts[input.name] = input.value
+      }
+      return opts
+    }
+  })()
+</script>
+</body>
+</html>

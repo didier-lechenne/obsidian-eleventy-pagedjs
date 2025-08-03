@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>turndown test runner</title>
+  <link rel="stylesheet" href="../node_modules/turndown-attendant/dist/styles.css">
+</head>
+<body>
+
+<!-- TEST CASES -->
+
+<div class="case" data-name="basic table (gfm module in place)">
+  <div class="input">
+    <table>
+      <thead>
+        <tr>
+          <th>Heading</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Content</td>
+        </tr>
+    </table>
+  </div>
+  <pre class="expected">| Heading |
+| --- |
+| Content |</pre>
+</div>
+
+<div class="case" data-name="img with alt (no impact)">
+  <div class="input"><img src="logo.png" alt="img with alt"></div>
+  <pre class="expected">![img with alt](logo.png)</pre>
+</div>
+
+<div class="case" data-name="standardemoji">
+  <div class="input">
+    <img class="emoticon emoticon-laugh" data-emoji-id="1f600" data-emoji-shortname=":grinning:" data-emoji-fallback="😀" src="images/icons/emoticons/biggrin.png" width="16" height="16" data-emoticon-name="laugh" alt="(big grin)"/>
+  </div>
+  <pre class="expected">:grinning:</pre>
+</div>
+
+<div class="case" data-name="standard emoji without data-emoji-shortname">
+  <div class="input">
+    <img class="emoticon emoticon-laugh" data-emoji-id="1f600" data-emoji-fallback="😀" src="images/icons/emoticons/biggrin.png" width="16" height="16" data-emoticon-name="laugh" alt="(big grin)"/>
+  </div>
+  <pre class="expected">😀</pre>
+</div>
+
+<div class="case" data-name="non gfm emoji">
+  <div class="input">
+    <img class="emoticon emoticon-blue-star" data-emoji-id="1f1ef-1f1f5" data-emoji-shortname=":flag_jp:" data-emoji-fallback="🇯🇵" src="images/icons/emoticons/72/1f1ef-1f1f5.png" width="16" height="16" data-emoticon-name="blue-star" alt="(blue star)"/>
+  </div>
+  <pre class="expected">🇯🇵</pre>
+</div>
+
+<div class="case" data-name="non gfm emoji with no fallback">
+  <div class="input">
+    <img class="emoticon emoticon-blue-star" data-emoji-id="1f1ef-1f1f5" data-emoji-shortname=":flag_jp:" src="images/icons/emoticons/72/1f1ef-1f1f5.png" width="16" height="16" data-emoticon-name="blue-star" alt="(blue star)"/>
+  </div>
+  <pre class="expected"></pre>
+</div>
+
+<div class="case" data-name="task list">
+  <div class="input">
+    <ul class="inline-task-list" data-inline-tasks-content-id="123123"><li data-inline-task-id="1"><span class="placeholder-inline-tasks">Action 1 unchecked</span></li><li class="checked" data-inline-task-id="2"><span class="placeholder-inline-tasks">Action 2 checked</span></li><li data-inline-task-id="3"><span class="placeholder-inline-tasks">Action 3 not specified</span></li></ul>
+  </div>
+  <pre class="expected">- [ ] Action 1 unchecked
+- [x] Action 2 checked
+- [ ] Action 3 not specified</pre>
+</div>
+
+<div class="case" data-name="highlighted code block - 1 line" data-options='{"codeBlockStyle": "fenced"}'>
+  <div class="input">
+    <div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+      <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">System.out.println(&quot;Hello World&quot;);</pre>
+      </div></div>
+  </div>
+  <pre class="expected">```java
+System.out.println("Hello World");
+```</pre>
+</div>
+
+<div class="case" data-name="highlighted code block - many lines - fenced" data-options='{"codeBlockStyle": "fenced"}'>
+  <div class="input">
+    <div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+      <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">{
+  &quot;key1&quot;: {
+    &quot;key2&quot;: &quot;value&quot;,
+    &quot;number&quot;: 123
+  },
+  &quot;array&quot;: [1, 2, 3]
+}</pre></div></div>
+  </div>
+  <pre class="expected">```java
+{
+  "key1": {
+    "key2": "value",
+    "number": 123
+  },
+  "array": [1, 2, 3]
+}
+```</pre>
+</div>
+
+<div class="case" data-name="highlighted code block - many lines - indented" data-options='{"codeBlockStyle": "indented"}'>
+  <div class="input">
+    <div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+      <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">{
+  &quot;key1&quot;: {
+    &quot;key2&quot;: &quot;value&quot;,
+    &quot;number&quot;: 123
+  },
+  &quot;array&quot;: [1, 2, 3]
+}</pre></div></div>
+  </div>
+  <pre class="expected">    {
+      "key1": {
+        "key2": "value",
+        "number": 123
+      },
+      "array": [1, 2, 3]
+    }</pre>
+</div>
+
+<div class="case" data-name="table header only, empty">
+  <div class="input">
+    <table data-layout="default" class="confluenceTable"><colgroup><col style="width: 680.0px;"/></colgroup><tbody><tr><th class="confluenceTh"><p /></th></tr></tbody></table>
+  </div>
+  <pre class="expected">|    |
+| --- |</pre>
+</div>
+
+<div class="case" data-name="table header and first row only, empty">
+  <div class="input">
+    <table data-layout="default" class="confluenceTable"><colgroup><col style="width: 680.0px;"/></colgroup><tbody><tr><th class="confluenceTh"><p /></th></tr><tr><td class="confluenceTd"><p /></td></tr></tbody></table>
+  </div>
+  <pre class="expected">|    |
+| --- |
+|    |</pre>
+</div>
+
+<div class="case" data-name="large table with auto-numbering">
+  <div class="input">
+    <table data-layout="default" class="confluenceTable"><colgroup><col/><col style="width: 226.67px;"/><col style="width: 226.67px;"/><col style="width: 226.67px;"/></colgroup><tbody><tr><th class="numberingColumn confluenceTh" /><th class="confluenceTh"><p><strong>l1h1</strong></p></th><th class="confluenceTh"><p><strong>h2</strong></p></th><th class="confluenceTh"><p><strong>h3</strong></p></th></tr><tr><td class="numberingColumn confluenceTd">1</td><th class="confluenceTh"><p><strong>l2</strong></p></th><td class="confluenceTd"><p>2-2</p></td><td class="confluenceTd"><p>2-3</p></td></tr><tr><td class="numberingColumn confluenceTd">2</td><th class="confluenceTh"><p><strong>l3</strong></p></th><td class="confluenceTd"><p>3-2</p></td><td class="confluenceTd"><p>3-3</p></td></tr></tbody></table>
+  </div>
+  <pre class="expected">|  |   **l1h1**   |   **h2**   |   **h3**   |
+| --- | --- | --- | --- |
+| 1 |   **l2**   |   2-2   |   2-3   |
+| 2 |   **l3**   |   3-2   |   3-3   |</pre>
+</div>
+
+<div class="case" data-name="inline code">
+  <div class="input">This is <code>a short inline code</code> example.</div>
+  <pre class="expected">This is `a short inline code` example.</pre>
+</div>
+
+<div class="case" data-name="bold in code" data-options='{"codeBlockStyle": "fenced"}'>
+  <div class="input"><div class="codeContent panelContent pdl"><pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">Test of **gfm bold** and &lt;b&gt;html bold&lt;/b&gt; in source.</pre></div></div>
+  <pre class="expected">```java
+Test of **gfm bold** and &lt;b&gt;html bold&lt;/b&gt; in source.
+```</pre>
+</div>
+
+<div class="case" data-name="fence char in code + multilines (fenced)" data-options='{"codeBlockStyle": "fenced"}'>
+  <div class="input"><div class="codeContent panelContent pdl">
+    <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">line 1
+```
+line 3
+```
+
+line 6
+</pre>
+</div></div>
+  <pre class="expected">````java
+line 1
+```
+line 3
+```
+
+line 6
+````</pre>
+</div>
+
+<div class="case" data-name="fence char in code + multilines (indented)" data-options='{"codeBlockStyle": "indented"}'>
+  <div class="input"><div class="codeContent panelContent pdl">
+    <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">line 1
+```
+line 3
+```
+
+line 6
+</pre>
+</div></div>
+  <pre class="expected">    line 1
+    ```
+    line 3
+    ```
+    
+    line 6</pre>
+</div>
+
+<div class="case" data-name="empty code block (TODO to improve with empty code)" data-options='{"codeBlockStyle": "fenced"}'>
+  <div class="input"><div class="codeContent panelContent pdl">
+    <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence"></pre>
+</div></div>
+  <pre class="expected"></pre>
+</div>
+
+<div class="case" data-name="empty code block (TODO to improve with empty code)" data-options='{"codeBlockStyle": "indented"}'>
+  <div class="input"><div class="codeContent panelContent pdl">
+    <pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence"></pre>
+</div></div>
+  <pre class="expected"></pre>
+</div>
+
+<!-- /TEST CASES -->
+
+<script src="turndown-plugin-gfm-test.browser.js"></script>
+</body>
+</html>
