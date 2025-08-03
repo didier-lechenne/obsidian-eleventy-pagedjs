@@ -82,7 +82,7 @@ export default class Editor extends Handler {
     var toggle = document.getElementById("editor-toggle");
     if (toggle) {
       // Restaurer état depuis localStorage
-      const savedState = localStorage.getItem("editor-plugin-active");
+      const savedState = localStorage.getItem("editor-plugin");
       if (savedState === "true") {
         toggle.checked = true;
         this.activate();
@@ -91,10 +91,10 @@ export default class Editor extends Handler {
       toggle.addEventListener("change", (e) => {
         if (e.target.checked) {
           this.activate();
-          localStorage.setItem("editor-plugin-active", "true");
+          localStorage.setItem("editor-plugin", "true");
         } else {
           this.deactivate();
-          localStorage.setItem("editor-plugin-active", "false");
+          localStorage.setItem("editor-plugin", "false");
         }
       });
     }

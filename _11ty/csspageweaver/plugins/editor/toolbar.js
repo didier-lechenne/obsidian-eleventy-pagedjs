@@ -2,6 +2,14 @@
  * @name Toolbar
  * @file Barre d'outils avec système d'extensions
  */
+import { 
+  textColPlugin, 
+  breakColumnPlugin, 
+  typographyPlugin, 
+  footnotesPlugin, 
+  spacesPlugin, 
+  coreRulesPlugin 
+} from './turndown-plugins/index.js';
 
 // Classe de base pour les boutons
 class ToolbarButton {
@@ -25,12 +33,6 @@ class FormattingExtension {
 
   getButtons() {
     return [
-      // new ToolbarButton('bold', '<strong>B</strong>', 'Gras (Ctrl+B)', () => {
-      //   this.toolbar.editor.commands.toggleBold();
-      // }),
-      // new ToolbarButton('italic', '<em>I</em>', 'Italique (Ctrl+I)', () => {
-      //   this.toolbar.editor.commands.toggleItalic();
-      // }),
       new ToolbarButton("smallcaps", "ᴀᴀ", "Petites capitales", () => {
         this.toolbar.editor.commands.toggleSmallCaps();
       }),
@@ -41,7 +43,6 @@ class FormattingExtension {
   }
 }
 
-// Extension pour le lettrage (letter-spacing)
 // Extension pour le lettrage (letter-spacing)
 class LetterSpacingExtension {
   constructor(toolbar) {
@@ -215,7 +216,6 @@ class LetterSpacingExtension {
 }
 
 // Extension pour espaces typographiques
-
 class SpacingExtension {
   constructor(toolbar) {
     this.toolbar = toolbar;
@@ -551,13 +551,13 @@ class UtilsExtension {
     const dataRef = element.getAttribute("data-ref");
 
     if (!dataRef) {
-      return element.outerHTML; // Changé de innerHTML
+      return element.outerHTML;
     }
 
     const fragments = document.querySelectorAll(`[data-ref="${dataRef}"]`);
 
     if (fragments.length <= 1) {
-      return element.outerHTML; // Changé de innerHTML
+      return element.outerHTML;
     }
 
     // Pour éléments scindés, reconstituer avec balises
@@ -593,185 +593,17 @@ export class Toolbar {
       linkStyle: "inlined",
     });
 
-    this.turndown.addRule("breakcolumn", {
-      filter: function (node) {
-        //         console.log(
-        //           "breakcolumn filter:",
-        //           node.nodeName,
-        //           node.classList?.contains("breakcolumn"),
-        //           node.textContent
-        //         );
-        return (
-          node.nodeName === "SPAN" && node.classList.contains("breakcolumn")
-        );
-      },
-      replacement: function (content, node) {
-        //         console.log("breakcolumn replacement called, content:", content);
-        return `<breakcolumn>`;
-      },
-    });
-
-    this.turndown.addRule("textCol", {
-      
-      filter: function (node) {
-        return node.nodeName === "DIV" && node.classList.contains("textCol");
-      },
-      // compliqué, mais cela semble fonctionner...
-      replacement: function (content, node) {
-        let processedContent = content;
-        let innerHTML = node.innerHTML;
-        let breakRegex = /<span[^>]*breakcolumn[^>]*><\/span>\s*(\w+)/g;
-        let match;
-        while ((match = breakRegex.exec(innerHTML)) !== null) {
-          let wordAfter = match[1];
-          processedContent = processedContent.replace(
-            wordAfter,
-            `\n<breakcolumn>\n${wordAfter}`
-          );
-        }
-
-        const gridCol = node.style.getPropertyValue("--grid-col") || "12";
-        const gridColGutter =
-          node.style.getPropertyValue("--grid-col-gutter") || "";
-
-        let attributes = `gridCol="${gridCol}"`;
-        if (gridColGutter) {
-          attributes += ` gridColGutter="${gridColGutter}"`;
-        }
-
-        return `<textCol ${attributes}>\n${processedContent}\n</textCol>`;
-      },
-    });
-
-    // Ajouter règles personnalisées sans écraser les règles par défaut
-
-    this.turndown.addRule("smallcaps", {
-      filter: function (node) {
-        return (
-          node.nodeName === "SPAN" && node.classList.contains("small-caps")
-        );
-      },
-      replacement: function (content) {
-        return `<smallcaps>${content}</smallcaps>`;
-      },
-    });
-
-    this.turndown.addRule("letterSpacing", {
-      filter: function (node) {
-        return (
-          node.nodeName === "SPAN" && node.style.getPropertyValue("--ls") !== ""
-        );
-      },
-      replacement: function (content, node) {
-        const lsValue = node.style.getPropertyValue("--ls");
-        return `<span style="--ls:${lsValue}">${content}</span>`;
-      },
-    });
-
-    this.turndown.addRule("removeSpaceSpans", {
-      filter: function (node) {
-        return node.nodeName === "SPAN" && node.className.includes("i_space");
-      },
-      replacement: function (content) {
-        return content;
-      },
-    });
-
-    this.turndown.addRule("lineBreak", {
-      filter: "br",
-      replacement: function () {
-        return " <br/>\n";
-      },
-    });
-
-    this.turndown.addRule("footnoteCall", {
-      filter: function (node) {
-        return (
-          node.nodeName === "A" &&
-          node.classList.contains("footnote") &&
-          node.hasAttribute("data-footnote-call")
-        );
-      },
-      replacement: function (content, node) {
-        const footnoteId =
-          node.getAttribute("data-footnote-call") ||
-          node.getAttribute("data-ref");
-        const footnoteContent = document.querySelector(`#note-${footnoteId}`);
-
-        if (footnoteContent) {
-          // Utiliser service global configuré SANS échapper les crochets
-          const noteMarkdown = window.mainTurndownService
-            .turndown(footnoteContent.innerHTML)
-            .replace(/\s+/g, " ")
-            .trim();
-          // .replace(/\]/g, "\\]"); // LIGNE SUPPRIMÉE
-          return `^[${noteMarkdown}]`;
-        }
-
-        return `^[Note ${footnoteId.substring(0, 8)}]`;
-      },
-    });
-
-    this.turndown.addRule("footnoteDefinition", {
-      filter: function (node) {
-        return (
-          node.nodeName === "SPAN" &&
-          node.classList.contains("footnote") &&
-          node.hasAttribute("id") &&
-          node.id.startsWith("note-")
-        );
-      },
-      replacement: function () {
-        return "";
-      },
-    });
-
-    this.turndown.addRule("superscript", {
-      filter: "sup",
-      replacement: function (content) {
-        return `<sup>${content}</sup>`;
-      },
-    });
-
-    // Redéfinir la fonction d'échappement pour exclure les crochets
-    this.turndown.escape = function (string) {
-      var customEscapes = [
-        [/\\/g, "\\\\"],
-        [/\*/g, "\\*"],
-        [/^-/g, "\\-"],
-        [/^\+ /g, "\\+ "],
-        [/^(=+)/g, "\\$1"],
-        [/^(#{1,6}) /g, "\\$1 "],
-        [/`/g, "\\`"],
-        [/^~~~/g, "\\~~~"],
-        // [/\[/g, '\\['], // SUPPRIMÉ pour éviter \[
-        // [/\]/g, '\\]'], // SUPPRIMÉ pour éviter \]
-        [/^>/g, "\\>"],
-        [/_/g, "\\_"],
-        [/^(\d+)\. /g, "$1\\. "],
-      ];
-
-      return customEscapes.reduce(function (accumulator, escape) {
-        return accumulator.replace(escape[0], escape[1]);
-      }, string);
-    };
-
-    // Stocker référence globale pour les règles
+    // Utiliser les plugins modulaires
+    this.turndown.use([
+      coreRulesPlugin,
+      textColPlugin,
+      breakColumnPlugin,
+      typographyPlugin,
+      footnotesPlugin,
+      spacesPlugin
+    ]);
+    
     window.mainTurndownService = this.turndown;
-
-    // Keep rules après l'initialisation
-    this.turndown.keep(function (node) {
-      return (
-        (node.nodeName === "SPAN" && node.style.getPropertyValue("--ls")) ||
-        (node.nodeName === "SPAN" && node.classList.contains("breakcolumn")) ||
-        node.nodeName === "SUP" ||
-        (node.nodeName === "BR" &&
-          (node.classList.contains("breakpage") ||
-            node.classList.contains("breakcolumn") ||
-            node.classList.contains("breakscreen") ||
-            node.classList.contains("breakprint")))
-      );
-    });
   }
 
   registerExtensions() {
@@ -900,8 +732,6 @@ export class Toolbar {
     const isSuperscript = this.isFormatActive("superscript", element);
     const hasLetterSpacing = this.hasLetterSpacing(element);
 
-    // this.element.querySelector('[data-command="bold"]')?.classList.toggle('active', isBold);
-    // this.element.querySelector('[data-command="italic"]')?.classList.toggle('active', isItalic);
     this.element
       .querySelector('[data-command="smallcaps"]')
       ?.classList.toggle("active", isSmallCaps);
