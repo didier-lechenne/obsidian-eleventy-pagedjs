@@ -9,6 +9,7 @@ import {
   footnotesPlugin,
   spacesPlugin,
   coreRulesPlugin,
+  annotationsPlugin,
 } from "./turndown-plugins/index.js";
 
 // Classe de base pour les boutons
@@ -700,6 +701,7 @@ export class Toolbar {
       typographyPlugin,
       footnotesPlugin,
       spacesPlugin,
+      annotationsPlugin,
     ]);
 
     window.mainTurndownService = this.turndown;
