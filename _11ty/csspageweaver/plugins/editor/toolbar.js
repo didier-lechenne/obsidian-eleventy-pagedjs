@@ -1,4 +1,4 @@
-import { UNICODE_CHARS } from './unicode.js';
+import { UNICODE_CHARS } from "./unicode.js";
 
 /**
  * @name Toolbar
@@ -113,7 +113,8 @@ class LetterSpacingExtension {
       '[data-command="letter-spacing"]'
     );
     if (lsButton) {
-      lsButton.innerHTML = "✓";
+      const checkIcon = `<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjEwIi8+PHBhdGggZD0ibTkgMTIgMiAyIDQtNCIvPjwvc3ZnPg==" style="width: 16px; height: 16px; filter: invert(1);" alt="Check">`;
+      lsButton.innerHTML = checkIcon;
       lsButton.title = "Valider letter-spacing (Entrée)";
       lsButton.classList.add("editing");
     }
@@ -232,12 +233,22 @@ class SpacingExtension {
       new ToolbarButton("nnbsp", "⸱", "Espace insécable fine", () => {
         this.insertNarrowNonBreakingSpace();
       }),
-      new ToolbarButton("quotes-fr", `${UNICODE_CHARS.LAQUO} ${UNICODE_CHARS.RAQUO}`, "Guillemets français", () => {
-        this.toggleFrenchQuotes();
-      }),
-      new ToolbarButton("quotes-en", `${UNICODE_CHARS.LDQUO} ${UNICODE_CHARS.RDQUO}`, "Guillemets anglais", () => {
-        this.toggleEnglishQuotes();
-      }),
+      new ToolbarButton(
+        "quotes-fr",
+        `${UNICODE_CHARS.LAQUO} ${UNICODE_CHARS.RAQUO}`,
+        "Guillemets français",
+        () => {
+          this.toggleFrenchQuotes();
+        }
+      ),
+      new ToolbarButton(
+        "quotes-en",
+        `${UNICODE_CHARS.LDQUO} ${UNICODE_CHARS.RDQUO}`,
+        "Guillemets anglais",
+        () => {
+          this.toggleEnglishQuotes();
+        }
+      ),
       new ToolbarButton("br", "↵", "Saut de ligne", () => {
         this.insertBreak();
       }),
@@ -260,8 +271,15 @@ class SpacingExtension {
       range.insertNode(span);
       range.setStartAfter(span);
       range.collapse(true);
+
       selection.removeAllRanges();
-      selection.addRange(range);
+      try {
+        if (range.startContainer.isConnected) {
+          selection.addRange(range);
+        }
+      } catch (error) {
+        console.warn("Range invalide:", error);
+      }
     }
   }
 
@@ -278,96 +296,15 @@ class SpacingExtension {
       range.insertNode(span);
       range.setStartAfter(span);
       range.collapse(true);
+
       selection.removeAllRanges();
-      selection.addRange(range);
-    }
-  }
-
-  insertFrenchOpeningQuote() {
-    const selection = window.getSelection();
-    if (selection.rangeCount > 0) {
-      const range = selection.getRangeAt(0);
-      range.deleteContents();
-
-      // Créer « + espace fine insécable avec span
-      const fragment = document.createDocumentFragment();
-      
-      const quote = document.createElement("span");
-      quote.className = "editor-add";
-      quote.textContent = UNICODE_CHARS.LAQUO;
-      fragment.appendChild(quote);
-
-      const span = document.createElement("span");
-      span.className = "i_space narrow-no-break-space editor-add";
-      span.textContent = UNICODE_CHARS.NO_BREAK_THIN_SPACE;
-      fragment.appendChild(span);
-
-      range.insertNode(fragment);
-      range.collapse(false);
-      selection.removeAllRanges();
-      selection.addRange(range);
-    }
-  }
-
-  insertFrenchClosingQuote() {
-    const selection = window.getSelection();
-    if (selection.rangeCount > 0) {
-      const range = selection.getRangeAt(0);
-      range.deleteContents();
-
-      // Créer espace fine insécable + » avec span
-      const fragment = document.createDocumentFragment();
-
-      const span = document.createElement("span");
-      span.className = "i_space narrow-no-break-space editor-add";
-      span.textContent = UNICODE_CHARS.NO_BREAK_THIN_SPACE;
-      fragment.appendChild(span);
-
-      const quote = document.createElement("span");
-      quote.className = "editor-add";
-      quote.textContent = UNICODE_CHARS.RAQUO;
-      fragment.appendChild(quote);
-
-      range.insertNode(fragment);
-      range.collapse(false);
-      selection.removeAllRanges();
-      selection.addRange(range);
-    }
-  }
-
-  insertEnglishOpeningQuote() {
-    const selection = window.getSelection();
-    if (selection.rangeCount > 0) {
-      const range = selection.getRangeAt(0);
-      range.deleteContents();
-
-      const quote = document.createElement("span");
-      quote.className = "editor-add";
-      quote.textContent = UNICODE_CHARS.LDQUO;
-
-      range.insertNode(quote);
-      range.setStartAfter(quote);
-      range.collapse(true);
-      selection.removeAllRanges();
-      selection.addRange(range);
-    }
-  }
-
-  insertEnglishClosingQuote() {
-    const selection = window.getSelection();
-    if (selection.rangeCount > 0) {
-      const range = selection.getRangeAt(0);
-      range.deleteContents();
-
-      const quote = document.createElement("span");
-      quote.className = "editor-add";
-      quote.textContent = UNICODE_CHARS.RDQUO;
-
-      range.insertNode(quote);
-      range.setStartAfter(quote);
-      range.collapse(true);
-      selection.removeAllRanges();
-      selection.addRange(range);
+      try {
+        if (range.startContainer.isConnected) {
+          selection.addRange(range);
+        }
+      } catch (error) {
+        console.warn("Range invalide:", error);
+      }
     }
   }
 
@@ -431,11 +368,20 @@ class SpacingExtension {
     wrapper.appendChild(closeQuote);
 
     range.insertNode(wrapper);
-    range.selectNodeContents(wrapper);
 
-    const selection = window.getSelection();
-    selection.removeAllRanges();
-    selection.addRange(range);
+    // Vérifier que le range est toujours valide avant de l'utiliser
+    try {
+      range.selectNodeContents(wrapper);
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+
+      // Vérifier que le range est dans le document
+      if (range.startContainer.isConnected && range.endContainer.isConnected) {
+        selection.addRange(range);
+      }
+    } catch (error) {
+      console.warn("Range invalide après insertion:", error);
+    }
   }
 
   wrapWithEnglishQuotes(range) {
@@ -458,25 +404,40 @@ class SpacingExtension {
     wrapper.appendChild(closeQuote);
 
     range.insertNode(wrapper);
-    range.selectNodeContents(wrapper);
 
-    const selection = window.getSelection();
-    selection.removeAllRanges();
-    selection.addRange(range);
+    // Vérifier que le range est toujours valide avant de l'utiliser
+    try {
+      range.selectNodeContents(wrapper);
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+
+      // Vérifier que le range est dans le document
+      if (range.startContainer.isConnected && range.endContainer.isConnected) {
+        selection.addRange(range);
+      }
+    } catch (error) {
+      console.warn("Range invalide après insertion:", error);
+    }
   }
 
   isWrappedInFrenchQuotes(range) {
     const container = range.commonAncestorContainer;
-    const parent = container.nodeType === Node.TEXT_NODE ? container.parentElement : container;
-    
+    const parent =
+      container.nodeType === Node.TEXT_NODE
+        ? container.parentElement
+        : container;
+
     // Chercher les éléments précédents et suivants pour détecter les guillemets français
     return this.hasAdjacentFrenchQuotes(parent, range);
   }
 
   isWrappedInEnglishQuotes(range) {
     const container = range.commonAncestorContainer;
-    const parent = container.nodeType === Node.TEXT_NODE ? container.parentElement : container;
-    
+    const parent =
+      container.nodeType === Node.TEXT_NODE
+        ? container.parentElement
+        : container;
+
     // Chercher les éléments précédents et suivants pour détecter les guillemets anglais
     return this.hasAdjacentEnglishQuotes(parent, range);
   }
@@ -495,18 +456,25 @@ class SpacingExtension {
 
     while (walker.nextNode()) {
       const node = walker.currentNode;
-      
-      if (node.classList && node.classList.contains('french-quote-open') && 
-          node.textContent === UNICODE_CHARS.LAQUO) {
+
+      if (
+        node.classList &&
+        node.classList.contains("french-quote-open") &&
+        node.textContent === UNICODE_CHARS.LAQUO
+      ) {
         if (!foundStart) hasOpenQuote = true;
       }
-      
+
       if (range.intersectsNode(node)) {
         foundStart = true;
       }
-      
-      if (foundStart && node.classList && node.classList.contains('french-quote-close') && 
-          node.textContent === UNICODE_CHARS.RAQUO) {
+
+      if (
+        foundStart &&
+        node.classList &&
+        node.classList.contains("french-quote-close") &&
+        node.textContent === UNICODE_CHARS.RAQUO
+      ) {
         hasCloseQuote = true;
         break;
       }
@@ -528,19 +496,26 @@ class SpacingExtension {
     let foundStart = false;
 
     while (walker.nextNode()) {
-      const node = walker.currentNode();
-      
-      if (node.classList && node.classList.contains('english-quote-open') && 
-          node.textContent === UNICODE_CHARS.LDQUO) {
+      const node = walker.currentNode;
+
+      if (
+        node.classList &&
+        node.classList.contains("english-quote-open") &&
+        node.textContent === UNICODE_CHARS.LDQUO
+      ) {
         if (!foundStart) hasOpenQuote = true;
       }
-      
+
       if (range.intersectsNode(node)) {
         foundStart = true;
       }
-      
-      if (foundStart && node.classList && node.classList.contains('english-quote-close') && 
-          node.textContent === UNICODE_CHARS.RDQUO) {
+
+      if (
+        foundStart &&
+        node.classList &&
+        node.classList.contains("english-quote-close") &&
+        node.textContent === UNICODE_CHARS.RDQUO
+      ) {
         hasCloseQuote = true;
         break;
       }
@@ -551,33 +526,45 @@ class SpacingExtension {
 
   unwrapFrenchQuotes(range) {
     const container = range.commonAncestorContainer;
-    const parent = container.nodeType === Node.TEXT_NODE ? container.parentElement : container;
-    
+    const parent =
+      container.nodeType === Node.TEXT_NODE
+        ? container.parentElement
+        : container;
+
     // Supprimer tous les éléments de guillemets français autour de la sélection
-    const quotesToRemove = parent.querySelectorAll('.french-quote-open, .french-quote-close, .i_space.editor-add');
-    quotesToRemove.forEach(quote => {
+    const quotesToRemove = parent.querySelectorAll(
+      ".french-quote-open, .french-quote-close, .i_space.editor-add"
+    );
+    quotesToRemove.forEach((quote) => {
       if (quote.parentNode) {
         quote.parentNode.removeChild(quote);
       }
     });
-    
+
     parent.normalize();
   }
 
   unwrapEnglishQuotes(range) {
     const container = range.commonAncestorContainer;
-    const parent = container.nodeType === Node.TEXT_NODE ? container.parentElement : container;
-    
+    const parent =
+      container.nodeType === Node.TEXT_NODE
+        ? container.parentElement
+        : container;
+
     // Supprimer tous les éléments de guillemets anglais autour de la sélection
-    const quotesToRemove = parent.querySelectorAll('.english-quote-open, .english-quote-close');
-    quotesToRemove.forEach(quote => {
+    const quotesToRemove = parent.querySelectorAll(
+      ".english-quote-open, .english-quote-close"
+    );
+    quotesToRemove.forEach((quote) => {
       if (quote.parentNode) {
         quote.parentNode.removeChild(quote);
       }
     });
-    
+
     parent.normalize();
   }
+
+  insertBreak() {
     const selection = window.getSelection();
     if (selection.rangeCount > 0) {
       const range = selection.getRangeAt(0);
@@ -587,8 +574,15 @@ class SpacingExtension {
       range.insertNode(br);
       range.setStartAfter(br);
       range.collapse(true);
+
       selection.removeAllRanges();
-      selection.addRange(range);
+      try {
+        if (range.startContainer.isConnected) {
+          selection.addRange(range);
+        }
+      } catch (error) {
+        console.warn("Range invalide:", error);
+      }
     }
   }
 
@@ -626,7 +620,7 @@ class SpacingExtension {
       span.parentNode.replaceChild(textNode, span);
     });
 
-    // 4. Supprimer les autres spans ajoutés par l'éditeur
+    // Supprimer les autres spans ajoutés par l'éditeur
     const otherSpans = element.querySelectorAll(
       "span.editor-add:not(.i_space)"
     );
@@ -639,12 +633,19 @@ class SpacingExtension {
       }
     });
 
-    // 5. Supprimer formatage Bold/Italic/SmallCaps/Superscript/br ajoutés par l'éditeur
-    ['strong.editor-add', 'b.editor-add', 'em.editor-add', 'i.editor-add', 
-     'span.small-caps.editor-add', 'sup.editor-add', 'br.editor-add'].forEach(selector => {
+    // Supprimer formatage Bold/Italic/SmallCaps/Superscript/br ajoutés par l'éditeur
+    [
+      "strong.editor-add",
+      "b.editor-add",
+      "em.editor-add",
+      "i.editor-add",
+      "span.small-caps.editor-add",
+      "sup.editor-add",
+      "br.editor-add",
+    ].forEach((selector) => {
       const elements = element.querySelectorAll(selector);
       elements.forEach((el) => {
-        if (el.tagName === 'BR') {
+        if (el.tagName === "BR") {
           el.parentNode.removeChild(el);
         } else {
           while (el.firstChild) {
@@ -655,7 +656,7 @@ class SpacingExtension {
       });
     });
 
-    // 6. Normaliser les nœuds de texte
+    // Normaliser les nœuds de texte
     element.normalize();
   }
 
@@ -676,10 +677,10 @@ class SpacingExtension {
         content === UNICODE_CHARS.LDQUO ||
         content === UNICODE_CHARS.RDQUO ||
         content === UNICODE_CHARS.NO_BREAK_THIN_SPACE ||
-        span.classList.contains('french-quote-open') ||
-        span.classList.contains('french-quote-close') ||
-        span.classList.contains('english-quote-open') ||
-        span.classList.contains('english-quote-close')
+        span.classList.contains("french-quote-open") ||
+        span.classList.contains("french-quote-close") ||
+        span.classList.contains("english-quote-open") ||
+        span.classList.contains("english-quote-close")
       ) {
         spansToRemove.push(span);
       }
@@ -695,17 +696,18 @@ class SpacingExtension {
 
   isQuoteSpan(span) {
     const text = span.textContent;
-    return text === UNICODE_CHARS.LAQUO || 
-           text === UNICODE_CHARS.RAQUO || 
-           text === UNICODE_CHARS.LDQUO || 
-           text === UNICODE_CHARS.RDQUO ||
-           span.classList.contains('french-quote-open') ||
-           span.classList.contains('french-quote-close') ||
-           span.classList.contains('english-quote-open') ||
-           span.classList.contains('english-quote-close');
+    return (
+      text === UNICODE_CHARS.LAQUO ||
+      text === UNICODE_CHARS.RAQUO ||
+      text === UNICODE_CHARS.LDQUO ||
+      text === UNICODE_CHARS.RDQUO ||
+      span.classList.contains("french-quote-open") ||
+      span.classList.contains("french-quote-close") ||
+      span.classList.contains("english-quote-open") ||
+      span.classList.contains("english-quote-close")
+    );
   }
 }
-
 // Extension utilitaires
 class UtilsExtension {
   constructor(toolbar) {
@@ -714,9 +716,14 @@ class UtilsExtension {
 
   getButtons() {
     return [
-      new ToolbarButton("copy-md", "📋", "Copier élément en Markdown", () => {
-        this.copyElementAsMarkdown();
-      }),
+      new ToolbarButton(
+        "copy-md",
+        `<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWNsaXBib2FyZC1jb3B5LWljb24gbHVjaWRlLWNsaXBib2FyZC1jb3B5Ij48cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI0IiB4PSI4IiB5PSIyIiByeD0iMSIgcnk9IjEiLz48cGF0aCBkPSJNOCA0SDZhMiAyIDAgMCAwLTIgMnYxNGEyIDIgMCAwIDAgMiAyaDEyYTIgMiAwIDAgMCAyLTJ2LTIiLz48cGF0aCBkPSJNMTYgNGgyYTIgMiAwIDAgMSAyIDJ2NCIvPjxwYXRoIGQ9Ik0yMSAxNEgxMSIvPjxwYXRoIGQ9Im0xNSAxMC00IDQgNCA0Ii8+PC9zdmc+" style="width: 16px; height: 16px; filter: invert(1);" alt="Copy">`,
+        "Copier élément en Markdown",
+        () => {
+          this.copyElementAsMarkdown();
+        }
+      ),
     ];
   }
 
@@ -742,14 +749,14 @@ class UtilsExtension {
     if (!element) return;
 
     // Trouver le parent blockquote/figure/etc si existe
-	let containerElement = element.parentElement;
-	while (containerElement && containerElement !== document.body) {
-	if (["BLOCKQUOTE", "UL", "OL"].includes(containerElement.tagName)) {
-	element = containerElement;
-	break;
-	}
-	containerElement = containerElement.parentElement;
-	}
+    let containerElement = element.parentElement;
+    while (containerElement && containerElement !== document.body) {
+      if (["BLOCKQUOTE", "UL", "OL"].includes(containerElement.tagName)) {
+        element = containerElement;
+        break;
+      }
+      containerElement = containerElement.parentElement;
+    }
 
     // Reconstituer l'élément complet si scindé par PagedJS
     const completeHTML = this.reconstructSplitElement(element);
@@ -1012,7 +1019,8 @@ export class Toolbar {
   showCopyFeedback() {
     const button = this.element.querySelector('[data-command="copy-md"]');
     const originalText = button.innerHTML;
-    button.innerHTML = "✓";
+    const checkIcon = `<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjEwIi8+PHBhdGggZD0ibTkgMTIgMiAyIDQtNCIvPjwvc3ZnPg==" style="width: 16px; height: 16px; filter: invert(1);" alt="Check">`;
+    button.innerHTML = checkIcon;
     button.classList.add("success");
 
     setTimeout(() => {
