@@ -10,7 +10,6 @@ class ToolbarButton {
     this.icon = icon;
     this.title = title;
     this.action = action;
-    
   }
 
   render() {
@@ -22,7 +21,6 @@ class ToolbarButton {
 class FormattingExtension {
   constructor(toolbar) {
     this.toolbar = toolbar;
-    
   }
 
   getButtons() {
@@ -134,7 +132,7 @@ class LetterSpacingExtension {
       if (this.currentSpan) {
         const value = e.target.value;
         this.currentSpan.style.setProperty("--ls", value);
-        this.triggerAutoCopy()
+        this.triggerAutoCopy();
       }
     });
 
@@ -172,7 +170,7 @@ class LetterSpacingExtension {
     if (this.input) {
       this.input.style.display = "none";
     }
-    this.triggerAutoCopy()
+    this.triggerAutoCopy();
 
     // Restaurer le bouton LS
     const lsButton = this.toolbar.element.querySelector(
@@ -503,6 +501,10 @@ class UtilsExtension {
   }
 
   copyElementAsMarkdown(silent) {
+    // Focus le document avant copie
+    window.focus();
+    document.body.focus();
+
     if (typeof silent === "undefined") silent = false;
     const selection = window.getSelection();
     if (selection.rangeCount === 0) return;
@@ -583,9 +585,7 @@ export class Toolbar {
     this.createToolbar();
   }
 
-
   setupTurndown() {
-	
     this.turndown = new window.TurndownService({
       headingStyle: "atx",
       emDelimiter: "*",
@@ -593,44 +593,58 @@ export class Toolbar {
       linkStyle: "inlined",
     });
 
+    this.turndown.addRule("breakcolumn", {
+      filter: function (node) {
+        //         console.log(
+        //           "breakcolumn filter:",
+        //           node.nodeName,
+        //           node.classList?.contains("breakcolumn"),
+        //           node.textContent
+        //         );
+        return (
+          node.nodeName === "SPAN" && node.classList.contains("breakcolumn")
+        );
+      },
+      replacement: function (content, node) {
+        //         console.log("breakcolumn replacement called, content:", content);
+        return `<breakcolumn>`;
+      },
+    });
 
-	this.turndown.addRule("breakcolumn", {
-	filter: function (node) {
-	console.log("breakcolumn filter:", node.nodeName, node.classList?.contains("breakcolumn"), node.textContent);
-	return node.nodeName === "SPAN" && node.classList.contains("breakcolumn");
-	},
-	replacement: function (content, node) {
-	console.log("breakcolumn replacement called, content:", content);
-	return `<breakcolumn>`;
-	},
-	});
+    this.turndown.addRule("textCol", {
+      
+      filter: function (node) {
+        return node.nodeName === "DIV" && node.classList.contains("textCol");
+      },
+      // compliqué, mais cela semble fonctionner...
+      replacement: function (content, node) {
+        let processedContent = content;
+        let innerHTML = node.innerHTML;
+        let breakRegex = /<span[^>]*breakcolumn[^>]*><\/span>\s*(\w+)/g;
+        let match;
+        while ((match = breakRegex.exec(innerHTML)) !== null) {
+          let wordAfter = match[1];
+          processedContent = processedContent.replace(
+            wordAfter,
+            `\n<breakcolumn>\n${wordAfter}`
+          );
+        }
 
-	this.turndown.addRule("textCol", {
-	filter: function (node) {
-	console.log("textCol filter:", node.nodeName, node.classList?.contains("textCol"));
-	return node.nodeName === "SPAN" && node.classList.contains("textCol");
-	},
-	replacement: function (content, node) {
-	console.log("textCol replacement, content:", content);
-	console.log("textCol innerHTML:", node.innerHTML);
-	
-	let processedContent = content;
+        const gridCol = node.style.getPropertyValue("--grid-col") || "12";
+        const gridColGutter =
+          node.style.getPropertyValue("--grid-col-gutter") || "";
 
-	const gridCol = node.style.getPropertyValue("--grid-col") || "12";
-	const gridColGutter = node.style.getPropertyValue("--grid-col-gutter") || "";
+        let attributes = `gridCol="${gridCol}"`;
+        if (gridColGutter) {
+          attributes += ` gridColGutter="${gridColGutter}"`;
+        }
 
-	let attributes = `gridCol="${gridCol}"`;
-	if (gridColGutter) {
-	attributes += ` gridColGutter="${gridColGutter}"`;
-	}
-
-	return `<textCol ${attributes}>\n${processedContent}\n</textCol>`;
-	},
-	});
+        return `<textCol ${attributes}>\n${processedContent}\n</textCol>`;
+      },
+    });
 
     // Ajouter règles personnalisées sans écraser les règles par défaut
 
-  
     this.turndown.addRule("smallcaps", {
       filter: function (node) {
         return (
@@ -746,19 +760,18 @@ export class Toolbar {
     window.mainTurndownService = this.turndown;
 
     // Keep rules après l'initialisation
-this.turndown.keep(function (node) {
-  return (
-    (node.nodeName === "SPAN" && node.style.getPropertyValue("--ls")) || 
-    (node.nodeName === "SPAN" && node.classList.contains("breakcolumn")) ||
-    node.nodeName === "SUP" ||
-    (node.nodeName === "BR" &&
-      (node.classList.contains("breakpage") ||
-        node.classList.contains("breakcolumn") ||
-        node.classList.contains("breakscreen") ||
-        node.classList.contains("breakprint")))
-  );
-});
-
+    this.turndown.keep(function (node) {
+      return (
+        (node.nodeName === "SPAN" && node.style.getPropertyValue("--ls")) ||
+        (node.nodeName === "SPAN" && node.classList.contains("breakcolumn")) ||
+        node.nodeName === "SUP" ||
+        (node.nodeName === "BR" &&
+          (node.classList.contains("breakpage") ||
+            node.classList.contains("breakcolumn") ||
+            node.classList.contains("breakscreen") ||
+            node.classList.contains("breakprint")))
+      );
+    });
   }
 
   registerExtensions() {
