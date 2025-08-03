@@ -2,14 +2,14 @@
  * @name Toolbar
  * @file Barre d'outils avec système d'extensions
  */
-import { 
-  textColPlugin, 
-  breakColumnPlugin, 
-  typographyPlugin, 
-  footnotesPlugin, 
-  spacesPlugin, 
-  coreRulesPlugin 
-} from './turndown-plugins/index.js';
+import {
+  textColPlugin,
+  breakColumnPlugin,
+  typographyPlugin,
+  footnotesPlugin,
+  spacesPlugin,
+  coreRulesPlugin,
+} from "./turndown-plugins/index.js";
 
 // Classe de base pour les boutons
 class ToolbarButton {
@@ -398,7 +398,10 @@ class SpacingExtension {
     }
   }
 
+  // Dans toolbar.js, classe SpacingExtension
+
   resetTransformations() {
+
     const selection = window.getSelection();
     if (selection.rangeCount === 0) return;
 
@@ -422,25 +425,31 @@ class SpacingExtension {
       letterSpacingExt.resetLetterSpacing(element);
     }
 
-    // Remplacer spans d'espaces par espaces normaux
-    const spaceSpans = element.querySelectorAll("span.i_space.editor-add");
-    spaceSpans.forEach((span) => {
+    this.resetAllQuotes(element);
+
+    const remainingSpaceSpans = element.querySelectorAll(
+      "span.i_space.editor-add"
+    );
+    remainingSpaceSpans.forEach((span) => {
       const textNode = document.createTextNode(" ");
       span.parentNode.replaceChild(textNode, span);
     });
 
-    // Supprimer spans de guillemets mais garder le contenu
-    const quoteSpans = element.querySelectorAll(
+    // 4. Supprimer les autres spans ajoutés par l'éditeur (mais pas les guillemets déjà traités)
+    const otherSpans = element.querySelectorAll(
       "span.editor-add:not(.i_space)"
     );
-    quoteSpans.forEach((span) => {
-      while (span.firstChild) {
-        span.parentNode.insertBefore(span.firstChild, span);
+    otherSpans.forEach((span) => {
+      // Vérifier que ce n'est pas un guillemet déjà traité
+      if (!this.isQuoteSpan(span)) {
+        while (span.firstChild) {
+          span.parentNode.insertBefore(span.firstChild, span);
+        }
+        span.parentNode.removeChild(span);
       }
-      span.parentNode.removeChild(span);
     });
 
-    // Supprimer formatage Bold/Italic ajouté par l'éditeur uniquement
+    // 5. Supprimer formatage Bold/Italic ajouté par l'éditeur uniquement
     const boldElements = element.querySelectorAll(
       "strong.editor-add, b.editor-add"
     );
@@ -461,7 +470,7 @@ class SpacingExtension {
       el.parentNode.removeChild(el);
     });
 
-    // Supprimer SmallCaps ajoutés par l'éditeur uniquement
+    // 6. Supprimer SmallCaps ajoutés par l'éditeur uniquement
     const smallCapsElements = element.querySelectorAll(
       "span.small-caps.editor-add"
     );
@@ -472,7 +481,7 @@ class SpacingExtension {
       el.parentNode.removeChild(el);
     });
 
-    // Supprimer Superscript ajoutés par l'éditeur uniquement
+    // 7. Supprimer Superscript ajoutés par l'éditeur uniquement
     const supElements = element.querySelectorAll("sup.editor-add");
     supElements.forEach((el) => {
       while (el.firstChild) {
@@ -481,8 +490,98 @@ class SpacingExtension {
       el.parentNode.removeChild(el);
     });
 
-    // Normaliser les nœuds de texte
+    // 8. Supprimer les <br> ajoutés par l'éditeur
+    const brElements = element.querySelectorAll("br.editor-add");
+    brElements.forEach((br) => {
+      br.parentNode.removeChild(br);
+    });
+
+    // 9. Normaliser les nœuds de texte
     element.normalize();
+  }
+
+  resetFrenchQuotes(element) {
+    // Rechercher tous les patterns de guillemets français
+    // Pattern 1: « + espace fine (guillemet ouvrant)
+    this.removeFrenchQuotePattern(element, "«", "\u202F");
+
+    // Pattern 2: espace fine + » (guillemet fermant)
+    this.removeFrenchQuotePattern(element, "\u202F", "»");
+  }
+
+  removeFrenchQuotePattern(element, firstChar, secondChar) {
+    // Approche plus simple et robuste
+    const allSpans = element.querySelectorAll("span.editor-add");
+    const spansToRemove = [];
+
+    for (let i = 0; i < allSpans.length - 1; i++) {
+      const currentSpan = allSpans[i];
+      const nextSpan = allSpans[i + 1];
+
+      // Vérifier si les spans sont adjacents (frères directs)
+      if (currentSpan.nextSibling === nextSpan) {
+        // Pattern « + espace fine
+        if (
+          currentSpan.textContent === firstChar &&
+          nextSpan.textContent === secondChar
+        ) {
+          spansToRemove.push(currentSpan);
+          spansToRemove.push(nextSpan);
+        }
+      }
+    }
+
+    // Supprimer les spans identifiés
+    spansToRemove.forEach((span) => {
+      if (span.parentNode) {
+        span.parentNode.removeChild(span);
+      }
+    });
+  }
+
+  resetEnglishQuotes(element) {
+    // Supprimer les guillemets anglais ajoutés par l'éditeur
+    const englishQuoteSpans = element.querySelectorAll("span.editor-add");
+    englishQuoteSpans.forEach((span) => {
+      if (span.textContent === '"' || span.textContent === '"') {
+        span.parentNode.removeChild(span);
+      }
+    });
+  }
+
+  resetAllQuotes(element) {
+    // Approche globale pour nettoyer tous les guillemets
+    const allEditorSpans = element.querySelectorAll("span.editor-add");
+    const spansToRemove = [];
+
+    for (let i = 0; i < allEditorSpans.length; i++) {
+      const span = allEditorSpans[i];
+      const content = span.textContent;
+
+      // Identifier les guillemets et espaces typographiques
+      if (
+        content === "«" ||
+        content === "»" ||
+        content === '“' ||
+        content === '”' ||
+        content === "\u202F"
+      ) {
+        // espace fine insécable
+        spansToRemove.push(span);
+      }
+    }
+
+    // Supprimer tous les spans identifiés
+    spansToRemove.forEach((span) => {
+      if (span.parentNode) {
+        span.parentNode.removeChild(span);
+      }
+    });
+  }
+
+  isQuoteSpan(span) {
+    const text = span.textContent;
+    return text === "«" || text === "»" || text === '"' || text === '"';
   }
 }
 
@@ -522,14 +621,14 @@ class UtilsExtension {
     if (!element) return;
 
     // Trouver le parent blockquote/figure/etc si existe
-    let containerElement = element.parentElement;
-    while (containerElement && containerElement !== document.body) {
-      if (["BLOCKQUOTE"].includes(containerElement.tagName)) {
-        element = containerElement;
-        break;
-      }
-      containerElement = containerElement.parentElement;
-    }
+	let containerElement = element.parentElement;
+	while (containerElement && containerElement !== document.body) {
+	if (["BLOCKQUOTE", "UL", "OL"].includes(containerElement.tagName)) {
+	element = containerElement;
+	break;
+	}
+	containerElement = containerElement.parentElement;
+	}
 
     // Reconstituer l'élément complet si scindé par PagedJS
     const completeHTML = this.reconstructSplitElement(element);
@@ -600,9 +699,9 @@ export class Toolbar {
       breakColumnPlugin,
       typographyPlugin,
       footnotesPlugin,
-      spacesPlugin
+      spacesPlugin,
     ]);
-    
+
     window.mainTurndownService = this.turndown;
   }
 
