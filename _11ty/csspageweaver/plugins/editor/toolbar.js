@@ -220,6 +220,7 @@ class LetterSpacingExtension {
 }
 
 // Extension pour espaces typographiques
+// Extension pour espaces typographiques
 class SpacingExtension {
   constructor(toolbar) {
     this.toolbar = toolbar;
@@ -708,6 +709,7 @@ class SpacingExtension {
     );
   }
 }
+
 // Extension utilitaires
 class UtilsExtension {
   constructor(toolbar) {
