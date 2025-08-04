@@ -86,11 +86,17 @@ class LetterSpacingExtension {
 
     if (existingSpan) {
       this.showLetterSpacingInput(existingSpan);
+      
     } else {
       const newSpan = this.toolbar.editor.commands.wrapWithLetterSpacing(range);
       this.showLetterSpacingInput(newSpan);
+      
     }
   }
+
+
+
+
 
   findLetterSpacingSpan(range) {
     return this.toolbar.editor.commands.findLetterSpacingSpan(range);
@@ -219,7 +225,7 @@ class LetterSpacingExtension {
   }
 }
 
-// Extension pour espaces typographiques
+
 // Extension pour espaces typographiques
 class SpacingExtension {
   constructor(toolbar) {

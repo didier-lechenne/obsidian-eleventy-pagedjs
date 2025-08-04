@@ -1,17 +1,17 @@
 :root {
 	/* Couleurs principales */
-	--editor-primary-color: #4a90e2;
-	--editor-primary-hover: rgba(74, 144, 226, 0.8);
-	--editor-primary-light: rgba(74, 144, 226, 0.05);
-	--editor-primary-border: rgba(74, 144, 226, 0.2);
-	--editor-primary-selection: rgba(74, 144, 226, 0.3);
-	--editor-primary-highlight: rgba(109, 168, 235, 0.205);
+	--editor-primary-color: rgb(102, 51, 153);
+	--editor-primary-hover: rgba(102, 51, 153, 0.8);
+	--editor-primary-light: rgba(102, 51, 153, 0.05);
+	--editor-primary-border: rgba(102, 51, 153, 0.2);
+	--editor-primary-selection: rgba(102, 51, 153, 0.3);
+	--editor-primary-highlight: rgba(102, 51, 153, 0.205);
 	
 	/* Couleurs toolbar */
 	--editor-toolbar-bg: #2c3e50;
 	--editor-toolbar-input-bg: #34495e;
 	--editor-toolbar-input-focus: #3c5b7a;
-	--editor-success-color: rgba(39, 174, 96, 0.8);
+	--editor-success-color: rgba(102, 51, 153, 0.8);
 	
 	/* Couleurs tooltip */
 	--editor-tooltip-bg: rgba(0, 0, 0, 0.8);

@@ -1,7 +1,4 @@
-/**
- * @name Selection
- * @file Gestion des sélections de texte
- */
+
 /**
  * @name Selection
  * @file Gestion des sélections de texte

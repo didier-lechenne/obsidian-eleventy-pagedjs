@@ -69,7 +69,11 @@ export class Commands {
     if (letterSpacingExt) {
       letterSpacingExt.handleLetterSpacingToggle();
     }
+
+
   }
+
+
 
   // Méthodes utilitaires pour le letter-spacing (déplacées depuis l'extension)
   findLetterSpacingSpan(range) {

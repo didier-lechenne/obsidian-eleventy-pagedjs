@@ -1,0 +1,20 @@
+body{
+
+  font:18px/1.1em arial, sans-serif;
+  --paged-layout : booklet;
+}
+@media print {
+
+
+  @page{
+    size: 100mm 200mm;
+    margin: 40px;
+    @bottom-center{
+      content: counter(page);
+    }
+  }
+
+  h1{
+    break-after: always;
+  }
+}
