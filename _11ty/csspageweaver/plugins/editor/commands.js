@@ -76,30 +76,12 @@ export class Commands {
 
 
   // Méthodes utilitaires pour le letter-spacing (déplacées depuis l'extension)
- findLetterSpacingSpan(range) {
+  findLetterSpacingSpan(range) {
     let container = range.commonAncestorContainer;
     if (container.nodeType === Node.TEXT_NODE) {
       container = container.parentElement;
     }
 
-    // D'abord vérifier si on est dans un élément unifié
-    const unified = container.closest('.unified-editor-element');
-    if (unified) {
-      // Chercher dans l'élément unifié
-      let current = container;
-      while (current && current !== unified) {
-        if (
-          current.tagName === "SPAN" &&
-          current.style.getPropertyValue("--ls") !== ""
-        ) {
-          return current;
-        }
-        current = current.parentElement;
-      }
-      return null;
-    }
-
-    // Logique normale pour éléments non fragmentés
     let current = container;
     while (current && current !== document.body) {
       if (
@@ -113,7 +95,6 @@ export class Commands {
 
     return null;
   }
-  
 
   wrapWithLetterSpacing(range) {
     const contents = range.extractContents();
