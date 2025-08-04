@@ -51,6 +51,7 @@ class LetterSpacingExtension {
   constructor(toolbar) {
     this.toolbar = toolbar;
     this.currentSpan = null;
+    this.currentUnified = null;
     this.input = null;
     this.autoCopyTimeout = null;
   }
@@ -68,35 +69,59 @@ class LetterSpacingExtension {
     ];
   }
 
-  handleLetterSpacingToggle() {
-    // Si input actif, valider et fermer
-    if (this.input && this.input.style.display !== "none") {
-      this.hideLetterSpacingInput();
+handleLetterSpacingToggle() {
+  // Si input actif, valider et fermer
+  if (this.input && this.input.style.display !== "none") {
+    this.hideLetterSpacingInput();
+    return;
+  }
+
+  const selection = window.getSelection();
+  if (selection.rangeCount === 0) return;
+
+  const range = selection.getRangeAt(0);
+
+  // Vérifier si on est dans un P fragmenté
+  const pElement = range.commonAncestorContainer.nodeType === Node.TEXT_NODE
+    ? range.commonAncestorContainer.parentElement.closest('p[data-ref]')
+    : range.commonAncestorContainer.closest('p[data-ref]');
+
+  if (pElement && this.toolbar.editor.fragmentMerger.isFragmented(pElement)) {
+    // Créer/obtenir l'élément unifié
+    const unified = this.toolbar.editor.fragmentMerger.getUnified(pElement);
+    
+    if (unified) {
+      // Trouver l'élément correspondant dans l'unifié
+      const targetInUnified = this.toolbar.editor.fragmentMerger
+        .findCorrespondingElement(range.commonAncestorContainer, unified);
+      
+      // Créer une nouvelle sélection dans l'unifié
+      const newRange = document.createRange();
+      newRange.selectNodeContents(targetInUnified);
+      
+      // Vérifier si déjà dans un span avec --ls dans l'unifié
+      const existingSpan = this.toolbar.editor.commands.findLetterSpacingSpan(newRange);
+      
+      if (existingSpan) {
+        this.showLetterSpacingInput(existingSpan, unified);
+      } else {
+        const newSpan = this.toolbar.editor.commands.wrapWithLetterSpacing(newRange);
+        this.showLetterSpacingInput(newSpan, unified);
+      }
       return;
-    }
-
-    const selection = window.getSelection();
-    if (selection.rangeCount === 0) return;
-
-    const range = selection.getRangeAt(0);
-
-    // Vérifier si déjà dans un span avec --ls
-    const existingSpan =
-      this.toolbar.editor.commands.findLetterSpacingSpan(range);
-
-    if (existingSpan) {
-      this.showLetterSpacingInput(existingSpan);
-      
-    } else {
-      const newSpan = this.toolbar.editor.commands.wrapWithLetterSpacing(range);
-      this.showLetterSpacingInput(newSpan);
-      
     }
   }
 
+  // Logique normale pour éléments non fragmentés
+  const existingSpan = this.toolbar.editor.commands.findLetterSpacingSpan(range);
 
-
-
+  if (existingSpan) {
+    this.showLetterSpacingInput(existingSpan);
+  } else {
+    const newSpan = this.toolbar.editor.commands.wrapWithLetterSpacing(range);
+    this.showLetterSpacingInput(newSpan);
+  }
+}
 
   findLetterSpacingSpan(range) {
     return this.toolbar.editor.commands.findLetterSpacingSpan(range);

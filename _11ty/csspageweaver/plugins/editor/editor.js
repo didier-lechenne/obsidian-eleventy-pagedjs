@@ -3,6 +3,7 @@
  * @file Plugin éditeur Medium-like pour PagedJS avec formatage français
  * @author Editor Plugin
  */
+import { FragmentMerger } from "./fragment-merger.js";
 import { Handler } from "/csspageweaver/lib/paged.esm.js";
 import { Toolbar } from "./toolbar.js";
 import { Selection } from "./selection.js";
@@ -36,6 +37,7 @@ export default class Editor extends Handler {
       debounceDelay: 300
     };
     this.exportTimeout = null;
+    this.fragmentMerger = null;
   }
 
   beforeParsed(content) {
@@ -104,6 +106,7 @@ export default class Editor extends Handler {
     this.toolbar = new Toolbar(this);
     this.selection = new Selection(this);
     this.commands = new Commands(this);
+    this.fragmentMerger = new FragmentMerger(this);
   }
 
   setupEditableElements() {

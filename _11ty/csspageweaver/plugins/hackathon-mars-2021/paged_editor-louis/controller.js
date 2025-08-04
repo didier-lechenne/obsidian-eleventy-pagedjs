@@ -50,6 +50,30 @@ ready.then(async function () {
 });
 
 //
+window.reflowText = function () {
+  // État de loading
+  document.querySelector("._controller").classList.add("is--loading");
+  
+  // Nettoyer complètement avant reflow
+  document.querySelectorAll(".pagedjs_page").forEach(page => page.remove());
+  
+  const new_content = document.querySelector("._controller--menu--template").innerHTML;
+  let flowText = document.querySelector("#flow");
+  flowText.innerHTML = new_content;
+  
+  // Régénérer les IDs
+  setIDforAllInnermostChildren(flowText.content);
+  
+  paged.preview(flowText.content).then((flow) => {
+    current_page = 1; // Reset à page 1
+    total_number_of_pages = flow.total; // Mettre à jour le total
+    updateNavMenu();
+    document.querySelector("._controller").classList.remove("is--loading");
+  }).catch((error) => {
+    console.error("Erreur reflow:", error);
+    document.querySelector("._controller").classList.remove("is--loading");
+  });
+};
 
 function setNavMenu() {
   document.querySelector("#js--pageNav").innerHTML =
@@ -62,21 +86,29 @@ function updateNavMenu() {
 }
 
 function navNext() {
-  current_page++;
-  updateNavMenu();
+  if (current_page < total_number_of_pages) {
+    current_page++;
+    updateNavMenu();
+  }
 }
+
 function navPrev() {
-  current_page--;
-  updateNavMenu();
+  if (current_page > 1) {
+    current_page--;
+    updateNavMenu();
+  }
 }
+
 function navToPage() {
-  // find page that correspond to current_page
-  document
-    .querySelectorAll(".pagedjs_page")
+  document.querySelectorAll(".pagedjs_page")
     .forEach((page) => (page.style.display = "none"));
-  document.querySelector(
+  
+  const targetPage = document.querySelector(
     `.pagedjs_page[data-page-number="${current_page}"]`
-  ).style.display = "block";
+  );
+  if (targetPage) {
+    targetPage.style.display = "block";
+  }
 }
 
 function setNavFromPaged() {
@@ -131,7 +163,7 @@ function pageAndFlashText(elem) {
   const parent_page = elem.closest(".pagedjs_page");
   if (!parent_page) return false;
 
-  current_page = parent_page.dataset.pageNumber;
+  current_page = parseInt(parent_page.dataset.pageNumber, 10); // Conversion explicite
   updateNavMenu();
 
   elem.scrollIntoView({
