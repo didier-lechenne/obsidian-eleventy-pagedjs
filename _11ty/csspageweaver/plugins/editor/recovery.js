@@ -44,18 +44,18 @@ export class PagedMarkdownRecovery {
   }
 
   // === MÉTHODE PRINCIPALE ===
-  reconstructOriginalMarkdown() {
-    const fragments = this.collectAllFragments();
-    const reconstructed = this.mergeFragments(fragments);
-    const markdown = this.convertToMarkdown(reconstructed);
-    
-    return {
-      markdown: markdown,
-      elements: reconstructed,
-      fragmentsCount: fragments.size,
-      totalPages: this.getTotalPages()
-    };
-  }
+reconstructOriginalMarkdown() {
+  const fragments = this.collectAllFragments();
+  const reconstructed = this.mergeFragments(fragments);
+  const markdown = this.convertToMarkdown(reconstructed); // Utiliser convertToMarkdown()
+  
+  return {
+    markdown: markdown,
+    elements: reconstructed,
+    fragmentsCount: fragments.size,
+    totalPages: this.getTotalPages()
+  };
+}
 
   // === COLLECTE DES FRAGMENTS SCINDÉS ===
   collectAllFragments() {
@@ -63,7 +63,7 @@ export class PagedMarkdownRecovery {
     const processedRefs = new Set();
     
     // Collecter uniquement les éléments éditables
-    const editableElements = document.querySelectorAll('[data-editable]');
+    const editableElements = document.querySelectorAll('[data-ref]');
     
     editableElements.forEach(element => {
       const ref = element.getAttribute('data-ref');
@@ -160,7 +160,8 @@ export class PagedMarkdownRecovery {
     let fullMarkdown = '';
     
     reconstructedElements.forEach((item, index) => {
-      const markdown = turndownService.turndown(item.element.outerHTML);
+      const markdown = this.getTurndownService().turndown(item.element.outerHTML);
+      
       
       if (index > 0) fullMarkdown += '\n\n';
       fullMarkdown += markdown;
@@ -229,26 +230,26 @@ export class PagedMarkdownRecovery {
   }
 
   // Export pages spécifiques
-  exportPageRange(startPage, endPage, filename = 'document-partial.md') {
-    const fragments = this.collectAllFragments();
-    const filteredFragments = new Map();
-    
-    fragments.forEach((elementGroup, ref) => {
-      const filteredGroup = elementGroup.filter(fragment => 
-        fragment.pageNumber >= startPage && fragment.pageNumber <= endPage
-      );
-      if (filteredGroup.length > 0) {
-        filteredFragments.set(ref, filteredGroup);
-      }
-    });
+exportPageRange(startPage, endPage, filename = 'document-partial.md') {
+  const fragments = this.collectAllFragments();
+  const filteredFragments = new Map();
+  
+  fragments.forEach((elementGroup, ref) => {
+    const filteredGroup = elementGroup.filter(fragment => 
+      fragment.pageNumber >= startPage && fragment.pageNumber <= endPage
+    );
+    if (filteredGroup.length > 0) {
+      filteredFragments.set(ref, filteredGroup);
+    }
+  });
 
-    const reconstructed = this.mergeFragments(filteredFragments);
-    const markdown = this.convertToMarkdown(reconstructed);
-    
-    this.downloadFile(markdown, filename, 'text/markdown');
-    console.log(`📄 Pages ${startPage}-${endPage} exportées`);
-    return markdown;
-  }
+  const reconstructed = this.mergeFragments(filteredFragments);
+  const markdown = this.convertToMarkdown(reconstructed); // Utiliser convertToMarkdown()
+  
+  this.downloadFile(markdown, filename, 'text/markdown');
+  console.log(`📄 Pages ${startPage}-${endPage} exportées`);
+  return markdown;
+}
 
   downloadFile(content, filename, mimeType) {
     const blob = new Blob([content], { type: mimeType });

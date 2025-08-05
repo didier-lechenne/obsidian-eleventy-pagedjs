@@ -1,1 +1,0 @@
-Script for delete content of margin boxes when an element appears on the page
