@@ -721,15 +721,15 @@ class UtilsExtension {
       new ToolbarButton(
         "copy-md",
         `<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWNsaXBib2FyZC1jb3B5LWljb24gbHVjaWRlLWNsaXBib2FyZC1jb3B5Ij48cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI0IiB4PSI4IiB5PSIyIiByeD0iMSIgcnk9IjEiLz48cGF0aCBkPSJNOCA0SDZhMiAyIDAgMCAwLTIgMnYxNGEyIDIgMCAwIDAgMiAyaDEyYTIgMiAwIDAgMCAyLTJ2LTIiLz48cGF0aCBkPSJNMTYgNGgyYTIgMiAwIDAgMSAyIDJ2NCIvPjxwYXRoIGQ9Ik0yMSAxNEgxMSIvPjxwYXRoIGQ9Im0xNSAxMC00IDQgNCA0Ii8+PC9zdmc+" style="width: 16px; height: 16px; filter: invert(1);" alt="Copy">`,
-        "Copier élément en Markdown",
+        "Copier l'élément en Markdown",
         () => {
           this.copyElementAsMarkdown();
         }
       ),
       new ToolbarButton(
-        "recover-range",
-        "📑",
-        "Exporter pages spécifiques",
+        "export-md",
+        `<img src=" data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWZpbGUtZG93bi1pY29uIGx1Y2lkZS1maWxlLWRvd24iPjxwYXRoIGQ9Ik0xNSAySDZhMiAyIDAgMCAwLTIgMnYxNmEyIDIgMCAwIDAgMiAyaDEyYTIgMiAwIDAgMCAyLTJWN1oiLz48cGF0aCBkPSJNMTQgMnY0YTIgMiAwIDAgMCAyIDJoNCIvPjxwYXRoIGQ9Ik0xMiAxOHYtNiIvPjxwYXRoIGQ9Im05IDE1IDMgMyAzLTMiLz48L3N2Zz4=" style="width: 16px; height: 16px; filter: invert(1);" alt="Copy">`,
+        "Télécharger le fichier markdown",
         () => {
           this.recovery.showPageRangeModal(); // Au lieu de exportPageRange()
         }
@@ -737,6 +737,8 @@ class UtilsExtension {
     ];
   }
 
+
+ 
   exportPageRange() {
     const totalPages = this.recovery.getTotalPages();
     const input = prompt(
@@ -853,7 +855,7 @@ class UtilsExtension {
   }
 
 
-  
+
 }
 
 export class Toolbar {
