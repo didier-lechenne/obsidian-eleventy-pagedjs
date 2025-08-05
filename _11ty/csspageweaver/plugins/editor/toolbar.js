@@ -851,6 +851,9 @@ class UtilsExtension {
     const tagName = firstFragment.tagName.toLowerCase();
     return `<${tagName}>${completeContent}</${tagName}>`;
   }
+
+
+  
 }
 
 export class Toolbar {

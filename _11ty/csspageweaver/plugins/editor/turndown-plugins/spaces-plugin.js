@@ -8,10 +8,4 @@ export function spacesPlugin(turndownService) {
     },
   });
 
-  turndownService.addRule("lineBreak", {
-    filter: "br",
-    replacement: function () {
-      return " <br/>\n";
-    },
-  });
 }

@@ -103,6 +103,7 @@ export class Selection {
     selection.addRange(range);
   }
   
+  
   insertAtCursor(text) {
     const selection = window.getSelection();
     if (selection.rangeCount === 0) return;

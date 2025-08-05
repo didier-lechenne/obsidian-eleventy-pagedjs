@@ -125,6 +125,106 @@ export class PagedMarkdownRecovery {
     });
   }
 
+
+
+	showPageRangeModal() {
+	// Créer modal HTML
+	const modal = document.createElement('div');
+	modal.style.cssText = `
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0,0,0,0.7);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 10000;
+	`;
+
+	const dialog = document.createElement('div');
+	dialog.style.cssText = `
+	background: white;
+	padding: 20px;
+	border-radius: 8px;
+	min-width: 300px;
+	box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+	`;
+
+	const totalPages = this.getTotalPages();
+	
+	dialog.innerHTML = `
+	<h3 style="margin-top: 0;">Exporter pages spécifiques</h3>
+	<p>Total: ${totalPages} pages</p>
+	<label>
+	Format d'export:<br>
+	<input type="text" id="page-range" placeholder="ex: 1-5 ou 3,7,9 ou 2" style="width: 100%; padding: 8px; margin: 5px 0;">
+	</label>
+	<div style="margin-top: 15px; display: flex; gap: 10px; justify-content: flex-end;">
+	<button id="cancel-export" style="padding: 8px 16px; border: 1px solid #ccc; background: white; border-radius: 4px; cursor: pointer;">Annuler</button>
+	<button id="confirm-export" style="padding: 8px 16px; border: none; background: #663399; color: white; border-radius: 4px; cursor: pointer;">Exporter</button>
+	</div>
+	`;
+
+	modal.appendChild(dialog);
+	document.body.appendChild(modal);
+
+	// Focus sur l'input
+	const input = dialog.querySelector('#page-range');
+	input.focus();
+
+	// Gestion des événements
+	const closeModal = () => {
+	document.body.removeChild(modal);
+	};
+
+	const exportPages = () => {
+	const inputValue = input.value.trim();
+	if (!inputValue) return;
+
+	try {
+	if (inputValue.includes('-')) {
+	// Plage de pages
+	const [start, end] = inputValue.split('-').map(n => parseInt(n.trim()));
+	this.exportPageRange(start, end, `pages-${start}-${end}.md`);
+	} else if (inputValue.includes(',')) {
+	// Pages individuelles - export simple en prenant min-max
+	const pages = inputValue.split(',').map(n => parseInt(n.trim()));
+	const start = Math.min(...pages);
+	const end = Math.max(...pages);
+	this.exportPageRange(start, end, `pages-selection.md`);
+	} else {
+	// Page unique
+	const page = parseInt(inputValue);
+	this.exportPageRange(page, page, `page-${page}.md`);
+	}
+	closeModal();
+	} catch (error) {
+	alert('Format invalide. Utilisez: 1-5 ou 3,7,9 ou 2');
+	}
+	};
+
+	dialog.querySelector('#cancel-export').onclick = closeModal;
+	dialog.querySelector('#confirm-export').onclick = exportPages;
+	
+	// Fermer avec Escape
+	modal.onclick = (e) => {
+	if (e.target === modal) closeModal();
+	};
+	
+	// Valider avec Entrée
+	input.onkeydown = (e) => {
+	if (e.key === 'Enter') exportPages();
+	if (e.key === 'Escape') closeModal();
+	};
+	}
+
+getTotalPages() {
+  const pages = document.querySelectorAll('.pagedjs_page');
+  return pages.length;
+}
+
   // === EXPORT PAR PLAGE DE PAGES ===
   exportPageRange(startPage, endPage, filename = 'pages-selection.md') {
     const selectedPages = [];
