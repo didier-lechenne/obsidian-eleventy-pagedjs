@@ -1,17 +1,22 @@
 export function coreRulesPlugin(turndownService) {
   // Override des règles de base pour garder certains éléments
-  turndownService.keep(function (node) {
-    return (
-      (node.nodeName === "SPAN" && node.style.getPropertyValue("--ls")) ||
-      (node.nodeName === "SPAN" && node.classList.contains("breakcolumn")) ||
-      node.nodeName === "SUP" ||
-      (node.nodeName === "BR" &&
-        (node.classList.contains("breakpage") ||
-          node.classList.contains("breakcolumn") ||
-          node.classList.contains("breakscreen") ||
-          node.classList.contains("breakprint")))
-    );
-  });
+turndownService.keep(function (node) {
+  return (
+    (node.nodeName === "SPAN" && node.style.getPropertyValue("--ls")) ||
+    (node.nodeName === "SPAN" && node.classList.contains("breakcolumn")) ||
+    node.nodeName === "SUP" ||
+    (node.nodeName === "BR" &&
+      (node.classList.contains("breakpage") ||
+        node.classList.contains("breakcolumn") ||
+        node.classList.contains("breakscreen") ||
+        node.classList.contains("breakprint"))) ||
+    // Ajout pour <breakpage>
+    (node.nodeName === "BREAKPAGE") ||
+    (node.nodeName === "BREAKCOLUMN") ||
+    (node.nodeName === "BREAKSCREEN") ||
+    (node.nodeName === "BREAKPRINT")
+  );
+});
 
   // Custom escape function
   turndownService.escape = function (string) {

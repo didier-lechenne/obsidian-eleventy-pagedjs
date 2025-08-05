@@ -1,5 +1,5 @@
 import { UNICODE_CHARS } from "./unicode.js";
-
+import { PagedMarkdownRecovery } from './recovery.js';
 /**
  * @name Toolbar
  * @file Barre d'outils avec système d'extensions
@@ -720,6 +720,7 @@ class SpacingExtension {
 class UtilsExtension {
   constructor(toolbar) {
     this.toolbar = toolbar;
+    this.recovery = new PagedMarkdownRecovery();
   }
 
   getButtons() {
@@ -732,7 +733,75 @@ class UtilsExtension {
           this.copyElementAsMarkdown();
         }
       ),
+      // NOUVEAU BOUTON - Récupération document complet
+      new ToolbarButton(
+        "recover-full",
+        "📄",
+        "Récupérer document Markdown complet",
+        () => {
+          this.recovery.exportOriginalMarkdown();
+        }
+      ),
+      // NOUVEAU BOUTON - Pages spécifiques
+      new ToolbarButton(
+        "recover-range",
+        "📑",
+        "Exporter pages spécifiques",
+        () => {
+          this.exportPageRange();
+        }
+      ),
+      // NOUVEAU BOUTON - Analyse
+      new ToolbarButton(
+        "analyze",
+        "🔍",
+        "Analyser fragmentation",
+        () => {
+          this.analyzeDocument();
+        }
+      )
     ];
+  }
+
+
+  exportPageRange() {
+    const totalPages = this.recovery.getTotalPages();
+    const input = prompt(`Pages à exporter (ex: 1-5 ou 3,7,9)\nTotal: ${totalPages} pages`);
+    
+    if (!input) return;
+    
+    // Parse l'input
+    if (input.includes('-')) {
+      const [start, end] = input.split('-').map(n => parseInt(n.trim()));
+      this.recovery.exportPageRange(start, end, `pages-${start}-${end}.md`);
+    } else if (input.includes(',')) {
+      // Pages individuelles - implémentation simple
+      const pages = input.split(',').map(n => parseInt(n.trim()));
+      const start = Math.min(...pages);
+      const end = Math.max(...pages);
+      this.recovery.exportPageRange(start, end, `pages-selection.md`);
+    } else {
+      const page = parseInt(input);
+      this.recovery.exportPageRange(page, page, `page-${page}.md`);
+    }
+  }
+
+  analyzeDocument() {
+    const analysis = this.recovery.analyzeFragmentation();
+    
+    console.group('📊 Analyse du document');
+    console.log(`📄 Pages totales: ${analysis.totalPages}`);
+    console.log(`🧩 Fragments totaux: ${analysis.totalFragments}`);
+    console.log(`✂️ Éléments scindés: ${analysis.splitElements}`);
+    console.log(`✅ Éléments intacts: ${analysis.intactElements}`);
+    
+    if (analysis.details.length > 0) {
+      console.table(analysis.details);
+    }
+    console.groupEnd();
+    
+    // Afficher dans l'interface
+    alert(`Document analysé:\n• ${analysis.totalPages} pages\n• ${analysis.splitElements} éléments scindés\n• ${analysis.intactElements} éléments intacts\n\nVoir console pour détails`);
   }
 
   copyElementAsMarkdown(silent) {

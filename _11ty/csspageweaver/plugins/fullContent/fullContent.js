@@ -216,7 +216,9 @@ export default class fullContent extends Handler {
           .querySelector(".pagedjs_page_content")
           .insertAdjacentElement("afterbegin", imgRight);
         fullContentRight.element.classList.add("pagedjs_page_fullRight");
-        img.style.removeProperty("display");
+        if (img && img.style) {
+          img.style.removeProperty("display");
+        }
 
         this.fullSpreadEls.delete(img);
       }
@@ -234,7 +236,9 @@ export default class fullContent extends Handler {
         .querySelector(".pagedjs_page_content")
         .insertAdjacentElement("afterbegin", container);
       fullContent.element.classList.add("pagedjs_page_fullContent");
-      img.style.removeProperty("display");
+      if (img && img.style) {
+        img.style.removeProperty("display");
+      }
 
       this.fullContentEls.delete(img);
     }
@@ -252,7 +256,9 @@ export default class fullContent extends Handler {
           .querySelector(".pagedjs_page_content")
           .insertAdjacentElement("afterbegin", container);
         fullContent.element.classList.add("pagedjs_page_fullContent");
-        img.style.removeProperty("display");
+        if (img && img.style) {
+          img.style.removeProperty("display");
+        }
 
         this.fullLeftEls.delete(img);
       }
@@ -271,7 +277,9 @@ export default class fullContent extends Handler {
           .querySelector(".pagedjs_page_content")
           .insertAdjacentElement("afterbegin", container);
         fullContent.element.classList.add("pagedjs_page_fullContent");
-        img.style.removeProperty("display");
+        if (img && img.style) {
+          img.style.removeProperty("display");
+        }
 
         this.fullRightEls.delete(img);
       }

@@ -1,5 +1,5 @@
 {
-    "plugins": [  "spread", "previewPage", "layout", "editor", "marker", "inlineNotes",  "bgColor", "fullContent",  "invisibleSpaces",  "pageMove", "tableOfContent",  "imposition", "marginBox",   "reloadInPlace"],
+    "plugins": [ "pageMove", "spread", "previewPage", "layout",  "marker", "inlineNotes",  "bgColor", "fullContent",  "invisibleSpaces",   "tableOfContent",  "imposition", "marginBox",  "editor", "reloadInPlace"],
 
     "pluginsParameters":{
 

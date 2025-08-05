@@ -47,16 +47,20 @@ export default function reloadFromFolio(){
 
 	/*  UI   */
 	
-	// Shortcut for GUI Panel
-	ui.onlySelector = cssPageWeaver.querySelector(`#toggle-reloadFromFolio-isOnly`)
-	ui.folioSelector = cssPageWeaver.querySelector(`#folio-reloadFromFolio`)
-	ui.triggerSelector = cssPageWeaver.querySelector(`#trigger-reloadFromFolio`)
+	// Shortcut for GUI Panel - CORRECTION: utiliser document.querySelector au lieu de cssPageWeaver.querySelector
+	ui.onlySelector = document.querySelector(`#toggle-reloadFromFolio-isOnly`)
+	ui.folioSelector = document.querySelector(`#folio-reloadFromFolio`)
+	ui.triggerSelector = document.querySelector(`#trigger-reloadFromFolio`)
 
 	// Update ui | folio input
-	ui.folioSelector.value = cssPageWeaver_frame?.range.from || undefined
+	if (ui.folioSelector) {
+		ui.folioSelector.value = cssPageWeaver_frame?.range.from || undefined
+	}
 	
 	// Update ui single page input
-	ui.onlySelector.checked = singlePage
+	if (ui.onlySelector) {
+		ui.onlySelector.checked = singlePage
+	}
 
 	/*   Function     */
 
@@ -151,20 +155,24 @@ export default function reloadFromFolio(){
 	/*       Event      */
 
 	// Add keydown listener based on configuration 
-	ui.shortcut.forEach( shortcut => {
-		// if user do not have disable plugin 
-		if(shortcut.active){
-			// Get shortcut combinaison from config
-			const keys = shortcut.keys
-			// CSS Page Weaver has a simple function to help you register your keyboard shortcut
-			cssPageWeaver.helpers.addKeydownListener(keys, reload)
-		}
-	})
+	if (ui.shortcut && Array.isArray(ui.shortcut)) {
+		ui.shortcut.forEach( shortcut => {
+			// if user do not have disable plugin 
+			if(shortcut.active){
+				// Get shortcut combinaison from config
+				const keys = shortcut.keys
+				// CSS Page Weaver has a simple function to help you register your keyboard shortcut
+				cssPageWeaver.helpers.addKeydownListener(keys, reload)
+			}
+		})
+	}
 
 	/* Trigger event  */
-	ui.triggerSelector.addEventListener('click', function() {
-		reload(false)
-	});
+	if (ui.triggerSelector) {
+		ui.triggerSelector.addEventListener('click', function() {
+			reload(false)
+		});
+	}
 
 	// Global mousemove event listener to track mouse position
 	document.addEventListener('mousemove', function(event) {
@@ -173,16 +181,19 @@ export default function reloadFromFolio(){
 	});
 
 	/* Toggle event  */
-	ui.onlySelector.addEventListener('change', function() {
-		singlePage = this.checked
-		console.log(singlePage)
-		localStorageAPI("setItem", "singlePage", this.checked)
-	});
+	if (ui.onlySelector) {
+		ui.onlySelector.addEventListener('change', function() {
+			singlePage = this.checked
+			console.log(singlePage)
+			localStorageAPI("setItem", "singlePage", this.checked)
+		});
+	}
 
-	
-	ui.folioSelector.addEventListener("input", function() {
-		cssPageWeaver_frame.range.from = parseInt(this.value)
-		localStorageAPI("setItem", "fromFolio", this.value)
-	});
+	if (ui.folioSelector) {
+		ui.folioSelector.addEventListener("input", function() {
+			cssPageWeaver_frame.range.from = parseInt(this.value)
+			localStorageAPI("setItem", "fromFolio", this.value)
+		});
+	}
 
 }
