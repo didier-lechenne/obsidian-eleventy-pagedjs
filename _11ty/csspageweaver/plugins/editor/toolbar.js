@@ -1,5 +1,5 @@
 import { UNICODE_CHARS } from "./unicode.js";
-import { PagedMarkdownRecovery } from './recovery.js';
+import { PagedMarkdownRecovery } from "./recovery.js";
 /**
  * @name Toolbar
  * @file Barre d'outils avec système d'extensions
@@ -86,17 +86,11 @@ class LetterSpacingExtension {
 
     if (existingSpan) {
       this.showLetterSpacingInput(existingSpan);
-      
     } else {
       const newSpan = this.toolbar.editor.commands.wrapWithLetterSpacing(range);
       this.showLetterSpacingInput(newSpan);
-      
     }
   }
-
-
-
-
 
   findLetterSpacingSpan(range) {
     return this.toolbar.editor.commands.findLetterSpacingSpan(range);
@@ -224,7 +218,6 @@ class LetterSpacingExtension {
     });
   }
 }
-
 
 // Extension pour espaces typographiques
 class SpacingExtension {
@@ -733,50 +726,32 @@ class UtilsExtension {
           this.copyElementAsMarkdown();
         }
       ),
-      // NOUVEAU BOUTON - Récupération document complet
-      new ToolbarButton(
-        "recover-full",
-        "📄",
-        "Récupérer document Markdown complet",
-        () => {
-          this.recovery.exportOriginalMarkdown();
-        }
-      ),
-      // NOUVEAU BOUTON - Pages spécifiques
       new ToolbarButton(
         "recover-range",
         "📑",
         "Exporter pages spécifiques",
         () => {
-          this.exportPageRange();
+          this.recovery.showPageRangeModal(); // Au lieu de exportPageRange()
         }
       ),
-      // NOUVEAU BOUTON - Analyse
-      new ToolbarButton(
-        "analyze",
-        "🔍",
-        "Analyser fragmentation",
-        () => {
-          this.analyzeDocument();
-        }
-      )
     ];
   }
 
-
   exportPageRange() {
     const totalPages = this.recovery.getTotalPages();
-    const input = prompt(`Pages à exporter (ex: 1-5 ou 3,7,9)\nTotal: ${totalPages} pages`);
-    
+    const input = prompt(
+      `Pages à exporter (ex: 1-5 ou 3,7,9)\nTotal: ${totalPages} pages`
+    );
+
     if (!input) return;
-    
+
     // Parse l'input
-    if (input.includes('-')) {
-      const [start, end] = input.split('-').map(n => parseInt(n.trim()));
+    if (input.includes("-")) {
+      const [start, end] = input.split("-").map((n) => parseInt(n.trim()));
       this.recovery.exportPageRange(start, end, `pages-${start}-${end}.md`);
-    } else if (input.includes(',')) {
+    } else if (input.includes(",")) {
       // Pages individuelles - implémentation simple
-      const pages = input.split(',').map(n => parseInt(n.trim()));
+      const pages = input.split(",").map((n) => parseInt(n.trim()));
       const start = Math.min(...pages);
       const end = Math.max(...pages);
       this.recovery.exportPageRange(start, end, `pages-selection.md`);
@@ -788,20 +763,22 @@ class UtilsExtension {
 
   analyzeDocument() {
     const analysis = this.recovery.analyzeFragmentation();
-    
-    console.group('📊 Analyse du document');
+
+    console.group("📊 Analyse du document");
     console.log(`📄 Pages totales: ${analysis.totalPages}`);
     console.log(`🧩 Fragments totaux: ${analysis.totalFragments}`);
     console.log(`✂️ Éléments scindés: ${analysis.splitElements}`);
     console.log(`✅ Éléments intacts: ${analysis.intactElements}`);
-    
+
     if (analysis.details.length > 0) {
       console.table(analysis.details);
     }
     console.groupEnd();
-    
+
     // Afficher dans l'interface
-    alert(`Document analysé:\n• ${analysis.totalPages} pages\n• ${analysis.splitElements} éléments scindés\n• ${analysis.intactElements} éléments intacts\n\nVoir console pour détails`);
+    alert(
+      `Document analysé:\n• ${analysis.totalPages} pages\n• ${analysis.splitElements} éléments scindés\n• ${analysis.intactElements} éléments intacts\n\nVoir console pour détails`
+    );
   }
 
   copyElementAsMarkdown(silent) {

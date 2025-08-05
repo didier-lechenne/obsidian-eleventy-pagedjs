@@ -29,7 +29,6 @@ export class PagedMarkdownRecovery {
       linkStyle: 'inlined',
     });
 
-    // Appliquer les plugins existants
     turndown.use([
       coreRulesPlugin,
       textColPlugin,
@@ -43,213 +42,119 @@ export class PagedMarkdownRecovery {
     return turndown;
   }
 
-  // === MÉTHODE PRINCIPALE ===
-reconstructOriginalMarkdown() {
-  const fragments = this.collectAllFragments();
-  const reconstructed = this.mergeFragments(fragments);
-  const markdown = this.convertToMarkdown(reconstructed); // Utiliser convertToMarkdown()
-  
-  return {
-    markdown: markdown,
-    elements: reconstructed,
-    fragmentsCount: fragments.size,
-    totalPages: this.getTotalPages()
-  };
-}
+  // === APPROCHE WEBCLIPPER ===
+  exportFullDocument(filename = 'document-complete.md') {
+    // Récupère tout le contenu de la zone principale
+    const mainContent = document.querySelector('.pagedjs_pages') || document.body;
+    
+    // Clone pour manipulation sans affecter l'original
+    const clone = mainContent.cloneNode(true);
+    
+    // Nettoie les éléments PagedJS non-désirés
+    this.cleanPagedJSElements(clone);
+    
+    // Reconstitue les éléments scindés
+    this.reconstructSplitElements(clone);
+    
+    // Conversion Turndown
+    const markdown = this.getTurndownService().turndown(clone.innerHTML);
+    
+    this.downloadFile(markdown, filename, 'text/markdown');
+    return markdown;
+  }
 
-  // === COLLECTE DES FRAGMENTS SCINDÉS ===
-  collectAllFragments() {
-    const fragments = new Map();
-    const processedRefs = new Set();
+  cleanPagedJSElements(clone) {
+    // Supprime les éléments de structure PagedJS
+    const toRemove = [
+      '.pagedjs_bleed',
+      '.pagedjs_margin',
+      '.pagedjs_marks-crop',
+      '.pagedjs_marks-cross',
+      '.pagedjs_sheet',
+      '.pagedjs_pagebox'
+    ];
     
-    // Collecter uniquement les éléments éditables
-    const editableElements = document.querySelectorAll('[data-ref]');
+    toRemove.forEach(selector => {
+      clone.querySelectorAll(selector).forEach(el => el.remove());
+    });
     
-    editableElements.forEach(element => {
+    // Garde seulement le contenu des pages
+    const pageContents = clone.querySelectorAll('.pagedjs_page_content');
+    if (pageContents.length > 0) {
+      // Remplace tout par le contenu des pages concaténé
+      clone.innerHTML = '';
+      pageContents.forEach(content => {
+        clone.appendChild(content.cloneNode(true));
+      });
+    }
+  }
+
+  reconstructSplitElements(clone) {
+    const fragmentGroups = new Map();
+    
+    // Groupe par data-ref
+    clone.querySelectorAll('[data-ref]').forEach(element => {
       const ref = element.getAttribute('data-ref');
-      
-      if (ref) {
-        // Élément avec data-ref (potentiellement scindé)
-        if (!processedRefs.has(ref)) {
-          const allFragments = document.querySelectorAll(`[data-ref="${ref}"][data-editable]`);
-          
-          const fragmentGroup = Array.from(allFragments).map(frag => ({
-            element: frag,
-            splitFrom: frag.getAttribute('data-split-from'),
-            splitTo: frag.getAttribute('data-split-to'),
-            pageNumber: this.getPageNumber(frag)
-          }));
-          
-          // Trier par page
-          fragmentGroup.sort((a, b) => a.pageNumber - b.pageNumber);
-          
-          fragments.set(ref, fragmentGroup);
-          processedRefs.add(ref);
-        }
-      } else {
-        // Élément sans data-ref (non scindé)
-        const uniqueRef = `single-${element.getAttribute('editable-id') || Date.now()}-${Math.random()}`;
-        fragments.set(uniqueRef, [{
-          element: element,
-          pageNumber: this.getPageNumber(element)
-        }]);
+      if (!fragmentGroups.has(ref)) {
+        fragmentGroups.set(ref, []);
+      }
+      fragmentGroups.get(ref).push(element);
+    });
+    
+    // Reconstitue chaque groupe
+    fragmentGroups.forEach((fragments, ref) => {
+      if (fragments.length > 1) {
+        const firstFragment = fragments[0];
+        
+        // Combine le contenu
+        let combinedHTML = '';
+        fragments.forEach(frag => {
+          combinedHTML += frag.innerHTML;
+        });
+        
+        // Remplace le premier par le contenu combiné
+        firstFragment.innerHTML = combinedHTML;
+        
+        // Supprime les autres fragments
+        fragments.slice(1).forEach(frag => frag.remove());
+        
+        // Nettoie les attributs de scission
+        firstFragment.removeAttribute('data-split-from');
+        firstFragment.removeAttribute('data-split-to');
       }
     });
-    
-    return fragments;
   }
 
-  // === FUSION DES FRAGMENTS ===
-  mergeFragments(fragments) {
-    const reconstructedElements = [];
+  // === EXPORT PAR PLAGE DE PAGES ===
+  exportPageRange(startPage, endPage, filename = 'pages-selection.md') {
+    const selectedPages = [];
     
-    fragments.forEach((elementGroup, ref) => {
-      if (elementGroup.length === 1) {
-        // Élément non scindé
-        reconstructedElements.push({
-          ref: ref,
-          element: elementGroup[0].element,
-          isReconstructed: false,
-          pageNumber: elementGroup[0].pageNumber
-        });
-      } else {
-        // Élément scindé - reconstitution
-        const mergedElement = this.createMergedElement(elementGroup);
-        reconstructedElements.push({
-          ref: ref,
-          element: mergedElement,
-          isReconstructed: true,
-          fragmentCount: elementGroup.length,
-          pageNumber: elementGroup[0].pageNumber
-        });
+    for (let i = startPage; i <= endPage; i++) {
+      const page = document.querySelector(`[data-page-number="${i}"] .pagedjs_page_content`);
+      if (page) {
+        selectedPages.push(page.cloneNode(true));
       }
-    });
+    }
     
-    // Trier par ordre d'apparition dans le document
-    reconstructedElements.sort((a, b) => {
-      const aOrder = this.getDocumentOrder(a.element);
-      const bOrder = this.getDocumentOrder(b.element);
-      return aOrder - bOrder;
-    });
+    if (selectedPages.length === 0) return;
     
-    return reconstructedElements;
-  }
-
-  createMergedElement(elementGroup) {
-    const firstElement = elementGroup[0].element;
-    const mergedElement = firstElement.cloneNode(false);
+    // Crée un container temporaire
+    const container = document.createElement('div');
+    selectedPages.forEach(page => container.appendChild(page));
     
-    // Combiner le contenu de tous les fragments
-    let combinedHTML = '';
-    elementGroup.forEach(fragment => {
-      combinedHTML += fragment.element.innerHTML;
-    });
+    // Reconstitue et nettoie
+    this.reconstructSplitElements(container);
     
-    mergedElement.innerHTML = combinedHTML;
+    // Conversion
+    const markdown = this.getTurndownService().turndown(container.innerHTML);
     
-    // Nettoyer les attributs de scission
-    mergedElement.removeAttribute('data-split-from');
-    mergedElement.removeAttribute('data-split-to');
-    
-    return mergedElement;
-  }
-
-  // === CONVERSION EN MARKDOWN ===
-  convertToMarkdown(reconstructedElements) {
-    const turndownService = this.getTurndownService();
-    let fullMarkdown = '';
-    
-    reconstructedElements.forEach((item, index) => {
-      const markdown = this.getTurndownService().turndown(item.element.outerHTML);
-      
-      
-      if (index > 0) fullMarkdown += '\n\n';
-      fullMarkdown += markdown;
-    });
-    
-    return fullMarkdown;
+    this.downloadFile(markdown, filename, 'text/markdown');
+    return markdown;
   }
 
   getTurndownService() {
-    // Réutilise l'instance Turndown existante du plugin editor
-    if (window.mainTurndownService) {
-      return window.mainTurndownService;
-    }
-    
-    // Fallback si pas disponible
-    return this.turndownService;
+    return window.mainTurndownService || this.turndownService;
   }
-
-  // === UTILITAIRES ===
-  getPageNumber(element) {
-    const page = element.closest('.pagedjs_page');
-    if (!page) return 0;
-    
-    const pageNumber = page.getAttribute('data-page-number');
-    return pageNumber ? parseInt(pageNumber) : 0;
-  }
-
-  getDocumentOrder(element) {
-    // Utilise l'ID éditable pour l'ordre
-    const editableId = element.getAttribute('editable-id');
-    if (editableId) {
-      // Parse l'ID type "j21" = lettre + nombre
-      const match = editableId.match(/([a-z])(\d+)/);
-      if (match) {
-        const sectionCode = match[1].charCodeAt(0) - 97; // a=0, b=1, etc
-        const elementNumber = parseInt(match[2]);
-        return (sectionCode * 1000) + elementNumber;
-      }
-    }
-    
-    // Fallback: position dans le DOM + page
-    let order = 0;
-    let current = element;
-    
-    while (current.previousElementSibling) {
-      current = current.previousElementSibling;
-      order++;
-    }
-    
-    const pageNumber = this.getPageNumber(element);
-    return (pageNumber * 10000) + order;
-  }
-
-  getTotalPages() {
-    return document.querySelectorAll('.pagedjs_page').length;
-  }
-
-  // === OPTIONS D'EXPORT ===
-  
-  // Export complet (toutes les pages)
-  exportOriginalMarkdown(filename = 'document-original.md') {
-    const result = this.reconstructOriginalMarkdown();
-    this.downloadFile(result.markdown, filename, 'text/markdown');
-    console.log(`✅ Document complet exporté: ${result.fragmentsCount} fragments sur ${result.totalPages} pages`);
-    return result;
-  }
-
-  // Export pages spécifiques
-exportPageRange(startPage, endPage, filename = 'document-partial.md') {
-  const fragments = this.collectAllFragments();
-  const filteredFragments = new Map();
-  
-  fragments.forEach((elementGroup, ref) => {
-    const filteredGroup = elementGroup.filter(fragment => 
-      fragment.pageNumber >= startPage && fragment.pageNumber <= endPage
-    );
-    if (filteredGroup.length > 0) {
-      filteredFragments.set(ref, filteredGroup);
-    }
-  });
-
-  const reconstructed = this.mergeFragments(filteredFragments);
-  const markdown = this.convertToMarkdown(reconstructed); // Utiliser convertToMarkdown()
-  
-  this.downloadFile(markdown, filename, 'text/markdown');
-  console.log(`📄 Pages ${startPage}-${endPage} exportées`);
-  return markdown;
-}
 
   downloadFile(content, filename, mimeType) {
     const blob = new Blob([content], { type: mimeType });
@@ -261,36 +166,5 @@ exportPageRange(startPage, endPage, filename = 'document-partial.md') {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-  }
-
-  // === DIAGNOSTIC ===
-  analyzeFragmentation() {
-    const fragments = this.collectAllFragments();
-    const analysis = {
-      totalPages: this.getTotalPages(),
-      totalFragments: 0,
-      splitElements: 0,
-      intactElements: 0,
-      details: []
-    };
-    
-    fragments.forEach((elementGroup, ref) => {
-      analysis.totalFragments += elementGroup.length;
-      
-      if (elementGroup.length > 1) {
-        analysis.splitElements++;
-        analysis.details.push({
-          ref: ref,
-          tagName: elementGroup[0].element.tagName,
-          fragmentCount: elementGroup.length,
-          pages: elementGroup.map(f => f.pageNumber),
-          preview: elementGroup[0].element.textContent.substring(0, 50) + '...'
-        });
-      } else {
-        analysis.intactElements++;
-      }
-    });
-    
-    return analysis;
   }
 }
