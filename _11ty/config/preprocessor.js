@@ -16,7 +16,7 @@ module.exports = function (eleventyConfig) {
       '<span class="breakcolumn"></span>'
     );
 
-    content = content.replace(/<breakpage>/gi, '\n<br class="breakpage">');
+    content = content.replace(/<breakpage>/gi, '<br class="breakpage">');
 
     return content;
   });
@@ -67,7 +67,6 @@ module.exports = function (eleventyConfig) {
     return content;
   });
 
- 
 
 
 };

@@ -5,3 +5,4 @@ export { spacesPlugin } from './spaces-plugin.js';
 export { breakColumnPlugin } from './breakcolumn-plugin.js';
 export { coreRulesPlugin } from './core-rules-plugin.js';
 export { annotationsPlugin } from "./annotations.js";
+export { _11tyPlugin } from "./_11ty.js";
