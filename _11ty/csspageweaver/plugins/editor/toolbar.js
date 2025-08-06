@@ -28,6 +28,31 @@ class ToolbarButton {
   }
 }
 
+class ToolbarSelect {
+  constructor(command, icon, title, options, action) {
+    this.command = command;
+    this.icon = icon;
+    this.title = title;
+    this.options = options;
+    this.action = action;
+  }
+
+  render() {
+    const optionsHTML = this.options
+      .map((opt) => `<option value="${opt.value}">${opt.label}</option>`)
+      .join("");
+
+    return `
+      <div class="toolbar-select-wrapper" data-command="${this.command}" data-tooltip="${this.title}">
+        <button class="select-trigger">${this.icon} ▼</button>
+        <select class="select-dropdown" style="display: none;">
+          <option value="">-- Choisir --</option>
+          ${optionsHTML}
+        </select>
+      </div>
+    `;
+  }
+}
 // Extension pour formatage de base
 class FormattingExtension {
   constructor(toolbar) {
@@ -868,6 +893,35 @@ class UtilsExtension {
   }
 }
 
+class ConfigSelectExtension {
+  constructor(toolbar, selectsConfig) {
+    this.toolbar = toolbar;
+    this.selectsConfig = selectsConfig;
+    this.name = 'ConfigSelectExtension';
+  }
+
+  init() {}
+  destroy() {}
+
+  getButtons() {
+    return this.selectsConfig.map(selectConfig => 
+      new ToolbarSelect(
+        selectConfig.id,
+        selectConfig.icon,
+        selectConfig.title,
+        selectConfig.options,
+        (value) => this.insertChar(selectConfig, value)
+      )
+    );
+  }
+
+  insertChar(selectConfig, value) {
+    const option = selectConfig.options.find(o => o.value === value);
+    if (option?.char) {
+      this.toolbar.editor.commands.insertText(option.char);
+    }
+  }
+}
 export class Toolbar {
   constructor(editor, customConfig = null) {
     this.editor = editor;
@@ -903,35 +957,42 @@ export class Toolbar {
     window.mainTurndownService = this.turndown;
   }
 
-registerExtensions() {
-  this.extensions = [
-    new FormattingExtension(this),
-    new LetterSpacingExtension(this),
-    new SpacingExtension(this),
-    new UtilsExtension(this),
-  ];
+  registerExtensions() {
+    this.extensions = [
+      new FormattingExtension(this),
+      new LetterSpacingExtension(this),
+      new SpacingExtension(this),
+      new UtilsExtension(this),
+    ];
+
+    if (this.config.selects?.length > 0) {
+      this.extensions.push(
+        new ConfigSelectExtension(this, this.config.selects)
+      );
+    }
+
+    this.activeButtons = this.config.buttons;
+  }
+
   
-  this.activeButtons = this.config.buttons;
-}
+  createToolbar() {
+    this.element = document.createElement("div");
+    this.element.className = "paged-editor-toolbar";
 
-createToolbar() {
-  this.element = document.createElement("div");
-  this.element.className = "paged-editor-toolbar";
-
-  let buttonsHTML = "";
-  this.extensions.forEach((extension) => {
-    extension.getButtons().forEach((button) => {
-      if (this.activeButtons.includes(button.command)) {
-        this.buttons.set(button.command, button);
-        buttonsHTML += button.render();
-      }
+    let buttonsHTML = "";
+    this.extensions.forEach((extension) => {
+      extension.getButtons().forEach((button) => {
+        if (this.activeButtons.includes(button.command)) {
+          this.buttons.set(button.command, button);
+          buttonsHTML += button.render();
+        }
+      });
     });
-  });
 
-  this.element.innerHTML = buttonsHTML;
-  document.body.appendChild(this.element);
-  this.bindEvents();
-}
+    this.element.innerHTML = buttonsHTML;
+    document.body.appendChild(this.element);
+    this.bindEvents();
+  }
 
   bindEvents() {
     this.element.addEventListener("mousedown", (e) => {
