@@ -265,19 +265,55 @@ body.interface-preview .paged-editor-content:focus {
 	background: var(--editor-primary-highlight);
 }
 
-
-
-/* Responsive */
-@media (max-width: 768px) {
-	.paged-editor-toolbar {
-		padding: 4px;
-		gap: 1px;
-	}
-	
-	.paged-editor-toolbar button {
-		padding: 6px 8px;
-		font-size: 13px;
-		min-width: 28px;
-		height: 28px;
-	}
+/* Styles pour les selects */
+.toolbar-select-wrapper {
+  position: relative;
+  display: inline-block;
 }
+
+.toolbar-select-wrapper .select-trigger {
+  background: transparent;
+  border: none;
+  color: white;
+  padding: var(--editor-button-padding);
+  border-radius: var(--editor-button-radius);
+  cursor: pointer;
+  font-size: var(--editor-font-size);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: var(--editor-button-min-width);
+  height: var(--editor-button-height);
+}
+
+.toolbar-select-wrapper .select-trigger:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.05);
+}
+
+.toolbar-select-wrapper .select-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: var(--editor-toolbar-bg)!important;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--editor-border-radius);
+  min-width: 250px;
+  z-index: var(--editor-tooltip-z-index);
+  max-height: 200px;
+  overflow-y: auto;
+  color: white;
+  font-size: 14px;
+}
+
+.toolbar-select-wrapper .select-dropdown option {
+  color: white !important;
+  background-color: #2c3e50 !important;
+  padding: 8px 12px;
+  display: block;
+}
+
+.toolbar-select-wrapper .select-dropdown option:hover {
+  background: var(--editor-primary-hover);
+}
+
