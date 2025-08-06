@@ -897,26 +897,27 @@ class ConfigSelectExtension {
   constructor(toolbar, selectsConfig) {
     this.toolbar = toolbar;
     this.selectsConfig = selectsConfig;
-    this.name = 'ConfigSelectExtension';
+    this.name = "ConfigSelectExtension";
   }
 
   init() {}
   destroy() {}
 
   getButtons() {
-    return this.selectsConfig.map(selectConfig => 
-      new ToolbarSelect(
-        selectConfig.id,
-        selectConfig.icon,
-        selectConfig.title,
-        selectConfig.options,
-        (value) => this.insertChar(selectConfig, value)
-      )
+    return this.selectsConfig.map(
+      (selectConfig) =>
+        new ToolbarSelect(
+          selectConfig.id,
+          selectConfig.icon,
+          selectConfig.title,
+          selectConfig.options,
+          (value) => this.insertChar(selectConfig, value)
+        )
     );
   }
 
   insertChar(selectConfig, value) {
-    const option = selectConfig.options.find(o => o.value === value);
+    const option = selectConfig.options.find((o) => o.value === value);
     if (option?.char) {
       this.toolbar.editor.commands.insertText(option.char);
     }
@@ -974,22 +975,29 @@ export class Toolbar {
     this.activeButtons = this.config.buttons;
   }
 
-  
   createToolbar() {
     this.element = document.createElement("div");
     this.element.className = "paged-editor-toolbar";
+    this.selects = new Map(); // AJOUTER
 
-    let buttonsHTML = "";
+    let elementsHTML = "";
     this.extensions.forEach((extension) => {
-      extension.getButtons().forEach((button) => {
-        if (this.activeButtons.includes(button.command)) {
-          this.buttons.set(button.command, button);
-          buttonsHTML += button.render();
+      extension.getButtons().forEach((item) => {
+        if (
+          item instanceof ToolbarButton &&
+          this.activeButtons.includes(item.command)
+        ) {
+          this.buttons.set(item.command, item);
+          elementsHTML += item.render();
+        } else if (item instanceof ToolbarSelect) {
+          // AJOUTER ce bloc
+          this.selects.set(item.command, item);
+          elementsHTML += item.render();
         }
       });
     });
 
-    this.element.innerHTML = buttonsHTML;
+    this.element.innerHTML = elementsHTML;
     document.body.appendChild(this.element);
     this.bindEvents();
   }
