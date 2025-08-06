@@ -13,14 +13,16 @@ export class PagedMarkdownRecovery {
   initializeTurndown() {
     const turndown = new TurndownService({
       headingStyle: "atx",
-      emDelimiter: "*",
+      emDelimiter: "_",
       strongDelimiter: "**",
       linkStyle: "inlined",
+      hr: "---",
+      bulletListMarker: "-",
+      codeBlockStyle: "fenced",
+      fence: "```",
     });
 
-	
-	turndown.use(Object.values(turndownPlugins));
-
+    turndown.use(Object.values(turndownPlugins));
 
     return turndown;
   }
@@ -76,83 +78,90 @@ export class PagedMarkdownRecovery {
       }
     });
 
+    const footnotesSep = section.querySelector("hr.footnotes-sep");
+    if (footnotesSep) {
+      footnotesSep.remove();
+    }
 
-  const footnotesSep = section.querySelector('hr.footnotes-sep');
-  if (footnotesSep) {
-    footnotesSep.remove();
-  }
-
-  const footnotesSection = section.querySelector('section.footnotes');
-  if (footnotesSection) {
-    footnotesSection.remove();
-  }
-
-
-  }
-
-  // === EXPORT PAR PLAGE DE PAGES ===
-exportPageRange(startPage, endPage, filename = "pages-selection.md") {
-  // 1. Récupérer le data-template de la page de départ
-  const startPageElement = document.querySelector(`[data-page-number="${startPage}"] section`);
-  if (!startPageElement) {
-    console.warn(`❌ Page ${startPage} introuvable`);
-    return;
-  }
-
-  const targetTemplate = startPageElement.getAttribute('data-template');
-  console.log(`🎯 Template cible: "${targetTemplate}" (depuis page ${startPage})`);
-
-  // 2. Collecter SEULEMENT les sections qui ont le même data-template
-  const selectedPages = [];
-
-  for (let i = startPage; i <= endPage; i++) {
-    const page = document.querySelector(`[data-page-number="${i}"] section`);
-    
-    if (page) {
-      const pageTemplate = page.getAttribute('data-template');
-      
-      // Ne collecter que si le data-template correspond
-      if (pageTemplate === targetTemplate) {
-        selectedPages.push(page.cloneNode(true));
-        console.log(`✅ Page ${i} collectée (template: "${pageTemplate}")`);
-      } else {
-        console.log(`⏭️ Page ${i} ignorée (template: "${pageTemplate}" ≠ "${targetTemplate}")`);
-      }
-    } else {
-      console.warn(`⚠️ Page ${i} introuvable`);
+    const footnotesSection = section.querySelector("section.footnotes");
+    if (footnotesSection) {
+      footnotesSection.remove();
     }
   }
 
-  console.log(`📊 Résultat: ${selectedPages.length} pages collectées avec le template "${targetTemplate}"`);
+  // === EXPORT PAR PLAGE DE PAGES ===
+  exportPageRange(startPage, endPage, filename = "pages-selection.md") {
+    // 1. Récupérer le data-template de la page de départ
+    const startPageElement = document.querySelector(
+      `[data-page-number="${startPage}"] section`
+    );
+    if (!startPageElement) {
+      console.warn(`❌ Page ${startPage} introuvable`);
+      return;
+    }
 
-  // 3. Vérification qu'on a au moins une page
-  if (selectedPages.length === 0) {
-    console.error(`❌ Aucune page trouvée avec le template "${targetTemplate}"`);
-    return;
+    const targetTemplate = startPageElement.getAttribute("data-template");
+    console.log(
+      `🎯 Template cible: "${targetTemplate}" (depuis page ${startPage})`
+    );
+
+    // 2. Collecter SEULEMENT les sections qui ont le même data-template
+    const selectedPages = [];
+
+    for (let i = startPage; i <= endPage; i++) {
+      const page = document.querySelector(`[data-page-number="${i}"] section`);
+
+      if (page) {
+        const pageTemplate = page.getAttribute("data-template");
+
+        // Ne collecter que si le data-template correspond
+        if (pageTemplate === targetTemplate) {
+          selectedPages.push(page.cloneNode(true));
+          console.log(`✅ Page ${i} collectée (template: "${pageTemplate}")`);
+        } else {
+          console.log(
+            `⏭️ Page ${i} ignorée (template: "${pageTemplate}" ≠ "${targetTemplate}")`
+          );
+        }
+      } else {
+        console.warn(`⚠️ Page ${i} introuvable`);
+      }
+    }
+
+    console.log(
+      `📊 Résultat: ${selectedPages.length} pages collectées avec le template "${targetTemplate}"`
+    );
+
+    // 3. Vérification qu'on a au moins une page
+    if (selectedPages.length === 0) {
+      console.error(
+        `❌ Aucune page trouvée avec le template "${targetTemplate}"`
+      );
+      return;
+    }
+
+    // 4. Crée un container temporaire
+    const container = document.createElement("div");
+    selectedPages.forEach((page) => container.appendChild(page));
+
+//     console.log("📄 Contenu avant reconstitution:", container.innerHTML);
+
+    // 5. Reconstitue les éléments scindés dans le container
+    this.reconstructSplitElements(container);
+
+//     console.log("🔧 Contenu après reconstitution:", container.innerHTML);
+
+    // 6. Conversion en Markdown
+    const markdown = this.getTurndownService().turndown(container.innerHTML);
+//     console.log("📝 Markdown Content:", markdown);
+
+    // 7. Téléchargement avec nom de fichier enrichi
+    const templateSuffix = targetTemplate ? `-${targetTemplate}` : "";
+    const enrichedFilename = filename.replace(".md", `${templateSuffix}.md`);
+
+    this.downloadFile(markdown, enrichedFilename, "text/markdown");
+    return markdown;
   }
-
-  // 4. Crée un container temporaire
-  const container = document.createElement("div");
-  selectedPages.forEach((page) => container.appendChild(page));
-
-  console.log("📄 Contenu avant reconstitution:", container.innerHTML);
-
-  // 5. Reconstitue les éléments scindés dans le container
-  this.reconstructSplitElements(container);
-
-  console.log("🔧 Contenu après reconstitution:", container.innerHTML);
-
-  // 6. Conversion en Markdown
-  const markdown = this.getTurndownService().turndown(container.innerHTML);
-  console.log("📝 Markdown Content:", markdown);
-
-  // 7. Téléchargement avec nom de fichier enrichi
-  const templateSuffix = targetTemplate ? `-${targetTemplate}` : '';
-  const enrichedFilename = filename.replace('.md', `${templateSuffix}.md`);
-  
-  this.downloadFile(markdown, enrichedFilename, "text/markdown");
-  return markdown;
-}
 
   // === INTERFACE UTILISATEUR ===
   showPageRangeModal() {

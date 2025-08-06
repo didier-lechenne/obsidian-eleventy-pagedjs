@@ -22,7 +22,7 @@ export function spacesPlugin(turndownService) {
       if (node.className.includes('breakpage')) {
         return '<breakpage>';
       }
-      return " <br/>\n";
+      return "  <br>\n";
     },
   });
 }

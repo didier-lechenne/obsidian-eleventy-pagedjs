@@ -729,8 +729,6 @@ class UtilsExtension {
     ];
   }
 
-
- 
   exportPageRange() {
     const totalPages = this.recovery.getTotalPages();
     const input = prompt(
@@ -845,9 +843,6 @@ class UtilsExtension {
     const tagName = firstFragment.tagName.toLowerCase();
     return `<${tagName}>${completeContent}</${tagName}>`;
   }
-
-
-
 }
 
 export class Toolbar {
@@ -866,12 +861,16 @@ export class Toolbar {
   setupTurndown() {
     this.turndown = new window.TurndownService({
       headingStyle: "atx",
-      emDelimiter: "*",
+      emDelimiter: "_",
       strongDelimiter: "**",
       linkStyle: "inlined",
+      hr: "---",
+      bulletListMarker: "-",
+      codeBlockStyle: "fenced",
+      fence: "```",
     });
 
-    this.turndown.use(Object.values(turndownPlugins));;
+    this.turndown.use(Object.values(turndownPlugins));
 
     window.mainTurndownService = this.turndown;
   }
