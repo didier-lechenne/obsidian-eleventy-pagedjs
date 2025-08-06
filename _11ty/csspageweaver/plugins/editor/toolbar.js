@@ -1,10 +1,18 @@
 import { UNICODE_CHARS } from "./unicode.js";
+import * as turndownPlugins from "./turndown-plugins/index.js";
 import { PagedMarkdownRecovery } from "./recovery.js";
+import { TOOLBAR_CONFIG } from "./config.js";
 /**
  * @name Toolbar
  * @file Barre d'outils avec système d'extensions
  */
-import * as turndownPlugins from "./turndown-plugins/index.js";
+
+const EXTENSION_MAP = {
+  formatting: () => new FormattingExtension(this),
+  letterSpacing: () => new LetterSpacingExtension(this),
+  spacing: () => new SpacingExtension(this),
+  utils: () => new UtilsExtension(this),
+};
 
 // Classe de base pour les boutons
 class ToolbarButton {
@@ -24,7 +32,11 @@ class ToolbarButton {
 class FormattingExtension {
   constructor(toolbar) {
     this.toolbar = toolbar;
+    this.name = "FormattingExtension";
   }
+
+  init() {}
+  destroy() {}
 
   getButtons() {
     return [
@@ -42,10 +54,14 @@ class FormattingExtension {
 class LetterSpacingExtension {
   constructor(toolbar) {
     this.toolbar = toolbar;
+    this.name = "FormattingExtension";
     this.currentSpan = null;
     this.input = null;
     this.autoCopyTimeout = null;
   }
+
+  init() {}
+  destroy() {}
 
   getButtons() {
     return [
@@ -215,7 +231,11 @@ class LetterSpacingExtension {
 class SpacingExtension {
   constructor(toolbar) {
     this.toolbar = toolbar;
+    this.name = "FormattingExtension";
   }
+
+  init() {}
+  destroy() {}
 
   getButtons() {
     return [
@@ -705,8 +725,11 @@ class SpacingExtension {
 class UtilsExtension {
   constructor(toolbar) {
     this.toolbar = toolbar;
+    this.name = "FormattingExtension";
     this.recovery = new PagedMarkdownRecovery();
   }
+  init() {}
+  destroy() {}
 
   getButtons() {
     return [
@@ -846,8 +869,9 @@ class UtilsExtension {
 }
 
 export class Toolbar {
-  constructor(editor) {
+  constructor(editor, customConfig = null) {
     this.editor = editor;
+    this.config = customConfig || TOOLBAR_CONFIG;
     this.element = null;
     this.isVisible = false;
     this.buttons = new Map();
@@ -856,6 +880,10 @@ export class Toolbar {
     this.setupTurndown();
     this.registerExtensions();
     this.createToolbar();
+  }
+
+  getExtension(name) {
+    return this.extensions.find((ext) => ext.name === name);
   }
 
   setupTurndown() {
@@ -875,32 +903,35 @@ export class Toolbar {
     window.mainTurndownService = this.turndown;
   }
 
-  registerExtensions() {
-    this.extensions = [
-      new FormattingExtension(this),
-      new LetterSpacingExtension(this),
-      new SpacingExtension(this),
-      new UtilsExtension(this),
-    ];
-  }
+registerExtensions() {
+  this.extensions = [
+    new FormattingExtension(this),
+    new LetterSpacingExtension(this),
+    new SpacingExtension(this),
+    new UtilsExtension(this),
+  ];
+  
+  this.activeButtons = this.config.buttons;
+}
 
-  createToolbar() {
-    this.element = document.createElement("div");
-    this.element.className = "paged-editor-toolbar";
+createToolbar() {
+  this.element = document.createElement("div");
+  this.element.className = "paged-editor-toolbar";
 
-    // Générer boutons depuis extensions
-    let buttonsHTML = "";
-    this.extensions.forEach((extension) => {
-      extension.getButtons().forEach((button) => {
+  let buttonsHTML = "";
+  this.extensions.forEach((extension) => {
+    extension.getButtons().forEach((button) => {
+      if (this.activeButtons.includes(button.command)) {
         this.buttons.set(button.command, button);
         buttonsHTML += button.render();
-      });
+      }
     });
+  });
 
-    this.element.innerHTML = buttonsHTML;
-    document.body.appendChild(this.element);
-    this.bindEvents();
-  }
+  this.element.innerHTML = buttonsHTML;
+  document.body.appendChild(this.element);
+  this.bindEvents();
+}
 
   bindEvents() {
     this.element.addEventListener("mousedown", (e) => {
