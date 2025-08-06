@@ -316,4 +316,25 @@ body.interface-preview .paged-editor-content:focus {
 .toolbar-select-wrapper .select-dropdown option:hover {
   background: var(--editor-primary-hover);
 }
+.toolbar-select-wrapper .custom-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #2c3e50;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  min-width: 250px;
+  z-index: 10000;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
 
+.toolbar-select-wrapper .custom-option {
+  padding: 8px 12px;
+  color: white;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.toolbar-select-wrapper .custom-option:hover {
+  background: rgba(102, 51, 153, 0.8);
+}

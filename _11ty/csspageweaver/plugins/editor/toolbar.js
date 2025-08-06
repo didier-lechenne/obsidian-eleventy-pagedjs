@@ -39,16 +39,18 @@ class ToolbarSelect {
 
   render() {
     const optionsHTML = this.options
-      .map((opt) => `<option value="${opt.value}">${opt.label}</option>`)
+      .map(
+        (opt) =>
+          `<div class="custom-option" data-value="${opt.value}">${opt.label}</div>`
+      )
       .join("");
 
     return `
       <div class="toolbar-select-wrapper" data-command="${this.command}" data-tooltip="${this.title}">
         <button class="select-trigger">${this.icon} ▼</button>
-        <select class="select-dropdown" style="display: none;">
-          <option value="">-- Choisir --</option>
+        <div class="custom-dropdown" style="display: none;">
           ${optionsHTML}
-        </select>
+        </div>
       </div>
     `;
   }
@@ -1008,11 +1010,27 @@ export class Toolbar {
     });
 
     this.element.addEventListener("click", (e) => {
-      // Gestion des selects
       const trigger = e.target.closest(".select-trigger");
       if (trigger) {
         e.preventDefault();
         this.toggleDropdown(trigger);
+        return;
+      }
+
+      // Gérer les options personnalisées
+      const option = e.target.closest(".custom-option");
+      if (option) {
+        const wrapper = option.closest(".toolbar-select-wrapper");
+        const command = wrapper.dataset.command;
+        const value = option.dataset.value;
+
+        if (value) {
+          const selectObj = this.selects.get(command);
+          if (selectObj?.action) {
+            selectObj.action(value);
+          }
+          this.hideDropdown(wrapper);
+        }
         return;
       }
 
