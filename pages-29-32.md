@@ -24,4 +24,16 @@ Tous ces matériaux ont en commun leur rareté et leur coût écologique, ils so
 
 Face à ce constat, certains acteurs de la joaillerie s’engagent pour une approche plus circulaire, dites d’*upcycling*^[*Upcycling* traduit surcyclage en français désigne l’action de réemployer des matériaux ou objets usagés en leur donnant une nouvelle valeur d’usage]. Kitesy Martin, avec sa marque éponyme, donne une nouvelle vie à des bijoux oubliés, des chaînes cassées, des chutes de production. Transformer l’existant, et extraire des tiroirs, plutôt que des mines. Cette démarche rejoint celle d’autres maisons comme Héloïse & Abelard qui misent sur l’or recyclé et les diamants de seconde main avec des bijoux vintage achetés aux enchères. La marque de haute joaillerie Courbet crée des diamants de synthèse, ils présentent les mêmes caractéristiques physiques que celle du diamant naturel. Cette alternative réduit non seulement l’empreinte écologique, mais garantit aussi des conditions de travail plus sûres et éthiques.
 
-Ces exemples montrent qu’il est possible de réduire l’impact environnemental lié à la production de bijoux, tout en désencombrant un certain nombre de tiroirs. Repenser la bijouterie, c’est non seulement interroger l’origine des matériaux, mais aussi la valeur que nous accordons à ces objets.
+Ces exemples montrent qu’il est possible de réduire l’impact environnemental lié à la production de bijoux, tout en désencombrant un certain nombre de tiroirs. Repenser la bijouterie, c’est non seulement interroger l’origine des matériaux, mais aussi la valeur que nous accordons à ces objets. <br/>
+<breakpage>
+
+* * *
+
+1.  *The Impact of Gold : Sustainability aspects in the gold supply chains and Switzerland’s role as a gold hub*, WWF Switzerland & Oeko-Institut, 2021
+2.  *The International Journal of Life Cycle Assessment, Environmental impact of high-value gold scrap recycling*, Fritz B., Aichele C., Schmidt M., vol.25, 2020.
+3.  GIERSTORFER, Carl, *Pérou : l’or à tout prix* (reportage télévisé), France : ARTE France, 2019. 25 min. (Collection *ARTE Reportage*). Disponible sur : https://www.arte.tv/fr/videos/087028-000-A/perou-l-or-a-tout-prix. [Consulté le : 10 mai 2025]
+4.  *Upcycling* traduit surcyclage en français désigne l’action de réemployer des matériaux ou objets usagés en leur donnant une nouvelle valeur d’usage
+5.  *The Impact of Gold : Sustainability aspects in the gold supply chains and Switzerland’s role as a gold hub*, WWF Switzerland & Oeko-Institut, 2021
+6.  *The International Journal of Life Cycle Assessment, Environmental impact of high-value gold scrap recycling*, Fritz B., Aichele C., Schmidt M., vol.25, 2020.
+7.  GIERSTORFER, Carl, *Pérou : l’or à tout prix* (reportage télévisé), France : ARTE France, 2019. 25 min. (Collection *ARTE Reportage*). Disponible sur : https://www.arte.tv/fr/videos/087028-000-A/perou-l-or-a-tout-prix. [Consulté le : 10 mai 2025]
+8.  *Upcycling* traduit surcyclage en français désigne l’action de réemployer des matériaux ou objets usagés en leur donnant une nouvelle valeur d’usage

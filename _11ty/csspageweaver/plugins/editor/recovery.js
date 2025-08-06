@@ -1,13 +1,5 @@
 import { TurndownService } from "./turndown.js";
-import {
-  textColPlugin,
-  breakColumnPlugin,
-  typographyPlugin,
-  footnotesPlugin,
-  spacesPlugin,
-  coreRulesPlugin,
-  annotationsPlugin,
-} from "./turndown-plugins/index.js";
+import * as turndownPlugins from "./turndown-plugins/index.js";
 
 /**
  * @name PagedMarkdownRecovery
@@ -26,74 +18,64 @@ export class PagedMarkdownRecovery {
       linkStyle: "inlined",
     });
 
-    turndown.use([
-      coreRulesPlugin,
-      textColPlugin,
-      breakColumnPlugin,
-      typographyPlugin,
-      footnotesPlugin,
-      spacesPlugin,
-      annotationsPlugin,
-    ]);
+	
+	turndown.use(Object.values(turndownPlugins));
+
 
     return turndown;
   }
 
-
-
   // === RECONSTITUTION ELEMENTS SCINDÉS ===
 
+  reconstructSplitElements(content) {
+    // Trouve toutes les sections
+    const sections = content.querySelectorAll("section");
 
-reconstructSplitElements(content) {
-  // Trouve toutes les sections
-  const sections = content.querySelectorAll('section');
-  
-  if (sections.length === 0) {
-    return; // Aucune section trouvée
-  }
-  
-  // Collecte tout le contenu de toutes les sections
-  let combinedContent = '';
-  sections.forEach(section => {
-    combinedContent += section.innerHTML;
-  });
-  
-  // Vide le contenu principal et ne garde qu'une seule section avec tout le contenu
-  content.innerHTML = `<section>${combinedContent}</section>`;
-  
-  // Maintenant réunit les paragraphes scindés
-  const section = content.querySelector('section');
-  const fragmentGroups = new Map();
-  
-  // Groupe les éléments par data-ref
-  section.querySelectorAll('[data-ref]').forEach(element => {
-    const ref = element.getAttribute('data-ref');
-    if (!fragmentGroups.has(ref)) {
-      fragmentGroups.set(ref, []);
+    if (sections.length === 0) {
+      return; // Aucune section trouvée
     }
-    fragmentGroups.get(ref).push(element);
-  });
-  
-  // Réunit les fragments
-  fragmentGroups.forEach((fragments) => {
-    if (fragments.length > 1) {
-      const firstFragment = fragments[0];
-      let completeContent = '';
-      
-      fragments.forEach(fragment => {
-        completeContent += fragment.innerHTML;
-      });
-      
-      firstFragment.innerHTML = completeContent;
-      
-      // Supprime les fragments suivants
-      for (let i = 1; i < fragments.length; i++) {
-        fragments[i].remove();
+
+    // Collecte tout le contenu de toutes les sections
+    let combinedContent = "";
+    sections.forEach((section) => {
+      combinedContent += section.innerHTML;
+    });
+
+    // Vide le contenu principal et ne garde qu'une seule section avec tout le contenu
+    content.innerHTML = `<section>${combinedContent}</section>`;
+
+    // Maintenant réunit les paragraphes scindés
+    const section = content.querySelector("section");
+    const fragmentGroups = new Map();
+
+    // Groupe les éléments par data-ref
+    section.querySelectorAll("[data-ref]").forEach((element) => {
+      const ref = element.getAttribute("data-ref");
+      if (!fragmentGroups.has(ref)) {
+        fragmentGroups.set(ref, []);
       }
-    }
-  });
-}
+      fragmentGroups.get(ref).push(element);
+    });
 
+    // Réunit les fragments
+    fragmentGroups.forEach((fragments) => {
+      if (fragments.length > 1) {
+        const firstFragment = fragments[0];
+        let completeContent = "";
+
+        fragments.forEach((fragment) => {
+          completeContent += fragment.innerHTML;
+        });
+
+        firstFragment.innerHTML = completeContent;
+
+        // Supprime les fragments suivants
+        for (let i = 1; i < fragments.length; i++) {
+          fragments[i].remove();
+        }
+      }
+    });
+  }
 
   // === EXPORT PAR PLAGE DE PAGES ===
   exportPageRange(startPage, endPage, filename = "pages-selection.md") {

@@ -5,8 +5,6 @@ export function coreRulesPlugin(turndownService) {
       (node.nodeName === "SPAN" && node.style.getPropertyValue("--ls")) ||
       (node.nodeName === "SPAN" && node.classList.contains("breakcolumn")) ||
       node.nodeName === "SUP" ||
-      
-      // Ajout pour <breakpage>
       node.nodeName === "BREAKPAGE" ||
       node.nodeName === "BREAKCOLUMN" ||
       node.nodeName === "BREAKSCREEN" ||
@@ -14,12 +12,12 @@ export function coreRulesPlugin(turndownService) {
     );
   });
 
-  turndownService.addRule("lineBreak", {
-    filter: "br",
-    replacement: function () {
-      return " <br>\n";
-    },
-  });
+//   turndownService.addRule("lineBreak", {
+//     filter: "br",
+//     replacement: function () {
+//       return " <br>\n";
+//     },
+//   });
 
   // Custom escape function
   turndownService.escape = function (string) {

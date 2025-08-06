@@ -4,15 +4,7 @@ import { PagedMarkdownRecovery } from "./recovery.js";
  * @name Toolbar
  * @file Barre d'outils avec système d'extensions
  */
-import {
-  textColPlugin,
-  breakColumnPlugin,
-  typographyPlugin,
-  footnotesPlugin,
-  spacesPlugin,
-  coreRulesPlugin,
-  annotationsPlugin,
-} from "./turndown-plugins/index.js";
+import * as turndownPlugins from "./turndown-plugins/index.js";
 
 // Classe de base pour les boutons
 class ToolbarButton {
@@ -879,16 +871,7 @@ export class Toolbar {
       linkStyle: "inlined",
     });
 
-    // Utiliser les plugins modulaires
-    this.turndown.use([
-      coreRulesPlugin,
-      textColPlugin,
-      breakColumnPlugin,
-      typographyPlugin,
-      footnotesPlugin,
-      spacesPlugin,
-      annotationsPlugin,
-    ]);
+    this.turndown.use(Object.values(turndownPlugins));;
 
     window.mainTurndownService = this.turndown;
   }
