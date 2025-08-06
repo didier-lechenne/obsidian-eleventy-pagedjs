@@ -39,21 +39,24 @@ class ToolbarSelect {
 
   render() {
     const optionsHTML = this.options
-      .map(
-        (opt) =>
-          `<div class="custom-option" data-value="${opt.value}">${opt.label}</div>`
-      )
+      .map((opt) => `<option value="${opt.value}">${opt.label}</option>`)
       .join("");
 
     return `
-      <div class="toolbar-select-wrapper" data-command="${this.command}" data-tooltip="${this.title}">
-        <button class="select-trigger">${this.icon} ▼</button>
-        <div class="custom-dropdown" style="display: none;">
+    <div class="toolbar-select-wrapper" data-command="${this.command}" data-tooltip="${this.title}">
+      <button class="select-trigger">${this.icon} ▼</button>
+      <div class="select-dropdown" style="display: none;">
+        <select>
+          <option value="">-- Choisir --</option>
           ${optionsHTML}
-        </div>
+        </select>
       </div>
-    `;
+    </div>
+  `;
   }
+
+
+  
 }
 // Extension pour formatage de base
 class FormattingExtension {
@@ -1076,7 +1079,20 @@ export class Toolbar {
 
   toggleDropdown(trigger) {
     const wrapper = trigger.closest(".toolbar-select-wrapper");
+
+    // Vérification de sécurité
+    if (!wrapper) {
+      console.error("toggleDropdown: wrapper non trouvé");
+      return;
+    }
+
     const dropdown = wrapper.querySelector(".select-dropdown");
+
+    // Vérification de sécurité pour dropdown
+    if (!dropdown) {
+      console.error("toggleDropdown: dropdown non trouvé dans wrapper");
+      return;
+    }
 
     if (dropdown.style.display === "none") {
       dropdown.style.display = "block";
@@ -1086,7 +1102,20 @@ export class Toolbar {
   }
 
   hideDropdown(wrapper) {
+    // Vérification de sécurité
+    if (!wrapper) {
+      console.error("hideDropdown: wrapper non fourni");
+      return;
+    }
+
     const dropdown = wrapper.querySelector(".select-dropdown");
+
+    // Vérification de sécurité pour dropdown
+    if (!dropdown) {
+      console.error("hideDropdown: dropdown non trouvé dans wrapper");
+      return;
+    }
+
     dropdown.style.display = "none";
   }
 
