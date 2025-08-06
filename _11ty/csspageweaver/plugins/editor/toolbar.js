@@ -1008,6 +1008,14 @@ export class Toolbar {
     });
 
     this.element.addEventListener("click", (e) => {
+      // Gestion des selects
+      const trigger = e.target.closest(".select-trigger");
+      if (trigger) {
+        e.preventDefault();
+        this.toggleDropdown(trigger);
+        return;
+      }
+
       const button = e.target.closest("button");
       if (!button) return;
 
@@ -1029,6 +1037,39 @@ export class Toolbar {
         }
       }
     });
+
+    this.element.addEventListener("change", (e) => {
+      if (e.target.classList.contains("select-dropdown")) {
+        const wrapper = e.target.closest(".toolbar-select-wrapper");
+        const command = wrapper.dataset.command;
+        const value = e.target.value;
+
+        if (value) {
+          const selectObj = this.selects.get(command);
+          if (selectObj?.action) {
+            selectObj.action(value);
+          }
+          e.target.value = "";
+          this.hideDropdown(wrapper);
+        }
+      }
+    });
+  }
+
+  toggleDropdown(trigger) {
+    const wrapper = trigger.closest(".toolbar-select-wrapper");
+    const dropdown = wrapper.querySelector(".select-dropdown");
+
+    if (dropdown.style.display === "none") {
+      dropdown.style.display = "block";
+    } else {
+      dropdown.style.display = "none";
+    }
+  }
+
+  hideDropdown(wrapper) {
+    const dropdown = wrapper.querySelector(".select-dropdown");
+    dropdown.style.display = "none";
   }
 
   show(selection) {
