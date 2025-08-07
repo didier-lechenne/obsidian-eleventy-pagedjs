@@ -157,41 +157,292 @@ export class Commands {
 
     // Supprimer tous les formatages ajoutés par l'éditeur
     this.resetAllFormatting(element);
+
+    // Déclencher la copie automatique après reset
+    this.triggerAutoCopy();
   }
 
-  copyElementAsMarkdown(silent = false) {
+  // ====== COPIE MARKDOWN CENTRALISÉE ======
+  // Cette méthode remplace celle qui était dans UtilsExtension
+  // et gère tous les cas : manuel, silencieux, et automatique
+
+  copyElementAsMarkdown(options = {}) {
+    // Options par défaut
+    const defaultOptions = {
+      silent: false, // Pas de feedback visuel si true
+      auto: false, // Copie automatique (utilisé par l'éditeur)
+      element: null, // Élément spécifique à copier
+    };
+
+    const config = { ...defaultOptions, ...options };
+
+    // Focus le document avant copie pour éviter les problèmes de context
     window.focus();
     document.body.focus();
 
+    let element = config.element;
+
+    // Si aucun élément spécifié, déterminer depuis la sélection
+    if (!element) {
+      const selection = window.getSelection();
+      if (selection.rangeCount === 0) return;
+
+      element = selection.anchorNode;
+      if (element && element.nodeType === Node.TEXT_NODE) {
+        element = element.parentElement;
+      }
+
+      // Chercher l'élément éditable parent
+      while (element && !element.hasAttribute("data-editable")) {
+        element = element.parentElement;
+      }
+    }
+
+    if (!element) {
+      console.warn("Aucun élément éditable trouvé pour la copie");
+      return;
+    }
+
+    try {
+      // Chercher un conteneur parent comme blockquote, ul, ol si approprié
+      let containerElement = element.parentElement;
+      while (containerElement && containerElement !== document.body) {
+        if (
+          ["BLOCKQUOTE", "UL", "OL", "FIGURE"].includes(
+            containerElement.tagName
+          )
+        ) {
+          element = containerElement;
+          break;
+        }
+        containerElement = containerElement.parentElement;
+      }
+
+      // Reconstituer l'élément complet si scindé par PagedJS
+      const completeHTML = this.reconstructSplitElement(element);
+      const markdown = this.editor.toolbar.turndown.turndown(completeHTML);
+
+      // Copier dans le clipboard
+      navigator.clipboard
+        .writeText(markdown)
+        .then(() => {
+          // Afficher le feedback uniquement si demandé
+          if (!config.silent && !config.auto) {
+            this.showCopyFeedback();
+          }
+
+          // Log pour debug en mode auto
+          if (config.auto) {
+            console.log("✓ Copie automatique effectuée");
+          }
+        })
+        .catch((err) => {
+          console.error("Erreur lors de la copie:", err);
+          // En cas d'erreur, essayer la méthode fallback
+          this.copyToClipboardFallback(markdown, config);
+        });
+    } catch (error) {
+      console.error("Erreur lors de la génération du markdown:", error);
+    }
+  }
+
+  // Méthode fallback pour la copie (si navigator.clipboard échoue)
+  copyToClipboardFallback(text, config) {
+    try {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      textArea.style.top = "-9999px";
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textArea);
+
+      if (!config.silent && !config.auto) {
+        this.showCopyFeedback();
+      }
+    } catch (fallbackError) {
+      console.error("Échec de la copie même avec fallback:", fallbackError);
+    }
+  }
+
+  // ====== FEEDBACK VISUEL POUR LA COPIE ======
+  // Remplace la méthode qui était dans toolbar.js et causait l'erreur
+
+  showCopyFeedback() {
+    // Trouver le bouton de copie dans la toolbar pour y afficher le feedback
+    const copyButton = this.editor.toolbar.element?.querySelector(
+      '[data-command="copy-md"]'
+    );
+
+    if (copyButton) {
+      // Sauvegarder l'état original
+      const originalClass = copyButton.className;
+      const originalContent = copyButton.innerHTML;
+
+      // Appliquer le style de succès
+      copyButton.classList.add("success");
+      copyButton.innerHTML = "✓";
+
+      // Restaurer après animation
+      setTimeout(() => {
+        copyButton.className = originalClass;
+        copyButton.innerHTML = originalContent;
+      }, 1000);
+    } else {
+      // Fallback: créer une notification temporaire
+      this.createTemporaryNotification("Copié dans le presse-papier");
+    }
+  }
+
+  // Notification temporaire si pas de bouton disponible
+  createTemporaryNotification(message) {
+    const notification = document.createElement("div");
+    notification.textContent = message;
+    notification.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    z-index: 10000;
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  `;
+
+    document.body.appendChild(notification);
+
+    // Animation d'apparition
+    requestAnimationFrame(() => {
+      notification.style.opacity = "1";
+    });
+
+    // Suppression automatique
+    setTimeout(() => {
+      notification.style.opacity = "0";
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+      }, 300);
+    }, 2000);
+  }
+
+  // ====== COPIE AUTOMATIQUE INTÉGRÉE ======
+  // Cette méthode est appelée automatiquement par l'éditeur
+
+  triggerAutoCopy() {
+    // Utiliser un debounce pour éviter trop d'appels rapprochés
+    clearTimeout(this.editor.autoCopyTimeout);
+    this.editor.autoCopyTimeout = setTimeout(() => {
+      const selection = window.getSelection();
+      if (selection.rangeCount === 0) return;
+
+      let element = selection.anchorNode;
+      if (element && element.nodeType === Node.TEXT_NODE) {
+        element = element.parentElement;
+      }
+
+      // Vérifier qu'on est dans un élément éditable
+      while (element && !element.hasAttribute("data-editable")) {
+        element = element.parentElement;
+      }
+
+      if (element) {
+        // Copie automatique silencieuse avec l'élément détecté
+        this.copyElementAsMarkdown({
+          silent: true,
+          auto: true,
+          element: element,
+        });
+      }
+    }, 300);
+  }
+
+  // ====== MÉTHODES POUR INSERTION D'ESPACES TYPOGRAPHIQUES ======
+  // Centralisées ici pour cohérence architecturale
+
+  insertNonBreakingSpace() {
     const selection = window.getSelection();
     if (selection.rangeCount === 0) return;
 
-    let element = selection.anchorNode;
-    if (element.nodeType === Node.TEXT_NODE) {
-      element = element.parentElement;
+    const range = selection.getRangeAt(0);
+    range.deleteContents();
+
+    const span = document.createElement("span");
+    span.className = "i_space non-breaking-space editor-add";
+    span.textContent = UNICODE_CHARS.NO_BREAK_SPACE;
+
+    range.insertNode(span);
+    range.setStartAfter(span);
+    range.collapse(true);
+
+    selection.removeAllRanges();
+
+    try {
+      if (range.startContainer.isConnected) {
+        selection.addRange(range);
+        this.triggerAutoCopy(); // Déclencher copie auto après insertion
+      }
+    } catch (error) {
+      console.warn("Range invalide après insertion d'espace insécable:", error);
     }
+  }
 
-    // Chercher l'élément éditable
-    while (element && !element.hasAttribute("data-editable")) {
-      element = element.parentElement;
+  insertNarrowNonBreakingSpace() {
+    const selection = window.getSelection();
+    if (selection.rangeCount === 0) return;
+
+    const range = selection.getRangeAt(0);
+    range.deleteContents();
+
+    const span = document.createElement("span");
+    span.className = "i_space narrow-no-break-space editor-add";
+    span.textContent = UNICODE_CHARS.NO_BREAK_THIN_SPACE;
+
+    range.insertNode(span);
+    range.setStartAfter(span);
+    range.collapse(true);
+
+    selection.removeAllRanges();
+
+    try {
+      if (range.startContainer.isConnected) {
+        selection.addRange(range);
+        this.triggerAutoCopy(); // Déclencher copie auto après insertion
+      }
+    } catch (error) {
+      console.warn("Range invalide après insertion d'espace fine:", error);
     }
+  }
 
-    if (!element) return;
+  insertBreak() {
+    const selection = window.getSelection();
+    if (selection.rangeCount === 0) return;
 
-    // Reconstituer l'élément complet si scindé par PagedJS
-    const completeHTML = this.reconstructSplitElement(element);
-    const markdown = this.editor.toolbar.turndown.turndown(completeHTML);
+    const range = selection.getRangeAt(0);
+    range.deleteContents();
 
-    navigator.clipboard
-      .writeText(markdown)
-      .then(() => {
-        if (!silent && this.editor.toolbar.showCopyFeedback) {
-          this.editor.toolbar.showCopyFeedback();
-        }
-      })
-      .catch((err) => {
-        console.error("Erreur copie:", err);
-      });
+    const br = document.createElement("br");
+    br.className = "editor-add";
+
+    range.insertNode(br);
+    range.setStartAfter(br);
+    range.collapse(true);
+
+    selection.removeAllRanges();
+
+    try {
+      if (range.startContainer.isConnected) {
+        selection.addRange(range);
+        this.triggerAutoCopy(); // Déclencher copie auto après insertion
+      }
+    } catch (error) {
+      console.warn("Range invalide après insertion de saut de ligne:", error);
+    }
   }
 
   // ====== MÉTHODES UTILITAIRES POUR GUILLEMETS FRANÇAIS ======
@@ -229,15 +480,15 @@ export class Commands {
 
     range.insertNode(wrapper);
 
-    // Réajuster la sélection sur le nouveau contenu avec gestion d'erreur
+    // Réajuster la sélection et déclencher copie auto
     try {
       range.selectNodeContents(wrapper);
       const selection = window.getSelection();
       selection.removeAllRanges();
 
-      // Vérifier que le range est encore connecté au document
       if (range.startContainer.isConnected && range.endContainer.isConnected) {
         selection.addRange(range);
+        this.triggerAutoCopy();
       }
     } catch (error) {
       console.warn(
@@ -268,7 +519,7 @@ export class Commands {
 
     range.insertNode(wrapper);
 
-    // Réajuster la sélection avec gestion d'erreur
+    // Réajuster la sélection avec gestion d'erreur et copie auto
     try {
       range.selectNodeContents(wrapper);
       const selection = window.getSelection();
@@ -276,6 +527,7 @@ export class Commands {
 
       if (range.startContainer.isConnected && range.endContainer.isConnected) {
         selection.addRange(range);
+        this.triggerAutoCopy();
       }
     } catch (error) {
       console.warn(
@@ -294,7 +546,6 @@ export class Commands {
         ? container.parentElement
         : container;
 
-    // Utiliser la méthode de détection spécialisée pour les guillemets français
     return this.hasAdjacentFrenchQuotes(parent, range);
   }
 
@@ -305,12 +556,10 @@ export class Commands {
         ? container.parentElement
         : container;
 
-    // Utiliser la méthode de détection spécialisée pour les guillemets anglais
     return this.hasAdjacentEnglishQuotes(parent, range);
   }
 
   hasAdjacentFrenchQuotes(element, range) {
-    // Créer un TreeWalker pour parcourir efficacement les éléments
     const walker = document.createTreeWalker(
       element,
       NodeFilter.SHOW_ELEMENT,
@@ -322,7 +571,6 @@ export class Commands {
     let hasCloseQuote = false;
     let foundStart = false;
 
-    // Parcourir tous les éléments pour trouver les guillemets français
     while (walker.nextNode()) {
       const node = walker.currentNode;
 
@@ -346,7 +594,7 @@ export class Commands {
         node.textContent === UNICODE_CHARS.RAQUO
       ) {
         hasCloseQuote = true;
-        break; // Arrêter la recherche une fois trouvé
+        break;
       }
     }
 
@@ -365,7 +613,6 @@ export class Commands {
     let hasCloseQuote = false;
     let foundStart = false;
 
-    // Même logique que pour les guillemets français, mais avec les caractères anglais
     while (walker.nextNode()) {
       const node = walker.currentNode;
 
@@ -404,10 +651,7 @@ export class Commands {
         ? container.parentElement
         : container;
 
-    // Identifier et supprimer tous les éléments des guillemets français
     const elementsToRemove = [];
-
-    // Chercher tous les spans liés aux guillemets français dans la zone
     const allSpans = parent.querySelectorAll("span.editor-add");
 
     for (const span of allSpans) {
@@ -433,8 +677,9 @@ export class Commands {
       }
     });
 
-    // Normaliser les nœuds de texte après suppression
+    // Normaliser et déclencher copie auto
     parent.normalize();
+    this.triggerAutoCopy();
   }
 
   unwrapEnglishQuotes(range) {
@@ -468,6 +713,7 @@ export class Commands {
     });
 
     parent.normalize();
+    this.triggerAutoCopy();
   }
 
   // ====== MÉTHODES DE RESET ET RECONSTRUCTION ======
@@ -545,6 +791,8 @@ export class Commands {
 
     return `<${tagName}${attributes}>${completeContent}</${tagName}>`;
   }
+
+  // ====== MÉTHODES DE RESET ET RECONSTRUCTION ======
 
   wrapSelection(range, tagName, className = null) {
     const contents = range.extractContents();
