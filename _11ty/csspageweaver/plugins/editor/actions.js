@@ -47,24 +47,27 @@ export const ACTIONS_REGISTRY = {
     }
   },
 
-  'letter-spacing': {
-    type: 'toggle',
-    icon: 'A ↔ A',
-    title: 'Lettrage (Letter-spacing)',
-    execute: (editor) => editor.commands.toggleLetterSpacing(),
-    isActive: (element) => {
-      // Recherche un span avec une propriété CSS --ls
-      let current = element;
-      while (current && current !== document.body) {
-        if (current.tagName === 'SPAN' && 
-            current.style.getPropertyValue('--ls') !== '') {
-          return true;
-        }
-        current = current.parentElement;
-      }
-      return false;
-    }
+'letter-spacing': {
+  type: 'toggle',
+  icon: 'A ↔ A',
+  title: 'Lettrage (Letter-spacing)',
+  execute: (editor) => {
+	const input = document.querySelector('.ls-input');
+	const value = input ? parseInt(input.value) || 0 : 0;
+	editor.commands.applyLetterSpacing(value);
   },
+  isActive: (element) => {
+    let current = element;
+    while (current && current !== document.body) {
+      if (current.tagName === 'SPAN' && 
+          current.style.getPropertyValue('--ls') !== '') {
+        return true;
+      }
+      current = current.parentElement;
+    }
+    return false;
+  }
+},
 
   // === ACTIONS D'INSERTION D'ESPACES ===
   // Ces actions insèrent des caractères spéciaux typographiques
@@ -278,6 +281,7 @@ export const ACTIONS_REGISTRY = {
       const option = action.options.find(opt => opt.value === value);
       if (option?.char) {
         editor.commands.insertText(option.char);
+//         editor.commands.insertTypographicSpan(option.char, "editor-add");
       }
     }
   }

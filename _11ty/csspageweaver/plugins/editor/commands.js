@@ -1,11 +1,7 @@
 /**
  * @name Commands
  * @file Commandes d'édition et formatage - Version refactorisée
- * 
- * Cette version supprime les duplications et clarifie l'architecture :
- * - Séparation claire entre commandes de base et utilitaires complexes
- * - Suppression des méthodes obsolètes
- * - Interface cohérente avec le système actions/toolbar
+ *
  */
 
 import { UNICODE_CHARS } from "./unicode.js";
@@ -13,10 +9,10 @@ import { UNICODE_CHARS } from "./unicode.js";
 export class Commands {
   constructor(editor) {
     this.editor = editor;
-    
+
     // Interface letter-spacing réutilisable
     this.letterSpacingInput = null;
-    
+
     // Debounce pour la copie automatique
     this.autoCopyTimeout = null;
   }
@@ -34,7 +30,7 @@ export class Commands {
     } else {
       this.wrapSelection(range, "strong");
     }
-    this.triggerAutoCopy();
+    //     this.triggerAutoCopy();
   }
 
   toggleItalic() {
@@ -47,7 +43,7 @@ export class Commands {
     } else {
       this.wrapSelection(range, "em");
     }
-    this.triggerAutoCopy();
+    //     this.triggerAutoCopy();
   }
 
   toggleSmallCaps() {
@@ -60,7 +56,7 @@ export class Commands {
     } else {
       this.wrapSelection(range, "span", "small-caps");
     }
-    this.triggerAutoCopy();
+    //     this.triggerAutoCopy();
   }
 
   toggleSuperscript() {
@@ -73,7 +69,7 @@ export class Commands {
     } else {
       this.wrapSelection(range, "sup");
     }
-    this.triggerAutoCopy();
+    //     this.triggerAutoCopy();
   }
 
   // ====== COMMANDE LETTER-SPACING COMPLEXE ======
@@ -83,16 +79,57 @@ export class Commands {
     const selection = this.editor.selection.getCurrentSelection();
     if (!selection?.isValid) return;
 
+    const value = prompt("Letter-spacing (en px, 0 pour supprimer):", "0");
+    if (value === null) return; // Annulation
+
+    const numValue = parseInt(value) || 0;
     const range = selection.range;
     const existingSpan = this.findLetterSpacingSpan(range);
 
     if (existingSpan) {
-      this.showLetterSpacingInterface(existingSpan);
+      if (numValue === 0) {
+        this.unwrapTag(range, ["SPAN"]);
+      } else {
+        existingSpan.style.setProperty("--ls", numValue);
+      }
+    } else if (numValue !== 0) {
+      this.wrapSelection(range, "span");
+      // Trouver le span créé et lui appliquer le style
+      const newSpan = range.commonAncestorContainer.querySelector(
+        "span.editor-add:last-child"
+      );
+      if (newSpan) {
+        newSpan.style.setProperty("--ls", numValue);
+      }
+    }
+
+    this.triggerAutoCopy();
+  }
+
+// Dans commands.js
+applyLetterSpacing(value) {
+  const selection = this.editor.selection.getCurrentSelection();
+  if (!selection?.isValid) return;
+
+  const range = selection.range;
+  const existingSpan = this.findLetterSpacingSpan(range);
+
+  if (existingSpan) {
+    if (value === 0) {
+      this.unwrapTag(range, ['SPAN']); // Supprime le span
     } else {
-      const newSpan = this.wrapWithLetterSpacing(range);
-      this.showLetterSpacingInterface(newSpan);
+      existingSpan.style.setProperty('--ls', value); // Met à jour
+    }
+  } else if (value !== 0) {
+    this.wrapSelection(range, 'span'); // Crée nouveau span
+    const newSpan = range.commonAncestorContainer.querySelector('span.editor-add:last-child');
+    if (newSpan) {
+      newSpan.style.setProperty('--ls', value);
     }
   }
+  
+//   this.triggerAutoCopy();
+}
 
   findLetterSpacingSpan(range) {
     let container = range.commonAncestorContainer;
@@ -103,9 +140,11 @@ export class Commands {
     // Chercher dans les parents
     let current = container;
     while (current && current !== document.body) {
-      if (current.tagName === "SPAN" && 
-          current.style.getPropertyValue("--ls") && 
-          current.classList.contains("editor-add")) {
+      if (
+        current.tagName === "SPAN" &&
+        current.style.getPropertyValue("--ls") &&
+        current.classList.contains("editor-add")
+      ) {
         return current;
       }
       current = current.parentElement;
@@ -125,7 +164,7 @@ export class Commands {
   wrapWithLetterSpacing(range) {
     const contents = range.extractContents();
     const span = document.createElement("span");
-    
+
     span.className = "editor-add";
     span.style.setProperty("--ls", "0");
     span.appendChild(contents);
@@ -136,20 +175,25 @@ export class Commands {
       range.selectNodeContents(span);
       const selection = window.getSelection();
       selection.removeAllRanges();
-      
+
       if (range.startContainer.isConnected && range.endContainer.isConnected) {
         selection.addRange(range);
       }
     } catch (error) {
-      console.warn("Range invalide après création du span letter-spacing:", error);
+      console.warn(
+        "Range invalide après création du span letter-spacing:",
+        error
+      );
     }
 
     return span;
   }
 
   showLetterSpacingInterface(span) {
-    const lsButton = this.editor.toolbar.element?.querySelector('[data-command="letter-spacing"]');
-    
+    const lsButton = this.editor.toolbar.element?.querySelector(
+      '[data-command="letter-spacing"]'
+    );
+
     if (!lsButton) {
       console.warn("Bouton letter-spacing non trouvé dans la toolbar");
       return;
@@ -161,14 +205,16 @@ export class Commands {
 
     const currentValue = span.style.getPropertyValue("--ls") || "0";
     this.letterSpacingInput.value = currentValue;
-    this.letterSpacingInput.setAttribute('data-target-span-id', 
-      span.getAttribute('data-ls-id') || this.generateSpanId(span));
-    
+    this.letterSpacingInput.setAttribute(
+      "data-target-span-id",
+      span.getAttribute("data-ls-id") || this.generateSpanId(span)
+    );
+
     // Mode édition du bouton
-    lsButton.innerHTML = '✓';
+    lsButton.innerHTML = "✓";
     lsButton.title = "Valider letter-spacing (Entrée)";
     lsButton.classList.add("editing");
-    
+
     // Afficher l'input
     this.positionLetterSpacingInput();
     this.letterSpacingInput.style.display = "block";
@@ -184,9 +230,9 @@ export class Commands {
 
     // Événements
     this.letterSpacingInput.addEventListener("input", (e) => {
-      const spanId = e.target.getAttribute('data-target-span-id');
+      const spanId = e.target.getAttribute("data-target-span-id");
       const span = document.querySelector(`[data-ls-id="${spanId}"]`);
-      
+
       if (span) {
         span.style.setProperty("--ls", e.target.value);
         this.triggerAutoCopy();
@@ -202,8 +248,10 @@ export class Commands {
     this.letterSpacingInput.addEventListener("blur", () => {
       setTimeout(() => {
         const activeElement = document.activeElement;
-        if (activeElement !== this.letterSpacingInput && 
-            !this.editor.toolbar.element?.contains(activeElement)) {
+        if (
+          activeElement !== this.letterSpacingInput &&
+          !this.editor.toolbar.element?.contains(activeElement)
+        ) {
           this.hideLetterSpacingInterface();
         }
       }, 200);
@@ -225,7 +273,9 @@ export class Commands {
       this.letterSpacingInput.style.display = "none";
     }
 
-    const lsButton = this.editor.toolbar.element?.querySelector('[data-command="letter-spacing"]');
+    const lsButton = this.editor.toolbar.element?.querySelector(
+      '[data-command="letter-spacing"]'
+    );
     if (lsButton) {
       lsButton.innerHTML = "A ↔ A";
       lsButton.title = "Lettrage (Letter-spacing)";
@@ -236,8 +286,8 @@ export class Commands {
   }
 
   generateSpanId(span) {
-    const id = 'ls-' + Math.random().toString(36).substr(2, 9);
-    span.setAttribute('data-ls-id', id);
+    const id = "ls-" + Math.random().toString(36).substr(2, 9);
+    span.setAttribute("data-ls-id", id);
     return id;
   }
 
@@ -257,8 +307,6 @@ export class Commands {
     selection.addRange(range);
     this.triggerAutoCopy();
   }
-
-  
 
   // Méthode utilitaire pour les espaces typographiques
   insertTypographicSpan(content, className) {
@@ -315,15 +363,35 @@ export class Commands {
     const wrapper = document.createDocumentFragment();
 
     // Guillemet ouvrant + espace fine
-    wrapper.appendChild(this.createQuoteElement("editor-add french-quote-open", UNICODE_CHARS.LAQUO));
-    wrapper.appendChild(this.createQuoteElement("i_space narrow-no-break-space editor-add", UNICODE_CHARS.NO_BREAK_THIN_SPACE));
-    
+    wrapper.appendChild(
+      this.createQuoteElement(
+        "editor-add french-quote-open",
+        UNICODE_CHARS.LAQUO
+      )
+    );
+    wrapper.appendChild(
+      this.createQuoteElement(
+        "i_space narrow-no-break-space editor-add",
+        UNICODE_CHARS.NO_BREAK_THIN_SPACE
+      )
+    );
+
     // Contenu
     wrapper.appendChild(contents);
-    
+
     // Espace fine + guillemet fermant
-    wrapper.appendChild(this.createQuoteElement("i_space narrow-no-break-space editor-add", UNICODE_CHARS.NO_BREAK_THIN_SPACE));
-    wrapper.appendChild(this.createQuoteElement("editor-add french-quote-close", UNICODE_CHARS.RAQUO));
+    wrapper.appendChild(
+      this.createQuoteElement(
+        "i_space narrow-no-break-space editor-add",
+        UNICODE_CHARS.NO_BREAK_THIN_SPACE
+      )
+    );
+    wrapper.appendChild(
+      this.createQuoteElement(
+        "editor-add french-quote-close",
+        UNICODE_CHARS.RAQUO
+      )
+    );
 
     range.insertNode(wrapper);
     this.selectAndTrigger(range, wrapper);
@@ -334,9 +402,19 @@ export class Commands {
     const wrapper = document.createDocumentFragment();
 
     // Guillemets anglais sans espaces
-    wrapper.appendChild(this.createQuoteElement("editor-add english-quote-open", UNICODE_CHARS.LDQUO));
+    wrapper.appendChild(
+      this.createQuoteElement(
+        "editor-add english-quote-open",
+        UNICODE_CHARS.LDQUO
+      )
+    );
     wrapper.appendChild(contents);
-    wrapper.appendChild(this.createQuoteElement("editor-add english-quote-close", UNICODE_CHARS.RDQUO));
+    wrapper.appendChild(
+      this.createQuoteElement(
+        "editor-add english-quote-close",
+        UNICODE_CHARS.RDQUO
+      )
+    );
 
     range.insertNode(wrapper);
     this.selectAndTrigger(range, wrapper);
@@ -365,18 +443,38 @@ export class Commands {
   }
 
   isWrappedInFrenchQuotes(range) {
-    return this.hasAdjacentQuotes(range, "french-quote-open", "french-quote-close", UNICODE_CHARS.LAQUO, UNICODE_CHARS.RAQUO);
+    return this.hasAdjacentQuotes(
+      range,
+      "french-quote-open",
+      "french-quote-close",
+      UNICODE_CHARS.LAQUO,
+      UNICODE_CHARS.RAQUO
+    );
   }
 
   isWrappedInEnglishQuotes(range) {
-    return this.hasAdjacentQuotes(range, "english-quote-open", "english-quote-close", UNICODE_CHARS.LDQUO, UNICODE_CHARS.RDQUO);
+    return this.hasAdjacentQuotes(
+      range,
+      "english-quote-open",
+      "english-quote-close",
+      UNICODE_CHARS.LDQUO,
+      UNICODE_CHARS.RDQUO
+    );
   }
 
   hasAdjacentQuotes(range, openClass, closeClass, openChar, closeChar) {
     const container = range.commonAncestorContainer;
-    const parent = container.nodeType === Node.TEXT_NODE ? container.parentElement : container;
+    const parent =
+      container.nodeType === Node.TEXT_NODE
+        ? container.parentElement
+        : container;
 
-    const walker = document.createTreeWalker(parent, NodeFilter.SHOW_ELEMENT, null, false);
+    const walker = document.createTreeWalker(
+      parent,
+      NodeFilter.SHOW_ELEMENT,
+      null,
+      false
+    );
 
     let hasOpenQuote = false;
     let hasCloseQuote = false;
@@ -385,7 +483,10 @@ export class Commands {
     while (walker.nextNode()) {
       const node = walker.currentNode;
 
-      if (node.classList?.contains(openClass) && node.textContent === openChar) {
+      if (
+        node.classList?.contains(openClass) &&
+        node.textContent === openChar
+      ) {
         if (!foundStart) hasOpenQuote = true;
       }
 
@@ -393,7 +494,11 @@ export class Commands {
         foundStart = true;
       }
 
-      if (foundStart && node.classList?.contains(closeClass) && node.textContent === closeChar) {
+      if (
+        foundStart &&
+        node.classList?.contains(closeClass) &&
+        node.textContent === closeChar
+      ) {
         hasCloseQuote = true;
         break;
       }
@@ -403,28 +508,39 @@ export class Commands {
   }
 
   unwrapFrenchQuotes(range) {
-    this.removeQuoteSequences(this.getQuoteContainer(range), 'french');
+    this.removeQuoteSequences(this.getQuoteContainer(range), "french");
   }
 
   unwrapEnglishQuotes(range) {
-    this.removeQuoteSequences(this.getQuoteContainer(range), 'english');
+    this.removeQuoteSequences(this.getQuoteContainer(range), "english");
   }
 
   getQuoteContainer(range) {
     const container = range.commonAncestorContainer;
-    const parent = container.nodeType === Node.TEXT_NODE ? container.parentElement : container;
+    const parent =
+      container.nodeType === Node.TEXT_NODE
+        ? container.parentElement
+        : container;
     parent.normalize();
     this.triggerAutoCopy();
     return parent;
   }
 
   removeQuoteSequences(element, quoteType) {
-    if (quoteType === 'french') {
+    if (quoteType === "french") {
       // Supprimer tous les éléments des guillemets français
-      element.querySelectorAll('.french-quote-open.editor-add, .french-quote-close.editor-add, .narrow-no-break-space.editor-add').forEach(el => el.remove());
-    } else if (quoteType === 'english') {
+      element
+        .querySelectorAll(
+          ".french-quote-open.editor-add, .french-quote-close.editor-add, .narrow-no-break-space.editor-add"
+        )
+        .forEach((el) => el.remove());
+    } else if (quoteType === "english") {
       // Supprimer tous les éléments des guillemets anglais
-      element.querySelectorAll('.english-quote-open.editor-add, .english-quote-close.editor-add').forEach(el => el.remove());
+      element
+        .querySelectorAll(
+          ".english-quote-open.editor-add, .english-quote-close.editor-add"
+        )
+        .forEach((el) => el.remove());
     }
   }
 
@@ -436,7 +552,7 @@ export class Commands {
       silent: false,
       auto: false,
       element: null,
-      ...options
+      ...options,
     };
 
     window.focus();
@@ -457,7 +573,8 @@ export class Commands {
       const markdown = this.editor.toolbar.turndown.turndown(completeHTML);
 
       // Copier
-      navigator.clipboard.writeText(markdown)
+      navigator.clipboard
+        .writeText(markdown)
         .then(() => {
           if (!config.silent && !config.auto) {
             this.showCopyFeedback();
@@ -491,7 +608,9 @@ export class Commands {
   findContainerElement(element) {
     let containerElement = element.parentElement;
     while (containerElement && containerElement !== document.body) {
-      if (["BLOCKQUOTE", "UL", "OL", "FIGURE"].includes(containerElement.tagName)) {
+      if (
+        ["BLOCKQUOTE", "UL", "OL", "FIGURE"].includes(containerElement.tagName)
+      ) {
         return containerElement;
       }
       containerElement = containerElement.parentElement;
@@ -501,13 +620,13 @@ export class Commands {
 
   copyToClipboardFallback(text, config) {
     try {
-      const textArea = document.createElement('textarea');
+      const textArea = document.createElement("textarea");
       textArea.value = text;
-      textArea.style.position = 'fixed';
-      textArea.style.top = '-9999px';
+      textArea.style.position = "fixed";
+      textArea.style.top = "-9999px";
       document.body.appendChild(textArea);
       textArea.select();
-      document.execCommand('copy');
+      document.execCommand("copy");
       document.body.removeChild(textArea);
     } catch (fallbackError) {
       console.error("Échec de la copie même avec fallback:", fallbackError);
@@ -515,7 +634,9 @@ export class Commands {
   }
 
   showCopyFeedback() {
-    const copyButton = this.editor.toolbar.element?.querySelector('[data-command="copy-md"]');
+    const copyButton = this.editor.toolbar.element?.querySelector(
+      '[data-command="copy-md"]'
+    );
 
     if (copyButton) {
       const originalClass = copyButton.className;
@@ -536,21 +657,23 @@ export class Commands {
     if (!element) return;
 
     this.resetAllFormatting(element);
-//     this.triggerAutoCopy();
+    //     this.triggerAutoCopy();
   }
 
   resetAllFormatting(element) {
     const selectorsToRemove = [".editor-add"];
 
-    selectorsToRemove.forEach(selector => {
+    selectorsToRemove.forEach((selector) => {
       const elements = element.querySelectorAll(selector);
-      elements.forEach(el => {
-        if (el.tagName === "BR" || 
-            el.classList.contains("french-quote-open") ||
-            el.classList.contains("french-quote-close") ||
-            el.classList.contains("english-quote-open") ||
-            el.classList.contains("english-quote-close") ||
-            el.classList.contains("i_space")) {
+      elements.forEach((el) => {
+        if (
+          el.tagName === "BR" ||
+          el.classList.contains("french-quote-open") ||
+          el.classList.contains("french-quote-close") ||
+          el.classList.contains("english-quote-open") ||
+          el.classList.contains("english-quote-close") ||
+          el.classList.contains("i_space")
+        ) {
           // Suppression pure pour BR, guillemets et espaces
           el.remove();
         } else if (el.parentNode) {
@@ -577,14 +700,17 @@ export class Commands {
   performAutoCopy() {
     const element = this.getEditableElementFromSelection();
     if (!element) return;
-    
+
     try {
       const completeHTML = this.reconstructSplitElement(element);
       const markdown = this.editor.toolbar.turndown.turndown(completeHTML);
-      
-      navigator.clipboard.writeText(markdown)
-        .then(() => console.log('✓ Copie automatique effectuée'))
-        .catch(() => this.copyToClipboardFallback(markdown, { silent: true, auto: true }));
+
+      navigator.clipboard
+        .writeText(markdown)
+        .then(() => console.log("✓ Copie automatique effectuée"))
+        .catch(() =>
+          this.copyToClipboardFallback(markdown, { silent: true, auto: true })
+        );
     } catch (error) {
       console.warn("Erreur lors de la copie automatique:", error);
     }
@@ -615,7 +741,7 @@ export class Commands {
 
     const tagName = firstFragment.tagName.toLowerCase();
     let attributes = "";
-    
+
     if (firstFragment.className) {
       attributes += ` class="${firstFragment.className}"`;
     }

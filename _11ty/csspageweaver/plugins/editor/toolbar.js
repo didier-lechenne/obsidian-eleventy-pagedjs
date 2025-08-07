@@ -1,13 +1,18 @@
 import * as turndownPlugins from "./turndown-plugins/index.js";
 import { PagedMarkdownRecovery } from "./recovery.js";
 import { TOOLBAR_CONFIG } from "./toolbar-config.js";
-import { UIFactory, ToolbarButton, ToolbarSelect, validateToolbarConfiguration } from "./ui-factory.js";
+import {
+  UIFactory,
+  ToolbarButton,
+  ToolbarSelect,
+  validateToolbarConfiguration,
+} from "./ui-factory.js";
 import { ACTIONS_REGISTRY } from "./actions.js";
 
 /**
  * @name Toolbar
  * @description Barre d'outils refactorisée - Version nettoyée
- * 
+ *
  * Responsabilités claires :
  * - Interface utilisateur (affichage, positionnement, événements)
  * - Coordination avec les actions (pas de logique métier)
@@ -17,24 +22,27 @@ export class Toolbar {
   constructor(editor, customConfig = null) {
     this.editor = editor;
     this.config = customConfig || TOOLBAR_CONFIG;
-    
+
     // Validation de la configuration
     const validationReport = validateToolbarConfiguration(this.config);
     if (!validationReport.isValid) {
-      console.error("❌ Configuration de toolbar invalide:", validationReport.errors);
+      console.error(
+        "❌ Configuration de toolbar invalide:",
+        validationReport.errors
+      );
     }
-    
+
     // État de la toolbar
     this.element = null;
     this.isVisible = false;
-    
+
     // Maps pour stocker les éléments créés
     this.buttons = new Map();
     this.selects = new Map();
-    
+
     // Recovery pour les actions d'export
     this.recovery = new PagedMarkdownRecovery();
-    
+
     // Initialisation
     this.setupTurndown();
     this.createToolbar();
@@ -67,18 +75,18 @@ export class Toolbar {
     this.element.className = "paged-editor-toolbar";
 
     let elementsHTML = "";
-    
-    this.config.elements.forEach(actionId => {
+
+    this.config.elements.forEach((actionId) => {
       const element = UIFactory.createElement(actionId, this.editor);
-      
+
       if (!element) return;
-      
+
       if (element instanceof ToolbarButton) {
         this.buttons.set(actionId, element);
       } else if (element instanceof ToolbarSelect) {
         this.selects.set(actionId, element);
       }
-      
+
       elementsHTML += element.render();
     });
 
@@ -94,6 +102,22 @@ export class Toolbar {
     // Empêcher la perte de sélection
     this.element.addEventListener("mousedown", (e) => {
       e.preventDefault();
+    });
+
+    // Dans toolbar.js, ajoutez à bindEvents() :
+    this.element.addEventListener("input", (e) => {
+      if (e.target.classList.contains("ls-input")) {
+        const value = parseInt(e.target.value) || 0;
+        const selection = this.editor.selection.getCurrentSelection();
+        if (selection?.isValid) {
+          const span = this.editor.commands.findLetterSpacingSpan(
+            selection.range
+          );
+          if (span) {
+            span.style.setProperty("--ls", value);
+          }
+        }
+      }
     });
 
     // Délégation d'événements unifiée
@@ -119,11 +143,11 @@ export class Toolbar {
 
       const command = button.dataset.command;
       const buttonElement = this.buttons.get(command);
-      
+
       if (buttonElement?.action) {
         // Exécuter l'action - la logique est dans commands.js
         buttonElement.action();
-        
+
         // Mise à jour des états visuels
         this.updateButtonStates();
       }
@@ -136,14 +160,16 @@ export class Toolbar {
   toggleCustomDropdown(trigger) {
     const wrapper = trigger.closest(".toolbar-select-wrapper");
     const dropdown = wrapper.querySelector(".custom-dropdown");
-    
+
     // Fermer les autres dropdowns
-    this.element.querySelectorAll(".custom-dropdown").forEach(otherDropdown => {
-      if (otherDropdown !== dropdown) {
-        otherDropdown.style.display = "none";
-      }
-    });
-    
+    this.element
+      .querySelectorAll(".custom-dropdown")
+      .forEach((otherDropdown) => {
+        if (otherDropdown !== dropdown) {
+          otherDropdown.style.display = "none";
+        }
+      });
+
     // Toggle du dropdown actuel
     const isCurrentlyVisible = dropdown.style.display !== "none";
     dropdown.style.display = isCurrentlyVisible ? "none" : "block";
@@ -156,12 +182,12 @@ export class Toolbar {
     const wrapper = optionElement.closest(".toolbar-select-wrapper");
     const command = wrapper.dataset.command;
     const value = optionElement.dataset.value;
-    
+
     const selectElement = this.selects.get(command);
     if (selectElement?.action && value) {
       selectElement.action(value);
     }
-    
+
     // Fermer le dropdown
     const dropdown = wrapper.querySelector(".custom-dropdown");
     dropdown.style.display = "none";
@@ -185,7 +211,7 @@ export class Toolbar {
    */
   hide() {
     // Fermer tous les dropdowns
-    this.element.querySelectorAll(".custom-dropdown").forEach(dropdown => {
+    this.element.querySelectorAll(".custom-dropdown").forEach((dropdown) => {
       dropdown.style.display = "none";
     });
 
@@ -208,10 +234,10 @@ export class Toolbar {
 
     // Position centrée horizontalement
     let left = rect.left + rect.width / 2 - toolbarRect.width / 2;
-    let top = rect.top - toolbarRect.height - 10;
+    let top = rect.top - toolbarRect.height - 40;
 
     // Ajustements pour rester dans l'écran
-    const margin = 10;
+    const margin = 40;
     if (left < margin) left = margin;
     if (left + toolbarRect.width > window.innerWidth - margin) {
       left = window.innerWidth - toolbarRect.width - margin;
@@ -219,7 +245,7 @@ export class Toolbar {
 
     // Afficher en-dessous si pas de place au-dessus
     if (top < margin) {
-      top = rect.bottom + 10;
+      top = rect.bottom + 40;
     }
 
     // Application avec scroll
@@ -237,14 +263,16 @@ export class Toolbar {
 
     const range = selection.getRangeAt(0);
     const ancestor = range.commonAncestorContainer;
-    const element = ancestor.nodeType === Node.TEXT_NODE ? 
-      ancestor.parentElement : ancestor;
+    const element =
+      ancestor.nodeType === Node.TEXT_NODE ? ancestor.parentElement : ancestor;
 
     // Utilise les fonctions checkActive définies dans actions.js
     this.buttons.forEach((buttonElement, actionId) => {
       if (buttonElement.isToggle) {
         const isActive = buttonElement.updateActiveState(element);
-        const domButton = this.element.querySelector(`[data-command="${actionId}"]`);
+        const domButton = this.element.querySelector(
+          `[data-command="${actionId}"]`
+        );
         domButton?.classList.toggle("active", isActive);
       }
     });
@@ -263,7 +291,7 @@ export class Toolbar {
     } else {
       this.config.elements.splice(position, 0, actionId);
     }
-    
+
     this.rebuildToolbar();
   }
 
@@ -287,7 +315,7 @@ export class Toolbar {
    */
   destroy() {
     if (this.element) {
-      this.element.querySelectorAll(".custom-dropdown").forEach(dropdown => {
+      this.element.querySelectorAll(".custom-dropdown").forEach((dropdown) => {
         dropdown.style.display = "none";
       });
     }

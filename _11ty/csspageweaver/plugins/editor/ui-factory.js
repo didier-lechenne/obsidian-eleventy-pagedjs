@@ -1,20 +1,19 @@
-import { ACTIONS_REGISTRY, executeAction, isValidAction } from './actions.js';
+import { ACTIONS_REGISTRY, executeAction, isValidAction } from "./actions.js";
 
 /**
  * @name UIFactory
  * @description Factory qui transforme les actions du registre en éléments d'interface
- * 
+ *
  * Cette classe suit le pattern Factory, où une méthode centrale décide
  * quel type d'élément créer selon le type de l'action demandée.
- * 
+ *
  * Architecture: Action (registre) → Factory → ToolbarElement → DOM
  */
 
 export class UIFactory {
-  
   /**
    * Méthode principale qui crée un élément d'interface à partir d'un ID d'action
-   * 
+   *
    * @param {string} actionId - Identifiant de l'action dans le registre
    * @param {Object} editor - Instance de l'éditeur pour les callbacks
    * @returns {ToolbarButton|ToolbarSelect|null} - Élément d'interface créé
@@ -22,61 +21,90 @@ export class UIFactory {
   static createElement(actionId, editor) {
     // Vérification de sécurité : l'action existe-t-elle ?
     if (!isValidAction(actionId)) {
-      console.warn(`🚨 Action inconnue demandée: "${actionId}". Vérifiez votre configuration.`);
+      console.warn(
+        `🚨 Action inconnue demandée: "${actionId}". Vérifiez votre configuration.`
+      );
       return null;
     }
 
     // Récupération de la configuration de l'action
     const actionConfig = ACTIONS_REGISTRY[actionId];
-    
+
     // Choix de la stratégie de création selon le type d'action
     // Ceci implémente le pattern Strategy au sein du pattern Factory
     switch (actionConfig.type) {
-      
-      case 'toggle':
+      case "toggle":
         return UIFactory.createToggleButton(actionId, actionConfig, editor);
-      
-      case 'insert':
+
+      case "insert":
         return UIFactory.createInsertButton(actionId, actionConfig, editor);
-      
-      case 'utility':
+
+      case "utility":
         return UIFactory.createUtilityButton(actionId, actionConfig, editor);
-      
-      case 'select':
+
+      case "select":
         return UIFactory.createSelectElement(actionId, actionConfig, editor);
-      
+
       default:
-        console.error(`🚨 Type d'action non supporté: "${actionConfig.type}" pour l'action "${actionId}"`);
+        console.error(
+          `🚨 Type d'action non supporté: "${actionConfig.type}" pour l'action "${actionId}"`
+        );
         return null;
     }
   }
 
+  static createInputElement(actionId, actionConfig, editor) {
+    return new ToolbarInput(
+      actionId,
+      actionConfig.icon,
+      actionConfig.title,
+      (value) => executeAction(actionId, editor, value)
+    );
+  }
+
   /**
    * Création d'un bouton toggle (qui peut être actif/inactif)
-   * 
+   *
    * Ces boutons changent d'apparence selon l'état du formatage dans la sélection.
    * Par exemple, le bouton "gras" sera actif si le texte sélectionné est déjà en gras.
    */
   static createToggleButton(actionId, actionConfig, editor) {
+    // Cas spécial pour letter-spacing avec input intégré
+    if (actionId === "letter-spacing") {
+      return new ToolbarButton(
+        actionId,
+        `${actionConfig.icon} <input type="number" class="ls-input" placeholder="0" min="-5" max="20" step="1" style="width:40px;margin-left:5px;">`,
+        actionConfig.title,
+        () => executeAction(actionId, editor),
+        {
+          isToggle: true,
+          checkActive: (element) => {
+            return actionConfig.isActive
+              ? actionConfig.isActive(element)
+              : false;
+          },
+        }
+      );
+    }
+
+    // Cas normal pour les autres boutons
     return new ToolbarButton(
       actionId,
       actionConfig.icon,
       actionConfig.title,
-      () => executeAction(actionId, editor), // Callback d'exécution sécurisé
+      () => executeAction(actionId, editor),
       {
-        // Propriétés spéciales pour les boutons toggle
         isToggle: true,
-        // Fonction qui détermine si le bouton doit être affiché comme actif
         checkActive: (element) => {
           return actionConfig.isActive ? actionConfig.isActive(element) : false;
-        }
+        },
       }
     );
   }
 
   /**
    * Création d'un bouton d'insertion simple
-   * 
+   *
    * Ces boutons effectuent une action ponctuelle (insérer un caractère, un saut de ligne...)
    * Ils n'ont pas d'état actif/inactif particulier.
    */
@@ -87,14 +115,14 @@ export class UIFactory {
       actionConfig.title,
       () => executeAction(actionId, editor),
       {
-        isToggle: false // Ces boutons ne changent pas d'état
+        isToggle: false, // Ces boutons ne changent pas d'état
       }
     );
   }
 
   /**
    * Création d'un bouton utilitaire
-   * 
+   *
    * Ces boutons effectuent des opérations complexes sur le document
    * (reset, copie, export...). Ils peuvent avoir des comportements spéciaux
    * comme des feedbacks visuels.
@@ -110,14 +138,14 @@ export class UIFactory {
         // Propriété spéciale pour identifier les boutons utilitaires
         isUtility: true,
         // Certains boutons utilitaires ont des feedbacks spéciaux
-        hasSpecialFeedback: actionId === 'copy-md'
+        hasSpecialFeedback: actionId === "copy-md",
       }
     );
   }
 
   /**
    * Création d'un élément select (menu déroulant)
-   * 
+   *
    * Ces éléments permettent de choisir parmi plusieurs options.
    * Le callback reçoit la valeur sélectionnée en plus de l'éditeur.
    */
@@ -133,20 +161,20 @@ export class UIFactory {
 
   /**
    * Méthode utilitaire pour créer plusieurs éléments à partir d'une liste d'IDs
-   * 
+   *
    * @param {string[]} actionIds - Liste des identifiants d'actions
    * @param {Object} editor - Instance de l'éditeur
    * @returns {Object[]} - Tableau d'éléments créés (filtré des éléments null)
    */
   static createElements(actionIds, editor) {
     return actionIds
-      .map(actionId => UIFactory.createElement(actionId, editor))
-      .filter(element => element !== null); // Supprime les éléments qui n'ont pas pu être créés
+      .map((actionId) => UIFactory.createElement(actionId, editor))
+      .filter((element) => element !== null); // Supprime les éléments qui n'ont pas pu être créés
   }
 
   /**
    * Méthode de diagnostic pour analyser une configuration
-   * 
+   *
    * Utile pour débugger et comprendre ce qui va être créé
    * avant de construire effectivement la toolbar
    */
@@ -158,11 +186,11 @@ export class UIFactory {
         toggle: [],
         insert: [],
         utility: [],
-        select: []
-      }
+        select: [],
+      },
     };
 
-    actionIds.forEach(actionId => {
+    actionIds.forEach((actionId) => {
       if (isValidAction(actionId)) {
         analysis.valid.push(actionId);
         const actionType = ACTIONS_REGISTRY[actionId].type;
@@ -179,7 +207,7 @@ export class UIFactory {
 /**
  * @name ToolbarButton
  * @description Classe améliorée pour les boutons de toolbar
- * 
+ *
  * Cette version étend la classe originale avec des capacités supplémentaires
  * pour gérer les différents types de boutons créés par la factory.
  */
@@ -189,7 +217,7 @@ export class ToolbarButton {
     this.icon = icon;
     this.title = title;
     this.action = action;
-    
+
     // Options étendues pour différents comportements
     this.isToggle = options.isToggle || false;
     this.isUtility = options.isUtility || false;
@@ -201,23 +229,23 @@ export class ToolbarButton {
     // Génération du HTML avec les attributs nécessaires pour le comportement
     const attributes = [
       `data-command="${this.command}"`,
-      `data-tooltip="${this.title}"`
+      `data-tooltip="${this.title}"`,
     ];
-    
+
     // Ajout d'attributs spéciaux selon le type de bouton
     if (this.isToggle) {
       attributes.push('data-toggle="true"');
     }
-    
+
     if (this.isUtility) {
       attributes.push('data-utility="true"');
     }
-    
+
     if (this.hasSpecialFeedback) {
       attributes.push('data-special-feedback="true"');
     }
 
-    return `<button ${attributes.join(' ')}>${this.icon}</button>`;
+    return `<button ${attributes.join(" ")}>${this.icon}</button>`;
   }
 
   /**
@@ -235,7 +263,7 @@ export class ToolbarButton {
 /**
  * @name ToolbarSelect
  * @description Classe pour les éléments select de la toolbar
- * 
+ *
  * Cette classe génère un menu déroulant personnalisé plutôt qu'un <select> HTML
  * natif pour avoir un meilleur contrôle sur le style et le comportement.
  */
@@ -252,8 +280,11 @@ export class ToolbarSelect {
     // Génération des options sous forme de divs personnalisées
     // Cela nous donne un contrôle total sur le style, contrairement aux <option> HTML
     const optionsHTML = this.options
-      .map(opt => `<div class="custom-option" data-value="${opt.value}" title="${opt.label}">${opt.label}</div>`)
-      .join('');
+      .map(
+        (opt) =>
+          `<div class="custom-option" data-value="${opt.value}" title="${opt.label}">${opt.label}</div>`
+      )
+      .join("");
 
     return `
       <div class="toolbar-select-wrapper" data-command="${this.command}" data-tooltip="${this.title}">
@@ -269,7 +300,7 @@ export class ToolbarSelect {
    * Récupère l'option correspondant à une valeur donnée
    */
   getOptionByValue(value) {
-    return this.options.find(option => option.value === value);
+    return this.options.find((option) => option.value === value);
   }
 }
 
@@ -287,23 +318,25 @@ export function validateToolbarConfiguration(config) {
     isValid: true,
     errors: [],
     warnings: [],
-    summary: null
+    summary: null,
   };
 
   // Vérification de la structure de base
   if (!config || !config.elements || !Array.isArray(config.elements)) {
     report.isValid = false;
-    report.errors.push("Configuration manquante ou propriété 'elements' invalide");
+    report.errors.push(
+      "Configuration manquante ou propriété 'elements' invalide"
+    );
     return report;
   }
 
   // Analyse des éléments
   const analysis = UIFactory.analyzeConfiguration(config.elements);
-  
+
   // Erreurs bloquantes
   if (analysis.invalid.length > 0) {
     report.isValid = false;
-    report.errors.push(`Actions inconnues: ${analysis.invalid.join(', ')}`);
+    report.errors.push(`Actions inconnues: ${analysis.invalid.join(", ")}`);
   }
 
   // Avertissements informatifs
@@ -312,7 +345,9 @@ export function validateToolbarConfiguration(config) {
   }
 
   if (analysis.byType.select.length > 3) {
-    report.warnings.push("Plus de 3 éléments select détectés, cela peut encombrer l'interface");
+    report.warnings.push(
+      "Plus de 3 éléments select détectés, cela peut encombrer l'interface"
+    );
   }
 
   // Résumé
@@ -320,7 +355,7 @@ export function validateToolbarConfiguration(config) {
     totalElements: config.elements.length,
     validElements: analysis.valid.length,
     invalidElements: analysis.invalid.length,
-    distribution: analysis.byType
+    distribution: analysis.byType,
   };
 
   return report;
