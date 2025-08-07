@@ -1,68 +1,94 @@
+/* 
+ * CSS pour le plugin Editor - Version refactorisée avec letter-spacing intégré
+ * 
+ * Cette feuille de style suit une approche modulaire où chaque section
+ * gère un aspect spécifique de l'interface d'édition.
+ */
+
+/* ========================================
+ * VARIABLES CSS GLOBALES
+ * ========================================
+ * Ces variables centralisent tous les réglages visuels pour faciliter
+ * la personnalisation et maintenir la cohérence visuelle.
+ */
 :root {
-	/* Couleurs principales */
-	--editor-primary-color: rgb(102, 51, 153);
-	--editor-primary-hover: rgba(102, 51, 153, 0.8);
-	--editor-primary-light: rgba(102, 51, 153, 0.05);
-	--editor-primary-border: rgba(102, 51, 153, 0.2);
-	--editor-primary-selection: rgba(102, 51, 153, 0.3);
-	--editor-primary-highlight: rgba(102, 51, 153, 0.205);
-	
-	/* Couleurs toolbar */
-	--editor-toolbar-bg: #2c3e50;
-	--editor-toolbar-input-bg: #34495e;
-	--editor-toolbar-input-focus: #3c5b7a;
-	--editor-success-color: rgba(102, 51, 153, 0.8);
-	
-	/* Couleurs tooltip */
-	--editor-tooltip-bg: rgba(0, 0, 0, 0.8);
-	--editor-tooltip-text: rgba(255, 255, 255, 0.6);
-	
-	/* Rayons de bordure */
-	--editor-border-radius: 2px;
-	--editor-toolbar-radius: 6px;
-	--editor-button-radius: 4px;
-	
-	/* Espacement */
-	--editor-toolbar-padding: 6px;
-	--editor-toolbar-gap: 2px;
-	--editor-button-padding: 8px 10px;
-	--editor-tooltip-padding: 4px 8px;
-	
-	/* Tailles */
-	--editor-button-min-width: 18px;
-	--editor-button-height: 18px;
-	--editor-input-width: 60px;
-	--editor-z-index: 9999;
-	--editor-tooltip-z-index: 10000;
-	
-	/* Transitions */
-	--editor-transition-fast: 0.15s ease;
-	--editor-transition-normal: 0.2s ease;
-	--editor-transition-duration: 0.3s;
-	
-	/* Polices */
-	--editor-font-size: 14px;
-	--editor-font-weight: 500;
-	--editor-tooltip-font-size: 12px;
-	--editor-quotes-font: "Times New Roman", serif;
-	--editor-special-font-size: 16px;
-	--editor-letter-spacing-font-size: 10px;
-	
-	/* Ombres */
-	--editor-toolbar-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-	--editor-input-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-	
-	/* Responsive breakpoint */
-	--editor-mobile-breakpoint: 768px;
+  /* Couleurs principales - Palette violette cohérente */
+  --editor-primary-color: rgb(102, 51, 153);
+  --editor-primary-hover: rgba(102, 51, 153, 0.8);
+  --editor-primary-light: rgba(102, 51, 153, 0.05);
+  --editor-primary-border: rgba(102, 51, 153, 0.2);
+  --editor-primary-selection: rgba(102, 51, 153, 0.3);
+  --editor-primary-highlight: rgba(102, 51, 153, 0.205);
+
+  /* Couleurs toolbar - Palette sombre pour contraster avec le contenu */
+  --editor-toolbar-bg: #2c3e50;
+  --editor-toolbar-input-bg: #34495e;
+  --editor-toolbar-input-focus: #3c5b7a;
+  --editor-success-color: rgba(102, 51, 153, 0.8);
+
+  /* Couleurs tooltip - Interface discrète */
+  --editor-tooltip-bg: rgba(0, 0, 0, 0.8);
+  --editor-tooltip-text: rgba(255, 255, 255, 0.6);
+
+  /* Rayons de bordure - Cohérence dans les arrondis */
+  --editor-border-radius: 2px;
+  --editor-toolbar-radius: 6px;
+  --editor-button-radius: 4px;
+
+  /* Espacement - Système de grille cohérent */
+  --editor-toolbar-padding: 6px;
+  --editor-toolbar-gap: 2px;
+  --editor-button-padding: 8px 10px;
+  --editor-tooltip-padding: 4px 8px;
+
+  /* Tailles - Dimensions optimisées pour l'usage */
+  --editor-button-min-width: 18px;
+  --editor-button-height: 18px;
+  --editor-input-width: 60px;
+  --editor-z-index: 9999;
+  --editor-tooltip-z-index: 10000;
+
+  /* Transitions - Animations fluides pour l'UX */
+  --editor-transition-fast: 0.15s ease;
+  --editor-transition-normal: 0.2s ease;
+  --editor-transition-duration: 0.3s;
+
+  /* Polices - Typographie adaptée aux différents usages */
+  --editor-font-size: 14px;
+  --editor-font-weight: 500;
+  --editor-tooltip-font-size: 12px;
+  --editor-quotes-font: "Times New Roman", serif;
+  --editor-special-font-size: 16px;
+  --editor-letter-spacing-font-size: 10px;
+
+  /* Ombres - Profondeur visuelle pour les éléments flottants */
+  --editor-toolbar-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  --editor-input-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+
+  /* Responsive breakpoint */
+  --editor-mobile-breakpoint: 768px;
 }
 
-/* Éléments éditables */
+/* ========================================
+ * ÉLÉMENTS ÉDITABLES - STYLES DE BASE
+ * ========================================
+ * Ces règles définissent l'apparence des éléments qui peuvent être modifiés
+ */
+
+/* Configuration de base pour tous les éléments éditables */
 .paged-editor-content {
-	outline: none;
-	cursor: text;
+  outline: none; /* Supprime l'outline par défaut du navigateur */
+  cursor: text; /* Indique visuellement que l'élément est éditable */
 }
 
-/* Mode preview : masquer TOUS les effets d'édition - marche pas */
+/* ========================================
+ * GESTION DU MODE PREVIEW
+ * ========================================
+ * Quand l'interface est en mode preview, tous les indicateurs visuels
+ * d'édition doivent disparaître pour une présentation propre
+ */
+
+/* Masquer TOUS les effets visuels d'édition en mode preview */
 body.interface-preview .small-caps,
 body.interface-preview sup,
 body.interface-preview br,
@@ -72,205 +98,285 @@ body.interface-preview figcaption br,
 body.interface-preview .paged-editor-active .paged-editor-content,
 body.interface-preview .paged-editor-active .paged-editor-content:focus,
 body.interface-preview .paged-editor-toolbar,
-body.interface-preview [style*="--ls"] {
-	background-color: transparent !important;
-	box-shadow: none !important;
-	border-radius: 0 !important;
-	transition: none !important;
-	/* visibility: hidden !important; */
+body.interface-preview [style*="--ls"],
+body.interface-preview .letterspacing-input {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  transition: none !important;
+  /* Les inputs letter-spacing sont complètement cachés en mode preview */
+  visibility: hidden !important;
 }
 
+/* Masquer spécifiquement la toolbar et les focus en mode preview */
+body.interface-preview .paged-editor-toolbar.visible,
+body.interface-preview .paged-editor-content:focus {
+  visibility: hidden !important;
+}
 
+/* ========================================
+ * STYLES NORMAUX EN MODE ÉDITION
+ * ========================================
+ * Ces règles s'appliquent uniquement quand l'éditeur est actif
+ */
 
-
-
-/* Règles normales mode édition */
+/* Highlighting visuel pour tous les éléments formatés */
 .paged-editor-active .small-caps,
 .paged-editor-active sup,
 .paged-editor-active br,
 .paged-editor-active figcaption .small-caps,
 .paged-editor-active figcaption sup,
 .paged-editor-active figcaption br {
-	background-color: var(--editor-primary-highlight);
+  background-color: var(--editor-primary-highlight);
 }
 
+/* Styles pour les contenus éditables actifs */
 .paged-editor-active .paged-editor-content {
-	border-radius: var(--editor-border-radius);
-	transition: all var(--editor-transition-normal);
+  border-radius: var(--editor-border-radius);
+  transition: all var(--editor-transition-normal);
 }
 
+/* Indication visuelle du focus sur un élément éditable */
 .paged-editor-active .paged-editor-content:focus {
-	background-color: var(--editor-primary-light);
-	box-shadow: inset 0 0 0 1px var(--editor-primary-border);
+  background-color: var(--editor-primary-light);
+  box-shadow: inset 0 0 0 1px var(--editor-primary-border);
 }
 
-body.interface-preview .paged-editor-toolbar.visible,
-body.interface-preview .paged-editor-content:focus {
-	visibility: hidden !important;
+/* ========================================
+ * LETTER-SPACING INTÉGRÉ - NOUVELLE APPROCHE
+ * ========================================
+ * Cette section remplace l'ancien système d'input flottant complexe
+ * par une approche plus simple et intégrée
+ */
+
+/* Style pour les spans contenant du letter-spacing */
+span[style*="--ls"] {
+  background: var(--editor-primary-highlight);
+  padding: 1px 3px; /* Espacement subtil pour délimiter visuellement */
+  border-radius: var(--editor-border-radius);
+  position: relative; /* Permet le positionnement relatif des enfants */
+  display: inline-block; /* Nécessaire pour que padding/margin fonctionnent correctement */
 }
 
-/* Toolbar */
+/* Style pour les inputs letter-spacing intégrés dans le texte */
+.letterspacing-input {
+  /* Apparence de base - s'intègre harmonieusement dans le texte */
+  background: rgba(255, 255, 255, 0.95) !important;
+  color: #333 !important;
+  font-size: 11px !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  /* Bordures et espacement - dimensions compactes */
+  border: 1px solid #999 !important;
+  border-radius: 2px !important;
+  padding: 1px 3px !important;
+  margin: 0 2px !important;
+  width: 40px !important;
+
+  /* Comportement - alignement avec le texte environnant */
+  vertical-align: baseline;
+  display: inline-block;
+
+  /* Transitions douces pour une meilleure UX */
+  transition: all var(--editor-transition-fast);
+}
+
+/* État focus pour l'input letter-spacing */
+.letterspacing-input:focus {
+  outline: 2px solid var(--editor-primary-color);
+  outline-offset: 1px;
+  background: rgba(255, 255, 255, 1) !important;
+  transform: scale(1.05); /* Agrandissement subtil au focus */
+}
+
+/* Style au survol pour indiquer l'interactivité */
+.letterspacing-input:hover {
+  border-color: var(--editor-primary-color) !important;
+}
+
+/* ========================================
+ * TOOLBAR - INTERFACE PRINCIPALE
+ * ========================================
+ * La toolbar est l'élément central de l'interface d'édition
+ */
+
+/* Container principal de la toolbar */
 .paged-editor-toolbar {
-	position: absolute;
-	z-index: var(--editor-z-index);
-	background: var(--editor-toolbar-bg);
-	border-radius: var(--editor-toolbar-radius);
-	box-shadow: var(--editor-toolbar-shadow);
-	padding: var(--editor-toolbar-padding);
-	display: flex;
-	gap: var(--editor-toolbar-gap);
-	opacity: 0;
-	visibility: hidden;
-	transform: translateY(-10px);
-	transition: all var(--editor-transition-normal);
+  position: absolute;
+  z-index: var(--editor-z-index);
+  background: var(--editor-toolbar-bg);
+  border-radius: var(--editor-toolbar-radius);
+  box-shadow: var(--editor-toolbar-shadow);
+  padding: var(--editor-toolbar-padding);
+  display: flex;
+  gap: var(--editor-toolbar-gap);
+
+  /* Animation d'apparition/disparition */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all var(--editor-transition-normal);
 }
 
+/* État visible de la toolbar */
 .paged-editor-toolbar.visible {
-	opacity: 1;
-	visibility: visible;
-	transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
 }
 
-/* Boutons toolbar */
+/* ========================================
+ * BOUTONS DE LA TOOLBAR
+ * ========================================
+ * Styles unifiés pour tous les boutons de la toolbar
+ */
+
+/* Style de base pour tous les boutons */
 .paged-editor-toolbar button {
-	background: transparent;
-	border: none;
-	color: white;
-	padding: var(--editor-button-padding);
-	border-radius: var(--editor-button-radius);
-	cursor: pointer;
-	font-size: var(--editor-font-size);
-	font-weight: var(--editor-font-weight);
-	transition: all var(--editor-transition-fast);
-	min-width: var(--editor-button-min-width);
-	height: var(--editor-button-height);
-	display: flex;
-	align-items: center;
-	justify-content: center;
+  background: transparent;
+  border: none;
+  color: white;
+  padding: var(--editor-button-padding);
+  border-radius: var(--editor-button-radius);
+  cursor: pointer;
+  font-size: var(--editor-font-size);
+  font-weight: var(--editor-font-weight);
+  transition: all var(--editor-transition-fast);
+  min-width: var(--editor-button-min-width);
+  height: var(--editor-button-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+/* État hover pour tous les boutons */
 .paged-editor-toolbar button:hover {
-	background: rgba(255, 255, 255, 0.1);
-	transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.05); /* Agrandissement subtil au survol */
 }
 
+/* État actif (clic) pour feedback immédiat */
 .paged-editor-toolbar button:active {
-	transform: scale(0.95);
+  transform: scale(0.95);
 }
 
+/* État actif pour les boutons toggle (quand la fonction est appliquée) */
 .paged-editor-toolbar button.active {
-	background: var(--editor-primary-hover);
-	color: white;
+  background: var(--editor-primary-hover);
+  color: white;
 }
 
+/* Animation de succès pour les actions comme la copie */
 .paged-editor-toolbar button.success {
-	background: var(--editor-success-color);
-	animation: success-pulse var(--editor-transition-duration) ease;
+  background: var(--editor-success-color);
+  animation: success-pulse var(--editor-transition-duration) ease;
 }
 
+/* Keyframe pour l'animation de succès */
 @keyframes success-pulse {
-	0%,
-	100% {
-		transform: scale(1);
-	}
-	50% {
-		transform: scale(1.1);
-	}
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
 }
 
-/* Boutons spéciaux */
-.paged-editor-toolbar button[data-command="quotes"] {
-	font-family: var(--editor-quotes-font);
-	font-size: var(--editor-special-font-size);
+/* ========================================
+ * BOUTONS SPÉCIALISÉS
+ * ========================================
+ * Quelques boutons ont des besoins typographiques particuliers
+ */
+
+/* Bouton guillemets - utilise une police serif pour un meilleur rendu */
+.paged-editor-toolbar button[data-command*="quotes"] {
+  font-family: var(--editor-quotes-font);
+  font-size: var(--editor-special-font-size);
 }
 
-.paged-editor-toolbar button[data-command="copy-md"] {
-	font-size: var(--editor-special-font-size);
+/* Bouton copie - taille d'icône adaptée */
+.paged-editor-toolbar button[data-command="copy-md"],
+.paged-editor-toolbar button[data-command="export-md"] {
+  font-size: var(--editor-special-font-size);
 }
 
+/* Bouton letter-spacing - police plus petite pour "A ↔ A" */
 .paged-editor-toolbar button[data-command="letter-spacing"] {
-	font-size: var(--editor-letter-spacing-font-size) !important;
+  font-size: var(--editor-letter-spacing-font-size) !important;
 }
 
+/* États spéciaux du bouton letter-spacing */
 .paged-editor-toolbar button[data-command="letter-spacing"].active {
-	background: var(--editor-primary-hover);
+  background: var(--editor-primary-hover);
 }
 
 .paged-editor-toolbar button[data-command="letter-spacing"].editing {
-	background: var(--editor-success-color);
-	color: white;
+  background: var(--editor-success-color);
+  color: white;
 }
 
-/* Tooltips */
+/* ========================================
+ * SYSTÈME DE TOOLTIPS
+ * ========================================
+ * Tooltips automatiques pour tous les boutons avec data-tooltip
+ */
+
+/* Contenu du tooltip - apparaît au survol */
 .paged-editor-toolbar button[data-tooltip]:hover::after {
-	content: attr(data-tooltip);
-	position: absolute;
-	bottom: -35px;
-	left: 50%;
-	transform: translateX(-50%);
-	background: var(--editor-tooltip-bg);
-	color: white;
-	padding: var(--editor-tooltip-padding);
-	border-radius: var(--editor-button-radius);
-	font-size: var(--editor-tooltip-font-size);
-	white-space: nowrap;
-	z-index: var(--editor-tooltip-z-index);
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: -35px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--editor-tooltip-bg);
+  color: white;
+  padding: var(--editor-tooltip-padding);
+  border-radius: var(--editor-button-radius);
+  font-size: var(--editor-tooltip-font-size);
+  white-space: nowrap;
+  z-index: var(--editor-tooltip-z-index);
+
+  /* Assure que le tooltip reste visible même si le bouton a une police spéciale */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: normal;
 }
 
+/* Flèche pointant vers le bouton */
 .paged-editor-toolbar button[data-tooltip]:hover::before {
-	content: "";
-	position: absolute;
-	bottom: -25px;
-	left: 50%;
-	transform: translateX(-50%);
-	border: 5px solid transparent;
-	border-bottom-color: var(--editor-tooltip-bg);
-	z-index: var(--editor-tooltip-z-index);
+  content: "";
+  position: absolute;
+  bottom: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-bottom-color: var(--editor-tooltip-bg);
+  z-index: var(--editor-tooltip-z-index);
 }
 
-/* Sélection personnalisée */
+/* ========================================
+ * SÉLECTION PERSONNALISÉE
+ * ========================================
+ * Style de la sélection de texte dans les éléments éditables
+ */
+
 .paged-editor-content ::selection {
-	background: var(--editor-primary-selection);
+  background: var(--editor-primary-selection);
 }
 
-/* Input letter-spacing */
-.letter-spacing-input {
-	position: absolute;
-	z-index: var(--editor-tooltip-z-index);
-	width: var(--editor-input-width);
-	padding: var(--editor-toolbar-gap) 8px;
-	border: none;
-	border-radius: var(--editor-toolbar-radius);
-	font-size: var(--editor-tooltip-font-size);
-	font-weight: var(--editor-font-weight);
-	background: var(--editor-toolbar-input-bg);
-	color: white;
-	display: none;
-	box-shadow: var(--editor-input-shadow);
-	outline: none;
-	transition: all var(--editor-transition-fast);
-}
+/* ========================================
+ * SYSTÈME DE DROPDOWN (SELECT)
+ * ========================================
+ * Styles pour les menus déroulants personnalisés
+ */
 
-.letter-spacing-input:focus {
-	background: var(--editor-toolbar-input-focus);
-	transform: scale(1.05);
-}
-
-.letter-spacing-input::placeholder {
-	color: var(--editor-tooltip-text);
-}
-
-/* Highlight letter-spacing */
-[style^="--ls"] {
-	background: var(--editor-primary-highlight);
-}
-
-/* Styles pour les selects */
+/* Container principal du select personnalisé */
 .toolbar-select-wrapper {
   position: relative;
   display: inline-block;
 }
 
+/* Bouton déclencheur du dropdown */
 .toolbar-select-wrapper .select-trigger {
   background: transparent;
   border: none;
@@ -286,73 +392,76 @@ body.interface-preview .paged-editor-content:focus {
   height: var(--editor-button-height);
 }
 
+/* Survol du bouton déclencheur */
 .toolbar-select-wrapper .select-trigger:hover {
   background: rgba(255, 255, 255, 0.1);
   transform: scale(1.05);
 }
 
-.toolbar-select-wrapper .select-dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background: var(--editor-toolbar-bg)!important;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: var(--editor-border-radius);
-  min-width: var(--editor-button-min-width);
-  z-index: var(--editor-tooltip-z-index);
-  max-height: auto;
-  overflow-y: hidden;
-  overflow-x:hidden;
-  color: white;
-  font-size: 1em;
-}
-
-.toolbar-select-wrapper .select-dropdown option {
-  color: white !important;
-  background-color: #2c3e50 !important;
-  padding: 8px 12px;
-  display: block;
-}
-
-.toolbar-select-wrapper .select-dropdown option:hover {
-  background: var(--editor-primary-hover);
-}
+/* Menu déroulant personnalisé */
 .toolbar-select-wrapper .custom-dropdown {
   position: absolute;
   top: 100%;
   left: 0;
-  background: #2c3e50;
+  background: var(--editor-toolbar-bg);
   border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 4px;
+  border-radius: var(--editor-border-radius);
   min-width: 250px;
-  z-index: 10000;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  z-index: var(--editor-tooltip-z-index);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+
+  /* Par défaut masqué */
+  display: none;
 }
 
+/* Options individuelles dans le dropdown */
 .toolbar-select-wrapper .custom-option {
   padding: 8px 12px;
   color: white;
   cursor: pointer;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background-color var(--editor-transition-fast);
+  user-select: none; /* Empêche la sélection de texte accidentelle */
 }
 
+/* Survol des options */
 .toolbar-select-wrapper .custom-option:hover {
-  background: rgba(102, 51, 153, 0.8);
+  background: var(--editor-primary-hover);
 }
 
-
-.select-option {
-  padding: 8px 12px;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-  user-select: none;
+/* Supprime la bordure du dernier élément */
+.toolbar-select-wrapper .custom-option:last-child {
+  border-bottom: none;
 }
 
-.select-option:hover {
-  background: var(--editor-primary-hover) !important;
+.ls-hide {
+  display: none;
 }
 
-.select-option:first-child {
-  color: rgba(255, 255, 255, 0.6);
-  font-style: italic;
+/* ========================================
+ * RESPONSIVE DESIGN
+ * ========================================
+ * Adaptations pour les écrans plus petits
+ */
+
+@media (max-width: 768px) {
+  /* Réduction de la taille des boutons sur mobile */
+  .paged-editor-toolbar button {
+    padding: 6px 8px;
+    min-width: 16px;
+    height: 16px;
+    font-size: 12px;
+  }
+
+  /* Réduction de la taille des inputs letter-spacing */
+  .letterspacing-input {
+    width: 35px !important;
+    font-size: 10px !important;
+  }
+
+  /* Tooltips désactivés sur mobile (pour éviter les problèmes tactiles) */
+  .paged-editor-toolbar button[data-tooltip]:hover::after,
+  .paged-editor-toolbar button[data-tooltip]:hover::before {
+    display: none;
+  }
 }

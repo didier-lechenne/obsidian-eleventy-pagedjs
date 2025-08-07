@@ -73,7 +73,7 @@ export class UIFactory {
     if (actionId === "letter-spacing") {
       return new ToolbarButton(
         actionId,
-        `${actionConfig.icon} <input type="number" class="ls-input" placeholder="0" min="-5" max="20" step="1" style="width:40px;margin-left:5px;">`,
+        `${actionConfig.icon} <input type="number" class="ls-hide ls-input" placeholder="0" min="-5000" max="5000" step="1" style="width:40px;margin-left:5px;">`,
         actionConfig.title,
         () => executeAction(actionId, editor),
         {

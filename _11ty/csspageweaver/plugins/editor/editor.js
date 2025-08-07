@@ -215,7 +215,10 @@ export default class Editor extends Handler {
     if (!this.isActive) return;
 
     const activeElement = document.activeElement;
-    if (activeElement && activeElement.classList.contains("ls-input")) {
+    if (
+      activeElement &&
+      activeElement.classList.contains("external-letterspacing-input")
+    ) {
       // Garder la toolbar visible si on est dans l'input
       return;
     }
@@ -244,6 +247,9 @@ export default class Editor extends Handler {
     }
 
     this.currentSelection = null;
+    if (document.querySelector(".external-letterspacing-input")) {
+      return; // Ne pas cacher la toolbar si l'input letter-spacing est actif
+    }
     this.toolbar.hide();
   }
 

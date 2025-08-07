@@ -1,24 +1,31 @@
 /**
  * @name Commands
- * @file Commandes d'édition et formatage - Version refactorisée
+ * @file Commandes d'édition et formatage - Version refactorisée avec letter-spacing simplifié
  *
+ * Cette version utilise une approche cohérente pour toutes les fonctionnalités :
+ * - Toggle simple pour créer/supprimer des éléments
+ * - Letter-spacing avec input intégré dans le DOM (pas d'interface flottante)
+ * - Logique unifiée pour le reset des transformations
  */
 
 import { UNICODE_CHARS } from "./unicode.js";
+
+// Constante HTML pour l'input letter-spacing intégré
+// Cette approche évite la complexité d'un input flottant en l'intégrant directement dans le document
+const LETTERSPACING_INPUT_HTML = ``;
 
 export class Commands {
   constructor(editor) {
     this.editor = editor;
 
-    // Interface letter-spacing réutilisable
-    this.letterSpacingInput = null;
-
-    // Debounce pour la copie automatique
+    // Simplification du constructeur : plus besoin de gérer un input global
+    // L'input est maintenant créé à la demande et intégré dans le DOM
     this.autoCopyTimeout = null;
   }
 
   // ====== COMMANDES DE FORMATAGE DE BASE ======
-  // Ces méthodes implémentent les actions toggle simples
+  // Ces méthodes restent identiques à votre version existante
+  // Elles suivent le pattern : vérifier sélection → toggle état → déclencher copie
 
   toggleBold() {
     const selection = this.editor.selection.getCurrentSelection();
@@ -30,7 +37,7 @@ export class Commands {
     } else {
       this.wrapSelection(range, "strong");
     }
-    //     this.triggerAutoCopy();
+    this.triggerAutoCopy();
   }
 
   toggleItalic() {
@@ -43,7 +50,7 @@ export class Commands {
     } else {
       this.wrapSelection(range, "em");
     }
-    //     this.triggerAutoCopy();
+    this.triggerAutoCopy();
   }
 
   toggleSmallCaps() {
@@ -56,7 +63,7 @@ export class Commands {
     } else {
       this.wrapSelection(range, "span", "small-caps");
     }
-    //     this.triggerAutoCopy();
+    this.triggerAutoCopy();
   }
 
   toggleSuperscript() {
@@ -69,81 +76,40 @@ export class Commands {
     } else {
       this.wrapSelection(range, "sup");
     }
-    //     this.triggerAutoCopy();
+    this.triggerAutoCopy();
   }
 
-  // ====== COMMANDE LETTER-SPACING COMPLEXE ======
-  // Cette commande nécessite une interface utilisateur
+  // ====== NOUVELLE COMMANDE LETTER-SPACING SIMPLIFIÉE ======
+  // Cette approche suit exactement le même pattern que toggleSmallCaps
+  // mais avec un input intégré pour permettre l'ajustement de la valeur
 
   toggleLetterSpacing() {
     const selection = this.editor.selection.getCurrentSelection();
     if (!selection?.isValid) return;
 
-    const value = prompt("Letter-spacing (en px, 0 pour supprimer):", "0");
-    if (value === null) return; // Annulation
-
-    const numValue = parseInt(value) || 0;
     const range = selection.range;
+
+    // Chercher si on est déjà dans un span letter-spacing
     const existingSpan = this.findLetterSpacingSpan(range);
 
     if (existingSpan) {
-      if (numValue === 0) {
-        this.unwrapTag(range, ["SPAN"]);
-      } else {
-        existingSpan.style.setProperty("--ls", numValue);
-      }
-    } else if (numValue !== 0) {
-      this.wrapSelection(range, "span");
-      // Trouver le span créé et lui appliquer le style
-      const newSpan = range.commonAncestorContainer.querySelector(
-        "span.editor-add:last-child"
-      );
-      if (newSpan) {
-        newSpan.style.setProperty("--ls", numValue);
-      }
-    }
-
-    this.triggerAutoCopy();
-  }
-
-  // Dans commands.js
-  createLetterSpacingSpan() {
-    const selection = this.editor.selection.getCurrentSelection();
-    if (!selection?.isValid) return;
-
-    const range = selection.range;
-    const existingSpan = this.findLetterSpacingSpan(range);
-
-    if (!existingSpan) {
-      this.wrapSelection(range, "span");
-      const newSpan = range.commonAncestorContainer.querySelector(
-        "span.editor-add:last-child"
-      );
-      if (newSpan) {
-        newSpan.style.setProperty("--ls", "0");
-      }
+      // Mode suppression : enlever le span et son input
+      this.unwrapLetterSpacing(existingSpan);
+    } else {
+      // Mode création : créer un span avec input intégré
+      this.wrapWithLetterSpacing(range);
     }
   }
 
-  applyLetterSpacing(value) {
-    const spans = document.querySelectorAll('span.editor-add[style*="--ls"]');
-    const lastSpan = spans[spans.length - 1];
-    if (lastSpan) {
-      if (value === 0) {
-        this.unwrapSpan(lastSpan);
-      } else {
-        lastSpan.style.setProperty("--ls", value);
-      }
-    }
-  }
-
+  // Recherche d'un span letter-spacing existant dans la sélection
+  // Cette méthode simplifie l'ancienne logique complexe de détection
   findLetterSpacingSpan(range) {
     let container = range.commonAncestorContainer;
     if (container.nodeType === Node.TEXT_NODE) {
       container = container.parentElement;
     }
 
-    // Chercher dans les parents
+    // Remonte dans l'arbre DOM pour trouver un span avec letter-spacing
     let current = container;
     while (current && current !== document.body) {
       if (
@@ -155,20 +121,72 @@ export class Commands {
       }
       current = current.parentElement;
     }
-
-    // Chercher dans les enfants
-    const spans = container.querySelectorAll('span[style*="--ls"].editor-add');
-    for (const span of spans) {
-      if (range.intersectsNode(span)) {
-        return span;
-      }
-    }
-
     return null;
   }
 
+  // Création d'un nouveau span letter-spacing avec input intégré
+  // L'avantage de cette approche : l'input fait partie du document, pas d'interface flottante
+  wrapWithLetterSpacing(range) {
+    const selectedText = range.toString();
+
+    const span = document.createElement("span");
+    span.className = "editor-add";
+    span.style.setProperty("--ls", "0");
+    span.setAttribute("data-ls-id", "ls-" + Date.now()); // ID unique
+    span.textContent = selectedText;
+
+    range.deleteContents();
+    range.insertNode(span);
+
+    //     this.attachInputListener(span); // Garde cette méthode mais modifie-la
+    //     this.triggerAutoCopy();
+  }
+
+  // Gestion des événements pour l'input letter-spacing
+  // Cette méthode centralise toute la logique d'interaction avec l'input
+  attachInputListener(span) {
+    const input = this.editor.toolbar.element.querySelector(".ls-input");
+    if (!input) return;
+
+    input.value = span.style.getPropertyValue("--ls") || "2";
+    input.addEventListener("input", (e) => {
+      span.style.setProperty("--ls", e.target.value);
+      this.triggerAutoCopy();
+    });
+  }
+
+  // Suppression d'un span letter-spacing
+  // Récupère seulement le texte, en excluant l'input de contrôle
+  unwrapLetterSpacing(span) {
+    // Parcourir les enfants pour récupérer uniquement le texte
+    // Cette approche évite de récupérer l'input dans le contenu final
+    let textContent = "";
+    span.childNodes.forEach((node) => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        textContent += node.textContent;
+      }
+    });
+
+    // Remplacer le span complexe par un simple nœud de texte
+    const textNode = document.createTextNode(textContent);
+    span.parentNode.replaceChild(textNode, span);
+
+    this.triggerAutoCopy();
+  }
+
+  applyLetterSpacing(value) {
+    const input = document.querySelector(".ls-input");
+    const targetId = input.getAttribute("data-target-span");
+    const span = document.querySelector(`[data-ls-id="${targetId}"]`);
+
+    if (span) {
+      span.style.setProperty("--ls", value);
+      this.triggerAutoCopy();
+    }
+  }
+
   // ====== COMMANDES D'INSERTION SIMPLE ======
-  // Ces méthodes insèrent des éléments ponctuels
+  // Ces méthodes restent identiques à votre version existante
 
   insertText(text) {
     const selection = window.getSelection();
@@ -208,7 +226,7 @@ export class Commands {
   }
 
   // ====== COMMANDES DE GUILLEMETS ======
-  // Guillemets français et anglais avec logique spécifique
+  // Ces méthodes restent identiques à votre version existante
 
   toggleFrenchQuotes() {
     const selection = this.editor.selection.getCurrentSelection();
@@ -421,7 +439,6 @@ export class Commands {
   }
 
   // ====== UTILITAIRES DE COPIE ET RESET ======
-  // Ces méthodes gèrent les opérations complexes sur le document
 
   copyElementAsMarkdown(options = {}) {
     const config = {
@@ -528,20 +545,23 @@ export class Commands {
     }
   }
 
+  // ====== RESET TRANSFORMATIONS SIMPLIFIÉ ======
+  // Cette version intègre la gestion des spans letter-spacing dans la logique unifiée
   resetTransformations() {
     const element = this.getEditableElementFromSelection();
     if (!element) return;
 
-    this.resetAllFormatting(element);
-    //     this.triggerAutoCopy();
-  }
+    // Gérer spécifiquement les spans letter-spacing (qui contiennent des inputs)
+    element
+      .querySelectorAll('span[style*="--ls"].editor-add')
+      .forEach((span) => {
+        this.unwrapLetterSpacing(span);
+      });
 
-  resetAllFormatting(element) {
-    const selectorsToRemove = [".editor-add"];
-
-    selectorsToRemove.forEach((selector) => {
-      const elements = element.querySelectorAll(selector);
-      elements.forEach((el) => {
+    // Gérer tous les autres éléments avec la classe editor-add
+    element.querySelectorAll(".editor-add").forEach((el) => {
+      // Vérifier qu'on n'a pas déjà traité cet élément comme letter-spacing
+      if (!el.style.getPropertyValue("--ls")) {
         if (
           el.tagName === "BR" ||
           el.classList.contains("french-quote-open") ||
@@ -553,18 +573,18 @@ export class Commands {
           // Suppression pure pour BR, guillemets et espaces
           el.remove();
         } else if (el.parentNode) {
-          // Remplacement par contenu textuel pour formatage (small-caps, sup, letter-spacing...)
+          // Remplacement par contenu textuel pour formatage (small-caps, sup...)
           const textNode = document.createTextNode(el.textContent);
           el.parentNode.replaceChild(textNode, el);
         }
-      });
+      }
     });
 
     element.normalize();
+    this.triggerAutoCopy();
   }
 
   // ====== COPIE AUTOMATIQUE ======
-  // Système de copie automatique avec debounce
 
   triggerAutoCopy() {
     clearTimeout(this.autoCopyTimeout);
@@ -593,7 +613,6 @@ export class Commands {
   }
 
   // ====== MÉTHODES UTILITAIRES DOM ======
-  // Méthodes de base pour la manipulation du DOM
 
   reconstructSplitElement(element) {
     const dataRef = element.getAttribute("data-ref");

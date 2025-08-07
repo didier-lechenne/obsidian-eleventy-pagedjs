@@ -106,16 +106,6 @@ export class Toolbar {
       }
     });
 
-    this.element.addEventListener("input", (e) => {
-      if (e.target.classList.contains("ls-input")) {
-        const value = parseInt(e.target.value) || 0;
-        const selection = this.editor.selection.getCurrentSelection();
-        if (selection?.isValid) {
-          this.editor.commands.applyLetterSpacing(value);
-        }
-      }
-    });
-
     // Délégation d'événements unifiée
     this.element.addEventListener("click", (e) => {
       // Input letter-spacing
@@ -152,7 +142,6 @@ export class Toolbar {
       }
     });
 
-    // Événement séparé pour l'input
     this.element.addEventListener("input", (e) => {
       if (e.target.classList.contains("ls-input")) {
         const value = parseInt(e.target.value) || 0;
