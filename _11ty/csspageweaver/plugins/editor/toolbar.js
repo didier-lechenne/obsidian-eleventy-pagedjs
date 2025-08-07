@@ -1,951 +1,52 @@
-import { UNICODE_CHARS } from "./unicode.js";
 import * as turndownPlugins from "./turndown-plugins/index.js";
 import { PagedMarkdownRecovery } from "./recovery.js";
 import { TOOLBAR_CONFIG } from "./config.js";
+import { UIFactory, ToolbarButton, ToolbarSelect, validateToolbarConfiguration } from "./ui-factory.js";
+import { ACTIONS_REGISTRY } from "./actions.js";
+
 /**
  * @name Toolbar
- * @file Barre d'outils avec système d'extensions
+ * @description Barre d'outils refactorisée utilisant l'architecture actions/factory
+ * 
+ * Cette version simplifie drastiquement la logique de création en déléguant
+ * toute la complexité au registre d'actions et à la factory.
+ * 
+ * Architecture: Config → Actions → Factory → Toolbar → DOM
  */
-
-const EXTENSION_MAP = {
-  formatting: () => new FormattingExtension(this),
-  letterSpacing: () => new LetterSpacingExtension(this),
-  spacing: () => new SpacingExtension(this),
-  utils: () => new UtilsExtension(this),
-};
-
-// Classe de base pour les boutons
-class ToolbarButton {
-  constructor(command, icon, title, action) {
-    this.command = command;
-    this.icon = icon;
-    this.title = title;
-    this.action = action;
-  }
-
-  render() {
-    return `<button data-command="${this.command}" data-tooltip="${this.title}">${this.icon}</button>`;
-  }
-}
-
-class ToolbarSelect {
-  constructor(command, icon, title, options, action) {
-    this.command = command;
-    this.icon = icon;
-    this.title = title;
-    this.options = options;
-    this.action = action;
-  }
-
-  render() {
-    const optionsHTML = this.options
-      .map(
-        (opt) =>
-          `<div class="select-option" data-value="${opt.value}">${opt.label}</div>`
-      )
-      .join("");
-
-    return `
-      <div class="toolbar-select-wrapper" data-command="${this.command}" data-tooltip="${this.title}">
-        <button type="button" class="select-trigger">${this.icon} ⯆</button>
-        <div class="select-dropdown" style="display: none;">
-          <div class="select-option" data-value="">⋯</div>
-          ${optionsHTML}
-        </div>
-      </div>
-    `;
-  }
-}
-
-// Extension pour formatage de base
-class FormattingExtension {
-  constructor(toolbar) {
-    this.toolbar = toolbar;
-    this.name = "FormattingExtension";
-  }
-
-  init() {}
-  destroy() {}
-
-  getButtons() {
-    return [
-      new ToolbarButton("smallcaps", "ᴀᴀ", "Petites capitales", () => {
-        this.toolbar.editor.commands.toggleSmallCaps();
-      }),
-      new ToolbarButton("superscript", "x²", "Exposant", () => {
-        this.toolbar.editor.commands.toggleSuperscript();
-      }),
-    ];
-  }
-}
-
-// Extension pour le lettrage (letter-spacing)
-class LetterSpacingExtension {
-  constructor(toolbar) {
-    this.toolbar = toolbar;
-    this.name = "FormattingExtension";
-    this.currentSpan = null;
-    this.input = null;
-    this.autoCopyTimeout = null;
-  }
-
-  init() {}
-  destroy() {}
-
-  getButtons() {
-    return [
-      new ToolbarButton(
-        "letter-spacing",
-        "A ↔ A",
-        "Lettrage (Letter-spacing)",
-        () => {
-          this.handleLetterSpacingToggle();
-        }
-      ),
-    ];
-  }
-
-  handleLetterSpacingToggle() {
-    // Si input actif, valider et fermer
-    if (this.input && this.input.style.display !== "none") {
-      this.hideLetterSpacingInput();
-      return;
-    }
-
-    const selection = window.getSelection();
-    if (selection.rangeCount === 0) return;
-
-    const range = selection.getRangeAt(0);
-
-    // Vérifier si déjà dans un span avec --ls
-    const existingSpan =
-      this.toolbar.editor.commands.findLetterSpacingSpan(range);
-
-    if (existingSpan) {
-      this.showLetterSpacingInput(existingSpan);
-    } else {
-      const newSpan = this.toolbar.editor.commands.wrapWithLetterSpacing(range);
-      this.showLetterSpacingInput(newSpan);
-    }
-  }
-
-  findLetterSpacingSpan(range) {
-    return this.toolbar.editor.commands.findLetterSpacingSpan(range);
-  }
-
-  showLetterSpacingInput(span) {
-    this.currentSpan = span;
-
-    // Créer ou réutiliser l'input
-    if (!this.input) {
-      this.createLetterSpacingInput();
-    }
-
-    // Récupérer la valeur actuelle
-    const currentValue = span.style.getPropertyValue("--ls") || "0";
-    this.input.value = currentValue;
-
-    // Changer le bouton LS en validation
-    const lsButton = this.toolbar.element.querySelector(
-      '[data-command="letter-spacing"]'
-    );
-    if (lsButton) {
-      const checkIcon = `<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjEwIi8+PHBhdGggZD0ibTkgMTIgMiAyIDQtNCIvPjwvc3ZnPg==" style="width: 16px; height: 16px; filter: invert(1);" alt="Check">`;
-      lsButton.innerHTML = checkIcon;
-      lsButton.title = "Valider letter-spacing (Entrée)";
-      lsButton.classList.add("editing");
-    }
-
-    // Positionner l'input près de la toolbar
-    this.positionInput();
-    this.input.style.display = "block";
-    this.input.focus();
-    this.input.select();
-  }
-
-  createLetterSpacingInput() {
-    this.input = document.createElement("input");
-    this.input.type = "number";
-    this.input.step = "1";
-    this.input.className = "letter-spacing-input";
-
-    // Events
-    this.input.addEventListener("input", (e) => {
-      if (this.currentSpan) {
-        const value = e.target.value;
-        this.currentSpan.style.setProperty("--ls", value);
-        this.triggerAutoCopy();
-      }
-    });
-
-    this.input.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === "Escape") {
-        this.hideLetterSpacingInput();
-      }
-    });
-
-    this.input.addEventListener("blur", () => {
-      // Délai plus long et vérifier si on reste dans la toolbar/input
-      setTimeout(() => {
-        const activeElement = document.activeElement;
-        if (
-          activeElement !== this.input &&
-          !this.toolbar.element.contains(activeElement)
-        ) {
-          this.hideLetterSpacingInput();
-        }
-      }, 200);
-    });
-
-    document.body.appendChild(this.input);
-  }
-
-  positionInput() {
-    if (!this.toolbar.element || !this.input) return;
-
-    const toolbarRect = this.toolbar.element.getBoundingClientRect();
-    this.input.style.left = `${toolbarRect.right + 10 + window.scrollX}px`;
-    this.input.style.top = `${toolbarRect.top + window.scrollY}px`;
-  }
-
-  hideLetterSpacingInput() {
-    if (this.input) {
-      this.input.style.display = "none";
-    }
-    this.triggerAutoCopy();
-
-    // Restaurer le bouton LS
-    const lsButton = this.toolbar.element.querySelector(
-      '[data-command="letter-spacing"]'
-    );
-    if (lsButton) {
-      lsButton.innerHTML = "A ↔ A";
-      lsButton.title = "Lettrage (Letter-spacing)";
-      lsButton.classList.remove("editing");
-    }
-
-    this.currentSpan = null;
-
-    // Masquer la toolbar maintenant
-    this.toolbar.isVisible = false;
-    this.toolbar.element.classList.remove("visible");
-  }
-
-  triggerAutoCopy() {
-    clearTimeout(this.autoCopyTimeout);
-    this.autoCopyTimeout = setTimeout(() => {
-      const utilsExt = this.toolbar.extensions.find(
-        (ext) => ext.constructor.name === "UtilsExtension"
-      );
-      if (utilsExt) {
-        utilsExt.copyElementAsMarkdown(true);
-      }
-    }, 300);
-  }
-
-  // Méthode pour nettoyer lors du reset
-  resetLetterSpacing(element) {
-    const letterSpacingSpans = element.querySelectorAll('span[style*="--ls"]');
-    letterSpacingSpans.forEach((span) => {
-      if (span.classList.contains("editor-add")) {
-        // Remplacer par le contenu
-        const textNode = document.createTextNode(span.textContent);
-        span.parentNode.replaceChild(textNode, span);
-      }
-    });
-  }
-}
-
-// Extension pour espaces typographiques
-class SpacingExtension {
-  constructor(toolbar) {
-    this.toolbar = toolbar;
-    this.name = "FormattingExtension";
-  }
-
-  init() {}
-  destroy() {}
-
-  getButtons() {
-    return [
-      new ToolbarButton("nbsp", "⎵", "Espace insécable", () => {
-        this.insertNonBreakingSpace();
-      }),
-      new ToolbarButton("nnbsp", "⸱", "Espace insécable fine", () => {
-        this.insertNarrowNonBreakingSpace();
-      }),
-      new ToolbarButton(
-        "quotes-fr",
-        `${UNICODE_CHARS.LAQUO} ${UNICODE_CHARS.RAQUO}`,
-        "Guillemets français",
-        () => {
-          this.toggleFrenchQuotes();
-        }
-      ),
-      new ToolbarButton(
-        "quotes-en",
-        `${UNICODE_CHARS.LDQUO} ${UNICODE_CHARS.RDQUO}`,
-        "Guillemets anglais",
-        () => {
-          this.toggleEnglishQuotes();
-        }
-      ),
-      new ToolbarButton("br", "↵", "Saut de ligne", () => {
-        this.insertBreak();
-      }),
-      new ToolbarButton("reset", "⟲", "Supprimer transformations", () => {
-        this.resetTransformations();
-      }),
-    ];
-  }
-
-  insertNonBreakingSpace() {
-    const selection = window.getSelection();
-    if (selection.rangeCount > 0) {
-      const range = selection.getRangeAt(0);
-      range.deleteContents();
-
-      const span = document.createElement("span");
-      span.className = "i_space non-breaking-space editor-add";
-      span.textContent = UNICODE_CHARS.NO_BREAK_SPACE;
-
-      range.insertNode(span);
-      range.setStartAfter(span);
-      range.collapse(true);
-
-      selection.removeAllRanges();
-      try {
-        if (range.startContainer.isConnected) {
-          selection.addRange(range);
-        }
-      } catch (error) {
-        console.warn("Range invalide:", error);
-      }
-    }
-  }
-
-  insertNarrowNonBreakingSpace() {
-    const selection = window.getSelection();
-    if (selection.rangeCount > 0) {
-      const range = selection.getRangeAt(0);
-      range.deleteContents();
-
-      const span = document.createElement("span");
-      span.className = "i_space narrow-no-break-space editor-add";
-      span.textContent = UNICODE_CHARS.NO_BREAK_THIN_SPACE;
-
-      range.insertNode(span);
-      range.setStartAfter(span);
-      range.collapse(true);
-
-      selection.removeAllRanges();
-      try {
-        if (range.startContainer.isConnected) {
-          selection.addRange(range);
-        }
-      } catch (error) {
-        console.warn("Range invalide:", error);
-      }
-    }
-  }
-
-  toggleFrenchQuotes() {
-    const selection = this.toolbar.editor.selection.getCurrentSelection();
-    if (!selection || !selection.isValid) return;
-
-    const range = selection.range;
-
-    // Vérifier si déjà entouré de guillemets français
-    if (this.isWrappedInFrenchQuotes(range)) {
-      this.unwrapFrenchQuotes(range);
-    } else {
-      this.wrapWithFrenchQuotes(range);
-    }
-  }
-
-  toggleEnglishQuotes() {
-    const selection = this.toolbar.editor.selection.getCurrentSelection();
-    if (!selection || !selection.isValid) return;
-
-    const range = selection.range;
-
-    // Vérifier si déjà entouré de guillemets anglais
-    if (this.isWrappedInEnglishQuotes(range)) {
-      this.unwrapEnglishQuotes(range);
-    } else {
-      this.wrapWithEnglishQuotes(range);
-    }
-  }
-
-  wrapWithFrenchQuotes(range) {
-    const contents = range.extractContents();
-    const wrapper = document.createDocumentFragment();
-
-    // Guillemet ouvrant
-    const openQuote = document.createElement("span");
-    openQuote.className = "editor-add french-quote-open";
-    openQuote.textContent = UNICODE_CHARS.LAQUO;
-    wrapper.appendChild(openQuote);
-
-    // Espace fine
-    const openSpace = document.createElement("span");
-    openSpace.className = "i_space narrow-no-break-space editor-add";
-    openSpace.textContent = UNICODE_CHARS.NO_BREAK_THIN_SPACE;
-    wrapper.appendChild(openSpace);
-
-    // Contenu
-    wrapper.appendChild(contents);
-
-    // Espace fine
-    const closeSpace = document.createElement("span");
-    closeSpace.className = "i_space narrow-no-break-space editor-add";
-    closeSpace.textContent = UNICODE_CHARS.NO_BREAK_THIN_SPACE;
-    wrapper.appendChild(closeSpace);
-
-    // Guillemet fermant
-    const closeQuote = document.createElement("span");
-    closeQuote.className = "editor-add french-quote-close";
-    closeQuote.textContent = UNICODE_CHARS.RAQUO;
-    wrapper.appendChild(closeQuote);
-
-    range.insertNode(wrapper);
-
-    // Vérifier que le range est toujours valide avant de l'utiliser
-    try {
-      range.selectNodeContents(wrapper);
-      const selection = window.getSelection();
-      selection.removeAllRanges();
-
-      // Vérifier que le range est dans le document
-      if (range.startContainer.isConnected && range.endContainer.isConnected) {
-        selection.addRange(range);
-      }
-    } catch (error) {
-      console.warn("Range invalide après insertion:", error);
-    }
-  }
-
-  wrapWithEnglishQuotes(range) {
-    const contents = range.extractContents();
-    const wrapper = document.createDocumentFragment();
-
-    // Guillemet ouvrant anglais
-    const openQuote = document.createElement("span");
-    openQuote.className = "editor-add english-quote-open";
-    openQuote.textContent = UNICODE_CHARS.LDQUO;
-    wrapper.appendChild(openQuote);
-
-    // Contenu
-    wrapper.appendChild(contents);
-
-    // Guillemet fermant anglais
-    const closeQuote = document.createElement("span");
-    closeQuote.className = "editor-add english-quote-close";
-    closeQuote.textContent = UNICODE_CHARS.RDQUO;
-    wrapper.appendChild(closeQuote);
-
-    range.insertNode(wrapper);
-
-    // Vérifier que le range est toujours valide avant de l'utiliser
-    try {
-      range.selectNodeContents(wrapper);
-      const selection = window.getSelection();
-      selection.removeAllRanges();
-
-      // Vérifier que le range est dans le document
-      if (range.startContainer.isConnected && range.endContainer.isConnected) {
-        selection.addRange(range);
-      }
-    } catch (error) {
-      console.warn("Range invalide après insertion:", error);
-    }
-  }
-
-  isWrappedInFrenchQuotes(range) {
-    const container = range.commonAncestorContainer;
-    const parent =
-      container.nodeType === Node.TEXT_NODE
-        ? container.parentElement
-        : container;
-
-    // Chercher les éléments précédents et suivants pour détecter les guillemets français
-    return this.hasAdjacentFrenchQuotes(parent, range);
-  }
-
-  isWrappedInEnglishQuotes(range) {
-    const container = range.commonAncestorContainer;
-    const parent =
-      container.nodeType === Node.TEXT_NODE
-        ? container.parentElement
-        : container;
-
-    // Chercher les éléments précédents et suivants pour détecter les guillemets anglais
-    return this.hasAdjacentEnglishQuotes(parent, range);
-  }
-
-  hasAdjacentFrenchQuotes(element, range) {
-    const walker = document.createTreeWalker(
-      element,
-      NodeFilter.SHOW_ELEMENT,
-      null,
-      false
-    );
-
-    let hasOpenQuote = false;
-    let hasCloseQuote = false;
-    let foundStart = false;
-
-    while (walker.nextNode()) {
-      const node = walker.currentNode;
-
-      if (
-        node.classList &&
-        node.classList.contains("french-quote-open") &&
-        node.textContent === UNICODE_CHARS.LAQUO
-      ) {
-        if (!foundStart) hasOpenQuote = true;
-      }
-
-      if (range.intersectsNode(node)) {
-        foundStart = true;
-      }
-
-      if (
-        foundStart &&
-        node.classList &&
-        node.classList.contains("french-quote-close") &&
-        node.textContent === UNICODE_CHARS.RAQUO
-      ) {
-        hasCloseQuote = true;
-        break;
-      }
-    }
-
-    return hasOpenQuote && hasCloseQuote;
-  }
-
-  hasAdjacentEnglishQuotes(element, range) {
-    const walker = document.createTreeWalker(
-      element,
-      NodeFilter.SHOW_ELEMENT,
-      null,
-      false
-    );
-
-    let hasOpenQuote = false;
-    let hasCloseQuote = false;
-    let foundStart = false;
-
-    while (walker.nextNode()) {
-      const node = walker.currentNode;
-
-      if (
-        node.classList &&
-        node.classList.contains("english-quote-open") &&
-        node.textContent === UNICODE_CHARS.LDQUO
-      ) {
-        if (!foundStart) hasOpenQuote = true;
-      }
-
-      if (range.intersectsNode(node)) {
-        foundStart = true;
-      }
-
-      if (
-        foundStart &&
-        node.classList &&
-        node.classList.contains("english-quote-close") &&
-        node.textContent === UNICODE_CHARS.RDQUO
-      ) {
-        hasCloseQuote = true;
-        break;
-      }
-    }
-
-    return hasOpenQuote && hasCloseQuote;
-  }
-
-  unwrapFrenchQuotes(range) {
-    const container = range.commonAncestorContainer;
-    const parent =
-      container.nodeType === Node.TEXT_NODE
-        ? container.parentElement
-        : container;
-
-    // Supprimer tous les éléments de guillemets français autour de la sélection
-    const quotesToRemove = parent.querySelectorAll(
-      ".french-quote-open, .french-quote-close, .i_space.editor-add"
-    );
-    quotesToRemove.forEach((quote) => {
-      if (quote.parentNode) {
-        quote.parentNode.removeChild(quote);
-      }
-    });
-
-    parent.normalize();
-  }
-
-  unwrapEnglishQuotes(range) {
-    const container = range.commonAncestorContainer;
-    const parent =
-      container.nodeType === Node.TEXT_NODE
-        ? container.parentElement
-        : container;
-
-    // Supprimer tous les éléments de guillemets anglais autour de la sélection
-    const quotesToRemove = parent.querySelectorAll(
-      ".english-quote-open, .english-quote-close"
-    );
-    quotesToRemove.forEach((quote) => {
-      if (quote.parentNode) {
-        quote.parentNode.removeChild(quote);
-      }
-    });
-
-    parent.normalize();
-  }
-
-  insertBreak() {
-    const selection = window.getSelection();
-    if (selection.rangeCount > 0) {
-      const range = selection.getRangeAt(0);
-      range.deleteContents();
-      const br = document.createElement("br");
-      br.className = "editor-add";
-      range.insertNode(br);
-      range.setStartAfter(br);
-      range.collapse(true);
-
-      selection.removeAllRanges();
-      try {
-        if (range.startContainer.isConnected) {
-          selection.addRange(range);
-        }
-      } catch (error) {
-        console.warn("Range invalide:", error);
-      }
-    }
-  }
-
-  resetTransformations() {
-    const selection = window.getSelection();
-    if (selection.rangeCount === 0) return;
-
-    let element = selection.anchorNode;
-    if (element.nodeType === Node.TEXT_NODE) {
-      element = element.parentElement;
-    }
-
-    // Trouver l'élément éditable parent
-    while (element && !element.hasAttribute("data-editable")) {
-      element = element.parentElement;
-    }
-
-    if (!element) return;
-
-    // Nettoyer letter-spacing
-    const letterSpacingExt = this.toolbar.extensions.find(
-      (ext) => ext instanceof LetterSpacingExtension
-    );
-    if (letterSpacingExt) {
-      letterSpacingExt.resetLetterSpacing(element);
-    }
-
-    this.resetAllQuotes(element);
-
-    const remainingSpaceSpans = element.querySelectorAll(
-      "span.i_space.editor-add"
-    );
-    remainingSpaceSpans.forEach((span) => {
-      const textNode = document.createTextNode(" ");
-      span.parentNode.replaceChild(textNode, span);
-    });
-
-    // Supprimer les autres spans ajoutés par l'éditeur
-    const otherSpans = element.querySelectorAll(
-      "span.editor-add:not(.i_space)"
-    );
-    otherSpans.forEach((span) => {
-      if (!this.isQuoteSpan(span)) {
-        while (span.firstChild) {
-          span.parentNode.insertBefore(span.firstChild, span);
-        }
-        span.parentNode.removeChild(span);
-      }
-    });
-
-    // Supprimer formatage Bold/Italic/SmallCaps/Superscript/br ajoutés par l'éditeur
-    [
-      "strong.editor-add",
-      "b.editor-add",
-      "em.editor-add",
-      "i.editor-add",
-      "span.small-caps.editor-add",
-      "sup.editor-add",
-      "br.editor-add",
-    ].forEach((selector) => {
-      const elements = element.querySelectorAll(selector);
-      elements.forEach((el) => {
-        if (el.tagName === "BR") {
-          el.parentNode.removeChild(el);
-        } else {
-          while (el.firstChild) {
-            el.parentNode.insertBefore(el.firstChild, el);
-          }
-          el.parentNode.removeChild(el);
-        }
-      });
-    });
-
-    // Normaliser les nœuds de texte
-    element.normalize();
-  }
-
-  resetAllQuotes(element) {
-    // Approche globale pour nettoyer tous les guillemets
-    const allEditorSpans = element.querySelectorAll("span.editor-add");
-    const spansToRemove = [];
-
-    for (let i = 0; i < allEditorSpans.length; i++) {
-      const span = allEditorSpans[i];
-      const content = span.textContent;
-
-      // Identifier les guillemets et espaces typographiques en utilisant les constantes
-      // ou par leurs classes
-      if (
-        content === UNICODE_CHARS.LAQUO ||
-        content === UNICODE_CHARS.RAQUO ||
-        content === UNICODE_CHARS.LDQUO ||
-        content === UNICODE_CHARS.RDQUO ||
-        content === UNICODE_CHARS.NO_BREAK_THIN_SPACE ||
-        span.classList.contains("french-quote-open") ||
-        span.classList.contains("french-quote-close") ||
-        span.classList.contains("english-quote-open") ||
-        span.classList.contains("english-quote-close")
-      ) {
-        spansToRemove.push(span);
-      }
-    }
-
-    // Supprimer tous les spans identifiés
-    spansToRemove.forEach((span) => {
-      if (span.parentNode) {
-        span.parentNode.removeChild(span);
-      }
-    });
-  }
-
-  isQuoteSpan(span) {
-    const text = span.textContent;
-    return (
-      text === UNICODE_CHARS.LAQUO ||
-      text === UNICODE_CHARS.RAQUO ||
-      text === UNICODE_CHARS.LDQUO ||
-      text === UNICODE_CHARS.RDQUO ||
-      span.classList.contains("french-quote-open") ||
-      span.classList.contains("french-quote-close") ||
-      span.classList.contains("english-quote-open") ||
-      span.classList.contains("english-quote-close")
-    );
-  }
-}
-
-// Extension utilitaires
-class UtilsExtension {
-  constructor(toolbar) {
-    this.toolbar = toolbar;
-    this.name = "FormattingExtension";
-    this.recovery = new PagedMarkdownRecovery();
-  }
-  init() {}
-  destroy() {}
-
-  getButtons() {
-    return [
-      new ToolbarButton(
-        "copy-md",
-        `<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWNsaXBib2FyZC1jb3B5LWljb24gbHVjaWRlLWNsaXBib2FyZC1jb3B5Ij48cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI0IiB4PSI4IiB5PSIyIiByeD0iMSIgcnk9IjEiLz48cGF0aCBkPSJNOCA0SDZhMiAyIDAgMCAwLTIgMnYxNGEyIDIgMCAwIDAgMiAyaDEyYTIgMiAwIDAgMCAyLTJ2LTIiLz48cGF0aCBkPSJNMTYgNGgyYTIgMiAwIDAgMSAyIDJ2NCIvPjxwYXRoIGQ9Ik0yMSAxNEgxMSIvPjxwYXRoIGQ9Im0xNSAxMC00IDQgNCA0Ii8+PC9zdmc+" style="width: 16px; height: 16px; filter: invert(1);" alt="Copy">`,
-        "Copier l'élément en Markdown",
-        () => {
-          this.copyElementAsMarkdown();
-        }
-      ),
-      new ToolbarButton(
-        "export-md",
-        `<img src=" data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWZpbGUtZG93bi1pY29uIGx1Y2lkZS1maWxlLWRvd24iPjxwYXRoIGQ9Ik0xNSAySDZhMiAyIDAgMCAwLTIgMnYxNmEyIDIgMCAwIDAgMiAyaDEyYTIgMiAwIDAgMCAyLTJWN1oiLz48cGF0aCBkPSJNMTQgMnY0YTIgMiAwIDAgMCAyIDJoNCIvPjxwYXRoIGQ9Ik0xMiAxOHYtNiIvPjxwYXRoIGQ9Im05IDE1IDMgMyAzLTMiLz48L3N2Zz4=" style="width: 16px; height: 16px; filter: invert(1);" alt="Copy">`,
-        "Télécharger le fichier markdown",
-        () => {
-          this.recovery.showPageRangeModal(); // Au lieu de exportPageRange()
-        }
-      ),
-    ];
-  }
-
-  exportPageRange() {
-    const totalPages = this.recovery.getTotalPages();
-    const input = prompt(
-      `Pages à exporter (ex: 1-5 ou 3,7,9)\nTotal: ${totalPages} pages`
-    );
-
-    if (!input) return;
-
-    // Parse l'input
-    if (input.includes("-")) {
-      const [start, end] = input.split("-").map((n) => parseInt(n.trim()));
-      this.recovery.exportPageRange(start, end, `pages-${start}-${end}.md`);
-    } else if (input.includes(",")) {
-      // Pages individuelles - implémentation simple
-      const pages = input.split(",").map((n) => parseInt(n.trim()));
-      const start = Math.min(...pages);
-      const end = Math.max(...pages);
-      this.recovery.exportPageRange(start, end, `pages-selection.md`);
-    } else {
-      const page = parseInt(input);
-      this.recovery.exportPageRange(page, page, `page-${page}.md`);
-    }
-  }
-
-  analyzeDocument() {
-    const analysis = this.recovery.analyzeFragmentation();
-
-    console.group("📊 Analyse du document");
-    console.log(`📄 Pages totales: ${analysis.totalPages}`);
-    console.log(`🧩 Fragments totaux: ${analysis.totalFragments}`);
-    console.log(`✂️ Éléments scindés: ${analysis.splitElements}`);
-    console.log(`✅ Éléments intacts: ${analysis.intactElements}`);
-
-    if (analysis.details.length > 0) {
-      console.table(analysis.details);
-    }
-    console.groupEnd();
-
-    // Afficher dans l'interface
-    alert(
-      `Document analysé:\n• ${analysis.totalPages} pages\n• ${analysis.splitElements} éléments scindés\n• ${analysis.intactElements} éléments intacts\n\nVoir console pour détails`
-    );
-  }
-
-  copyElementAsMarkdown(silent) {
-    // Focus le document avant copie
-    window.focus();
-    document.body.focus();
-
-    if (typeof silent === "undefined") silent = false;
-    const selection = window.getSelection();
-    if (selection.rangeCount === 0) return;
-
-    let element = selection.anchorNode;
-    if (element.nodeType === Node.TEXT_NODE) {
-      element = element.parentElement;
-    }
-
-    // Chercher l'élément éditable
-    while (element && !element.hasAttribute("data-editable")) {
-      element = element.parentElement;
-    }
-
-    if (!element) return;
-
-    // Trouver le parent blockquote/figure/etc si existe
-    let containerElement = element.parentElement;
-    while (containerElement && containerElement !== document.body) {
-      if (["BLOCKQUOTE", "UL", "OL"].includes(containerElement.tagName)) {
-        element = containerElement;
-        break;
-      }
-      containerElement = containerElement.parentElement;
-    }
-
-    // Reconstituer l'élément complet si scindé par PagedJS
-    const completeHTML = this.reconstructSplitElement(element);
-    const markdown = this.toolbar.turndown.turndown(completeHTML);
-
-    navigator.clipboard
-      .writeText(markdown)
-      .then(() => {
-        if (!silent) {
-          this.toolbar.showCopyFeedback();
-        }
-      })
-      .catch((err) => {
-        console.error("Erreur copie:", err);
-      });
-  }
-
-  reconstructSplitElement(element) {
-    const dataRef = element.getAttribute("data-ref");
-
-    if (!dataRef) {
-      return element.outerHTML;
-    }
-
-    const fragments = document.querySelectorAll(`[data-ref="${dataRef}"]`);
-
-    if (fragments.length <= 1) {
-      return element.outerHTML;
-    }
-
-    // Pour éléments scindés, reconstituer avec balises
-    const firstFragment = fragments[0];
-    let completeContent = "";
-    fragments.forEach((fragment) => {
-      completeContent += fragment.innerHTML;
-    });
-
-    const tagName = firstFragment.tagName.toLowerCase();
-    return `<${tagName}>${completeContent}</${tagName}>`;
-  }
-}
-
-class ConfigSelectExtension {
-  constructor(toolbar, selectsConfig) {
-    this.toolbar = toolbar;
-    this.selectsConfig = selectsConfig;
-    this.name = "ConfigSelectExtension";
-  }
-
-  init() {}
-  destroy() {}
-
-  getButtons() {
-    return this.selectsConfig.map(
-      (selectConfig) =>
-        new ToolbarSelect(
-          selectConfig.id,
-          selectConfig.icon,
-          selectConfig.title,
-          selectConfig.options,
-          (value) => this.insertChar(selectConfig, value)
-        )
-    );
-  }
-
-  insertChar(selectConfig, value) {
-    const option = selectConfig.options.find((o) => o.value === value);
-    if (option?.char) {
-      this.toolbar.editor.commands.insertText(option.char);
-    }
-  }
-}
-
 export class Toolbar {
   constructor(editor, customConfig = null) {
     this.editor = editor;
     this.config = customConfig || TOOLBAR_CONFIG;
+    
+    // Validation de la configuration avant de continuer
+    const validationReport = validateToolbarConfiguration(this.config);
+    if (!validationReport.isValid) {
+      console.error("❌ Configuration de toolbar invalide:", validationReport.errors);
+      // On continue quand même avec les éléments valides pour éviter un crash total
+    }
+    
+    // État de la toolbar
     this.element = null;
     this.isVisible = false;
+    
+    // Maps pour stocker les éléments créés, organisés par type pour un accès rapide
     this.buttons = new Map();
-    this.extensions = [];
-
+    this.selects = new Map();
+    
+    // Initialisation du système de recovery pour les actions d'export
+    // Cette instance sera accessible via this.recovery par les actions qui en ont besoin
+    this.recovery = new PagedMarkdownRecovery();
+    
+    // Initialisation des composants
     this.setupTurndown();
-    this.registerExtensions();
     this.createToolbar();
   }
 
-  getExtension(name) {
-    return this.extensions.find((ext) => ext.name === name);
-  }
-
+  /**
+   * Configuration du service de conversion HTML vers Markdown
+   * Cette partie reste identique à l'ancienne version car elle ne dépend pas
+   * de la structure des boutons
+   */
   setupTurndown() {
     this.turndown = new window.TurndownService({
       headingStyle: "atx",
@@ -959,170 +60,145 @@ export class Toolbar {
     });
 
     this.turndown.use(Object.values(turndownPlugins));
-
     window.mainTurndownService = this.turndown;
   }
 
-  registerExtensions() {
-    this.extensions = [
-      new FormattingExtension(this),
-      new LetterSpacingExtension(this),
-      new SpacingExtension(this),
-      new UtilsExtension(this),
-    ];
-
-    if (this.config.selects?.length > 0) {
-      this.extensions.push(
-        new ConfigSelectExtension(this, this.config.selects)
-      );
-    }
-
-    this.activeButtons = this.config.buttons;
-  }
-
+  /**
+   * Création de la toolbar - Version simplifiée utilisant la factory
+   * 
+   * Cette méthode remplace l'ancienne logique complexe avec extensions multiples
+   * par une approche directe et linéaire basée sur la configuration.
+   */
   createToolbar() {
+    // Création de l'élément DOM principal
     this.element = document.createElement("div");
     this.element.className = "paged-editor-toolbar";
-    this.selects = new Map();
 
+    // Génération des éléments via la factory
+    // Cette boucle remplace toute la logique des extensions multiples
     let elementsHTML = "";
-
-    // Créer un mapping de tous les éléments disponibles
-    const availableElements = new Map();
-    this.extensions.forEach((extension) => {
-      extension.getButtons().forEach((item) => {
-        availableElements.set(item.command, item);
-      });
-    });
-
-    // Parcourir la config dans l'ordre défini
-    this.config.elements.forEach((configElement) => {
-      if (configElement.type === "button") {
-        const item = availableElements.get(configElement.id);
-        if (item instanceof ToolbarButton) {
-          this.buttons.set(item.command, item);
-          elementsHTML += item.render();
-        }
-      } else if (configElement.type === "select") {
-        // Créer le select directement depuis la config
-        const selectItem = new ToolbarSelect(
-          configElement.id,
-          configElement.icon,
-          configElement.title,
-          configElement.options,
-          (value) => this.handleSelectAction(configElement, value)
-        );
-        this.selects.set(selectItem.command, selectItem);
-        elementsHTML += selectItem.render();
+    
+    this.config.elements.forEach(actionId => {
+      // La factory se charge de créer l'élément approprié selon le type d'action
+      const element = UIFactory.createElement(actionId, this.editor);
+      
+      if (!element) {
+        // L'élément n'a pas pu être créé (action inconnue), on continue
+        return;
       }
+      
+      // Organisation des éléments créés dans les maps appropriées pour un accès rapide
+      if (element instanceof ToolbarButton) {
+        this.buttons.set(actionId, element);
+      } else if (element instanceof ToolbarSelect) {
+        this.selects.set(actionId, element);
+      }
+      
+      // Ajout du HTML généré au DOM
+      elementsHTML += element.render();
     });
 
+    // Insertion du HTML dans le DOM et activation des événements
     this.element.innerHTML = elementsHTML;
     document.body.appendChild(this.element);
     this.bindEvents();
   }
 
-  handleSelectAction(configElement, value) {
-    const option = configElement.options.find((o) => o.value === value);
-    if (option?.char) {
-      this.editor.commands.insertText(option.char);
-    }
-  }
-
+  /**
+   * Gestion des événements - Version adaptée pour la nouvelle architecture
+   * 
+   * Cette méthode utilise maintenant les propriétés étendues des éléments
+   * pour déterminer le comportement approprié
+   */
   bindEvents() {
-    // Prevent default sur mousedown pour éviter la perte de focus
+    // Prévention du comportement par défaut sur mousedown pour éviter la perte de sélection
     this.element.addEventListener("mousedown", (e) => {
       e.preventDefault();
     });
 
+    // Gestion unifiée des clics sur les boutons et les déclencheurs de select
     this.element.addEventListener("click", (e) => {
-      e.preventDefault();
-
-      // Gestion click sur option de select
-      const option = e.target.closest(".select-option");
-      if (option) {
-        const wrapper = option.closest(".toolbar-select-wrapper");
-        const command = wrapper.dataset.command;
-        const value = option.dataset.value;
-
-        if (value) {
-          const selectObj = this.selects.get(command);
-          if (selectObj?.action) {
-            selectObj.action(value);
-          }
-        }
-        this.hideDropdown(wrapper);
+      // Gestion des déclencheurs de menu déroulant (select custom)
+      const selectTrigger = e.target.closest(".select-trigger");
+      if (selectTrigger) {
+        e.preventDefault();
+        this.toggleCustomDropdown(selectTrigger);
         return;
       }
 
-      // Gestion click sur trigger de select
-      const trigger = e.target.closest(".select-trigger");
-      if (trigger) {
-        this.toggleDropdown(trigger);
+      // Gestion des options dans les menus déroulants custom
+      const customOption = e.target.closest(".custom-option");
+      if (customOption) {
+        this.handleCustomOptionClick(customOption);
         return;
       }
 
-      // Gestion boutons normaux
-      const button = e.target.closest("button[data-command]");
-      if (button && !button.classList.contains("select-trigger")) {
-        const command = button.dataset.command;
-        const buttonObj = this.buttons.get(command);
-        if (buttonObj?.action) {
-          buttonObj.action();
-          this.updateButtonStates();
-        }
-      }
-    });
+      // Gestion des boutons classiques
+      const button = e.target.closest("button");
+      if (!button) return;
 
-    // Fermer dropdowns quand on clique ailleurs
-    document.addEventListener("click", (e) => {
-      if (!this.element.contains(e.target)) {
-        this.hideAllDropdowns();
-      }
-    });
-
-    // Événement spécial pour copy-md
-    document.addEventListener("click", (e) => {
-      const button = e.target.closest('button[data-command="copy-md"]');
-      if (button && this.element.contains(button)) {
-        const buttonObj = this.buttons.get("copy-md");
-        if (buttonObj?.action) {
-          buttonObj.action();
+      const command = button.dataset.command;
+      const buttonElement = this.buttons.get(command);
+      
+      if (buttonElement && buttonElement.action) {
+        // Exécution de l'action du bouton
+        buttonElement.action();
+        
+        // Mise à jour de l'état des boutons après l'action
+        this.updateButtonStates();
+        
+        // Gestion des feedbacks spéciaux pour certains boutons utilitaires
+        if (buttonElement.hasSpecialFeedback) {
+          this.showCopyFeedback(button);
         }
       }
     });
   }
 
-  toggleDropdown(trigger) {
+  /**
+   * Gestion des menus déroulants personnalisés
+   * 
+   * Cette méthode remplace la gestion des <select> HTML par des div stylables
+   */
+  toggleCustomDropdown(trigger) {
     const wrapper = trigger.closest(".toolbar-select-wrapper");
-    if (!wrapper) return;
-
-    const dropdown = wrapper.querySelector(".select-dropdown");
-    if (!dropdown) return;
-
-    // Fermer tous les autres dropdowns
-    this.hideAllDropdowns();
-
-    // Toggle ce dropdown
-    const isVisible = dropdown.style.display === "block";
-    dropdown.style.display = isVisible ? "none" : "block";
-  }
-
-  hideDropdown(wrapper) {
-    if (!wrapper) return;
-    const dropdown = wrapper.querySelector(".select-dropdown");
-    if (dropdown) {
-      dropdown.style.display = "none";
-    }
-  }
-
-  hideAllDropdowns() {
-    const dropdowns = this.element.querySelectorAll(".select-dropdown");
-    dropdowns.forEach((dropdown) => {
-      dropdown.style.display = "none";
+    const dropdown = wrapper.querySelector(".custom-dropdown");
+    
+    // Fermer tous les autres dropdowns ouverts avant d'ouvrir celui-ci
+    this.element.querySelectorAll(".custom-dropdown").forEach(otherDropdown => {
+      if (otherDropdown !== dropdown) {
+        otherDropdown.style.display = "none";
+      }
     });
+    
+    // Toggle de l'état du dropdown cliqué
+    const isCurrentlyVisible = dropdown.style.display !== "none";
+    dropdown.style.display = isCurrentlyVisible ? "none" : "block";
   }
 
+  /**
+   * Gestion du clic sur une option dans un menu déroulant personnalisé
+   */
+  handleCustomOptionClick(optionElement) {
+    const wrapper = optionElement.closest(".toolbar-select-wrapper");
+    const command = wrapper.dataset.command;
+    const value = optionElement.dataset.value;
+    
+    // Récupération de l'élément select et exécution de son action
+    const selectElement = this.selects.get(command);
+    if (selectElement && selectElement.action && value) {
+      selectElement.action(value);
+    }
+    
+    // Fermeture du dropdown après sélection
+    const dropdown = wrapper.querySelector(".custom-dropdown");
+    dropdown.style.display = "none";
+  }
+
+  /**
+   * Affichage et positionnement de la toolbar
+   * Cette logique reste identique à l'ancienne version
+   */
   show(selection) {
     if (!selection || !selection.range) return;
 
@@ -1133,27 +209,28 @@ export class Toolbar {
     this.updateButtonStates();
   }
 
+  /**
+   * Masquage de la toolbar avec gestion des cas spéciaux
+   */
   hide() {
-    // Ne pas masquer si l'input letter-spacing est actif
-    const letterSpacingExt = this.extensions.find(
-      (ext) => ext instanceof LetterSpacingExtension
-    );
-    if (
-      letterSpacingExt &&
-      letterSpacingExt.input &&
-      letterSpacingExt.input.style.display !== "none"
-    ) {
-      return;
-    }
+    // Fermeture de tous les dropdowns ouverts lors du masquage
+    this.element.querySelectorAll(".custom-dropdown").forEach(dropdown => {
+      dropdown.style.display = "none";
+    });
 
     this.isVisible = false;
     this.element.classList.remove("visible");
   }
 
+  /**
+   * Positionnement de la toolbar par rapport à la sélection
+   * Cette logique reste identique à l'ancienne version car elle ne dépend pas
+   * de la structure interne des boutons
+   */
   positionToolbar(range) {
     const rect = range.getBoundingClientRect();
 
-    // Vérifier si les coordonnées sont valides
+    // Vérification de la validité des coordonnées
     if (rect.width === 0 && rect.height === 0) {
       this.hide();
       return;
@@ -1161,110 +238,131 @@ export class Toolbar {
 
     const toolbarRect = this.element.getBoundingClientRect();
 
+    // Calcul de la position horizontale centrée par rapport à la sélection
     let left = rect.left + rect.width / 2 - toolbarRect.width / 2;
     let top = rect.top - toolbarRect.height - 50;
 
+    // Ajustements pour éviter le débordement de l'écran
     const margin = 10;
     if (left < margin) left = margin;
     if (left + toolbarRect.width > window.innerWidth - margin) {
       left = window.innerWidth - toolbarRect.width - margin;
     }
 
+    // Si pas assez de place au-dessus, afficher en-dessous de la sélection
     if (top < margin) {
       top = rect.bottom + 20;
     }
 
+    // Application de la position avec prise en compte du scroll
     this.element.style.left = `${left + window.scrollX}px`;
     this.element.style.top = `${top + window.scrollY}px`;
   }
 
+  /**
+   * Mise à jour des états des boutons - Version simplifiée
+   * 
+   * Cette méthode utilise maintenant les fonctions checkActive des boutons
+   * plutôt que de dupliquer la logique de vérification
+   */
   updateButtonStates() {
     const selection = window.getSelection();
     if (selection.rangeCount === 0) return;
 
+    // Détermination de l'élément de référence pour les vérifications d'état
     const range = selection.getRangeAt(0);
     const ancestor = range.commonAncestorContainer;
-    const element =
-      ancestor.nodeType === Node.TEXT_NODE ? ancestor.parentElement : ancestor;
+    const element = ancestor.nodeType === Node.TEXT_NODE ? 
+      ancestor.parentElement : ancestor;
 
-    const isBold = this.isFormatActive("bold", element);
-    const isItalic = this.isFormatActive("italic", element);
-    const isSmallCaps = this.isFormatActive("smallcaps", element);
-    const isSuperscript = this.isFormatActive("superscript", element);
-    const hasLetterSpacing = this.hasLetterSpacing(element);
-
-    this.element
-      .querySelector('[data-command="smallcaps"]')
-      ?.classList.toggle("active", isSmallCaps);
-    this.element
-      .querySelector('[data-command="superscript"]')
-      ?.classList.toggle("active", isSuperscript);
-    this.element
-      .querySelector('[data-command="letter-spacing"]')
-      ?.classList.toggle("active", hasLetterSpacing);
-  }
-
-  isFormatActive(format, element) {
-    const tags = {
-      bold: ["B", "STRONG"],
-      italic: ["I", "EM"],
-      smallcaps: ["SPAN"],
-      superscript: ["SUP"],
-    };
-
-    let current = element;
-    while (current && current !== document.body) {
-      if (format === "smallcaps") {
-        if (
-          current.tagName === "SPAN" &&
-          current.classList.contains("small-caps")
-        ) {
-          return true;
-        }
-      } else if (format === "superscript") {
-        if (current.tagName === "SUP") {
-          return true;
-        }
-      } else if (tags[format] && tags[format].includes(current.tagName)) {
-        return true;
+    // Mise à jour de l'état actif de chaque bouton toggle
+    this.buttons.forEach((buttonElement, actionId) => {
+      if (buttonElement.isToggle) {
+        const isActive = buttonElement.updateActiveState(element);
+        const domButton = this.element.querySelector(`[data-command="${actionId}"]`);
+        domButton?.classList.toggle("active", isActive);
       }
-      current = current.parentElement;
-    }
-
-    return false;
+    });
   }
 
-  hasLetterSpacing(element) {
-    let current = element;
-    while (current && current !== document.body) {
-      if (
-        current.tagName === "SPAN" &&
-        current.style.getPropertyValue("--ls") !== ""
-      ) {
-        return true;
-      }
-      current = current.parentElement;
-    }
-
-    return false;
-  }
-
-  showCopyFeedback() {
-    const button = this.element.querySelector('[data-command="copy-md"]');
-    const originalText = button.innerHTML;
+  /**
+   * Affichage du feedback visuel pour les boutons avec retour d'information
+   * Cette méthode reste identique à l'ancienne version
+   */
+  showCopyFeedback(button) {
+    const originalHTML = button.innerHTML;
     const checkIcon = `<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjEwIi8+PHBhdGggZD0ibTkgMTIgMiAyIDQtNCIvPjwvc3ZnPg==" style="width: 16px; height: 16px; filter: invert(1);" alt="Check">`;
+    
     button.innerHTML = checkIcon;
     button.classList.add("success");
 
     setTimeout(() => {
-      button.innerHTML = originalText;
+      button.innerHTML = originalHTML;
       button.classList.remove("success");
     }, 1000);
   }
 
+  /**
+   * Méthode utilitaire pour récupérer une référence à une action spécifique
+   * Ceci peut être utile pour les intégrations externes ou le debugging
+   */
+  getAction(actionId) {
+    return ACTIONS_REGISTRY[actionId] || null;
+  }
+
+  /**
+   * Méthode pour ajouter dynamiquement des actions à la toolbar
+   * Ceci permet d'étendre la toolbar après sa création initiale
+   */
+  addAction(actionId, position = -1) {
+    if (position === -1) {
+      this.config.elements.push(actionId);
+    } else {
+      this.config.elements.splice(position, 0, actionId);
+    }
+    
+    // Reconstruction de la toolbar avec le nouvel élément
+    this.element.innerHTML = "";
+    this.buttons.clear();
+    this.selects.clear();
+    this.createToolbar();
+  }
+
+  /**
+   * Méthode pour supprimer des actions de la toolbar
+   */
+  removeAction(actionId) {
+    const index = this.config.elements.indexOf(actionId);
+    if (index > -1) {
+      this.config.elements.splice(index, 1);
+      
+      // Reconstruction de la toolbar sans l'élément supprimé
+      this.element.innerHTML = "";
+      this.buttons.clear();
+      this.selects.clear();
+      this.createToolbar();
+    }
+  }
+
+  /**
+   * Nettoyage et destruction de la toolbar
+   */
   destroy() {
+    // Fermeture de tous les dropdowns avant destruction
+    if (this.element) {
+      this.element.querySelectorAll(".custom-dropdown").forEach(dropdown => {
+        dropdown.style.display = "none";
+      });
+    }
+
+    // Suppression de l'élément DOM
     if (this.element && this.element.parentNode) {
       this.element.parentNode.removeChild(this.element);
     }
+
+    // Nettoyage des références
+    this.buttons.clear();
+    this.selects.clear();
+    this.element = null;
   }
 }

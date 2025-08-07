@@ -1,30 +1,23 @@
+/**
+ * @name TOOLBAR_CONFIG
+ * @description Configuration simple de la toolbar
+ * 
+ * Liste ordonnée des actions à afficher dans la toolbar.
+ * Chaque identifiant correspond à une action définie dans actions.js.
+ */
 export const TOOLBAR_CONFIG = {
   elements: [
-    { type: "button", id: "smallcaps" },
-    { type: "button", id: "superscript" },
-    {
-      type: "select",
-      id: "accented-caps",
-      icon: "Á",
-      title: "Capitales accentuées",
-      options: [
-        { value: "A_acute", label: "Á", char: "Á" },
-        { value: "A_grave", label: "À", char: "À" },
-        { value: "A_circ", label: "Â", char: "Â" },
-        { value: "C_cedilla", label: "Ç", char: "Ç" },
-        { value: "E_acute", label: "É", char: "É" },
-        { value: "E_grave", label: "È", char: "È" },
-        { value: "E_circ", label: "Ê", char: "Ê" },
-      ],
-    },
-    { type: "button", id: "letter-spacing" },
-    { type: "button", id: "nbsp" },
-    { type: "button", id: "nnbsp" },
-    { type: "button", id: "quotes-fr" },
-    { type: "button", id: "quotes-en" },
-    { type: "button", id: "br" },
-    { type: "button", id: "reset" },
-    { type: "button", id: "copy-md" },
-    { type: "button", id: "export-md" },
-  ],
+    'smallcaps',
+    'superscript', 
+    'accented-caps',
+    'letter-spacing',
+    'nbsp',
+    'nnbsp',
+    'quotes-fr',
+    'quotes-en',
+    'br',
+    'reset',
+    'copy-md',
+    'export-md'
+  ]
 };
