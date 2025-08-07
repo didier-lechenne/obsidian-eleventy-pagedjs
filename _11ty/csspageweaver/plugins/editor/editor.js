@@ -190,30 +190,26 @@ export default class Editor extends Handler {
   }
 
   handleShortcuts(event) {
-    if (event.ctrlKey || event.metaKey) {
-      switch (event.key.toLowerCase()) {
-        case "b":
+  if (event.ctrlKey || event.metaKey) {
+    switch (event.key.toLowerCase()) {
+      case "b":
+        event.preventDefault();
+        this.commands.toggleBold();
+        break;
+      case "i":
+        event.preventDefault();
+        this.commands.toggleItalic();
+        break;
+      case "c":
+        if (event.shiftKey) {
           event.preventDefault();
-          this.commands.toggleBold();
-          break;
-        case "i":
-          event.preventDefault();
-          this.commands.toggleItalic();
-          break;
-        case "c":
-          if (event.shiftKey) {
-            event.preventDefault();
-            const utilsExt = this.toolbar.extensions.find(
-              (ext) => ext.constructor.name === "UtilsExtension"
-            );
-            if (utilsExt) {
-              utilsExt.copyElementAsMarkdown();
-            }
-          }
-          break;
-      }
+          // Appeler directement la méthode centralisée
+          this.commands.copyElementAsMarkdown({ silent: false, auto: false });
+        }
+        break;
     }
   }
+}
 
   updateSelection() {
     if (!this.isActive) return;
@@ -246,17 +242,13 @@ export default class Editor extends Handler {
   }
 
   autoCopyToClipboard() {
-    // Délai pour éviter la copie répétée lors du drag
-    clearTimeout(this.autoCopyTimeout);
-    this.autoCopyTimeout = setTimeout(() => {
-      const utilsExt = this.toolbar.extensions.find(
-        (ext) => ext.constructor.name === "UtilsExtension"
-      );
-      if (utilsExt) {
-        utilsExt.copyElementAsMarkdown(true); // true = mode silencieux
-      }
-    }, 300);
-  }
+  // Délai pour éviter la copie répétée lors du drag
+  clearTimeout(this.autoCopyTimeout);
+  this.autoCopyTimeout = setTimeout(() => {
+    // Appeler directement la méthode centralisée dans Commands
+    this.commands.performAutoCopy();
+  }, 300);
+}
 
   // === NOUVELLES MÉTHODES POUR L'EXPORT TEMPS RÉEL ===
 
@@ -272,26 +264,21 @@ export default class Editor extends Handler {
     clearTimeout(this.exportTimeout);
   }
 
-  triggerRealtimeExport() {
-    if (!this.realtimeExport.enabled || !this.realtimeExport.callback) return;
+ triggerRealtimeExport() {
+  if (!this.realtimeExport.enabled || !this.realtimeExport.callback) return;
 
-    // Debounce pour éviter trop d'appels
-    clearTimeout(this.exportTimeout);
-    this.exportTimeout = setTimeout(() => {
-      const utilsExt = this.toolbar.extensions.find(
-        ext => ext.constructor.name === "UtilsExtension"
-      );
-      
-      if (utilsExt) {
-        const activeElement = document.activeElement;
-        if (activeElement && this.isInEditableElement(activeElement)) {
-          // Générer le markdown de l'élément actuel
-          const markdown = utilsExt.generateMarkdownFromElement(activeElement);
-          this.realtimeExport.callback(markdown, activeElement);
-        }
-      }
-    }, this.realtimeExport.debounceDelay);
-  }
+  // Debounce pour éviter trop d'appels
+  clearTimeout(this.exportTimeout);
+  this.exportTimeout = setTimeout(() => {
+    const activeElement = document.activeElement;
+    if (activeElement && this.isInEditableElement(activeElement)) {
+      // Générer le markdown directement avec Commands
+      const completeHTML = this.commands.reconstructSplitElement(activeElement);
+      const markdown = this.toolbar.turndown.turndown(completeHTML);
+      this.realtimeExport.callback(markdown, activeElement);
+    }
+  }, this.realtimeExport.debounceDelay);
+}
 
   // === MÉTHODES EXISTANTES ===
 

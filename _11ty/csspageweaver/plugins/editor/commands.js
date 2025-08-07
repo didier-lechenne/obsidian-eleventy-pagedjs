@@ -64,67 +64,210 @@ export class Commands {
     }
   }
 
-  toggleLetterSpacing() {
-    // Déléguer à l'extension LetterSpacing via la toolbar
-    const letterSpacingExt = this.editor.toolbar.extensions.find(
-      (ext) => ext.constructor.name === "LetterSpacingExtension"
-    );
+toggleLetterSpacing() {
+  const selection = this.editor.selection.getCurrentSelection();
+  if (!selection || !selection.isValid) return;
 
-    if (letterSpacingExt) {
-      letterSpacingExt.handleLetterSpacingToggle();
+  const range = selection.range;
+
+  // Vérifier si déjà dans un span avec letter-spacing
+  const existingSpan = this.findLetterSpacingSpan(range);
+
+  if (existingSpan) {
+    // Si span existe, montrer l'interface d'édition
+    this.showLetterSpacingInterface(existingSpan);
+  } else {
+    // Créer un nouveau span avec letter-spacing
+    const newSpan = this.wrapWithLetterSpacing(range);
+    this.showLetterSpacingInterface(newSpan);
+  }
+}
+
+findLetterSpacingSpan(range) {
+  let container = range.commonAncestorContainer;
+  if (container.nodeType === Node.TEXT_NODE) {
+    container = container.parentElement;
+  }
+
+  // Chercher dans les parents un span avec style --ls
+  let current = container;
+  while (current && current !== document.body) {
+    if (
+      current.tagName === "SPAN" &&
+      current.style.getPropertyValue("--ls") &&
+      current.classList.contains("editor-add")
+    ) {
+      return current;
+    }
+    current = current.parentElement;
+  }
+
+  // Chercher dans les enfants si pas trouvé dans les parents
+  const spans = container.querySelectorAll('span[style*="--ls"].editor-add');
+  for (const span of spans) {
+    if (range.intersectsNode(span)) {
+      return span;
     }
   }
 
-  findLetterSpacingSpan(range) {
-    let container = range.commonAncestorContainer;
-    if (container.nodeType === Node.TEXT_NODE) {
-      container = container.parentElement;
-    }
+  return null;
+}
 
-    let current = container;
-    while (current && current !== document.body) {
-      if (
-        current.tagName === "SPAN" &&
-        current.style.getPropertyValue("--ls") !== ""
-      ) {
-        return current;
-      }
-      current = current.parentElement;
-    }
+wrapWithLetterSpacing(range) {
+  const contents = range.extractContents();
+  const span = document.createElement("span");
+  
+  // Appliquer les classes et style par défaut
+  span.className = "editor-add";
+  span.style.setProperty("--ls", "0");
+  span.appendChild(contents);
 
-    return null;
-  }
+  range.insertNode(span);
 
-  wrapWithLetterSpacing(range) {
-    const contents = range.extractContents();
-    const span = document.createElement("span");
-    span.style.setProperty("--ls", "0");
-    span.className = "editor-add";
-    span.appendChild(contents);
-
-    range.insertNode(span);
+  try {
     range.selectNodeContents(span);
-
     const selection = window.getSelection();
     selection.removeAllRanges();
-    selection.addRange(range);
-
-    return span;
-  }
-
-  toggleFrenchQuotes() {
-    const selection = this.editor.selection.getCurrentSelection();
-    if (!selection || !selection.isValid) return;
-
-    const range = selection.range;
-
-    // Vérifier si déjà entouré de guillemets français
-    if (this.isWrappedInFrenchQuotes(range)) {
-      this.unwrapFrenchQuotes(range);
-    } else {
-      this.wrapWithFrenchQuotes(range);
+    
+    if (range.startContainer.isConnected && range.endContainer.isConnected) {
+      selection.addRange(range);
     }
+  } catch (error) {
+    console.warn("Range invalide après création du span letter-spacing:", error);
   }
+
+  return span;
+}
+
+showLetterSpacingInterface(span) {
+  // Trouver le bouton letter-spacing dans la toolbar
+  const lsButton = this.editor.toolbar.element?.querySelector('[data-command="letter-spacing"]');
+  
+  if (!lsButton) {
+    console.warn("Bouton letter-spacing non trouvé dans la toolbar");
+    return;
+  }
+
+  // Créer l'interface d'édition si elle n'existe pas
+  if (!this.letterSpacingInput) {
+    this.createLetterSpacingInput(span);
+  }
+
+  // Configurer l'input avec la valeur actuelle
+  const currentValue = span.style.getPropertyValue("--ls") || "0";
+  this.letterSpacingInput.value = currentValue;
+  this.letterSpacingInput.setAttribute('data-target-span-id', span.getAttribute('data-ls-id') || this.generateSpanId(span));
+  
+  // Changer l'apparence du bouton pour indiquer le mode édition
+  const checkIcon = '✓';
+  lsButton.innerHTML = checkIcon;
+  lsButton.title = "Valider letter-spacing (Entrée)";
+  lsButton.classList.add("editing");
+  
+  // Positionner et afficher l'input
+  this.positionLetterSpacingInput();
+  this.letterSpacingInput.style.display = "block";
+  this.letterSpacingInput.focus();
+  this.letterSpacingInput.select();
+}
+
+createLetterSpacingInput(targetSpan) {
+  this.letterSpacingInput = document.createElement("input");
+  this.letterSpacingInput.type = "number";
+  this.letterSpacingInput.step = "1";
+  this.letterSpacingInput.className = "letter-spacing-input";
+  this.letterSpacingInput.style.cssText = `
+    position: absolute;
+    padding: 4px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 12px;
+    width: 60px;
+    z-index: 10000;
+    background: white;
+  `;
+
+  // Gestionnaire pour les modifications en temps réel
+  this.letterSpacingInput.addEventListener("input", (e) => {
+    const spanId = e.target.getAttribute('data-target-span-id');
+    const span = document.querySelector(`[data-ls-id="${spanId}"]`);
+    
+    if (span) {
+      const value = e.target.value;
+      span.style.setProperty("--ls", value);
+      // Déclencher la copie automatique après modification
+      this.triggerAutoCopy();
+    }
+  });
+
+  // Gestionnaires pour la validation/annulation
+  this.letterSpacingInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      this.hideLetterSpacingInterface();
+    } else if (e.key === "Escape") {
+      this.hideLetterSpacingInterface();
+    }
+  });
+
+  this.letterSpacingInput.addEventListener("blur", () => {
+    // Délai pour permettre le clic sur le bouton de validation
+    setTimeout(() => {
+      const activeElement = document.activeElement;
+      if (activeElement !== this.letterSpacingInput && 
+          !this.editor.toolbar.element?.contains(activeElement)) {
+        this.hideLetterSpacingInterface();
+      }
+    }, 200);
+  });
+
+  document.body.appendChild(this.letterSpacingInput);
+}
+
+positionLetterSpacingInput() {
+  if (!this.editor.toolbar.element || !this.letterSpacingInput) return;
+
+  const toolbarRect = this.editor.toolbar.element.getBoundingClientRect();
+  this.letterSpacingInput.style.left = `${toolbarRect.right + 10 + window.scrollX}px`;
+  this.letterSpacingInput.style.top = `${toolbarRect.top + window.scrollY}px`;
+}
+
+hideLetterSpacingInterface() {
+  if (this.letterSpacingInput) {
+    this.letterSpacingInput.style.display = "none";
+  }
+
+  // Restaurer le bouton letter-spacing
+  const lsButton = this.editor.toolbar.element?.querySelector('[data-command="letter-spacing"]');
+  if (lsButton) {
+    lsButton.innerHTML = "A ↔ A";
+    lsButton.title = "Lettrage (Letter-spacing)";
+    lsButton.classList.remove("editing");
+  }
+
+  // Déclencher une dernière copie automatique
+  this.triggerAutoCopy();
+}
+
+generateSpanId(span) {
+  const id = 'ls-' + Math.random().toString(36).substr(2, 9);
+  span.setAttribute('data-ls-id', id);
+  return id;
+}
+
+
+
+toggleFrenchQuotes() {
+  const selection = this.editor.selection.getCurrentSelection();
+  if (!selection || !selection.isValid) return;
+
+  const range = selection.range;
+
+  if (this.isWrappedInFrenchQuotes(range)) {
+    this.unwrapFrenchQuotes(range);
+  } else {
+    this.wrapWithFrenchQuotes(range);
+  }
+}
 
   toggleEnglishQuotes() {
     const selection = this.editor.selection.getCurrentSelection();
@@ -247,24 +390,24 @@ export class Commands {
   }
 
   // Méthode fallback pour la copie (si navigator.clipboard échoue)
-  copyToClipboardFallback(text, config) {
-    try {
-      const textArea = document.createElement("textarea");
-      textArea.value = text;
-      textArea.style.position = "fixed";
-      textArea.style.top = "-9999px";
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand("copy");
-      document.body.removeChild(textArea);
-
-      if (!config.silent && !config.auto) {
-        this.showCopyFeedback();
-      }
-    } catch (fallbackError) {
-      console.error("Échec de la copie même avec fallback:", fallbackError);
+copyToClipboardFallback(text, config) {
+  try {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.top = '-9999px';
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textArea);
+    
+    if (config.auto) {
+      console.log('✓ Copie automatique effectuée (fallback)');
     }
+  } catch (fallbackError) {
+    console.error("Échec de la copie même avec fallback:", fallbackError);
   }
+}
 
   // ====== FEEDBACK VISUEL POUR LA COPIE ======
   // Remplace la méthode qui était dans toolbar.js et causait l'erreur
@@ -335,32 +478,51 @@ export class Commands {
   // Cette méthode est appelée automatiquement par l'éditeur
 
   triggerAutoCopy() {
-    // Utiliser un debounce pour éviter trop d'appels rapprochés
-    clearTimeout(this.editor.autoCopyTimeout);
-    this.editor.autoCopyTimeout = setTimeout(() => {
-      const selection = window.getSelection();
-      if (selection.rangeCount === 0) return;
+  // Utiliser un debounce pour éviter trop d'appels rapprochés
+  clearTimeout(this.editor.autoCopyTimeout);
+  this.editor.autoCopyTimeout = setTimeout(() => {
+    this.performAutoCopy();
+  }, 300);
+}
 
-      let element = selection.anchorNode;
-      if (element && element.nodeType === Node.TEXT_NODE) {
-        element = element.parentElement;
-      }
-
-      // Vérifier qu'on est dans un élément éditable
-      while (element && !element.hasAttribute("data-editable")) {
-        element = element.parentElement;
-      }
-
-      if (element) {
-        // Copie automatique silencieuse avec l'élément détecté
-        this.copyElementAsMarkdown({
-          silent: true,
-          auto: true,
-          element: element,
-        });
-      }
-    }, 300);
+performAutoCopy() {
+  const selection = window.getSelection();
+  if (selection.rangeCount === 0) return;
+  
+  let element = selection.anchorNode;
+  if (element && element.nodeType === Node.TEXT_NODE) {
+    element = element.parentElement;
   }
+  
+  // Trouver l'élément éditable parent
+  while (element && !element.hasAttribute("data-editable")) {
+    element = element.parentElement;
+  }
+  
+  if (element) {
+    try {
+      // Reconstituer l'élément complet si scindé par PagedJS
+      const completeHTML = this.reconstructSplitElement(element);
+      
+      // Convertir en Markdown avec turndown et ses plugins
+      const markdown = this.editor.toolbar.turndown.turndown(completeHTML);
+      
+      // Copier silencieusement dans le presse-papiers
+      navigator.clipboard.writeText(markdown)
+        .then(() => {
+          console.log('✓ Copie automatique effectuée');
+        })
+        .catch((err) => {
+          console.warn("Erreur copie automatique:", err);
+          // Fallback avec l'ancienne méthode
+          this.copyToClipboardFallback(markdown, { silent: true, auto: true });
+        });
+        
+    } catch (error) {
+      console.warn("Erreur lors de la copie automatique:", error);
+    }
+  }
+}
 
   // ====== MÉTHODES POUR INSERTION D'ESPACES TYPOGRAPHIQUES ======
   // Centralisées ici pour cohérence architecturale
@@ -644,112 +806,122 @@ export class Commands {
 
   // ====== MÉTHODES DE SUPPRESSION DES GUILLEMETS ======
 
-  unwrapFrenchQuotes(range) {
-    const container = range.commonAncestorContainer;
-    const parent =
-      container.nodeType === Node.TEXT_NODE
-        ? container.parentElement
-        : container;
+unwrapFrenchQuotes(range) {
+  const container = range.commonAncestorContainer;
+  const parent = container.nodeType === Node.TEXT_NODE 
+    ? container.parentElement 
+    : container;
 
-    const elementsToRemove = [];
-    const allSpans = parent.querySelectorAll("span.editor-add");
+  // Stratégie améliorée : identifier et supprimer les séquences complètes
+  this.removeQuoteSequences(parent, 'french');
+  
+  // Normaliser et déclencher copie auto
+  parent.normalize();
+  this.triggerAutoCopy();
+}
 
-    for (const span of allSpans) {
-      const content = span.textContent;
+unwrapEnglishQuotes(range) {
+  const container = range.commonAncestorContainer;
+  const parent = container.nodeType === Node.TEXT_NODE 
+    ? container.parentElement 
+    : container;
 
-      // Identifier les éléments des guillemets français
+  // Même logique pour les guillemets anglais
+  this.removeQuoteSequences(parent, 'english');
+  
+  parent.normalize();
+  this.triggerAutoCopy();
+}
+
+removeQuoteSequences(element, quoteType) {
+  const allSpans = element.querySelectorAll("span.editor-add");
+  const spansToRemove = new Set();
+  
+  // Identifier tous les éléments liés aux guillemets du type spécifié
+  for (const span of allSpans) {
+    const content = span.textContent;
+    const classList = span.classList;
+    
+    if (quoteType === 'french') {
+      // Éléments des guillemets français
       if (
         content === UNICODE_CHARS.LAQUO ||
         content === UNICODE_CHARS.RAQUO ||
         content === UNICODE_CHARS.NO_BREAK_THIN_SPACE ||
-        span.classList.contains("french-quote-open") ||
-        span.classList.contains("french-quote-close") ||
-        span.classList.contains("narrow-no-break-space")
+        classList.contains("french-quote-open") ||
+        classList.contains("french-quote-close") ||
+        classList.contains("narrow-no-break-space")
       ) {
-        elementsToRemove.push(span);
+        spansToRemove.add(span);
       }
-    }
-
-    // Supprimer les éléments identifiés
-    elementsToRemove.forEach((span) => {
-      if (span.parentNode) {
-        span.parentNode.removeChild(span);
-      }
-    });
-
-    // Normaliser et déclencher copie auto
-    parent.normalize();
-    this.triggerAutoCopy();
-  }
-
-  unwrapEnglishQuotes(range) {
-    const container = range.commonAncestorContainer;
-    const parent =
-      container.nodeType === Node.TEXT_NODE
-        ? container.parentElement
-        : container;
-
-    const elementsToRemove = [];
-    const allSpans = parent.querySelectorAll("span.editor-add");
-
-    for (const span of allSpans) {
-      const content = span.textContent;
-
-      // Identifier uniquement les guillemets anglais (pas d'espaces fines)
+    } else if (quoteType === 'english') {
+      // Éléments des guillemets anglais (pas d'espaces)
       if (
         content === UNICODE_CHARS.LDQUO ||
         content === UNICODE_CHARS.RDQUO ||
-        span.classList.contains("english-quote-open") ||
-        span.classList.contains("english-quote-close")
+        classList.contains("english-quote-open") ||
+        classList.contains("english-quote-close")
       ) {
-        elementsToRemove.push(span);
+        spansToRemove.add(span);
       }
     }
-
-    elementsToRemove.forEach((span) => {
-      if (span.parentNode) {
-        span.parentNode.removeChild(span);
-      }
-    });
-
-    parent.normalize();
-    this.triggerAutoCopy();
   }
+
+  // Supprimer tous les spans identifiés
+  spansToRemove.forEach(span => {
+    if (span.parentNode) {
+      span.parentNode.removeChild(span);
+    }
+  });
+}
 
   // ====== MÉTHODES DE RESET ET RECONSTRUCTION ======
 
   resetAllFormatting(element) {
-    // Supprimer tous les formatages ajoutés par l'éditeur
-    const selectorsToRemove = [
-      "strong.editor-add",
-      "b.editor-add",
-      "em.editor-add",
-      "i.editor-add",
-      "span.small-caps.editor-add",
-      "sup.editor-add",
-      "br.editor-add",
-      "span.editor-add", // Inclure tous les spans editor-add
-    ];
+  // Liste étendue des sélecteurs à supprimer
+  const selectorsToRemove = [
+    "strong.editor-add",
+    "b.editor-add", 
+    "em.editor-add",
+    "i.editor-add",
+    "span.small-caps.editor-add",
+    "sup.editor-add",
+    "br.editor-add",
+    // Tous les spans avec letter-spacing
+    'span[style*="--ls"].editor-add',
+    // Tous les spans d'espaces typographiques
+    "span.i_space.editor-add",
+    "span.narrow-no-break-space.editor-add",
+    "span.non-breaking-space.editor-add",
+    // Tous les spans de guillemets
+    "span.french-quote-open.editor-add",
+    "span.french-quote-close.editor-add",
+    "span.english-quote-open.editor-add",
+    "span.english-quote-close.editor-add"
+  ];
 
-    selectorsToRemove.forEach((selector) => {
-      const elements = element.querySelectorAll(selector);
-      elements.forEach((el) => {
-        if (el.tagName === "BR") {
-          // Supprimer les sauts de ligne ajoutés
-          el.parentNode.removeChild(el);
-        } else {
-          // Pour les autres éléments, remplacer par leur contenu
-          while (el.firstChild) {
-            el.parentNode.insertBefore(el.firstChild, el);
-          }
+  selectorsToRemove.forEach(selector => {
+    const elements = element.querySelectorAll(selector);
+    elements.forEach(el => {
+      if (el.tagName === "BR") {
+        // Supprimer les sauts de ligne ajoutés
+        if (el.parentNode) {
           el.parentNode.removeChild(el);
         }
-      });
+      } else {
+        // Pour les autres éléments, remplacer par leur contenu textuel
+        if (el.parentNode) {
+          // Créer un nœud texte avec le contenu
+          const textNode = document.createTextNode(el.textContent);
+          el.parentNode.replaceChild(textNode, el);
+        }
+      }
     });
+  });
 
-    // Normaliser les nœuds de texte après toutes les suppressions
-    element.normalize();
-  }
+  // Normaliser les nœuds de texte après toutes les suppressions
+  element.normalize();
+}
 
   reconstructSplitElement(element) {
     // Vérifier si l'élément a été scindé par PagedJS
