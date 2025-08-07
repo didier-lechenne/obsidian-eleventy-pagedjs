@@ -124,12 +124,12 @@ export const ACTIONS_REGISTRY = {
     icon: `${UNICODE_CHARS.LAQUO} ${UNICODE_CHARS.RAQUO}`,
     title: 'Guillemets français',
     execute: (editor) => {
-      // Délègue vers l'extension SpacingExtension
-      const spacingExt = editor.toolbar.extensions.find(
-        ext => ext.constructor.name === 'SpacingExtension'
-      );
-      if (spacingExt) {
-        spacingExt.toggleFrenchQuotes();
+      // Appel direct aux commandes de l'éditeur plutôt qu'aux extensions
+      // Cette approche est plus cohérente avec notre architecture simplifiée
+      if (editor.commands.toggleFrenchQuotes) {
+        editor.commands.toggleFrenchQuotes();
+      } else {
+        console.warn('Méthode toggleFrenchQuotes non disponible dans commands.js');
       }
     },
     isActive: (element) => {
@@ -148,11 +148,11 @@ export const ACTIONS_REGISTRY = {
     icon: `${UNICODE_CHARS.LDQUO} ${UNICODE_CHARS.RDQUO}`,
     title: 'Guillemets anglais',
     execute: (editor) => {
-      const spacingExt = editor.toolbar.extensions.find(
-        ext => ext.constructor.name === 'SpacingExtension'
-      );
-      if (spacingExt) {
-        spacingExt.toggleEnglishQuotes();
+      // Appel direct aux commandes de l'éditeur
+      if (editor.commands.toggleEnglishQuotes) {
+        editor.commands.toggleEnglishQuotes();
+      } else {
+        console.warn('Méthode toggleEnglishQuotes non disponible dans commands.js');
       }
     },
     isActive: (element) => {
@@ -197,11 +197,12 @@ export const ACTIONS_REGISTRY = {
     icon: '⟲',
     title: 'Supprimer transformations',
     execute: (editor) => {
-      const spacingExt = editor.toolbar.extensions.find(
-        ext => ext.constructor.name === 'SpacingExtension'
-      );
-      if (spacingExt) {
-        spacingExt.resetTransformations();
+      // Appel direct aux commandes de l'éditeur pour la fonction de reset
+      // Cette méthode centralise la logique de nettoyage
+      if (editor.commands.resetTransformations) {
+        editor.commands.resetTransformations();
+      } else {
+        console.warn('Méthode resetTransformations non disponible dans commands.js');
       }
     }
   },
@@ -211,11 +212,11 @@ export const ACTIONS_REGISTRY = {
     icon: `<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWNsaXBib2FyZC1jb3B5LWljb24gbHVjaWRlLWNsaXBib2FyZC1jb3B5Ij48cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI0IiB4PSI4IiB5PSIyIiByeD0iMSIgcnk9IjEiLz48cGF0aCBkPSJNOCA0SDZhMiAyIDAgMCAwLTIgMnYxNGEyIDIgMCAwIDAgMiAyaDEyYTIgMiAwIDAgMCAyLTJ2LTIiLz48cGF0aCBkPSJNMTYgNGgyYTIgMiAwIDAgMSAyIDJ2NCIvPjxwYXRoIGQ9Ik0yMSAxNEgxMSIvPjxwYXRoIGQ9Im0xNSAxMC00IDQgNCA0Ii8+PC9zdmc+" style="width: 16px; height: 16px; filter: invert(1);" alt="Copy">`,
     title: 'Copier l\'élément en Markdown',
     execute: (editor) => {
-      const utilsExt = editor.toolbar.extensions.find(
-        ext => ext.constructor.name === 'UtilsExtension'
-      );
-      if (utilsExt) {
-        utilsExt.copyElementAsMarkdown();
+      // Appel direct aux commandes de l'éditeur pour la copie Markdown
+      if (editor.commands.copyElementAsMarkdown) {
+        editor.commands.copyElementAsMarkdown();
+      } else {
+        console.warn('Méthode copyElementAsMarkdown non disponible dans commands.js');
       }
     }
   },
