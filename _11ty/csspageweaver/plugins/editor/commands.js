@@ -258,40 +258,7 @@ export class Commands {
     this.triggerAutoCopy();
   }
 
-  insertNonBreakingSpace() {
-    this.insertTypographicSpan(
-      UNICODE_CHARS.NO_BREAK_SPACE,
-      "i_space non-breaking-space editor-add"
-    );
-  }
-
-  insertNarrowNonBreakingSpace() {
-    this.insertTypographicSpan(
-      UNICODE_CHARS.NO_BREAK_THIN_SPACE,
-      "i_space narrow-no-break-space editor-add"
-    );
-  }
-
-  insertBreak() {
-    const selection = window.getSelection();
-    if (selection.rangeCount === 0) return;
-
-    const range = selection.getRangeAt(0);
-    range.deleteContents();
-
-    const br = document.createElement("br");
-    br.className = "editor-add";
-
-    range.insertNode(br);
-    range.setStartAfter(br);
-    range.collapse(true);
-
-    selection.removeAllRanges();
-    if (range.startContainer.isConnected) {
-      selection.addRange(range);
-      this.triggerAutoCopy();
-    }
-  }
+  
 
   // Méthode utilitaire pour les espaces typographiques
   insertTypographicSpan(content, className) {

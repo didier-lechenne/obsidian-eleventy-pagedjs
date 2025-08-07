@@ -1,6 +1,6 @@
 import * as turndownPlugins from "./turndown-plugins/index.js";
 import { PagedMarkdownRecovery } from "./recovery.js";
-import { TOOLBAR_CONFIG } from "./config.js";
+import { TOOLBAR_CONFIG } from "./toolbar-config.js";
 import { UIFactory, ToolbarButton, ToolbarSelect, validateToolbarConfiguration } from "./ui-factory.js";
 import { ACTIONS_REGISTRY } from "./actions.js";
 

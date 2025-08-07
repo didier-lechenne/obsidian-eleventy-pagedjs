@@ -17,7 +17,7 @@ export const TOOLBAR_CONFIG = {
     'quotes-en',
     'br',
     'reset',
-    'copy-md',
+//     'copy-md',
     'export-md'
   ]
 };

@@ -324,15 +324,15 @@ export default class Editor extends Handler {
     this.disableRealtimeExport();
   }
 
-  getContent(selector) {
-    const element = document.querySelector(selector || this.options.selector);
-    return element ? element.innerHTML : "";
-  }
+//   getContent(selector) {
+//     const element = document.querySelector(selector || this.options.selector);
+//     return element ? element.innerHTML : "";
+//   }
 
-  setContent(content, selector) {
-    const element = document.querySelector(selector || this.options.selector);
-    if (element) {
-      element.innerHTML = content;
-    }
-  }
+//   setContent(content, selector) {
+//     const element = document.querySelector(selector || this.options.selector);
+//     if (element) {
+//       element.innerHTML = content;
+//     }
+//   }
 }
