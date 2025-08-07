@@ -33,7 +33,7 @@ export default class Editor extends Handler {
     this.realtimeExport = {
       enabled: false,
       callback: null,
-      debounceDelay: 300
+      debounceDelay: 300,
     };
     this.exportTimeout = null;
   }
@@ -190,29 +190,35 @@ export default class Editor extends Handler {
   }
 
   handleShortcuts(event) {
-  if (event.ctrlKey || event.metaKey) {
-    switch (event.key.toLowerCase()) {
-      case "b":
-        event.preventDefault();
-        this.commands.toggleBold();
-        break;
-      case "i":
-        event.preventDefault();
-        this.commands.toggleItalic();
-        break;
-      case "c":
-        if (event.shiftKey) {
+    if (event.ctrlKey || event.metaKey) {
+      switch (event.key.toLowerCase()) {
+        case "b":
           event.preventDefault();
-          // Appeler directement la méthode centralisée
-          this.commands.copyElementAsMarkdown({ silent: false, auto: false });
-        }
-        break;
+          this.commands.toggleBold();
+          break;
+        case "i":
+          event.preventDefault();
+          this.commands.toggleItalic();
+          break;
+        case "c":
+          if (event.shiftKey) {
+            event.preventDefault();
+            // Appeler directement la méthode centralisée
+            this.commands.copyElementAsMarkdown({ silent: false, auto: false });
+          }
+          break;
+      }
     }
   }
-}
 
   updateSelection() {
     if (!this.isActive) return;
+
+    const activeElement = document.activeElement;
+    if (activeElement && activeElement.classList.contains("ls-input")) {
+      // Garder la toolbar visible si on est dans l'input
+      return;
+    }
 
     const selection = this.selection.getCurrentSelection();
 
@@ -242,13 +248,13 @@ export default class Editor extends Handler {
   }
 
   autoCopyToClipboard() {
-  // Délai pour éviter la copie répétée lors du drag
-  clearTimeout(this.autoCopyTimeout);
-  this.autoCopyTimeout = setTimeout(() => {
-    // Appeler directement la méthode centralisée dans Commands
-    this.commands.performAutoCopy();
-  }, 300);
-}
+    // Délai pour éviter la copie répétée lors du drag
+    clearTimeout(this.autoCopyTimeout);
+    this.autoCopyTimeout = setTimeout(() => {
+      // Appeler directement la méthode centralisée dans Commands
+      this.commands.performAutoCopy();
+    }, 300);
+  }
 
   // === NOUVELLES MÉTHODES POUR L'EXPORT TEMPS RÉEL ===
 
@@ -264,21 +270,22 @@ export default class Editor extends Handler {
     clearTimeout(this.exportTimeout);
   }
 
- triggerRealtimeExport() {
-  if (!this.realtimeExport.enabled || !this.realtimeExport.callback) return;
+  triggerRealtimeExport() {
+    if (!this.realtimeExport.enabled || !this.realtimeExport.callback) return;
 
-  // Debounce pour éviter trop d'appels
-  clearTimeout(this.exportTimeout);
-  this.exportTimeout = setTimeout(() => {
-    const activeElement = document.activeElement;
-    if (activeElement && this.isInEditableElement(activeElement)) {
-      // Générer le markdown directement avec Commands
-      const completeHTML = this.commands.reconstructSplitElement(activeElement);
-      const markdown = this.toolbar.turndown.turndown(completeHTML);
-      this.realtimeExport.callback(markdown, activeElement);
-    }
-  }, this.realtimeExport.debounceDelay);
-}
+    // Debounce pour éviter trop d'appels
+    clearTimeout(this.exportTimeout);
+    this.exportTimeout = setTimeout(() => {
+      const activeElement = document.activeElement;
+      if (activeElement && this.isInEditableElement(activeElement)) {
+        // Générer le markdown directement avec Commands
+        const completeHTML =
+          this.commands.reconstructSplitElement(activeElement);
+        const markdown = this.toolbar.turndown.turndown(completeHTML);
+        this.realtimeExport.callback(markdown, activeElement);
+      }
+    }, this.realtimeExport.debounceDelay);
+  }
 
   // === MÉTHODES EXISTANTES ===
 
@@ -324,15 +331,15 @@ export default class Editor extends Handler {
     this.disableRealtimeExport();
   }
 
-//   getContent(selector) {
-//     const element = document.querySelector(selector || this.options.selector);
-//     return element ? element.innerHTML : "";
-//   }
+  //   getContent(selector) {
+  //     const element = document.querySelector(selector || this.options.selector);
+  //     return element ? element.innerHTML : "";
+  //   }
 
-//   setContent(content, selector) {
-//     const element = document.querySelector(selector || this.options.selector);
-//     if (element) {
-//       element.innerHTML = content;
-//     }
-//   }
+  //   setContent(content, selector) {
+  //     const element = document.querySelector(selector || this.options.selector);
+  //     if (element) {
+  //       element.innerHTML = content;
+  //     }
+  //   }
 }

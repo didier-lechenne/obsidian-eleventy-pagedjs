@@ -101,27 +101,29 @@ export class Toolbar {
   bindEvents() {
     // Empêcher la perte de sélection
     this.element.addEventListener("mousedown", (e) => {
-      e.preventDefault();
+      if (!e.target.classList.contains("ls-input")) {
+        e.preventDefault();
+      }
     });
 
-    // Dans toolbar.js, ajoutez à bindEvents() :
     this.element.addEventListener("input", (e) => {
       if (e.target.classList.contains("ls-input")) {
         const value = parseInt(e.target.value) || 0;
         const selection = this.editor.selection.getCurrentSelection();
         if (selection?.isValid) {
-          const span = this.editor.commands.findLetterSpacingSpan(
-            selection.range
-          );
-          if (span) {
-            span.style.setProperty("--ls", value);
-          }
+          this.editor.commands.applyLetterSpacing(value);
         }
       }
     });
 
     // Délégation d'événements unifiée
     this.element.addEventListener("click", (e) => {
+      // Input letter-spacing
+      if (e.target.classList.contains("ls-input")) {
+        e.stopPropagation();
+        return;
+      }
+
       // Menus déroulants
       const selectTrigger = e.target.closest(".select-trigger");
       if (selectTrigger) {
@@ -145,11 +147,16 @@ export class Toolbar {
       const buttonElement = this.buttons.get(command);
 
       if (buttonElement?.action) {
-        // Exécuter l'action - la logique est dans commands.js
         buttonElement.action();
-
-        // Mise à jour des états visuels
         this.updateButtonStates();
+      }
+    });
+
+    // Événement séparé pour l'input
+    this.element.addEventListener("input", (e) => {
+      if (e.target.classList.contains("ls-input")) {
+        const value = parseInt(e.target.value) || 0;
+        this.editor.commands.applyLetterSpacing(value);
       }
     });
   }
@@ -210,6 +217,10 @@ export class Toolbar {
    * Masquage de la toolbar
    */
   hide() {
+    if (document.activeElement?.classList.contains("ls-input")) {
+      return;
+    }
+
     // Fermer tous les dropdowns
     this.element.querySelectorAll(".custom-dropdown").forEach((dropdown) => {
       dropdown.style.display = "none";
@@ -234,10 +245,10 @@ export class Toolbar {
 
     // Position centrée horizontalement
     let left = rect.left + rect.width / 2 - toolbarRect.width / 2;
-    let top = rect.top - toolbarRect.height - 40;
+    let top = rect.top - toolbarRect.height - 80;
 
     // Ajustements pour rester dans l'écran
-    const margin = 40;
+    const margin = 80;
     if (left < margin) left = margin;
     if (left + toolbarRect.width > window.innerWidth - margin) {
       left = window.innerWidth - toolbarRect.width - margin;
@@ -245,7 +256,7 @@ export class Toolbar {
 
     // Afficher en-dessous si pas de place au-dessus
     if (top < margin) {
-      top = rect.bottom + 40;
+      top = rect.bottom + 80;
     }
 
     // Application avec scroll

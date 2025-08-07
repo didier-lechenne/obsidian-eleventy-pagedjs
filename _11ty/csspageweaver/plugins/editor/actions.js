@@ -47,26 +47,28 @@ export const ACTIONS_REGISTRY = {
     }
   },
 
+
 'letter-spacing': {
-  type: 'toggle',
-  icon: 'A ↔ A',
-  title: 'Lettrage (Letter-spacing)',
-  execute: (editor) => {
-	const input = document.querySelector('.ls-input');
-	const value = input ? parseInt(input.value) || 0 : 0;
-	editor.commands.applyLetterSpacing(value);
-  },
-  isActive: (element) => {
-    let current = element;
-    while (current && current !== document.body) {
-      if (current.tagName === 'SPAN' && 
-          current.style.getPropertyValue('--ls') !== '') {
-        return true;
-      }
-      current = current.parentElement;
-    }
-    return false;
-  }
+ type: 'toggle',
+ icon: 'A ↔ A <input type="number" class="ls-input" placeholder="0" min="-5" max="20" step="1" style="width:40px;margin-left:5px;">',
+ title: 'Lettrage (Letter-spacing)',
+ execute: (editor) => {
+   const selection = editor.selection.getCurrentSelection();
+   if (!selection?.isValid) return;
+   
+   editor.commands.createLetterSpacingSpan();
+ },
+ isActive: (element) => {
+   let current = element;
+   while (current && current !== document.body) {
+     if (current.tagName === 'SPAN' && 
+         current.style.getPropertyValue('--ls') !== '') {
+       return true;
+     }
+     current = current.parentElement;
+   }
+   return false;
+ }
 },
 
   // === ACTIONS D'INSERTION D'ESPACES ===
