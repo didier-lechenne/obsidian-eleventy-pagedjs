@@ -298,12 +298,13 @@ body.interface-preview .paged-editor-content:focus {
   background: var(--editor-toolbar-bg)!important;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: var(--editor-border-radius);
-  min-width: 250px;
+  min-width: var(--editor-button-min-width);
   z-index: var(--editor-tooltip-z-index);
-  max-height: 200px;
-  overflow-y: auto;
+  max-height: auto;
+  overflow-y: hidden;
+  overflow-x:hidden;
   color: white;
-  font-size: 14px;
+  font-size: 1em;
 }
 
 .toolbar-select-wrapper .select-dropdown option {
@@ -337,4 +338,21 @@ body.interface-preview .paged-editor-content:focus {
 
 .toolbar-select-wrapper .custom-option:hover {
   background: rgba(102, 51, 153, 0.8);
+}
+
+
+.select-option {
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  user-select: none;
+}
+
+.select-option:hover {
+  background: var(--editor-primary-hover) !important;
+}
+
+.select-option:first-child {
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
 }

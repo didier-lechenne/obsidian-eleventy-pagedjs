@@ -39,25 +39,24 @@ class ToolbarSelect {
 
   render() {
     const optionsHTML = this.options
-      .map((opt) => `<option value="${opt.value}">${opt.label}</option>`)
+      .map(
+        (opt) =>
+          `<div class="select-option" data-value="${opt.value}">${opt.label}</div>`
+      )
       .join("");
 
     return `
-    <div class="toolbar-select-wrapper" data-command="${this.command}" data-tooltip="${this.title}">
-      <button class="select-trigger">${this.icon} ▼</button>
-      <div class="select-dropdown" style="display: none;">
-        <select>
-          <option value="">-- Choisir --</option>
+      <div class="toolbar-select-wrapper" data-command="${this.command}" data-tooltip="${this.title}">
+        <button type="button" class="select-trigger">${this.icon} ⯆</button>
+        <div class="select-dropdown" style="display: none;">
+          <div class="select-option" data-value="">⋯</div>
           ${optionsHTML}
-        </select>
+        </div>
       </div>
-    </div>
-  `;
+    `;
   }
-
-
-  
 }
+
 // Extension pour formatage de base
 class FormattingExtension {
   constructor(toolbar) {
@@ -928,6 +927,7 @@ class ConfigSelectExtension {
     }
   }
 }
+
 export class Toolbar {
   constructor(editor, customConfig = null) {
     this.editor = editor;
@@ -983,23 +983,38 @@ export class Toolbar {
   createToolbar() {
     this.element = document.createElement("div");
     this.element.className = "paged-editor-toolbar";
-    this.selects = new Map(); // AJOUTER
+    this.selects = new Map();
 
     let elementsHTML = "";
+
+    // Créer un mapping de tous les éléments disponibles
+    const availableElements = new Map();
     this.extensions.forEach((extension) => {
       extension.getButtons().forEach((item) => {
-        if (
-          item instanceof ToolbarButton &&
-          this.activeButtons.includes(item.command)
-        ) {
+        availableElements.set(item.command, item);
+      });
+    });
+
+    // Parcourir la config dans l'ordre défini
+    this.config.elements.forEach((configElement) => {
+      if (configElement.type === "button") {
+        const item = availableElements.get(configElement.id);
+        if (item instanceof ToolbarButton) {
           this.buttons.set(item.command, item);
           elementsHTML += item.render();
-        } else if (item instanceof ToolbarSelect) {
-          // AJOUTER ce bloc
-          this.selects.set(item.command, item);
-          elementsHTML += item.render();
         }
-      });
+      } else if (configElement.type === "select") {
+        // Créer le select directement depuis la config
+        const selectItem = new ToolbarSelect(
+          configElement.id,
+          configElement.icon,
+          configElement.title,
+          configElement.options,
+          (value) => this.handleSelectAction(configElement, value)
+        );
+        this.selects.set(selectItem.command, selectItem);
+        elementsHTML += selectItem.render();
+      }
     });
 
     this.element.innerHTML = elementsHTML;
@@ -1007,21 +1022,24 @@ export class Toolbar {
     this.bindEvents();
   }
 
+  handleSelectAction(configElement, value) {
+    const option = configElement.options.find((o) => o.value === value);
+    if (option?.char) {
+      this.editor.commands.insertText(option.char);
+    }
+  }
+
   bindEvents() {
+    // Prevent default sur mousedown pour éviter la perte de focus
     this.element.addEventListener("mousedown", (e) => {
       e.preventDefault();
     });
 
     this.element.addEventListener("click", (e) => {
-      const trigger = e.target.closest(".select-trigger");
-      if (trigger) {
-        e.preventDefault();
-        this.toggleDropdown(trigger);
-        return;
-      }
+      e.preventDefault();
 
-      // Gérer les options personnalisées
-      const option = e.target.closest(".custom-option");
+      // Gestion click sur option de select
+      const option = e.target.closest(".select-option");
       if (option) {
         const wrapper = option.closest(".toolbar-select-wrapper");
         const command = wrapper.dataset.command;
@@ -1032,46 +1050,44 @@ export class Toolbar {
           if (selectObj?.action) {
             selectObj.action(value);
           }
-          this.hideDropdown(wrapper);
         }
+        this.hideDropdown(wrapper);
         return;
       }
 
-      const button = e.target.closest("button");
-      if (!button) return;
+      // Gestion click sur trigger de select
+      const trigger = e.target.closest(".select-trigger");
+      if (trigger) {
+        this.toggleDropdown(trigger);
+        return;
+      }
 
-      const command = button.dataset.command;
-      const buttonObj = this.buttons.get(command);
-      if (buttonObj && buttonObj.action) {
-        buttonObj.action();
-        this.updateButtonStates();
+      // Gestion boutons normaux
+      const button = e.target.closest("button[data-command]");
+      if (button && !button.classList.contains("select-trigger")) {
+        const command = button.dataset.command;
+        const buttonObj = this.buttons.get(command);
+        if (buttonObj?.action) {
+          buttonObj.action();
+          this.updateButtonStates();
+        }
       }
     });
 
-    // Event listener spécial pour copy-md pendant letter-spacing
+    // Fermer dropdowns quand on clique ailleurs
+    document.addEventListener("click", (e) => {
+      if (!this.element.contains(e.target)) {
+        this.hideAllDropdowns();
+      }
+    });
+
+    // Événement spécial pour copy-md
     document.addEventListener("click", (e) => {
       const button = e.target.closest('button[data-command="copy-md"]');
       if (button && this.element.contains(button)) {
         const buttonObj = this.buttons.get("copy-md");
-        if (buttonObj && buttonObj.action) {
+        if (buttonObj?.action) {
           buttonObj.action();
-        }
-      }
-    });
-
-    this.element.addEventListener("change", (e) => {
-      if (e.target.classList.contains("select-dropdown")) {
-        const wrapper = e.target.closest(".toolbar-select-wrapper");
-        const command = wrapper.dataset.command;
-        const value = e.target.value;
-
-        if (value) {
-          const selectObj = this.selects.get(command);
-          if (selectObj?.action) {
-            selectObj.action(value);
-          }
-          e.target.value = "";
-          this.hideDropdown(wrapper);
         }
       }
     });
@@ -1079,44 +1095,32 @@ export class Toolbar {
 
   toggleDropdown(trigger) {
     const wrapper = trigger.closest(".toolbar-select-wrapper");
-
-    // Vérification de sécurité
-    if (!wrapper) {
-      console.error("toggleDropdown: wrapper non trouvé");
-      return;
-    }
+    if (!wrapper) return;
 
     const dropdown = wrapper.querySelector(".select-dropdown");
+    if (!dropdown) return;
 
-    // Vérification de sécurité pour dropdown
-    if (!dropdown) {
-      console.error("toggleDropdown: dropdown non trouvé dans wrapper");
-      return;
-    }
+    // Fermer tous les autres dropdowns
+    this.hideAllDropdowns();
 
-    if (dropdown.style.display === "none") {
-      dropdown.style.display = "block";
-    } else {
+    // Toggle ce dropdown
+    const isVisible = dropdown.style.display === "block";
+    dropdown.style.display = isVisible ? "none" : "block";
+  }
+
+  hideDropdown(wrapper) {
+    if (!wrapper) return;
+    const dropdown = wrapper.querySelector(".select-dropdown");
+    if (dropdown) {
       dropdown.style.display = "none";
     }
   }
 
-  hideDropdown(wrapper) {
-    // Vérification de sécurité
-    if (!wrapper) {
-      console.error("hideDropdown: wrapper non fourni");
-      return;
-    }
-
-    const dropdown = wrapper.querySelector(".select-dropdown");
-
-    // Vérification de sécurité pour dropdown
-    if (!dropdown) {
-      console.error("hideDropdown: dropdown non trouvé dans wrapper");
-      return;
-    }
-
-    dropdown.style.display = "none";
+  hideAllDropdowns() {
+    const dropdowns = this.element.querySelectorAll(".select-dropdown");
+    dropdowns.forEach((dropdown) => {
+      dropdown.style.display = "none";
+    });
   }
 
   show(selection) {
