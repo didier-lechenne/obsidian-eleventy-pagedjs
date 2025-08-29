@@ -1,3 +1,6 @@
+const fs = require('fs');
+const yaml = require('js-yaml'); 
+
 // const { HtmlBasePlugin } = require("@11ty/eleventy");
 const collectionsConfig = require("./_11ty/config/collections.js");
 const markdownPlugin = require("./_11ty/config/markdown.js");
@@ -9,6 +12,19 @@ const yamlPlugin = require("./_11ty/config/yaml.js");
 const config = require('./_11ty/config/siteData.js');
 
 module.exports = function (eleventyConfig) {
+	
+  eleventyConfig.addFilter("readYaml", function(filePath) {
+    try {
+      return yaml.load(fs.readFileSync(filePath, 'utf8'));
+    } catch (error) {
+      console.warn(`Erreur lecture ${filePath}:`, error.message);
+      return {};
+    }
+  });
+  
+  // Surveillance du fichier options.yml
+  const configYaml = yaml.load(fs.readFileSync('_11ty/_data/config.yml', 'utf8')); // 
+  eleventyConfig.addWatchTarget(`./${configYaml.publicFolder}/options.yml`);
 
   eleventyConfig.addTransform("fixImagePaths", function(content, outputPath) {
     if (outputPath && outputPath.endsWith(".html")) {
@@ -33,24 +49,21 @@ module.exports = function (eleventyConfig) {
     "_11ty/csspageweaver": "csspageweaver"
   });
 
+
   eleventyConfig.addGlobalData("eleventyComputed", {
     permalink: (data) => {
-      
       // Pour z_indexPrint.md
       if (data.page.inputPath.endsWith('z_indexPrint.md')) {
         return data.permalink;
       }
-      
       // Pour z_indexScreen.md  
       if (data.page.inputPath.endsWith('z_indexScreen.md')) {
         return data.permalink;
       }
-      
       // Ignore tous les autres .md
       if (data.page.inputPath.endsWith('.md')) {
         return false;
       }
-      
       return data.permalink;
     }
   });

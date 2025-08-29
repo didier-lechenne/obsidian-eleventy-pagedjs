@@ -48,12 +48,3 @@ recto_verso: false
 printNotes: "bottom"
 imageNotes: false
 
-# === OPTIONS AVANCÉES ===
-ragadjust: false
-typesetting: false
-ep_markdown: false
-tailwind: false
-auto: false
-baseline: false
-
-
