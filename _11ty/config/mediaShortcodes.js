@@ -1,9 +1,7 @@
 const fs = require('fs');
 const path = require('path');
-const yaml = require('js-yaml');
 
-// Charger la config
-const config = yaml.load(fs.readFileSync('./_11ty/_data/config.yml', 'utf8'));
+const config = require('./siteData.js');
 
 const markdownIt = require("markdown-it");
 const markdownItFootnote = require("markdown-it-footnote");

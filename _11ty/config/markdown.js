@@ -8,7 +8,7 @@ const markdownItAbbr = require("markdown-it-abbr");
 const markdownItContainer = require("markdown-it-container");
 // const markdownItFigures = require("markdown-it-image-figures");
 
-const string = require("string");
+
 
 let globalNoteCounter = 0;
 
