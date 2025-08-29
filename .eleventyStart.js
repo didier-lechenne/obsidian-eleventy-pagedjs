@@ -15,6 +15,7 @@ module.exports = function (eleventyConfig) {
 	
 
 
+
   eleventyConfig.addTransform("fixImagePaths", function(content, outputPath) {
     if (outputPath && outputPath.endsWith(".html")) {
       // Transformer les chemins relatifs en chemins absolus
@@ -35,7 +36,6 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy({
     [`${config.publicFolder}/images`]: "images",
     [`_11ty/assets/themes/${config.theme}`]: "assets",
-    [`!_11ty/assets/themes/${config.theme}/**/*.njk`]: "",
     "_11ty/csspageweaver": "csspageweaver"
   });
 
@@ -89,13 +89,12 @@ module.exports = function (eleventyConfig) {
 
   // === CONFIGURATION DES DOSSIERS ===
   return {
-    templateFormats: ["njk", "md", "html", "liquid", "11ty.js"],
     markdownTemplateEngine: "njk",
     htmlTemplateEngine: "njk",
     dataTemplateEngine: "njk",
     pathPrefix: "",
     dir: {
-      input: "valentine",
+      input: config.publicFolder, 
       output: "_site/",
       includes: "../_11ty/_includes",
       layouts: "../_11ty/_layouts",
