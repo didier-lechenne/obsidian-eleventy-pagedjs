@@ -1,6 +1,7 @@
 ---
 layout: screenLayout.njk
-permalink: /
+permalink: index.html
 siteMode: screen
+eleventyExcludeFromCollections: true
 ---
 
