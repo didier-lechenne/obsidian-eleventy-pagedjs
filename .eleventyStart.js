@@ -40,11 +40,11 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addGlobalData("eleventyComputed", {
     permalink: (data) => {
       // Pour z_indexPrint.md
-      if (data.page.inputPath.endsWith('z_indexPrint.md')) {
+      if (data.page.inputPath.endsWith('print.md')) {
         return data.permalink;
       }
       // Pour z_indexScreen.md  
-      if (data.page.inputPath.endsWith('z_indexScreen.md')) {
+      if (data.page.inputPath.endsWith('screen.md')) {
         return data.permalink;
       }
       // Ignore tous les autres .md
