@@ -4,7 +4,10 @@ module.exports = function (eleventyConfig) {
 
   eleventyConfig.addCollection("printPages", (collectionApi) => {
     const result = collectionApi
-      .getFilteredByGlob(config.publicFolder + "/*.md")
+      .getFilteredByGlob([
+        config.publicFolder + "/*.md",           
+        config.publicFolder + "/templates/*.md"  
+      ])
       .filter((item) => !item.data.draft)
       .filter((item) => !item.data.show || item.data.show === "print")
       .sort((a, b) => {
@@ -18,7 +21,10 @@ module.exports = function (eleventyConfig) {
 
   eleventyConfig.addCollection("screenPages", (collectionApi) => {
     const result = collectionApi
-      .getFilteredByGlob(config.publicFolder + "/*.md")
+      .getFilteredByGlob([
+        config.publicFolder + "/*.md",           
+        config.publicFolder + "/templates/*.md"  
+      ])
       .filter((item) => !item.data.draft)
       .filter((item) => !item.data.show || item.data.show === "web")
       .sort((a, b) => {
