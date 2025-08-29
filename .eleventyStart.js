@@ -12,9 +12,6 @@ const yamlPlugin = require("./_11ty/config/yaml.js");
 const config = require('./_11ty/config/siteData.js');
 
 module.exports = function (eleventyConfig) {
-	
-
-
 
   eleventyConfig.addTransform("fixImagePaths", function(content, outputPath) {
     if (outputPath && outputPath.endsWith(".html")) {

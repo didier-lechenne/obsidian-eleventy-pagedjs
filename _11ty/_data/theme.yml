@@ -1,0 +1,50 @@
+
+# === INFORMATIONS DU DOCUMENT ===
+title: "Désencombrement"
+subtitle: "Index d’une société à venir, allégée de ses objets"
+runningtitle: ""
+
+# === AUTEUR ===
+name: "VALENTINE SAINT-MARTIN"
+mention: "Mémoire de Diplôme National Supérieur d’Expression Plastique"
+option: "option Design "
+year: "2025-2026 "
+
+# === INSTITUTION ===
+directeur: "sous la direction de Jean Charles Zebo "
+ecole: "ebabx – école supérieure des beaux-arts de Bordeaux"
+
+build:
+  timestamp: "{{ 'now' | date('iso') }}"
+
+  
+# === DIMENSIONS DE LA PAGE (mm) ===
+width: 165
+height: 240
+
+# === MARGES GÉNÉRALES (mm) ===
+margin_top: 10
+margin_right: 10
+margin_bottom: 10
+margin_left: 10
+
+# === MARGES PAGES GAUCHE (mm) ===
+page_left_margin_top: 10
+page_left_margin_bottom: 10
+page_left_margin_left: 25
+page_left_margin_right: 10
+
+# === MARGES PAGES DROITE (mm) ===
+page_right_margin_top: 10
+page_right_margin_bottom: 10
+page_right_margin_left: 10
+page_right_margin_right: 25
+
+# === OPTIONS DE MISE EN PAGE ===
+bleed: true
+marks: true
+recto_verso: false
+
+# === OPTIONS DES NOTES ===
+printNotes: "bottom"
+imageNotes: false

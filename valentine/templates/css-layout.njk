@@ -10,15 +10,15 @@ eleventyExcludeFromCollections: true
         --g-row-offset: 0;
         --g-row-gutter: 3mm;
 
-        size: {{ config.width }}mm {{ config.height }}mm;
+        size: {{ theme.width }}mm {{ theme.height }}mm;
 
-        margin-top: {{ config.margin_top }}mm;
-        margin-bottom: {{ config.margin_bottom }}mm;
-        margin-left: {{ config.margin_left }}mm;
-        margin-right: {{ config.margin_right }}mm;
+        margin-top: {{ theme.margin_top }}mm;
+        margin-bottom: {{ theme.margin_bottom }}mm;
+        margin-left: {{ theme.margin_left }}mm;
+        margin-right: {{ theme.margin_right }}mm;
 
-        {% if config.bleed %}bleed: 6mm;{% endif %}
-        {% if config.marks %}marks: crop;{% endif %}
+        {% if theme.bleed %}bleed: 6mm;{% endif %}
+        {% if theme.marks %}marks: crop;{% endif %}
 
         @footnote {
           float: bottom;
@@ -26,17 +26,17 @@ eleventyExcludeFromCollections: true
     }
 
     @page:left {
-        margin-top: {{ config.page_left_margin_top }}mm;
-        margin-bottom: {{ config.page_left_margin_bottom }}mm;
-        margin-left: {{ config.page_left_margin_left }}mm;
-        margin-right: {{ config.page_left_margin_right }}mm;
+        margin-top: {{ theme.page_left_margin_top }}mm;
+        margin-bottom: {{ theme.page_left_margin_bottom }}mm;
+        margin-left: {{ theme.page_left_margin_left }}mm;
+        margin-right: {{ theme.page_left_margin_right }}mm;
     }
 
     @page:right {
-        margin-top: {{ config.page_right_margin_top }}mm;
-        margin-bottom: {{ config.page_right_margin_bottom }}mm;
-        margin-left: {{ config.page_right_margin_left }}mm;
-        margin-right: {{ config.page_right_margin_right }}mm;
+        margin-top: {{ theme.page_right_margin_top }}mm;
+        margin-bottom: {{ theme.page_right_margin_bottom }}mm;
+        margin-left: {{ theme.page_right_margin_left }}mm;
+        margin-right: {{ theme.page_right_margin_right }}mm;
     }
 
     @page:left{
