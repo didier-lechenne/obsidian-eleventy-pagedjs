@@ -1,13 +1,23 @@
-const collectionsConfig = require("./_11ty/config/collections.js");
-const markdownPlugin = require("./_11ty/config/markdown.js");
-const preprocessorConfig = require("./_11ty/config/preprocessor.js");
-const filtersConfig = require("./_11ty/config/filters.js");
-const shortcodesConfig = require("./_11ty/config/mediaShortcodes.js");
-const transformsConfig = require("./_11ty/config/transforms.js");
+
+// === CONFIGURATION DE BASE ===
 const yamlPlugin = require("./_11ty/config/yaml.js");
-const afterBuild = require("./_11ty/config/afterBuild.js");
-const passthroughCopy = require("./_11ty/config/passthroughCopy.js");
 const globalDataPlugin = require("./_11ty/config/globalData.js");
+const passthroughCopy = require("./_11ty/config/passthroughCopy.js");
+
+// === TRAITEMENT DU CONTENU ===
+const preprocessorConfig = require("./_11ty/config/preprocessor.js");
+const shortcodesConfig = require("./_11ty/config/mediaShortcodes.js");
+const markdownPlugin = require("./_11ty/config/markdown.js");
+
+// === COLLECTIONS ET FILTRES ===
+const collectionsConfig = require("./_11ty/config/collections.js");
+const filtersConfig = require("./_11ty/config/filters.js");
+
+// === POST-TRAITEMENT ===
+const transformsConfig = require("./_11ty/config/transforms.js");
+const afterBuild = require("./_11ty/config/afterBuild.js");
+
+// === CONFIGURATION SITE ===
 const config = require("./_11ty/config/siteData.js");
 
 module.exports = function (eleventyConfig) {
@@ -21,7 +31,7 @@ module.exports = function (eleventyConfig) {
   });
 
   // === APPLIQUER LES CONFIGURATIONS ===
-  // 1. Configuration YAML en premier
+  // 1. Configuration YAML 
   // 2. Données globales
   // 3. Copie des fichiers statiques
   // 4. Préprocesseurs
@@ -30,7 +40,7 @@ module.exports = function (eleventyConfig) {
   // 7. Collections
   // 8. Filtres
   // 9. Transformations
-  // 10. After Build en dernier
+  // 10. After Build 
 
   eleventyConfig.addPlugin(yamlPlugin);
   eleventyConfig.addPlugin(globalDataPlugin);
@@ -46,7 +56,7 @@ module.exports = function (eleventyConfig) {
   // === CONFIGURATION SERVEUR DE DEV ===
   eleventyConfig.setServerOptions({
     port: 3000,
-    watch: ["_11ty/**/*", "valentine/**/*"],
+    watch: ["_11ty/**/*", config.publicFolder + "/**/*"],
     showAllHosts: true,
     domDiff: true,
     ignored: ["node_modules/**", ".git/**", "**/.DS_Store"],
