@@ -1,5 +1,5 @@
-const fs = require('fs');
-const yaml = require('js-yaml'); 
+const fs = require("fs");
+const path = require("path");
 
 // const { HtmlBasePlugin } = require("@11ty/eleventy");
 const collectionsConfig = require("./_11ty/config/collections.js");
@@ -13,18 +13,7 @@ const config = require('./_11ty/config/siteData.js');
 
 module.exports = function (eleventyConfig) {
 	
-  eleventyConfig.addFilter("readYaml", function(filePath) {
-    try {
-      return yaml.load(fs.readFileSync(filePath, 'utf8'));
-    } catch (error) {
-      console.warn(`Erreur lecture ${filePath}:`, error.message);
-      return {};
-    }
-  });
-  
-  // Surveillance du fichier options.yml
-  const configYaml = yaml.load(fs.readFileSync('_11ty/_data/config.yml', 'utf8')); // 
-  eleventyConfig.addWatchTarget(`./${configYaml.publicFolder}/options.yml`);
+
 
   eleventyConfig.addTransform("fixImagePaths", function(content, outputPath) {
     if (outputPath && outputPath.endsWith(".html")) {
@@ -99,12 +88,13 @@ module.exports = function (eleventyConfig) {
 
   // === CONFIGURATION DES DOSSIERS ===
   return {
+    templateFormats: ["njk", "md", "html", "liquid", "11ty.js"],
     markdownTemplateEngine: "njk",
     htmlTemplateEngine: "njk",
     dataTemplateEngine: "njk",
     pathPrefix: "",
     dir: {
-      input: config.publicFolder,
+      input: "valentine",
       output: "_site/",
       includes: "../_11ty/_includes",
       layouts: "../_11ty/_layouts",

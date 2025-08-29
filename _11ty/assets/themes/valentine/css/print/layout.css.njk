@@ -1,8 +1,7 @@
 ---
-permalink: "_11ty/assets/themes/{{ config.theme }}/css/print/layout.css"
+permalink: "assets/css/print/layout.css"
 eleventyExcludeFromCollections: true
 ---
-{%- set opts = layoutOptions -%}
 @page {
         --g-column-count: 1;
         --g-column-offset: 0;
@@ -11,15 +10,15 @@ eleventyExcludeFromCollections: true
         --g-row-offset: 0;
         --g-row-gutter: 3mm;
 
-        size: {{ opts.width }}mm {{ opts.height }}mm;
+        size: {{ config.width }}mm {{ config.height }}mm;
 
-        margin-top: {{ opts.margin_top }}mm;
-        margin-bottom: {{ opts.margin_bottom }}mm;
-        margin-left: {{ opts.margin_left }}mm;
-        margin-right: {{ opts.margin_right }}mm;
+        margin-top: {{ config.margin_top }}mm;
+        margin-bottom: {{ config.margin_bottom }}mm;
+        margin-left: {{ config.margin_left }}mm;
+        margin-right: {{ config.margin_right }}mm;
 
-        {% if opts.bleed %}bleed: 6mm;{% endif %}
-        {% if opts.marks %}marks: crop;{% endif %}
+        {% if config.bleed %}bleed: 6mm;{% endif %}
+        {% if config.marks %}marks: crop;{% endif %}
 
         @footnote {
           float: bottom;
@@ -27,17 +26,17 @@ eleventyExcludeFromCollections: true
     }
 
     @page:left {
-        margin-top: {{ opts.page_left_margin_top }}mm;
-        margin-bottom: {{ opts.page_left_margin_bottom }}mm;
-        margin-left: {{ opts.page_left_margin_left }}mm;
-        margin-right: {{ opts.page_left_margin_right }}mm;
+        margin-top: {{ config.page_left_margin_top }}mm;
+        margin-bottom: {{ config.page_left_margin_bottom }}mm;
+        margin-left: {{ config.page_left_margin_left }}mm;
+        margin-right: {{ config.page_left_margin_right }}mm;
     }
 
     @page:right {
-        margin-top: {{ opts.page_right_margin_top }}mm;
-        margin-bottom: {{ opts.page_right_margin_bottom }}mm;
-        margin-left: {{ opts.page_right_margin_left }}mm;
-        margin-right: {{ opts.page_right_margin_right }}mm;
+        margin-top: {{ config.page_right_margin_top }}mm;
+        margin-bottom: {{ config.page_right_margin_bottom }}mm;
+        margin-left: {{ config.page_right_margin_left }}mm;
+        margin-right: {{ config.page_right_margin_right }}mm;
     }
 
     @page:left{
