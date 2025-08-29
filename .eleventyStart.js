@@ -35,6 +35,7 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy({
     [`${config.publicFolder}/images`]: "images",
     [`_11ty/assets/themes/${config.theme}`]: "assets",
+    [`!_11ty/assets/themes/${config.theme}/**/*.njk`]: "",
     "_11ty/csspageweaver": "csspageweaver"
   });
 
