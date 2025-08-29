@@ -1,7 +1,7 @@
 {
-  "name": "didier",
+  "name": "eleventy-pagedjs",
   "version": "1.0.0",
-  "description": "",
+  "description": "Configuration Eleventy pour générer web et print avec Paged.js",
   "main": ".eleventy.js",
   "scripts": {
     "clean": "rimraf .cache _site",
@@ -16,9 +16,9 @@
     "deploy": "npm run build && cd _site && git init && git branch -M pages && git remote add origin git@codeberg.org:didierlechenne/valentine.git && git add . && git commit -m 'Deploy' && git push -f origin pages",
     "stop": "kill-port 8080"
   },
-  "keywords": [],
-  "author": "Didier Lechenne",
-  "license": "CCBYSA",
+  "keywords": ["eleventy", "print", "web", "paged-js", "static-site"],
+  "author": "didier@lechenne.fr",
+  "license": "MIT",
   "dependencies": {
     "@11ty/eleventy": "^3.1.2",
     "@11ty/eleventy-img": "^6.0.4",
