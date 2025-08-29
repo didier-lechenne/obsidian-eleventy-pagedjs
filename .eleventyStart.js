@@ -1,7 +1,3 @@
-const fs = require("fs");
-const path = require("path");
-
-// const { HtmlBasePlugin } = require("@11ty/eleventy");
 const collectionsConfig = require("./_11ty/config/collections.js");
 const markdownPlugin = require("./_11ty/config/markdown.js");
 const preprocessorConfig = require("./_11ty/config/preprocessor.js");
@@ -9,67 +5,43 @@ const filtersConfig = require("./_11ty/config/filters.js");
 const shortcodesConfig = require("./_11ty/config/mediaShortcodes.js");
 const transformsConfig = require("./_11ty/config/transforms.js");
 const yamlPlugin = require("./_11ty/config/yaml.js");
-const config = require('./_11ty/config/siteData.js');
+const afterBuild = require("./_11ty/config/afterBuild.js");
+const passthroughCopy = require("./_11ty/config/passthroughCopy.js");
+const globalDataPlugin = require("./_11ty/config/globalData.js");
+const config = require("./_11ty/config/siteData.js");
 
 module.exports = function (eleventyConfig) {
-
-  eleventyConfig.addTransform("fixImagePaths", function(content, outputPath) {
+  eleventyConfig.addTransform("fixImagePaths", function (content, outputPath) {
     if (outputPath && outputPath.endsWith(".html")) {
       // Transformer les chemins relatifs en chemins absolus
-      content = content.replace(
-        /src="images\//g, 
-        'src="/images/'
-      );
+      content = content.replace(/src="images\//g, 'src="/images/');
       return content;
     }
     return content;
   });
 
-  eleventyConfig.on("afterBuild", () => {
-    console.log("✅ Site généré avec succès (avec start) !");
-  });
-
-  // Copier les ressources depuis _11ty
-  eleventyConfig.addPassthroughCopy({
-    [`${config.publicFolder}/images`]: "images",
-    [`_11ty/assets/themes/${config.theme}`]: "assets",
-    "_11ty/csspageweaver": "csspageweaver"
-  });
-
-
-  eleventyConfig.addGlobalData("eleventyComputed", {
-    permalink: (data) => {
-      // Pour z_indexPrint.md
-      if (data.page.inputPath.endsWith('print.md')) {
-        return data.permalink;
-      }
-      // Pour z_indexScreen.md  
-      if (data.page.inputPath.endsWith('screen.md')) {
-        return data.permalink;
-      }
-      // Ignore tous les autres .md
-      if (data.page.inputPath.endsWith('.md')) {
-        return false;
-      }
-      return data.permalink;
-    }
-  });
-
   // === APPLIQUER LES CONFIGURATIONS ===
-  // 1. PREPROCESSORS     (preprocessor.js)
-  // 2. SHORTCODES        (mediaShortcodes.js)  
-  // 3. RENDU MARKDOWN    (markdown.js)
-  // 4. TEMPLATE RENDERING
-  // 5. TRANSFORMS        (transforms.js)
+  // 1. Configuration YAML en premier
+  // 2. Données globales
+  // 3. Copie des fichiers statiques
+  // 4. Préprocesseurs
+  // 5. Shortcodes (avant markdown)
+  // 6. Rendu Markdown
+  // 7. Collections
+  // 8. Filtres
+  // 9. Transformations
+  // 10. After Build en dernier
 
-  // eleventyConfig.addPlugin(HtmlBasePlugin);
   eleventyConfig.addPlugin(yamlPlugin);
+  eleventyConfig.addPlugin(globalDataPlugin);
+  eleventyConfig.addPlugin(passthroughCopy);
   preprocessorConfig(eleventyConfig);
+  shortcodesConfig(eleventyConfig);
   eleventyConfig.addPlugin(markdownPlugin);
   collectionsConfig(eleventyConfig);
   filtersConfig(eleventyConfig);
-  shortcodesConfig(eleventyConfig);
   transformsConfig(eleventyConfig);
+  eleventyConfig.addPlugin(afterBuild);
 
   // === CONFIGURATION SERVEUR DE DEV ===
   eleventyConfig.setServerOptions({
@@ -77,11 +49,7 @@ module.exports = function (eleventyConfig) {
     watch: ["_11ty/**/*", "valentine/**/*"],
     showAllHosts: true,
     domDiff: true,
-    ignored: [
-      "node_modules/**", 
-      ".git/**",
-      "**/.DS_Store"
-    ]
+    ignored: ["node_modules/**", ".git/**", "**/.DS_Store"],
   });
 
   // === CONFIGURATION DES DOSSIERS ===
@@ -91,7 +59,7 @@ module.exports = function (eleventyConfig) {
     dataTemplateEngine: "njk",
     pathPrefix: "",
     dir: {
-      input: config.publicFolder, 
+      input: config.publicFolder,
       output: "_site/",
       includes: "../_11ty/_includes",
       layouts: "../_11ty/_layouts",
