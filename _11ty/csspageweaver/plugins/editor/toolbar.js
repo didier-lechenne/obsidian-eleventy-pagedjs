@@ -148,8 +148,37 @@ export class Toolbar {
         this.editor.commands.toggleLetterSpacing(value);
       }
     });
+
+    this.bindLetterSpacingInput();
   }
 
+
+  bindLetterSpacingInput() {
+  const input = this.element.querySelector('.ls-input');
+  if (!input) return;
+
+  // Événement sur changement de valeur
+  input.addEventListener('input', (e) => {
+    e.stopPropagation();
+    
+    const selection = this.editor.selection.getCurrentSelection();
+    if (!selection?.isValid) return;
+
+    // Appliquer immédiatement le nouveau letter-spacing
+    this.editor.commands.toggleLetterSpacing();
+  });
+
+  // Événement pour empêcher la fermeture de la toolbar
+  input.addEventListener('focus', (e) => {
+    e.stopPropagation();
+    this.editor.toolbar.keepOpen = true;
+  });
+
+  input.addEventListener('blur', (e) => {
+    e.stopPropagation();
+    this.editor.toolbar.keepOpen = false;
+  });
+}
   /**
    * Gestion des dropdowns personnalisés
    */
