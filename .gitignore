@@ -4,6 +4,10 @@
 # Répertoires contenant "old"
 **/*old*/
 
+**/a_garder/
+a_garder/
+**/pas_utilisé/
+
 # Obsidian
 .obsidian/
 
@@ -13,9 +17,7 @@ _site/
 node_modules/
 .eleventy-cache/
 
-**/a_garder/
-a_garder/
-**/pas_utilisé/
+
 
 node_modules/
 npm-debug.log*
