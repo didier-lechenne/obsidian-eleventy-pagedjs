@@ -59,104 +59,130 @@ export class Commands {
     this.triggerAutoCopy();
   }
 
-toggleLetterSpacing() {
+  toggleLetterSpacing() {
+    const selection = this.editor.selection.getCurrentSelection();
+    if (!selection?.isValid) return;
+
+    const range = selection.range;
+    const input = document.querySelector(".ls-input");
+    if (!input) return;
+
+    console.log("input.value = " + input.value);
+
+    const value = parseInt(input.value) || 0;
+
+    // Vérifier si la sélection est déjà dans un span avec --ls
+    const existingSpan = this.findParentWithLetterSpacing(range);
+
+    if (existingSpan) {
+      // Mettre à jour le span existant avec CSS variable
+      existingSpan.style.setProperty("--ls", value);
+      console.log("value = " + value);
+    } else {
+      // Créer un nouveau span avec CSS variable
+      this.wrapSelectionWithCSSVariable(range, "--ls", value);
+      console.log("value else = " + value);
+    }
+
+    this.triggerAutoCopy();
+  }
+
+  findParentWithLetterSpacing(range) {
+    let node = range.commonAncestorContainer;
+
+    if (node.nodeType === Node.TEXT_NODE) {
+      node = node.parentElement;
+    }
+
+    while (node && node !== document.body) {
+      if (
+        node.tagName === "SPAN" &&
+        (node.style.getPropertyValue("--ls") !== "" ||
+          node.getAttribute("style")?.includes("--ls"))
+      ) {
+        return node;
+      }
+      node = node.parentElement;
+    }
+
+    return null;
+  }
+
+  wrapSelectionWithCSSVariable(range, cssVar, value) {
+    const span = document.createElement("span");
+    span.style.setProperty(cssVar, value);
+//     console.log("value wrap = " + value);
+
+    try {
+      range.surroundContents(span);
+    } catch (e) {
+      // Si surroundContents échoue, utiliser une approche alternative
+      const contents = range.extractContents();
+      span.appendChild(contents);
+      range.insertNode(span);
+    }
+  }
+
+  // ====== MÉTHODES POUR GUILLEMETS ======
+
+ toggleFrenchQuotes() {
   const selection = this.editor.selection.getCurrentSelection();
   if (!selection?.isValid) return;
 
   const range = selection.range;
-  const input = document.querySelector(".ls-input");
-  if (!input) return;
+  const text = range.toString();
 
-  const value = parseInt(input.value) || 0;
+  if (text) {
+    range.deleteContents();
 
-  // Vérifier si la sélection est déjà dans un span avec --ls
-  const existingSpan = this.findParentWithLetterSpacing(range);
+    // Créer un fragment pour maintenir l'ordre
+    const fragment = document.createDocumentFragment();
 
-  if (existingSpan) {
-    // Mettre à jour le span existant avec CSS variable
-    existingSpan.style.setProperty('--ls', value);
-  } else {
-    // Créer un nouveau span avec CSS variable
-    this.wrapSelectionWithCSSVariable(range, '--ls', value);
+    // Span pour le guillemet ouvrant
+    const openQuoteSpan = document.createElement("span");
+    openQuoteSpan.className = "french-quote-open editor-add";
+    openQuoteSpan.dataset.timestamp = Date.now();
+    openQuoteSpan.textContent = UNICODE_CHARS.LAQUO;
+
+    // Span pour l'espace insécable après le guillemet ouvrant
+    const openSpaceSpan = document.createElement("span");
+    openSpaceSpan.className = "i_space narrow-no-break-space editor-add";
+    openSpaceSpan.dataset.timestamp = Date.now();
+    openSpaceSpan.textContent = UNICODE_CHARS.NO_BREAK_THIN_SPACE;
+
+    // Noeud de texte pour le contenu sélectionné
+    const textNode = document.createTextNode(text);
+
+    // Span pour l'espace insécable avant le guillemet fermant
+    const closeSpaceSpan = document.createElement("span");
+    closeSpaceSpan.className = "i_space narrow-no-break-space editor-add";
+    closeSpaceSpan.dataset.timestamp = Date.now();
+    closeSpaceSpan.textContent = UNICODE_CHARS.NO_BREAK_THIN_SPACE;
+
+    // Span pour le guillemet fermant
+    const closeQuoteSpan = document.createElement("span");
+    closeQuoteSpan.className = "french-quote-close editor-add";
+    closeQuoteSpan.dataset.timestamp = Date.now();
+    closeQuoteSpan.textContent = UNICODE_CHARS.RAQUO;
+
+    // Ajouter les éléments au fragment dans le bon ordre
+    fragment.appendChild(openQuoteSpan);
+    fragment.appendChild(openSpaceSpan);
+    fragment.appendChild(textNode);
+    fragment.appendChild(closeSpaceSpan);
+    fragment.appendChild(closeQuoteSpan);
+
+    // Insérer le fragment dans le DOM
+    range.insertNode(fragment);
+
+    // Mettre à jour la sélection pour inclure les guillemets
+    range.setStartBefore(openQuoteSpan);
+    range.setEndAfter(closeQuoteSpan);
   }
 
   this.triggerAutoCopy();
 }
 
-findParentWithLetterSpacing(range) {
-  let node = range.commonAncestorContainer;
-
-  if (node.nodeType === Node.TEXT_NODE) {
-    node = node.parentElement;
-  }
-
-  while (node && node !== document.body) {
-    if (node.tagName === "SPAN" && 
-        (node.style.getPropertyValue('--ls') !== '' || 
-         node.getAttribute('style')?.includes('--ls'))) {
-      return node;
-    }
-    node = node.parentElement;
-  }
-
-  return null;
-}
-
-wrapSelectionWithCSSVariable(range, cssVar, value) {
-  const span = document.createElement("span");
-  span.style.setProperty(cssVar, value);
-
-  try {
-    range.surroundContents(span);
-  } catch (e) {
-    // Si surroundContents échoue, utiliser une approche alternative
-    const contents = range.extractContents();
-    span.appendChild(contents);
-    range.insertNode(span);
-  }
-}
-
-  // ====== MÉTHODES POUR GUILLEMETS ======
-
-  toggleFrenchQuotes() {
-    const selection = this.editor.selection.getCurrentSelection();
-    if (!selection?.isValid) return;
-
-    const range = selection.range;
-    const text = range.toString();
-
-    if (text) {
-      range.deleteContents();
-
-      // Créer un fragment pour maintenir l'ordre
-      const fragment = document.createDocumentFragment();
-
-      const openSpan = document.createElement("span");
-      openSpan.className = "french-quote-open";
-      openSpan.textContent =
-        UNICODE_CHARS.LAQUO + UNICODE_CHARS.NO_BREAK_THIN_SPACE;
-
-      const textNode = document.createTextNode(text);
-
-      const closeSpan = document.createElement("span");
-      closeSpan.className = "french-quote-close";
-      closeSpan.textContent =
-        UNICODE_CHARS.NO_BREAK_THIN_SPACE + UNICODE_CHARS.RAQUO;
-
-      // Ajouter au fragment dans le bon ordre
-      fragment.appendChild(openSpan);
-      fragment.appendChild(textNode);
-      fragment.appendChild(closeSpan);
-
-      // Insérer le fragment d'un coup
-      range.insertNode(fragment);
-
-      range.setStartBefore(openSpan);
-      range.setEndAfter(closeSpan);
-    }
-
-    this.triggerAutoCopy();
-  }
 
   toggleEnglishQuotes() {
     const selection = this.editor.selection.getCurrentSelection();

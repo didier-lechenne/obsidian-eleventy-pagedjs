@@ -127,10 +127,15 @@ export class Toolbar {
       }
     });
 
+
+
     // Event listener unique pour l'input letter-spacing
     this.element.addEventListener("input", (e) => {
       if (e.target.classList.contains("ls-input")) {
+	
+
         e.stopPropagation();
+        
 
         // Appliquer le letter-spacing immédiatement
         this.editor.commands.toggleLetterSpacing();
@@ -138,7 +143,7 @@ export class Toolbar {
       }
     });
 
-    // SUPPRIMER bindLetterSpacingInput() - plus besoin
+   
   }
 
   /**
