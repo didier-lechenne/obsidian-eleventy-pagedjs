@@ -65,7 +65,7 @@ export class Commands {
 
     const range = selection.range;
     const input = document.querySelector(".ls-input");
-    
+
     if (!input) return;
 
     const value = input.value || "0";
@@ -90,28 +90,28 @@ export class Commands {
 
     const range = selection.range;
     const text = range.toString();
-    
+
     if (text) {
       range.deleteContents();
-      
+
       const openSpan = document.createElement("span");
       openSpan.className = "french-quote-open";
       openSpan.textContent = UNICODE_CHARS.LAQUO + UNICODE_CHARS.NBSP;
-      
+
       const textNode = document.createTextNode(text);
-      
+
       const closeSpan = document.createElement("span");
       closeSpan.className = "french-quote-close";
       closeSpan.textContent = UNICODE_CHARS.NBSP + UNICODE_CHARS.RAQUO;
-      
+
       range.insertNode(openSpan);
       range.insertNode(textNode);
       range.insertNode(closeSpan);
-      
+
       range.setStartBefore(openSpan);
       range.setEndAfter(closeSpan);
     }
-    
+
     this.triggerAutoCopy();
   }
 
@@ -121,28 +121,28 @@ export class Commands {
 
     const range = selection.range;
     const text = range.toString();
-    
+
     if (text) {
       range.deleteContents();
-      
+
       const openSpan = document.createElement("span");
       openSpan.className = "english-quote-open";
       openSpan.textContent = UNICODE_CHARS.LDQUO;
-      
+
       const textNode = document.createTextNode(text);
-      
+
       const closeSpan = document.createElement("span");
       closeSpan.className = "english-quote-close";
       closeSpan.textContent = UNICODE_CHARS.RDQUO;
-      
+
       range.insertNode(openSpan);
       range.insertNode(textNode);
       range.insertNode(closeSpan);
-      
+
       range.setStartBefore(openSpan);
       range.setEndAfter(closeSpan);
     }
-    
+
     this.triggerAutoCopy();
   }
 
@@ -156,13 +156,13 @@ export class Commands {
     range.deleteContents();
     const textNode = document.createTextNode(text);
     range.insertNode(textNode);
-    
+
     range.setStartAfter(textNode);
     range.collapse(true);
-    
+
     selection.selection.removeAllRanges();
     selection.selection.addRange(range);
-    
+
     this.triggerAutoCopy();
   }
 
@@ -171,31 +171,32 @@ export class Commands {
   wrapSelection(range, tagName, className = null) {
     const contents = range.extractContents();
     const element = document.createElement(tagName);
-    
+
     if (className) {
       element.className = className;
     }
-    
+
     element.appendChild(contents);
     range.insertNode(element);
-    
+
     range.selectNode(element);
-    
+
     const selection = window.getSelection();
     selection.removeAllRanges();
     selection.addRange(range);
-    
+
     return element;
   }
 
   unwrapTag(range, tagNames, className = null) {
     let element = range.commonAncestorContainer;
-    
+
     while (element && element !== document.body) {
       if (element.nodeType === Node.ELEMENT_NODE) {
         const tagMatches = tagNames.includes(element.tagName);
-        const classMatches = !className || element.classList.contains(className);
-        
+        const classMatches =
+          !className || element.classList.contains(className);
+
         if (tagMatches && classMatches) {
           const parent = element.parentNode;
           while (element.firstChild) {
@@ -211,23 +212,24 @@ export class Commands {
 
   isWrappedInTag(range, tagNames, className = null) {
     let element = range.commonAncestorContainer;
-    
+
     if (element.nodeType === Node.TEXT_NODE) {
       element = element.parentElement;
     }
-    
+
     while (element && element !== document.body) {
       if (element.nodeType === Node.ELEMENT_NODE) {
         const tagMatches = tagNames.includes(element.tagName);
-        const classMatches = !className || element.classList.contains(className);
-        
+        const classMatches =
+          !className || element.classList.contains(className);
+
         if (tagMatches && classMatches) {
           return true;
         }
       }
       element = element.parentElement;
     }
-    
+
     return false;
   }
 
@@ -237,13 +239,13 @@ export class Commands {
     const editableElement = this.editor.getCurrentElement();
     if (!editableElement) return;
 
-    const addedElements = editableElement.querySelectorAll('[data-timestamp]');
-    addedElements.forEach(element => {
+    const addedElements = editableElement.querySelectorAll("[data-timestamp]");
+    addedElements.forEach((element) => {
       element.parentNode?.removeChild(element);
     });
 
-    const spans = editableElement.querySelectorAll('span.editor-add');
-    spans.forEach(span => {
+    const spans = editableElement.querySelectorAll("span.editor-add");
+    spans.forEach((span) => {
       const parent = span.parentNode;
       while (span.firstChild) {
         parent.insertBefore(span.firstChild, span);
@@ -260,13 +262,16 @@ export class Commands {
 
     if (this.editor.toolbar.turndown) {
       const markdown = this.editor.toolbar.turndown.turndown(element.innerHTML);
-      
-      navigator.clipboard.writeText(markdown).then(() => {
-        console.log('Élément copié en Markdown');
-        this.showFeedback('Copié !');
-      }).catch(err => {
-        console.error('Erreur lors de la copie:', err);
-      });
+
+      navigator.clipboard
+        .writeText(markdown)
+        .then(() => {
+          console.log("Élément copié en Markdown");
+          this.showFeedback("Copié !");
+        })
+        .catch((err) => {
+          console.error("Erreur lors de la copie:", err);
+        });
     }
   }
 
@@ -280,7 +285,7 @@ export class Commands {
 
   showFeedback(message) {
     // Affiche un feedback temporaire à l'utilisateur
-    const feedback = document.createElement('div');
+    const feedback = document.createElement("div");
     feedback.textContent = message;
     feedback.style.cssText = `
       position: fixed;
@@ -294,11 +299,11 @@ export class Commands {
       opacity: 1;
       transition: opacity 0.3s ease;
     `;
-    
+
     document.body.appendChild(feedback);
-    
+
     setTimeout(() => {
-      feedback.style.opacity = '0';
+      feedback.style.opacity = "0";
       setTimeout(() => {
         document.body.removeChild(feedback);
       }, 300);
@@ -317,10 +322,44 @@ export class Commands {
     if (!selection?.isValid) return null;
 
     let element = selection.range.commonAncestorContainer;
-    while (element && !element.hasAttribute?.('data-editable')) {
+    while (element && !element.hasAttribute?.("data-editable")) {
       element = element.parentElement;
     }
-    
+
     return element;
+  }
+
+  /**
+   * Méthode manquante - performAutoCopy
+   * Effectue une copie automatique si l'option est activée
+   */
+  performAutoCopy() {
+    if (!this.editor.options?.autoCopy) return;
+
+    const element = this.getCurrentElement();
+    if (!element) return;
+
+    // Utilise la logique existante de copyElementAsMarkdown
+    if (this.editor.toolbar.turndown) {
+      const markdown = this.editor.toolbar.turndown.turndown(element.innerHTML);
+
+      navigator.clipboard
+        .writeText(markdown)
+        .then(() => {
+          // Feedback discret pour l'auto-copie
+          console.log("Auto-copie effectuée");
+        })
+        .catch((err) => {
+          console.error("Erreur lors de l'auto-copie:", err);
+        });
+    }
+  }
+
+  /**
+   * Correction de la méthode getCurrentElement dans Commands
+   * (utilise maintenant la méthode de l'éditeur)
+   */
+  getCurrentElement() {
+    return this.editor.getCurrentElement();
   }
 }

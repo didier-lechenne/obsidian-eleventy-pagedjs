@@ -15,6 +15,7 @@ export default class Editor extends Handler {
     this.options = {
       selector: "[data-editable], .footnote, figcaption",
       shortcuts: true,
+      autoCopy: false, // Option pour l'auto-copie
     };
 
     this.isActive = false;
@@ -26,7 +27,7 @@ export default class Editor extends Handler {
 
     // Timer unifié pour debounce
     this._debounceTimer = null;
-    
+
     // Cache des éléments éditables
     this.editableElements = null;
   }
@@ -112,6 +113,20 @@ export default class Editor extends Handler {
     document.addEventListener("keydown", this.handleKeyDown.bind(this));
     document.addEventListener("paste", this.handlePaste.bind(this));
     document.addEventListener("focusin", this.handleFocusIn.bind(this));
+
+    // CORRECTION: Gestionnaire de clic pour afficher la toolbar
+    document.addEventListener("click", (e) => {
+      if (!this.isActive) return;
+
+      if (this.isInEditableElement(e.target)) {
+        setTimeout(() => {
+          const selection = this.selection.getCurrentSelection();
+          if (selection && this.toolbar) {
+            this.toolbar.show(selection);
+          }
+        }, 50);
+      }
+    });
   }
 
   handleFocusIn(event) {
@@ -119,87 +134,68 @@ export default class Editor extends Handler {
     if (this.isInEditableElement(event.target)) {
       // Créer une sélection au curseur
       const selection = window.getSelection();
-      if (selection.rangeCount === 0) {
-        const range = document.createRange();
-        range.setStart(event.target, 0);
-        range.collapse(true);
-        selection.removeAllRanges();
-        selection.addRange(range);
-      }
-
-      setTimeout(() => {
+      if (selection.rangeCount > 0) {
         const currentSelection = this.selection.getCurrentSelection();
         if (currentSelection) {
           this.toolbar.show(currentSelection);
         }
-      }, 10);
+      }
     }
   }
 
   handleMouseUp(event) {
-    this.debouncedUpdateSelection();
+    if (!this.isActive) return;
+    this.updateSelection();
   }
-
-  // Méthode de debounce centralisée
-  debounce(func, delay) {
-    clearTimeout(this._debounceTimer);
-    this._debounceTimer = setTimeout(func, delay);
-  }
-
-  debouncedUpdateSelection = () => {
-    this.debounce(() => this.updateSelection(), 50);
-  };
 
   handleKeyUp(event) {
     if (!this.isActive) return;
-
-    if (this.options.shortcuts) {
-      // Raccourcis existants
-      if (event.ctrlKey || event.metaKey) {
-        switch (event.key) {
-          case "b":
-            event.preventDefault();
-            break;
-          case "i":
-            event.preventDefault();
-            break;
-        }
-      }
-    }
-
-    this.debouncedUpdateSelection();
+    this.updateSelection();
   }
 
   handleKeyDown(event) {
     if (!this.isActive) return;
 
     if (this.options.shortcuts) {
-      if (event.ctrlKey || event.metaKey) {
-        switch (event.key) {
-          case "b":
-            event.preventDefault();
-            break;
-          case "i":
-            event.preventDefault();
-            break;
-        }
+      this.handleShortcuts(event);
+    }
+  }
+
+  handleShortcuts(event) {
+    if (event.ctrlKey || event.metaKey) {
+      switch (event.key) {
+        case "b":
+          event.preventDefault();
+          this.commands.toggleBold();
+          break;
+        case "i":
+          event.preventDefault();
+          this.commands.toggleItalic();
+          break;
       }
     }
   }
 
   handlePaste(event) {
     if (!this.isActive) return;
-    if (this.isInEditableElement(event.target)) {
-      event.preventDefault();
-      const text = event.clipboardData.getData("text/plain");
-      this.commands.insertText(text);
-    }
+
+    const selection = this.selection.getCurrentSelection();
+    if (!selection?.isValid) return;
+
+    event.preventDefault();
+    const text = event.clipboardData.getData("text/plain");
+    this.commands.insertText(text);
+  }
+
+  debounce(func, wait) {
+    clearTimeout(this._debounceTimer);
+    this._debounceTimer = setTimeout(func, wait);
   }
 
   activate() {
     if (this.isActive) return;
     this.isActive = true;
-    
+
     if (this.editableElements) {
       this.editableElements.forEach((element) => {
         element.contentEditable = true;
@@ -231,12 +227,14 @@ export default class Editor extends Handler {
     if (!this.isActive) return;
 
     const currentSelection = this.selection.getCurrentSelection();
-    
+
     if (currentSelection?.isValid) {
       const activeElement = document.activeElement;
-      
+
       if (
-        this.isInEditableElement(currentSelection.range.commonAncestorContainer) ||
+        this.isInEditableElement(
+          currentSelection.range.commonAncestorContainer
+        ) ||
         this.isInEditableElement(activeElement) ||
         activeElement?.classList.contains("footnote")
       ) {
@@ -262,8 +260,9 @@ export default class Editor extends Handler {
   isInEditableElement(node) {
     if (!node) return false;
 
-    const element = node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
-    
+    const element =
+      node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
+
     // Vérification rapide avec cache si disponible
     if (this.editableElements) {
       for (const editable of this.editableElements) {
@@ -276,6 +275,27 @@ export default class Editor extends Handler {
 
     // Fallback si pas de cache
     return element.closest(this.options.selector) !== null;
+  }
+
+  // CORRECTION: Méthode manquante getCurrentElement
+  getCurrentElement() {
+    const selection = this.selection.getCurrentSelection();
+    if (!selection?.isValid) return null;
+
+    let element = selection.range.commonAncestorContainer;
+
+    if (element.nodeType === Node.TEXT_NODE) {
+      element = element.parentElement;
+    }
+
+    while (element && element !== document.body) {
+      if (element.hasAttribute && element.hasAttribute("data-editable")) {
+        return element;
+      }
+      element = element.parentElement;
+    }
+
+    return null;
   }
 
   // Méthodes API publiques simplifiées
@@ -293,27 +313,30 @@ export default class Editor extends Handler {
     if (this.isInEditableElement(activeElement)) {
       return activeElement.closest(this.options.selector);
     }
-    
+
     const selection = window.getSelection();
     if (selection.rangeCount > 0) {
       const range = selection.getRangeAt(0);
       const container = range.commonAncestorContainer;
-      const element = container.nodeType === Node.TEXT_NODE ? container.parentElement : container;
+      const element =
+        container.nodeType === Node.TEXT_NODE
+          ? container.parentElement
+          : container;
       return element.closest(this.options.selector);
     }
-    
+
     return null;
   }
 
   cleanup() {
     // Nettoyage des timers
     clearTimeout(this._debounceTimer);
-    
+
     // Nettoyage des modules
     this.toolbar?.destroy();
     this.selection = null;
     this.commands = null;
-    
+
     // Reset du cache
     this.editableElements = null;
   }
