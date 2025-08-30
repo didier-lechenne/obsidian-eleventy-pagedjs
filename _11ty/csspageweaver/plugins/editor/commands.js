@@ -59,67 +59,84 @@ export class Commands {
     this.triggerAutoCopy();
   }
 
-toggleLetterSpacing() {
-  const selection = this.editor.selection.getCurrentSelection();
-  if (!selection?.isValid) return;
+  toggleLetterSpacing() {
+    const selection = this.editor.selection.getCurrentSelection();
+    if (!selection?.isValid) return;
 
-  const range = selection.range;
-  const input = document.querySelector(".ls-input");
+    const range = selection.range;
+    const input = document.querySelector(".ls-input");
+    if (!input) return;
 
-  if (!input) return;
+    const value = parseInt(input.value) || 0;
+    const letterSpacingValue = `${value}px`;
 
-  // Récupérer la valeur de l'input
-  let value = input.value || "0";
-  value = parseInt(value, 10) || 0;
-  
-  // Appliquer le letter-spacing
-  const letterSpacingValue = `${value}px`;
-  
-  // Si la sélection est déjà dans un span avec letter-spacing
-  const existingSpan = this.getContainingLetterSpacingSpan(range);
-  
-  if (existingSpan) {
-    // Mettre à jour le span existant
-    existingSpan.style.letterSpacing = letterSpacingValue;
-  } else {
-    // Créer un nouveau span avec letter-spacing
-    this.wrapSelectionWithLetterSpacing(range, letterSpacingValue);
-  }
-  
-  this.triggerAutoCopy();
-}
+    // Vérifier si la sélection est déjà dans un span avec letter-spacing
+    const existingSpan = this.findParentWithLetterSpacing(range);
 
-getContainingLetterSpacingSpan(range) {
-  let node = range.commonAncestorContainer;
-  
-  if (node.nodeType === Node.TEXT_NODE) {
-    node = node.parentElement;
-  }
-  
-  while (node && node !== document.body) {
-    if (node.tagName === 'SPAN' && node.style.letterSpacing) {
-      return node;
+    if (existingSpan) {
+      // Mettre à jour le span existant
+      existingSpan.style.letterSpacing = letterSpacingValue;
+    } else {
+      // Créer un nouveau span avec letter-spacing
+      this.wrapSelection(range, "span", "letter-spacing", letterSpacingValue);
     }
-    node = node.parentElement;
-  }
-  
-  return null;
-}
 
-wrapSelectionWithLetterSpacing(range, letterSpacingValue) {
-  const span = document.createElement('span');
-  span.className = 'letter-spacing';
-  span.style.letterSpacing = letterSpacingValue;
-  
-  try {
-    range.surroundContents(span);
-  } catch (e) {
-    // Si surroundContents échoue, utiliser une approche alternative
-    const contents = range.extractContents();
-    span.appendChild(contents);
-    range.insertNode(span);
+    this.triggerAutoCopy();
   }
-}
+
+  findParentWithLetterSpacing(range) {
+    let node = range.commonAncestorContainer;
+
+    // Si c'est un nœud texte, prendre son parent
+    if (node.nodeType === Node.TEXT_NODE) {
+      node = node.parentElement;
+    }
+
+    // Chercher un span parent avec letter-spacing
+    while (node && node !== document.body) {
+      if (
+        node.tagName === "SPAN" &&
+        (node.classList.contains("letter-spacing") || node.style.letterSpacing)
+      ) {
+        return node;
+      }
+      node = node.parentElement;
+    }
+
+    return null;
+  }
+
+  getContainingLetterSpacingSpan(range) {
+    let node = range.commonAncestorContainer;
+
+    if (node.nodeType === Node.TEXT_NODE) {
+      node = node.parentElement;
+    }
+
+    while (node && node !== document.body) {
+      if (node.tagName === "SPAN" && node.style.letterSpacing) {
+        return node;
+      }
+      node = node.parentElement;
+    }
+
+    return null;
+  }
+
+  wrapSelectionWithLetterSpacing(range, letterSpacingValue) {
+    const span = document.createElement("span");
+    span.className = "letter-spacing";
+    span.style.letterSpacing = letterSpacingValue;
+
+    try {
+      range.surroundContents(span);
+    } catch (e) {
+      // Si surroundContents échoue, utiliser une approche alternative
+      const contents = range.extractContents();
+      span.appendChild(contents);
+      range.insertNode(span);
+    }
+  }
 
   // ====== MÉTHODES POUR GUILLEMETS ======
 
@@ -216,24 +233,38 @@ wrapSelectionWithLetterSpacing(range, letterSpacingValue) {
 
   // ====== UTILITAIRES DE FORMATAGE ======
 
-  wrapSelection(range, tagName, className = null) {
-    const contents = range.extractContents();
-    const element = document.createElement(tagName);
+  wrapSelection(range, tagName, className = null, inlineStyle = null) {
+    if (range.collapsed) return;
 
-    if (className) {
-      element.className = className;
+    try {
+      const element = document.createElement(tagName);
+
+      if (className) {
+        element.classList.add(className);
+      }
+
+      // Support pour les styles inline
+      if (inlineStyle && className === "letter-spacing") {
+        element.style.letterSpacing = inlineStyle;
+      }
+
+      range.surroundContents(element);
+    } catch (error) {
+      // Fallback si surroundContents échoue
+      const contents = range.extractContents();
+      const element = document.createElement(tagName);
+
+      if (className) {
+        element.classList.add(className);
+      }
+
+      if (inlineStyle && className === "letter-spacing") {
+        element.style.letterSpacing = inlineStyle;
+      }
+
+      element.appendChild(contents);
+      range.insertNode(element);
     }
-
-    element.appendChild(contents);
-    range.insertNode(element);
-
-    range.selectNode(element);
-
-    const selection = window.getSelection();
-    selection.removeAllRanges();
-    selection.addRange(range);
-
-    return element;
   }
 
   unwrapTag(range, tagNames, className = null) {

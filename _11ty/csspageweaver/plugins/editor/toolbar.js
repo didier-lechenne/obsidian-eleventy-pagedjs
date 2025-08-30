@@ -108,77 +108,39 @@ export class Toolbar {
 
     // Délégation d'événements unifiée
     this.element.addEventListener("click", (e) => {
-      // Input letter-spacing
+      // Input letter-spacing - ne rien faire sur click
       if (e.target.classList.contains("ls-input")) {
         e.stopPropagation();
         return;
       }
 
-      // Menus déroulants
-      const selectTrigger = e.target.closest(".select-trigger");
-      if (selectTrigger) {
-        e.preventDefault();
-        this.toggleCustomDropdown(selectTrigger);
-        return;
+      // Gestion des boutons normaux
+      const button = e.target.closest("button[data-command]");
+      if (button) {
+        const command = button.dataset.command;
+        const buttonElement = this.buttons.get(command);
+
+        if (buttonElement?.action) {
+          buttonElement.action();
+          this.updateButtonStates();
+        }
       }
+    });
 
-      // Options des menus
-      const customOption = e.target.closest(".custom-option");
-      if (customOption) {
-        this.handleCustomOptionClick(customOption);
-        return;
-      }
+    // Event listener unique pour l'input letter-spacing
+    this.element.addEventListener("input", (e) => {
+      if (e.target.classList.contains("ls-input")) {
+        e.stopPropagation();
 
-      // Boutons standards
-      const button = e.target.closest("button");
-      if (!button) return;
-
-      const command = button.dataset.command;
-      const buttonElement = this.buttons.get(command);
-
-      if (buttonElement?.action) {
-        buttonElement.action();
+        // Appliquer le letter-spacing immédiatement
+        this.editor.commands.toggleLetterSpacing();
         this.updateButtonStates();
       }
     });
 
-    this.element.addEventListener("input", (e) => {
-      if (e.target.classList.contains("ls-input")) {
-        const value = parseInt(e.target.value) || 0;
-        this.editor.commands.toggleLetterSpacing(value);
-      }
-    });
-
-    this.bindLetterSpacingInput();
+    // SUPPRIMER bindLetterSpacingInput() - plus besoin
   }
 
-
-  bindLetterSpacingInput() {
-  const input = this.element.querySelector('.ls-input');
-  if (!input) return;
-
-  // Événement sur changement de valeur
-  input.addEventListener('input', (e) => {
-    e.stopPropagation();
-    
-    const selection = this.editor.selection.getCurrentSelection();
-    if (!selection?.isValid) return;
-
-    // Appliquer immédiatement le nouveau letter-spacing
-    this.editor.commands.toggleLetterSpacing();
-  });
-
-  // Événement pour empêcher la fermeture de la toolbar
-  input.addEventListener('focus', (e) => {
-    e.stopPropagation();
-    this.editor.toolbar.keepOpen = true;
-  });
-
-  input.addEventListener('blur', (e) => {
-    e.stopPropagation();
-    this.editor.toolbar.keepOpen = false;
-  });
-}
   /**
    * Gestion des dropdowns personnalisés
    */
@@ -191,7 +153,7 @@ export class Toolbar {
       .querySelectorAll(".custom-dropdown")
       .forEach((otherDropdown) => {
         if (otherDropdown !== dropdown) {
-	 otherDropdown.style.display = "none";
+          otherDropdown.style.display = "none";
         }
       });
 
@@ -300,7 +262,7 @@ export class Toolbar {
       if (buttonElement.isToggle) {
         const isActive = buttonElement.updateActiveState(element);
         const domButton = this.element.querySelector(
-	 `[data-command="${actionId}"]`
+          `[data-command="${actionId}"]`
         );
         domButton?.classList.toggle("active", isActive);
       }

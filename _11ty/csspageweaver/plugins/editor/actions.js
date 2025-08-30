@@ -16,7 +16,10 @@ export const ACTIONS_REGISTRY = {
     isActive: (element) => {
       let current = element;
       while (current && current !== document.body) {
-        if (current.tagName === "SPAN" && current.classList.contains("small-caps")) {
+        if (
+          current.tagName === "SPAN" &&
+          current.classList.contains("small-caps")
+        ) {
           return true;
         }
         current = current.parentElement;
@@ -38,17 +41,18 @@ export const ACTIONS_REGISTRY = {
     icon: "A ↔ A",
     title: "Lettrage (Letter-spacing)",
     execute: (editor) => {
-      const selection = editor.selection.getCurrentSelection();
-      if (!selection?.isValid) return;
-
       const input = document.querySelector(".ls-input");
       const button = document.querySelector('[data-command="letter-spacing"]');
 
       if (input.classList.contains("ls-hide")) {
+        // Montrer l'input
         input.classList.remove("ls-hide");
         button.classList.add("active");
+
+        // Appliquer le letter-spacing avec la valeur actuelle
         editor.commands.toggleLetterSpacing();
       } else {
+        // Cacher l'input
         input.classList.add("ls-hide");
         button.classList.remove("active");
       }
@@ -56,7 +60,12 @@ export const ACTIONS_REGISTRY = {
     isActive: (element) => {
       let current = element;
       while (current && current !== document.body) {
-        if (current.tagName === "SPAN" && current.style.letterSpacing && current.style.letterSpacing !== "normal") {
+        if (
+          current.tagName === "SPAN" &&
+          (current.classList.contains("letter-spacing") ||
+            (current.style.letterSpacing &&
+              current.style.letterSpacing !== "normal"))
+        ) {
           return true;
         }
         current = current.parentElement;
@@ -64,7 +73,6 @@ export const ACTIONS_REGISTRY = {
       return false;
     },
   },
-
   // === ACTIONS D'INSERTION ===
 
   nbsp: {
@@ -78,7 +86,8 @@ export const ACTIONS_REGISTRY = {
     type: "insert",
     icon: "⍽",
     title: "Espace insécable fine",
-    execute: (editor) => editor.commands.insertText(UNICODE_CHARS.NNBSP || "\u202F"),
+    execute: (editor) =>
+      editor.commands.insertText(UNICODE_CHARS.NNBSP || "\u202F"),
   },
 
   "thin-space": {
@@ -103,7 +112,7 @@ export const ACTIONS_REGISTRY = {
   },
 
   br: {
-    type: "insert", 
+    type: "insert",
     icon: "↵",
     title: "Saut de ligne",
     execute: (editor) => {
@@ -182,7 +191,9 @@ export const ACTIONS_REGISTRY = {
       if (editor.commands.toggleFrenchQuotes) {
         editor.commands.toggleFrenchQuotes();
       } else {
-        console.warn("Méthode toggleFrenchQuotes non disponible dans commands.js");
+        console.warn(
+          "Méthode toggleFrenchQuotes non disponible dans commands.js"
+        );
       }
     },
     isActive: (element) => {
@@ -203,7 +214,9 @@ export const ACTIONS_REGISTRY = {
       if (editor.commands.toggleEnglishQuotes) {
         editor.commands.toggleEnglishQuotes();
       } else {
-        console.warn("Méthode toggleEnglishQuotes non disponible dans commands.js");
+        console.warn(
+          "Méthode toggleEnglishQuotes non disponible dans commands.js"
+        );
       }
     },
     isActive: (element) => {
@@ -264,7 +277,9 @@ export const ACTIONS_REGISTRY = {
       if (editor.commands.resetTransformations) {
         editor.commands.resetTransformations();
       } else {
-        console.warn("Méthode resetTransformations non disponible dans commands.js");
+        console.warn(
+          "Méthode resetTransformations non disponible dans commands.js"
+        );
       }
     },
   },
@@ -277,7 +292,9 @@ export const ACTIONS_REGISTRY = {
       if (editor.commands.copyElementAsMarkdown) {
         editor.commands.copyElementAsMarkdown();
       } else {
-        console.warn("Méthode copyElementAsMarkdown non disponible dans commands.js");
+        console.warn(
+          "Méthode copyElementAsMarkdown non disponible dans commands.js"
+        );
       }
     },
   },
@@ -290,7 +307,9 @@ export const ACTIONS_REGISTRY = {
       if (editor.commands.exportMarkdownByRange) {
         editor.commands.exportMarkdownByRange();
       } else {
-        console.warn("Méthode exportMarkdownByRange non disponible dans commands.js");
+        console.warn(
+          "Méthode exportMarkdownByRange non disponible dans commands.js"
+        );
       }
     },
   },
