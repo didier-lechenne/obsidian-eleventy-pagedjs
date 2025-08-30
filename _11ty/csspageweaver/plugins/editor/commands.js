@@ -125,7 +125,7 @@ export class Commands {
 
   // ====== MÉTHODES POUR GUILLEMETS ======
 
- toggleFrenchQuotes() {
+toggleFrenchQuotes() {
   const selection = this.editor.selection.getCurrentSelection();
   if (!selection?.isValid) return;
 
@@ -135,47 +135,30 @@ export class Commands {
   if (text) {
     range.deleteContents();
 
-    // Créer un fragment pour maintenir l'ordre
     const fragment = document.createDocumentFragment();
 
-    // Span pour le guillemet ouvrant
-    const openQuoteSpan = document.createElement("span");
-    openQuoteSpan.className = "french-quote-open editor-add";
-    openQuoteSpan.dataset.timestamp = Date.now();
+    // Utilisation de createElement pour simplifier
+    const openQuoteSpan = this.createElement('span', 'french-quote-open');
     openQuoteSpan.textContent = UNICODE_CHARS.LAQUO;
 
-    // Span pour l'espace insécable après le guillemet ouvrant
-    const openSpaceSpan = document.createElement("span");
-    openSpaceSpan.className = "i_space narrow-no-break-space editor-add";
-    openSpaceSpan.dataset.timestamp = Date.now();
+    const openSpaceSpan = this.createElement('span', 'i_space narrow-no-break-space');
     openSpaceSpan.textContent = UNICODE_CHARS.NO_BREAK_THIN_SPACE;
 
-    // Noeud de texte pour le contenu sélectionné
     const textNode = document.createTextNode(text);
 
-    // Span pour l'espace insécable avant le guillemet fermant
-    const closeSpaceSpan = document.createElement("span");
-    closeSpaceSpan.className = "i_space narrow-no-break-space editor-add";
-    closeSpaceSpan.dataset.timestamp = Date.now();
+    const closeSpaceSpan = this.createElement('span', 'i_space narrow-no-break-space');
     closeSpaceSpan.textContent = UNICODE_CHARS.NO_BREAK_THIN_SPACE;
 
-    // Span pour le guillemet fermant
-    const closeQuoteSpan = document.createElement("span");
-    closeQuoteSpan.className = "french-quote-close editor-add";
-    closeQuoteSpan.dataset.timestamp = Date.now();
+    const closeQuoteSpan = this.createElement('span', 'french-quote-close');
     closeQuoteSpan.textContent = UNICODE_CHARS.RAQUO;
 
-    // Ajouter les éléments au fragment dans le bon ordre
     fragment.appendChild(openQuoteSpan);
     fragment.appendChild(openSpaceSpan);
     fragment.appendChild(textNode);
     fragment.appendChild(closeSpaceSpan);
     fragment.appendChild(closeQuoteSpan);
 
-    // Insérer le fragment dans le DOM
     range.insertNode(fragment);
-
-    // Mettre à jour la sélection pour inclure les guillemets
     range.setStartBefore(openQuoteSpan);
     range.setEndAfter(closeQuoteSpan);
   }
@@ -215,61 +198,84 @@ export class Commands {
     this.triggerAutoCopy();
   }
 
+
+
   // ====== INSERTION DE TEXTE ======
 
-  insertText(text) {
-    const selection = this.editor.selection.getCurrentSelection();
-    if (!selection?.isValid) return;
+insertText(text) {
+  const selection = this.editor.selection.getCurrentSelection();
+  if (!selection || !selection.isValid) return;
 
-    const range = selection.range;
-    range.deleteContents();
-    const textNode = document.createTextNode(text);
-    range.insertNode(textNode);
-
-    range.setStartAfter(textNode);
-    range.collapse(true);
-
-    selection.selection.removeAllRanges();
-    selection.selection.addRange(range);
-
-    this.triggerAutoCopy();
-  }
+  const range = selection.range;
+  
+  // Créer un span avec les attributs requis
+  const span = document.createElement('span');
+  span.classList.add('editor-add');
+  span.setAttribute('data-timestamp', Date.now().toString());
+  span.textContent = text;
+  
+  range.deleteContents();
+  range.insertNode(span);
+  
+  // Positionner le curseur après l'insertion
+  range.setStartAfter(span);
+  range.setEndAfter(span);
+  selection.selection.removeAllRanges();
+  selection.selection.addRange(range);
+  
+  this.triggerAutoCopy();
+}
 
   // ====== UTILITAIRES DE FORMATAGE ======
 
-  wrapSelection(range, tagName, className = null, inlineStyle = null) {
-    if (range.collapsed) return;
-
-    try {
-      const element = document.createElement(tagName);
-
-      if (className) {
-        element.classList.add(className);
-      }
-
-      // Support pour les styles inline
-      if (inlineStyle && className === "letter-spacing") {
-        element.style.letterSpacing = inlineStyle;
-      }
-
-      range.surroundContents(element);
-    } catch (error) {
-      // Fallback si surroundContents échoue
-      const contents = range.extractContents();
-      const element = document.createElement(tagName);
-
-      if (className) {
-        element.classList.add(className);
-      }
-
-      if (inlineStyle && className === "letter-spacing") {
-        element.style.letterSpacing = inlineStyle;
-      }
-
-      element.appendChild(contents);
-      range.insertNode(element);
-    }
+wrapSelection(range, tagName, className = null, attributes = {}) {
+  const element = document.createElement(tagName);
+  
+  // Ajout automatique de la classe editor-add et data-timestamp
+  element.classList.add('editor-add');
+  element.setAttribute('data-timestamp', Date.now().toString());
+  
+  // Ajout de la classe personnalisée si fournie
+  if (className) {
+    element.classList.add(className);
   }
+  
+  // Ajout des attributs personnalisés
+  Object.entries(attributes).forEach(([key, value]) => {
+    element.setAttribute(key, value);
+  });
+  
+  try {
+    range.surroundContents(element);
+  } catch (e) {
+    // Fallback si surroundContents échoue
+    element.appendChild(range.extractContents());
+    range.insertNode(element);
+  }
+  
+  this.triggerAutoCopy();
+}
+
+createElement(tagName, className = null, attributes = {}) {
+  const element = document.createElement(tagName);
+  
+  // Ajout automatique de la classe editor-add et data-timestamp
+  element.classList.add('editor-add');
+  element.setAttribute('data-timestamp', Date.now().toString());
+  
+  // Ajout de la classe personnalisée si fournie
+  if (className) {
+    element.classList.add(className);
+  }
+  
+  // Ajout des attributs personnalisés
+  Object.entries(attributes).forEach(([key, value]) => {
+    element.setAttribute(key, value);
+  });
+  
+  return element;
+}
+
 
   unwrapTag(range, tagNames, className = null) {
     let element = range.commonAncestorContainer;
