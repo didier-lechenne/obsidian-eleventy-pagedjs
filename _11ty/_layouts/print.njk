@@ -8,13 +8,6 @@
 
     <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
 
-    <link
-      rel="alternate"
-      type="application/rss+xml"
-      title="{{ config.title }}"
-      href="../feed.xml"
-    />
-
     <meta property="og:title" content="{{ title or config.title }}" />
     <meta
       property="og:description"
@@ -26,24 +19,15 @@
     <script src="https://unpkg.com/turndown/dist/turndown.js"></script>
     <script src="csspageweaver/lib/csstree.min.js"></script>
     <script src="csspageweaver/main.js" type="module"></script>
-
   </head>
 
-  <body class="print {{ bodyClass }}" lang="fr" >
-    <!-- Main content -->
+  <body class="print {{ bodyClass }}" lang="fr">
     <main class="main-content">
-      
-        
-          <div class="container" >
-            {% for p in collections.printPages %}
-            
-            {% set templateName = p.data.template | default('default') %}
-            {% include "templates/" + templateName + ".njk" %}
-
-            {% endfor %}
-          </div>
-       
-     
+      <div class="container">
+        {% for p in collections.printPages %} {% set templateName =
+        p.data.template | default('default') %} {% include "templates/" +
+        templateName + ".njk" %} {% endfor %}
+      </div>
     </main>
   </body>
 </html>
