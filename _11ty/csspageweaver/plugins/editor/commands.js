@@ -131,6 +131,7 @@ export class Commands {
 
     const span = document.createElement("span");
     span.className = "editor-add";
+    span.dataset.timestamp = Date.now();
     span.style.setProperty("--ls", "0");
     span.setAttribute("data-ls-id", "ls-" + Date.now()); // ID unique
     span.textContent = selectedText;
@@ -188,19 +189,27 @@ export class Commands {
   // ====== COMMANDES D'INSERTION SIMPLE ======
   // Ces méthodes restent identiques à votre version existante
 
-  insertText(text) {
-    const selection = window.getSelection();
-    if (selection.rangeCount === 0) return;
+insertText(text) {
+  const selection = window.getSelection();
+  if (selection.rangeCount === 0) return;
 
-    const range = selection.getRangeAt(0);
-    range.deleteContents();
-    range.insertNode(document.createTextNode(text));
-    range.collapse(false);
+  const range = selection.getRangeAt(0);
+  range.deleteContents();
+  
+  // Créer un span au lieu d'un textNode
+  const span = document.createElement('span');
+  span.className = 'editor-add';
+  span.dataset.timestamp = Date.now();
+  span.textContent = text;
+  
+  range.insertNode(span);
+  range.setStartAfter(span);
+  range.collapse(true);
 
-    selection.removeAllRanges();
-    selection.addRange(range);
-    this.triggerAutoCopy();
-  }
+  selection.removeAllRanges();
+  selection.addRange(range);
+  this.triggerAutoCopy();
+}
 
   // Méthode utilitaire pour les espaces typographiques
   insertTypographicSpan(content, className) {
@@ -212,6 +221,7 @@ export class Commands {
 
     const span = document.createElement("span");
     span.className = className;
+    span.dataset.timestamp = Date.now();
     span.textContent = content;
 
     range.insertNode(span);
@@ -317,6 +327,7 @@ export class Commands {
   createQuoteElement(className, content) {
     const span = document.createElement("span");
     span.className = className;
+    span.dataset.timestamp = Date.now();
     span.textContent = content;
     return span;
   }
@@ -547,20 +558,20 @@ export class Commands {
 
   // ====== RESET TRANSFORMATIONS SIMPLIFIÉ ======
   // Cette version intègre la gestion des spans letter-spacing dans la logique unifiée
-  resetTransformations() {
-    const element = this.getEditableElementFromSelection();
-    if (!element) return;
+ resetTransformations() {
+  const element = this.getEditableElementFromSelection();
+  if (!element) return;
 
-    // Gérer spécifiquement les spans letter-spacing (qui contiennent des inputs)
-    element
-      .querySelectorAll('span[style*="--ls"].editor-add')
-      .forEach((span) => {
-        this.unwrapLetterSpacing(span);
-      });
+  // Récupérer TOUS les éléments avec timestamp
+  const allElements = Array.from(element.querySelectorAll('.editor-add[data-timestamp]'));
+  
+  if (allElements.length === 0) {
+    // Fallback : votre code actuel complet
+    element.querySelectorAll('span[style*="--ls"].editor-add').forEach((span) => {
+      this.unwrapLetterSpacing(span);
+    });
 
-    // Gérer tous les autres éléments avec la classe editor-add
     element.querySelectorAll(".editor-add").forEach((el) => {
-      // Vérifier qu'on n'a pas déjà traité cet élément comme letter-spacing
       if (!el.style.getPropertyValue("--ls")) {
         if (
           el.tagName === "BR" ||
@@ -570,19 +581,43 @@ export class Commands {
           el.classList.contains("english-quote-close") ||
           el.classList.contains("i_space")
         ) {
-          // Suppression pure pour BR, guillemets et espaces
           el.remove();
         } else if (el.parentNode) {
-          // Remplacement par contenu textuel pour formatage (small-caps, sup...)
           const textNode = document.createTextNode(el.textContent);
           el.parentNode.replaceChild(textNode, el);
         }
       }
     });
-
+    
     element.normalize();
     this.triggerAutoCopy();
+    return;
   }
+
+  // Si timestamps présents : suppression progressive
+  allElements.sort((a, b) => parseInt(b.dataset.timestamp) - parseInt(a.dataset.timestamp));
+  const mostRecent = allElements[0];
+  
+  // Même logique que le fallback mais sur un seul élément
+  if (mostRecent.style && mostRecent.style.getPropertyValue("--ls")) {
+    this.unwrapLetterSpacing(mostRecent);
+  } else if (
+    mostRecent.tagName === "BR" ||
+    mostRecent.classList.contains("french-quote-open") ||
+    mostRecent.classList.contains("french-quote-close") ||
+    mostRecent.classList.contains("english-quote-open") ||
+    mostRecent.classList.contains("english-quote-close") ||
+    mostRecent.classList.contains("i_space")
+  ) {
+    mostRecent.remove();
+  } else if (mostRecent.parentNode) {
+    const textNode = document.createTextNode(mostRecent.textContent);
+    mostRecent.parentNode.replaceChild(textNode, mostRecent);
+  }
+
+  element.normalize();
+  this.triggerAutoCopy();
+}
 
   // ====== COPIE AUTOMATIQUE ======
 

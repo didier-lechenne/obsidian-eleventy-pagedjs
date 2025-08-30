@@ -220,6 +220,7 @@ export const ACTIONS_REGISTRY = {
 
         const br = document.createElement("br");
         br.className = "editor-add";
+        br.dataset.timestamp = Date.now();
 
         range.insertNode(br);
         range.setStartAfter(br);
