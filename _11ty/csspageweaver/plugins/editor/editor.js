@@ -18,8 +18,7 @@ export default class Editor extends Handler {
     };
 
     this.isActive = false;
-    this.editableElements = [];
-    this.currentSelection = null;
+
 
     // Modules
     this.toolbar = null;
@@ -67,16 +66,14 @@ export default class Editor extends Handler {
         idCounter++;
         var editableId = `${idPrefix}${idCounter}`;
         element.setAttribute("editable-id", editableId);
-        this.assignEditableCapabilities(element);
+        element.setAttribute("data-editable", "");
       });
 
       sectionCounter++;
     });
   }
 
-  assignEditableCapabilities(element) {
-    element.setAttribute("data-editable", "");
-  }
+
 
   setupToggle() {
     var toggle = document.getElementById("editor-toggle");
@@ -107,7 +104,7 @@ export default class Editor extends Handler {
   }
 
   setupEditableElements() {
-    this.editableElements = document.querySelectorAll(this.options.selector);
+//     this.editableElements = document.querySelectorAll(this.options.selector);
 
     this.editableElements.forEach((element) => {
       element.contentEditable = true;
@@ -233,7 +230,7 @@ export default class Editor extends Handler {
         activeElement.hasAttribute("data-editable") ||
         activeElement.classList.contains("footnote")
       ) {
-        this.currentSelection = selection;
+//         this.currentSelection = selection;
         this.toolbar.show(selection);
 
         // Auto-copie TOUJOURS quand dans un élément éditable
@@ -246,7 +243,7 @@ export default class Editor extends Handler {
       }
     }
 
-    this.currentSelection = null;
+//     this.currentSelection = null;
     if (document.querySelector(".external-letterspacing-input")) {
       return; // Ne pas cacher la toolbar si l'input letter-spacing est actif
     }
@@ -327,11 +324,11 @@ export default class Editor extends Handler {
     this.toolbar.hide();
     document.body.classList.remove("paged-editor-active");
 
-    // Nettoyer les éléments éditables
-    this.editableElements.forEach((element) => {
-      element.contentEditable = false;
-      element.classList.remove("paged-editor-content");
-    });
+    
+//     this.editableElements.forEach((element) => {
+//       element.contentEditable = false;
+//       element.classList.remove("paged-editor-content");
+//     });
 
     // Désactiver l'export temps réel
     this.disableRealtimeExport();
