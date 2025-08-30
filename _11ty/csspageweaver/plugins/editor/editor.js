@@ -19,22 +19,16 @@ export default class Editor extends Handler {
 
     this.isActive = false;
 
-
     // Modules
     this.toolbar = null;
     this.selection = null;
     this.commands = null;
 
-    this.autoCopyTimeout = null;
-    this.autoCopyEnabled = true;
-
-    // Export temps réel
-    this.realtimeExport = {
-      enabled: false,
-      callback: null,
-      debounceDelay: 300,
-    };
-    this.exportTimeout = null;
+    // Timer unifié pour debounce
+    this._debounceTimer = null;
+    
+    // Cache des éléments éditables
+    this.editableElements = null;
   }
 
   beforeParsed(content) {
@@ -49,14 +43,12 @@ export default class Editor extends Handler {
   }
 
   assignEditableIds(content) {
-    var sections = content.querySelectorAll("section");
-    var sectionCounter = 0;
-    var idCounter = 0;
-    var idPrefix = "a";
+    const sections = content.querySelectorAll("section");
+    let sectionCounter = 0;
 
     sections.forEach((section) => {
-      idCounter = 0;
-      idPrefix = String.fromCharCode(sectionCounter + 97);
+      let idCounter = 0;
+      const idPrefix = String.fromCharCode(sectionCounter + 97);
 
       const selectors =
         "*:not(hgroup) p, *:not(hgroup) li, *:not(hgroup) h1, *:not(hgroup) h2, *:not(hgroup) h3, *:not(hgroup) h4, *:not(hgroup) h5, *:not(hgroup) h6, .footnote, figcaption";
@@ -64,7 +56,7 @@ export default class Editor extends Handler {
 
       targetElements.forEach((element) => {
         idCounter++;
-        var editableId = `${idPrefix}${idCounter}`;
+        const editableId = `${idPrefix}${idCounter}`;
         element.setAttribute("editable-id", editableId);
         element.setAttribute("data-editable", "");
       });
@@ -73,10 +65,8 @@ export default class Editor extends Handler {
     });
   }
 
-
-
   setupToggle() {
-    var toggle = document.getElementById("editor-toggle");
+    const toggle = document.getElementById("editor-toggle");
     if (toggle) {
       // Restaurer état depuis localStorage
       const savedState = localStorage.getItem("editor-plugin");
@@ -104,7 +94,8 @@ export default class Editor extends Handler {
   }
 
   setupEditableElements() {
-//     this.editableElements = document.querySelectorAll(this.options.selector);
+    // Cache des éléments éditables
+    this.editableElements = document.querySelectorAll(this.options.selector);
 
     this.editableElements.forEach((element) => {
       element.contentEditable = true;
@@ -149,101 +140,112 @@ export default class Editor extends Handler {
     this.debouncedUpdateSelection();
   }
 
-  debouncedUpdateSelection = this.debounce(() => {
-    this.updateSelection();
-  }, 100);
-
-  debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-      const later = () => {
-        clearTimeout(timeout);
-        func(...args);
-      };
-      clearTimeout(timeout);
-      timeout = setTimeout(later, wait);
-    };
+  // Méthode de debounce centralisée
+  debounce(func, delay) {
+    clearTimeout(this._debounceTimer);
+    this._debounceTimer = setTimeout(func, delay);
   }
 
+  debouncedUpdateSelection = () => {
+    this.debounce(() => this.updateSelection(), 50);
+  };
+
   handleKeyUp(event) {
-    if (this.isNavigationKey(event.keyCode)) return;
-    setTimeout(() => this.updateSelection(), 10);
+    if (!this.isActive) return;
+
+    if (this.options.shortcuts) {
+      // Raccourcis existants
+      if (event.ctrlKey || event.metaKey) {
+        switch (event.key) {
+          case "b":
+            event.preventDefault();
+            break;
+          case "i":
+            event.preventDefault();
+            break;
+        }
+      }
+    }
+
+    this.debouncedUpdateSelection();
   }
 
   handleKeyDown(event) {
-    if (!this.isInEditableElement(event.target)) return;
+    if (!this.isActive) return;
 
     if (this.options.shortcuts) {
-      this.handleShortcuts(event);
+      if (event.ctrlKey || event.metaKey) {
+        switch (event.key) {
+          case "b":
+            event.preventDefault();
+            break;
+          case "i":
+            event.preventDefault();
+            break;
+        }
+      }
     }
   }
 
   handlePaste(event) {
-    if (!this.isInEditableElement(event.target)) return;
-
-    event.preventDefault();
-    const text = event.clipboardData.getData("text/plain");
-    this.commands.insertText(text);
+    if (!this.isActive) return;
+    if (this.isInEditableElement(event.target)) {
+      event.preventDefault();
+      const text = event.clipboardData.getData("text/plain");
+      this.commands.insertText(text);
+    }
   }
 
-  handleShortcuts(event) {
-    if (event.ctrlKey || event.metaKey) {
-      switch (event.key.toLowerCase()) {
-        case "b":
-          event.preventDefault();
-          this.commands.toggleBold();
-          break;
-        case "i":
-          event.preventDefault();
-          this.commands.toggleItalic();
-          break;
-        case "c":
-          if (event.shiftKey) {
-            event.preventDefault();
-            // Appeler directement la méthode centralisée
-            this.commands.copyElementAsMarkdown({ silent: false, auto: false });
-          }
-          break;
-      }
+  activate() {
+    if (this.isActive) return;
+    this.isActive = true;
+    
+    if (this.editableElements) {
+      this.editableElements.forEach((element) => {
+        element.contentEditable = true;
+        element.classList.add("paged-editor-content");
+      });
     }
+
+    document.body.classList.add("paged-editor-active");
+    console.log("✅ Éditeur activé");
+  }
+
+  deactivate() {
+    if (!this.isActive) return;
+    this.isActive = false;
+
+    if (this.editableElements) {
+      this.editableElements.forEach((element) => {
+        element.contentEditable = false;
+        element.classList.remove("paged-editor-content");
+      });
+    }
+
+    document.body.classList.remove("paged-editor-active");
+    this.toolbar?.hide();
+    console.log("❌ Éditeur désactivé");
   }
 
   updateSelection() {
     if (!this.isActive) return;
 
-    const activeElement = document.activeElement;
-    if (
-      activeElement &&
-      activeElement.classList.contains("external-letterspacing-input")
-    ) {
-      // Garder la toolbar visible si on est dans l'input
-      return;
-    }
-
-    const selection = this.selection.getCurrentSelection();
-
-    if (selection && this.isInEditableElement(selection.anchorNode)) {
-      // Afficher si sélection valide OU si curseur dans élément éditable ou footnote
+    const currentSelection = this.selection.getCurrentSelection();
+    
+    if (currentSelection?.isValid) {
       const activeElement = document.activeElement;
+      
       if (
-        selection.isValid ||
-        activeElement.hasAttribute("data-editable") ||
-        activeElement.classList.contains("footnote")
+        this.isInEditableElement(currentSelection.range.commonAncestorContainer) ||
+        this.isInEditableElement(activeElement) ||
+        activeElement?.classList.contains("footnote")
       ) {
-//         this.currentSelection = selection;
-        this.toolbar.show(selection);
-
-        // Auto-copie TOUJOURS quand dans un élément éditable
+        this.toolbar.show(currentSelection);
         this.autoCopyToClipboard();
-
-        // Déclencher l'export temps réel
-        this.triggerRealtimeExport();
-
         return;
       }
     }
 
-//     this.currentSelection = null;
     if (document.querySelector(".external-letterspacing-input")) {
       return; // Ne pas cacher la toolbar si l'input letter-spacing est actif
     }
@@ -252,97 +254,67 @@ export default class Editor extends Handler {
 
   autoCopyToClipboard() {
     // Délai pour éviter la copie répétée lors du drag
-    clearTimeout(this.autoCopyTimeout);
-    this.autoCopyTimeout = setTimeout(() => {
-      // Appeler directement la méthode centralisée dans Commands
+    this.debounce(() => {
       this.commands.performAutoCopy();
     }, 300);
   }
 
-  // === NOUVELLES MÉTHODES POUR L'EXPORT TEMPS RÉEL ===
-
-  enableRealtimeExport(callback, delay = 300) {
-    this.realtimeExport.enabled = true;
-    this.realtimeExport.callback = callback;
-    this.realtimeExport.debounceDelay = delay;
-  }
-
-  disableRealtimeExport() {
-    this.realtimeExport.enabled = false;
-    this.realtimeExport.callback = null;
-    clearTimeout(this.exportTimeout);
-  }
-
-  triggerRealtimeExport() {
-    if (!this.realtimeExport.enabled || !this.realtimeExport.callback) return;
-
-    // Debounce pour éviter trop d'appels
-    clearTimeout(this.exportTimeout);
-    this.exportTimeout = setTimeout(() => {
-      const activeElement = document.activeElement;
-      if (activeElement && this.isInEditableElement(activeElement)) {
-        // Générer le markdown directement avec Commands
-        const completeHTML =
-          this.commands.reconstructSplitElement(activeElement);
-        const markdown = this.toolbar.turndown.turndown(completeHTML);
-        this.realtimeExport.callback(markdown, activeElement);
-      }
-    }, this.realtimeExport.debounceDelay);
-  }
-
-  // === MÉTHODES EXISTANTES ===
-
   isInEditableElement(node) {
     if (!node) return false;
 
-    let element = node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
-
-    while (element) {
-      if (
-        element.hasAttribute("data-editable") ||
-        element.classList.contains("footnote")
-      ) {
-        return true;
+    const element = node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
+    
+    // Vérification rapide avec cache si disponible
+    if (this.editableElements) {
+      for (const editable of this.editableElements) {
+        if (element === editable || editable.contains(element)) {
+          return true;
+        }
       }
-      element = element.parentElement;
+      return false;
     }
 
-    return false;
+    // Fallback si pas de cache
+    return element.closest(this.options.selector) !== null;
   }
 
-  isNavigationKey(keyCode) {
-    return [37, 38, 39, 40, 16, 17, 18].includes(keyCode);
+  // Méthodes API publiques simplifiées
+  getActiveElement() {
+    return document.activeElement;
   }
 
-  activate() {
-    this.isActive = true;
-    document.body.classList.add("paged-editor-active");
+  isEditorActive() {
+    return this.isActive;
   }
 
-  deactivate() {
-    this.isActive = false;
-    this.toolbar.hide();
-    document.body.classList.remove("paged-editor-active");
-
+  // Méthode pour obtenir l'élément éditable actif
+  getActiveEditableElement() {
+    const activeElement = document.activeElement;
+    if (this.isInEditableElement(activeElement)) {
+      return activeElement.closest(this.options.selector);
+    }
     
-//     this.editableElements.forEach((element) => {
-//       element.contentEditable = false;
-//       element.classList.remove("paged-editor-content");
-//     });
-
-    // Désactiver l'export temps réel
-    this.disableRealtimeExport();
+    const selection = window.getSelection();
+    if (selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+      const container = range.commonAncestorContainer;
+      const element = container.nodeType === Node.TEXT_NODE ? container.parentElement : container;
+      return element.closest(this.options.selector);
+    }
+    
+    return null;
   }
 
-  //   getContent(selector) {
-  //     const element = document.querySelector(selector || this.options.selector);
-  //     return element ? element.innerHTML : "";
-  //   }
-
-  //   setContent(content, selector) {
-  //     const element = document.querySelector(selector || this.options.selector);
-  //     if (element) {
-  //       element.innerHTML = content;
-  //     }
-  //   }
+  cleanup() {
+    // Nettoyage des timers
+    clearTimeout(this._debounceTimer);
+    
+    // Nettoyage des modules
+    this.toolbar?.destroy();
+    this.selection = null;
+    this.commands = null;
+    
+    // Reset du cache
+    this.editableElements = null;
+  }
 }
