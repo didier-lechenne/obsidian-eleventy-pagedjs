@@ -145,7 +145,7 @@ export class Toolbar {
     this.element.addEventListener("input", (e) => {
       if (e.target.classList.contains("ls-input")) {
         const value = parseInt(e.target.value) || 0;
-        this.editor.commands.applyLetterSpacing(value);
+        this.editor.commands.toggleLetterSpacing(value);
       }
     });
   }

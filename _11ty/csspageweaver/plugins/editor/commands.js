@@ -94,19 +94,28 @@ export class Commands {
     if (text) {
       range.deleteContents();
 
+      // Créer un fragment pour maintenir l'ordre
+      const fragment = document.createDocumentFragment();
+
       const openSpan = document.createElement("span");
       openSpan.className = "french-quote-open";
-      openSpan.textContent = UNICODE_CHARS.LAQUO + UNICODE_CHARS.NBSP;
+      openSpan.textContent =
+        UNICODE_CHARS.LAQUO + UNICODE_CHARS.NO_BREAK_THIN_SPACE;
 
       const textNode = document.createTextNode(text);
 
       const closeSpan = document.createElement("span");
       closeSpan.className = "french-quote-close";
-      closeSpan.textContent = UNICODE_CHARS.NBSP + UNICODE_CHARS.RAQUO;
+      closeSpan.textContent =
+        UNICODE_CHARS.NO_BREAK_THIN_SPACE + UNICODE_CHARS.RAQUO;
 
-      range.insertNode(openSpan);
-      range.insertNode(textNode);
-      range.insertNode(closeSpan);
+      // Ajouter au fragment dans le bon ordre
+      fragment.appendChild(openSpan);
+      fragment.appendChild(textNode);
+      fragment.appendChild(closeSpan);
+
+      // Insérer le fragment d'un coup
+      range.insertNode(fragment);
 
       range.setStartBefore(openSpan);
       range.setEndAfter(closeSpan);
