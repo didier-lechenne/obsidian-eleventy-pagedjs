@@ -80,3 +80,11 @@ Consultez les guides de développement pour des instructions détaillées sur ce
 Compatible avec tous les navigateurs modernes supportant PagedJS. Testé particulièrement avec Chrome, Firefox et Safari.
 
 Le plugin respecte la structure de pagination de PagedJS et reconstruit intelligemment les éléments qui peuvent être scindés entre les pages lors de l'export.
+
+
+
+
+
+
+
+

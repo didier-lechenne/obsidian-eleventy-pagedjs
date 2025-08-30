@@ -1,6 +1,6 @@
 /**
  * @name Commands
- * @file Commandes d'édition et formatage - Version refactorisée avec letter-spacing simplifié
+ * @file Commandes d'édition et formatage 
  *
  * Cette version utilise une approche cohérente pour toutes les fonctionnalités :
  * - Toggle simple pour créer/supprimer des éléments
@@ -651,6 +651,7 @@ export class Commands {
     const contents = range.extractContents();
     const wrapper = document.createElement(tagName);
     wrapper.className = className ? `${className} editor-add` : "editor-add";
+    wrapper.dataset.timestamp = Date.now();
     wrapper.appendChild(contents);
     range.insertNode(wrapper);
 

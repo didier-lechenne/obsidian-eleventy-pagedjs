@@ -323,7 +323,7 @@ export const ACTIONS_REGISTRY = {
       const option = action.options.find((opt) => opt.value === value);
       if (option?.char) {
         editor.commands.insertText(option.char);
-        //         editor.commands.insertTypographicSpan(option.char, "editor-add");
+//         editor.commands.insertTypographicSpan(option.char, "editor-add");
       }
     },
   },
