@@ -36,43 +36,38 @@ export const ACTIONS_REGISTRY = {
     isActive: (element) => element.closest("sup") !== null,
   },
 
-  "letter-spacing": {
-    type: "toggle",
-    icon: "A ↔ A",
-    title: "Lettrage (Letter-spacing)",
-    execute: (editor) => {
-      const input = document.querySelector(".ls-input");
-      const button = document.querySelector('[data-command="letter-spacing"]');
+"letter-spacing": {
+  type: "toggle",
+  icon: "A ↔ A", 
+  title: "Lettrage (Letter-spacing)",
+  execute: (editor) => {
+    const input = document.querySelector(".ls-input");
+    const button = document.querySelector('[data-command="letter-spacing"]');
 
-      if (input.classList.contains("ls-hide")) {
-        // Montrer l'input
-        input.classList.remove("ls-hide");
-        button.classList.add("active");
-
-        // Appliquer le letter-spacing avec la valeur actuelle
-        editor.commands.toggleLetterSpacing();
-      } else {
-        // Cacher l'input
-        input.classList.add("ls-hide");
-        button.classList.remove("active");
-      }
-    },
-    isActive: (element) => {
-      let current = element;
-      while (current && current !== document.body) {
-        if (
-          current.tagName === "SPAN" &&
-          (current.classList.contains("letter-spacing") ||
-            (current.style.letterSpacing &&
-              current.style.letterSpacing !== "normal"))
-        ) {
-          return true;
-        }
-        current = current.parentElement;
-      }
-      return false;
-    },
+    if (input.classList.contains("ls-hide")) {
+      input.classList.remove("ls-hide");
+      button.classList.add("active");
+      editor.commands.toggleLetterSpacing();
+    } else {
+      input.classList.add("ls-hide");
+      button.classList.remove("active");
+    }
   },
+  isActive: (element) => {
+    let current = element;
+    while (current && current !== document.body) {
+      if (current.tagName === "SPAN" && 
+          (current.style.getPropertyValue('--ls') !== '' ||
+           current.getAttribute('style')?.includes('--ls'))) {
+        return true;
+      }
+      current = current.parentElement;
+    }
+    return false;
+  },
+},
+
+
   // === ACTIONS D'INSERTION ===
 
   nbsp: {

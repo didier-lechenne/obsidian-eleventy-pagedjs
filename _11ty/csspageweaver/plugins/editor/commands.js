@@ -59,84 +59,62 @@ export class Commands {
     this.triggerAutoCopy();
   }
 
-  toggleLetterSpacing() {
-    const selection = this.editor.selection.getCurrentSelection();
-    if (!selection?.isValid) return;
+toggleLetterSpacing() {
+  const selection = this.editor.selection.getCurrentSelection();
+  if (!selection?.isValid) return;
 
-    const range = selection.range;
-    const input = document.querySelector(".ls-input");
-    if (!input) return;
+  const range = selection.range;
+  const input = document.querySelector(".ls-input");
+  if (!input) return;
 
-    const value = parseInt(input.value) || 0;
-    const letterSpacingValue = `${value}px`;
+  const value = parseInt(input.value) || 0;
 
-    // Vérifier si la sélection est déjà dans un span avec letter-spacing
-    const existingSpan = this.findParentWithLetterSpacing(range);
+  // Vérifier si la sélection est déjà dans un span avec --ls
+  const existingSpan = this.findParentWithLetterSpacing(range);
 
-    if (existingSpan) {
-      // Mettre à jour le span existant
-      existingSpan.style.letterSpacing = letterSpacingValue;
-    } else {
-      // Créer un nouveau span avec letter-spacing
-      this.wrapSelection(range, "span", "letter-spacing", letterSpacingValue);
-    }
-
-    this.triggerAutoCopy();
+  if (existingSpan) {
+    // Mettre à jour le span existant avec CSS variable
+    existingSpan.style.setProperty('--ls', value);
+  } else {
+    // Créer un nouveau span avec CSS variable
+    this.wrapSelectionWithCSSVariable(range, '--ls', value);
   }
 
-  findParentWithLetterSpacing(range) {
-    let node = range.commonAncestorContainer;
+  this.triggerAutoCopy();
+}
 
-    // Si c'est un nœud texte, prendre son parent
-    if (node.nodeType === Node.TEXT_NODE) {
-      node = node.parentElement;
-    }
+findParentWithLetterSpacing(range) {
+  let node = range.commonAncestorContainer;
 
-    // Chercher un span parent avec letter-spacing
-    while (node && node !== document.body) {
-      if (
-        node.tagName === "SPAN" &&
-        (node.classList.contains("letter-spacing") || node.style.letterSpacing)
-      ) {
-        return node;
-      }
-      node = node.parentElement;
-    }
-
-    return null;
+  if (node.nodeType === Node.TEXT_NODE) {
+    node = node.parentElement;
   }
 
-  getContainingLetterSpacingSpan(range) {
-    let node = range.commonAncestorContainer;
-
-    if (node.nodeType === Node.TEXT_NODE) {
-      node = node.parentElement;
+  while (node && node !== document.body) {
+    if (node.tagName === "SPAN" && 
+        (node.style.getPropertyValue('--ls') !== '' || 
+         node.getAttribute('style')?.includes('--ls'))) {
+      return node;
     }
-
-    while (node && node !== document.body) {
-      if (node.tagName === "SPAN" && node.style.letterSpacing) {
-        return node;
-      }
-      node = node.parentElement;
-    }
-
-    return null;
+    node = node.parentElement;
   }
 
-  wrapSelectionWithLetterSpacing(range, letterSpacingValue) {
-    const span = document.createElement("span");
-    span.className = "letter-spacing";
-    span.style.letterSpacing = letterSpacingValue;
+  return null;
+}
 
-    try {
-      range.surroundContents(span);
-    } catch (e) {
-      // Si surroundContents échoue, utiliser une approche alternative
-      const contents = range.extractContents();
-      span.appendChild(contents);
-      range.insertNode(span);
-    }
+wrapSelectionWithCSSVariable(range, cssVar, value) {
+  const span = document.createElement("span");
+  span.style.setProperty(cssVar, value);
+
+  try {
+    range.surroundContents(span);
+  } catch (e) {
+    // Si surroundContents échoue, utiliser une approche alternative
+    const contents = range.extractContents();
+    span.appendChild(contents);
+    range.insertNode(span);
   }
+}
 
   // ====== MÉTHODES POUR GUILLEMETS ======
 
