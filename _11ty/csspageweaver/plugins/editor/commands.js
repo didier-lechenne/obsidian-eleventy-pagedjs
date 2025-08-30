@@ -64,301 +64,263 @@ export class Commands {
     if (!selection?.isValid) return;
 
     const range = selection.range;
-    const span = document.createElement("span");
-    span.className = "editor-add";
-    span.style.setProperty("--ls", "0");
-    span.dataset.timestamp = Date.now();
+    const input = document.querySelector(".ls-input");
+    
+    if (!input) return;
 
-    const contents = range.extractContents();
-    span.appendChild(contents);
-    range.insertNode(span);
+    const value = input.value || "0";
+    const letterSpacingValue = `${value}px`;
 
-    range.selectNodeContents(span);
-    const windowSelection = window.getSelection();
-    windowSelection.removeAllRanges();
-    windowSelection.addRange(range);
-
+    if (this.isWrappedInTag(range, ["SPAN"], "letter-spacing")) {
+      this.unwrapTag(range, ["SPAN"]);
+    } else {
+      const span = this.wrapSelection(range, "span", "letter-spacing");
+      if (span) {
+        span.style.letterSpacing = letterSpacingValue;
+      }
+    }
     this.triggerAutoCopy();
   }
 
-  applyLetterSpacing(value) {
+  // ====== MÉTHODES POUR GUILLEMETS ======
+
+  toggleFrenchQuotes() {
     const selection = this.editor.selection.getCurrentSelection();
     if (!selection?.isValid) return;
 
-    let container = selection.range.commonAncestorContainer;
-    if (container.nodeType === Node.TEXT_NODE) {
-      container = container.parentElement;
+    const range = selection.range;
+    const text = range.toString();
+    
+    if (text) {
+      range.deleteContents();
+      
+      const openSpan = document.createElement("span");
+      openSpan.className = "french-quote-open";
+      openSpan.textContent = UNICODE_CHARS.LAQUO + UNICODE_CHARS.NBSP;
+      
+      const textNode = document.createTextNode(text);
+      
+      const closeSpan = document.createElement("span");
+      closeSpan.className = "french-quote-close";
+      closeSpan.textContent = UNICODE_CHARS.NBSP + UNICODE_CHARS.RAQUO;
+      
+      range.insertNode(openSpan);
+      range.insertNode(textNode);
+      range.insertNode(closeSpan);
+      
+      range.setStartBefore(openSpan);
+      range.setEndAfter(closeSpan);
     }
+    
+    this.triggerAutoCopy();
+  }
 
-    while (container && !container.style.getPropertyValue("--ls")) {
-      container = container.parentElement;
-      if (container === document.body) break;
-    }
+  toggleEnglishQuotes() {
+    const selection = this.editor.selection.getCurrentSelection();
+    if (!selection?.isValid) return;
 
-    if (container && container.style.getPropertyValue("--ls") !== null) {
-      container.style.setProperty("--ls", value + "px");
-      container.dataset.timestamp = Date.now();
-      this.triggerAutoCopy();
+    const range = selection.range;
+    const text = range.toString();
+    
+    if (text) {
+      range.deleteContents();
+      
+      const openSpan = document.createElement("span");
+      openSpan.className = "english-quote-open";
+      openSpan.textContent = UNICODE_CHARS.LDQUO;
+      
+      const textNode = document.createTextNode(text);
+      
+      const closeSpan = document.createElement("span");
+      closeSpan.className = "english-quote-close";
+      closeSpan.textContent = UNICODE_CHARS.RDQUO;
+      
+      range.insertNode(openSpan);
+      range.insertNode(textNode);
+      range.insertNode(closeSpan);
+      
+      range.setStartBefore(openSpan);
+      range.setEndAfter(closeSpan);
     }
+    
+    this.triggerAutoCopy();
   }
 
   // ====== INSERTION DE TEXTE ======
 
   insertText(text) {
-    const selection = window.getSelection();
-    if (selection.rangeCount > 0) {
-      const range = selection.getRangeAt(0);
-      range.deleteContents();
-      
-      const span = document.createElement("span");
-      span.className = "editor-add";
-      span.textContent = text;
-      span.dataset.timestamp = Date.now();
-      
-      range.insertNode(span);
-      range.setStartAfter(span);
-      range.collapse(true);
-      selection.removeAllRanges();
-      selection.addRange(range);
-      
-      this.triggerAutoCopy();
-    }
-  }
+    const selection = this.editor.selection.getCurrentSelection();
+    if (!selection?.isValid) return;
 
-  insertTypographicSpan(content, className) {
-    const selection = window.getSelection();
-    if (selection.rangeCount > 0) {
-      const range = selection.getRangeAt(0);
-      range.deleteContents();
-
-      const span = document.createElement("span");
-      span.className = className;
-      span.textContent = content;
-      span.dataset.timestamp = Date.now();
-
-      range.insertNode(span);
-      range.setStartAfter(span);
-      range.collapse(true);
-      selection.removeAllRanges();
-      selection.addRange(range);
-
-      this.triggerAutoCopy();
-    }
-  }
-
-  // ====== RESET PROGRESSIF AVEC TIMESTAMP ======
-
-  resetTransformations() {
-    const element = this.getEditableElementFromSelection();
-    if (!element) return;
-
-    // Récupérer TOUS les éléments avec timestamp
-    const allElements = Array.from(element.querySelectorAll('.editor-add[data-timestamp]'));
+    const range = selection.range;
+    range.deleteContents();
+    const textNode = document.createTextNode(text);
+    range.insertNode(textNode);
     
-    if (allElements.length === 0) {
-      // Fallback : reset complet traditionnel
-      element.querySelectorAll('span[style*="--ls"].editor-add').forEach((span) => {
-        this.unwrapLetterSpacing(span);
-      });
-
-      element.querySelectorAll(".editor-add").forEach((el) => {
-        if (!el.style.getPropertyValue("--ls")) {
-          if (
-            el.tagName === "BR" ||
-            el.classList.contains("french-quote-open") ||
-            el.classList.contains("french-quote-close") ||
-            el.classList.contains("english-quote-open") ||
-            el.classList.contains("english-quote-close") ||
-            el.classList.contains("i_space")
-          ) {
-            el.remove();
-          } else if (el.parentNode) {
-            const textNode = document.createTextNode(el.textContent);
-            el.parentNode.replaceChild(textNode, el);
-          }
-        }
-      });
-      
-      element.normalize();
-      this.triggerAutoCopy();
-      return;
-    }
-
-    // Tri par timestamp décroissant - le plus récent en premier
-    allElements.sort((a, b) => parseInt(b.dataset.timestamp) - parseInt(a.dataset.timestamp));
-    const mostRecent = allElements[0];
+    range.setStartAfter(textNode);
+    range.collapse(true);
     
-    // Supprimer uniquement l'élément le plus récent
-    if (mostRecent.style && mostRecent.style.getPropertyValue("--ls")) {
-      this.unwrapLetterSpacing(mostRecent);
-    } else if (
-      mostRecent.tagName === "BR" ||
-      mostRecent.classList.contains("french-quote-open") ||
-      mostRecent.classList.contains("french-quote-close") ||
-      mostRecent.classList.contains("english-quote-open") ||
-      mostRecent.classList.contains("english-quote-close") ||
-      mostRecent.classList.contains("i_space")
-    ) {
-      mostRecent.remove();
-    } else if (mostRecent.parentNode) {
-      const textNode = document.createTextNode(mostRecent.textContent);
-      mostRecent.parentNode.replaceChild(textNode, mostRecent);
-    }
-
-    element.normalize();
+    selection.selection.removeAllRanges();
+    selection.selection.addRange(range);
+    
     this.triggerAutoCopy();
   }
 
-  // ====== MÉTHODES UTILITAIRES ======
+  // ====== UTILITAIRES DE FORMATAGE ======
 
   wrapSelection(range, tagName, className = null) {
     const contents = range.extractContents();
-    const wrapper = document.createElement(tagName);
-    wrapper.className = className ? `${className} editor-add` : "editor-add";
-    wrapper.dataset.timestamp = Date.now();
-    wrapper.appendChild(contents);
-    range.insertNode(wrapper);
-
-    range.selectNodeContents(wrapper);
+    const element = document.createElement(tagName);
+    
+    if (className) {
+      element.className = className;
+    }
+    
+    element.appendChild(contents);
+    range.insertNode(element);
+    
+    range.selectNode(element);
+    
     const selection = window.getSelection();
     selection.removeAllRanges();
     selection.addRange(range);
+    
+    return element;
   }
 
-  unwrapTag(range, tagNames) {
-    let container = range.commonAncestorContainer;
-    if (container.nodeType === Node.TEXT_NODE) {
-      container = container.parentElement;
-    }
-
-    let formatElement = null;
-    let current = container;
-
-    while (current && current !== document.body) {
-      if (tagNames.includes(current.tagName)) {
-        formatElement = current;
-        break;
+  unwrapTag(range, tagNames, className = null) {
+    let element = range.commonAncestorContainer;
+    
+    while (element && element !== document.body) {
+      if (element.nodeType === Node.ELEMENT_NODE) {
+        const tagMatches = tagNames.includes(element.tagName);
+        const classMatches = !className || element.classList.contains(className);
+        
+        if (tagMatches && classMatches) {
+          const parent = element.parentNode;
+          while (element.firstChild) {
+            parent.insertBefore(element.firstChild, element);
+          }
+          parent.removeChild(element);
+          break;
+        }
       }
-      current = current.parentElement;
-    }
-
-    if (formatElement) {
-      const parent = formatElement.parentNode;
-      while (formatElement.firstChild) {
-        parent.insertBefore(formatElement.firstChild, formatElement);
-      }
-      parent.removeChild(formatElement);
-      parent.normalize();
+      element = element.parentElement;
     }
   }
 
   isWrappedInTag(range, tagNames, className = null) {
-    let container = range.commonAncestorContainer;
-    if (container.nodeType === Node.TEXT_NODE) {
-      container = container.parentElement;
+    let element = range.commonAncestorContainer;
+    
+    if (element.nodeType === Node.TEXT_NODE) {
+      element = element.parentElement;
     }
-
-    let current = container;
-    while (current && current !== document.body) {
-      if (tagNames.includes(current.tagName)) {
-        return className ? current.classList.contains(className) : true;
+    
+    while (element && element !== document.body) {
+      if (element.nodeType === Node.ELEMENT_NODE) {
+        const tagMatches = tagNames.includes(element.tagName);
+        const classMatches = !className || element.classList.contains(className);
+        
+        if (tagMatches && classMatches) {
+          return true;
+        }
       }
-      current = current.parentElement;
+      element = element.parentElement;
     }
-
+    
     return false;
   }
 
-  unwrapLetterSpacing(span) {
-    if (span && span.parentNode) {
+  // ====== ACTIONS UTILITAIRES ======
+
+  resetTransformations() {
+    const editableElement = this.editor.getCurrentElement();
+    if (!editableElement) return;
+
+    const addedElements = editableElement.querySelectorAll('[data-timestamp]');
+    addedElements.forEach(element => {
+      element.parentNode?.removeChild(element);
+    });
+
+    const spans = editableElement.querySelectorAll('span.editor-add');
+    spans.forEach(span => {
       const parent = span.parentNode;
       while (span.firstChild) {
         parent.insertBefore(span.firstChild, span);
       }
       parent.removeChild(span);
-      parent.normalize();
-    }
+    });
+
+    this.triggerAutoCopy();
   }
 
-  getEditableElementFromSelection() {
-    const element = this.editor.getActiveEditableElement();
-    return element;
-  }
-
-  // ====== COPIE ET EXPORT ======
-
-  performAutoCopy() {
-    this.copyElementAsMarkdown({ auto: true, silent: true });
-  }
-
-  copyElementAsMarkdown(options = {}) {
-    const config = { silent: false, auto: false, element: null, ...options };
-
-    let element = config.element || this.getEditableElementFromSelection();
+  copyElementAsMarkdown() {
+    const element = this.editor.getCurrentElement();
     if (!element) return;
 
-    try {
-      element = this.findContainerElement(element);
-      const completeHTML = this.reconstructSplitElement(element);
-      const markdown = this.editor.toolbar.turndown.turndown(completeHTML);
-
+    if (this.editor.toolbar.turndown) {
+      const markdown = this.editor.toolbar.turndown.turndown(element.innerHTML);
+      
       navigator.clipboard.writeText(markdown).then(() => {
-        if (!config.silent && !config.auto) {
-          this.showCopyFeedback();
-        }
-      }).catch((err) => {
-        this.copyToClipboardFallback(markdown);
+        console.log('Élément copié en Markdown');
+        this.showFeedback('Copié !');
+      }).catch(err => {
+        console.error('Erreur lors de la copie:', err);
       });
-    } catch (error) {
-      console.error("Erreur lors de la génération du markdown:", error);
     }
   }
 
-  findContainerElement(element) {
-    let containerElement = element.parentElement;
-    while (containerElement && containerElement !== document.body) {
-      if (["BLOCKQUOTE", "UL", "OL", "FIGURE"].includes(containerElement.tagName)) {
-        return containerElement;
-      }
-      containerElement = containerElement.parentElement;
+  exportMarkdownByRange() {
+    if (this.editor.toolbar.recovery) {
+      this.editor.toolbar.recovery.showExportDialog();
     }
-    return element;
   }
 
-  reconstructSplitElement(element) {
-    return element.outerHTML;
-  }
+  // ====== MÉTHODES UTILITAIRES ======
 
-  copyToClipboardFallback(text) {
-    const textArea = document.createElement("textarea");
-    textArea.value = text;
-    textArea.style.position = "fixed";
-    textArea.style.top = "-9999px";
-    document.body.appendChild(textArea);
-    textArea.select();
-    document.execCommand("copy");
-    document.body.removeChild(textArea);
-  }
-
-  showCopyFeedback() {
-    const copyButton = this.editor.toolbar.element?.querySelector('[data-command="copy-md"]');
-    if (copyButton) {
-      const originalClass = copyButton.className;
-      const originalContent = copyButton.innerHTML;
-      
-      copyButton.classList.add("success");
-      copyButton.innerHTML = "✓";
-      
+  showFeedback(message) {
+    // Affiche un feedback temporaire à l'utilisateur
+    const feedback = document.createElement('div');
+    feedback.textContent = message;
+    feedback.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #4CAF50;
+      color: white;
+      padding: 10px;
+      border-radius: 4px;
+      z-index: 10000;
+      opacity: 1;
+      transition: opacity 0.3s ease;
+    `;
+    
+    document.body.appendChild(feedback);
+    
+    setTimeout(() => {
+      feedback.style.opacity = '0';
       setTimeout(() => {
-        copyButton.className = originalClass;
-        copyButton.innerHTML = originalContent;
-      }, 1000);
-    }
+        document.body.removeChild(feedback);
+      }, 300);
+    }, 2000);
   }
 
   triggerAutoCopy() {
-    this.editor.debounce(() => {
-      this.performAutoCopy();
-    }, 300);
+    // Déclenche automatiquement la copie si activée
+    if (this.editor.options?.autoCopy) {
+      setTimeout(() => this.copyElementAsMarkdown(), 100);
+    }
+  }
+
+  getCurrentElement() {
+    const selection = this.editor.selection.getCurrentSelection();
+    if (!selection?.isValid) return null;
+
+    let element = selection.range.commonAncestorContainer;
+    while (element && !element.hasAttribute?.('data-editable')) {
+      element = element.parentElement;
+    }
+    
+    return element;
   }
 }

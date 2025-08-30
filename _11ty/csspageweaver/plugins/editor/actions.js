@@ -74,6 +74,13 @@ export const ACTIONS_REGISTRY = {
     execute: (editor) => editor.commands.insertText(UNICODE_CHARS.NBSP),
   },
 
+  nnbsp: {
+    type: "insert",
+    icon: "⍽",
+    title: "Espace insécable fine",
+    execute: (editor) => editor.commands.insertText(UNICODE_CHARS.NNBSP || "\u202F"),
+  },
+
   "thin-space": {
     type: "insert",
     icon: "᎐",
@@ -93,6 +100,29 @@ export const ACTIONS_REGISTRY = {
     icon: "–",
     title: "Tiret demi-cadratin",
     execute: (editor) => editor.commands.insertText(UNICODE_CHARS.EN_DASH),
+  },
+
+  br: {
+    type: "insert", 
+    icon: "↵",
+    title: "Saut de ligne",
+    execute: (editor) => {
+      const selection = window.getSelection();
+      if (selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        range.deleteContents();
+
+        const br = document.createElement("br");
+        br.className = "editor-add";
+        br.dataset.timestamp = Date.now();
+
+        range.insertNode(br);
+        range.setStartAfter(br);
+        range.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+    },
   },
 
   "break-column": {
