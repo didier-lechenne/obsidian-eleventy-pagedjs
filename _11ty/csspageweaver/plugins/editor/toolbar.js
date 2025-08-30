@@ -98,53 +98,60 @@ export class Toolbar {
   /**
    * Gestion des événements DOM
    */
-  bindEvents() {
-    // Empêcher la perte de sélection
-    this.element.addEventListener("mousedown", (e) => {
-      if (!e.target.classList.contains("ls-input")) {
-        e.preventDefault();
-      }
-    });
+bindEvents() {
+ // Empêcher la perte de sélection
+ this.element.addEventListener("mousedown", (e) => {
+   if (!e.target.classList.contains("ls-input")) {
+     e.preventDefault();
+   }
+ });
 
-    // Délégation d'événements unifiée
-    this.element.addEventListener("click", (e) => {
-      // Input letter-spacing - ne rien faire sur click
-      if (e.target.classList.contains("ls-input")) {
-        e.stopPropagation();
-        return;
-      }
+ // Délégation d'événements unifiée
+ this.element.addEventListener("click", (e) => {
+   // Input letter-spacing - ne rien faire sur click
+   if (e.target.classList.contains("ls-input")) {
+     e.stopPropagation();
+     return;
+   }
 
-      // Gestion des boutons normaux
-      const button = e.target.closest("button[data-command]");
-      if (button) {
-        const command = button.dataset.command;
-        const buttonElement = this.buttons.get(command);
+   // Gestion des options de dropdown
+   const option = e.target.closest(".custom-option");
+   if (option) {
+     this.handleCustomOptionClick(option);
+     return;
+   }
 
-        if (buttonElement?.action) {
-          buttonElement.action();
-          this.updateButtonStates();
-        }
-      }
-    });
+   // Gestion des triggers de dropdown
+   const trigger = e.target.closest(".select-trigger");
+   if (trigger) {
+     this.toggleCustomDropdown(trigger);
+     return;
+   }
 
+   // Gestion des boutons normaux
+   const button = e.target.closest("button[data-command]");
+   if (button) {
+     const command = button.dataset.command;
+     const buttonElement = this.buttons.get(command);
 
+     if (buttonElement?.action) {
+       buttonElement.action();
+       this.updateButtonStates();
+     }
+   }
+ });
 
-    // Event listener unique pour l'input letter-spacing
-    this.element.addEventListener("input", (e) => {
-      if (e.target.classList.contains("ls-input")) {
-	
-
-        e.stopPropagation();
-        
-
-        // Appliquer le letter-spacing immédiatement
-        this.editor.commands.toggleLetterSpacing();
-        this.updateButtonStates();
-      }
-    });
-
-   
-  }
+ // Event listener unique pour l'input letter-spacing
+ this.element.addEventListener("input", (e) => {
+   if (e.target.classList.contains("ls-input")) {
+     e.stopPropagation();
+     
+     // Appliquer le letter-spacing immédiatement
+     this.editor.commands.toggleLetterSpacing();
+     this.updateButtonStates();
+   }
+ });
+}
 
   /**
    * Gestion des dropdowns personnalisés
