@@ -3,7 +3,7 @@ export function coreRulesPlugin(turndownService) {
   turndownService.keep(function (node) {
     return (
       (node.nodeName === "SPAN" && node.style.getPropertyValue("--ls")) ||
-      (node.nodeName === "SPAN" && node.classList.contains("breakcolumn")) ||
+      (node.nodeName === "DIV" && node.classList.contains("breakcolumn")) ||
       node.nodeName === "SUP" ||
       node.nodeName === "BREAKPAGE" ||
       node.nodeName === "BREAKCOLUMN" ||
