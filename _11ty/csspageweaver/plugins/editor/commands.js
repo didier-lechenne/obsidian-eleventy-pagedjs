@@ -4,6 +4,8 @@
  * @author Editor Plugin
  */
 
+import { UNICODE_CHARS } from "./unicode.js";
+
 export class Commands {
   constructor(editor) {
     this.editor = editor;
@@ -115,6 +117,82 @@ export class Commands {
     this.toggleFormatting('sup');
   }
 
+  // ====== GUILLEMETS FRANÇAIS ======
+
+  toggleFrenchQuotes() {
+    const selection = this.editor.selection.getCurrentSelection();
+    if (!selection?.isValid) return;
+
+    const range = selection.range;
+    const text = range.toString();
+
+    if (text) {
+      range.deleteContents();
+
+      const fragment = document.createDocumentFragment();
+
+      const openQuoteSpan = this.createElement('span', 'french-quote-open');
+      openQuoteSpan.textContent = UNICODE_CHARS.LAQUO;
+
+      const openSpaceSpan = this.createElement('span', 'i_space no-break-narrow-space');
+      openSpaceSpan.textContent = UNICODE_CHARS.NO_BREAK_THIN_SPACE;
+
+      const textNode = document.createTextNode(text);
+
+      const closeSpaceSpan = this.createElement('span', 'i_space no-break-narrow-space');
+      closeSpaceSpan.textContent = UNICODE_CHARS.NO_BREAK_THIN_SPACE;
+
+      const closeQuoteSpan = this.createElement('span', 'french-quote-close');
+      closeQuoteSpan.textContent = UNICODE_CHARS.RAQUO;
+
+      fragment.appendChild(openQuoteSpan);
+      fragment.appendChild(openSpaceSpan);
+      fragment.appendChild(textNode);
+      fragment.appendChild(closeSpaceSpan);
+      fragment.appendChild(closeQuoteSpan);
+
+      range.insertNode(fragment);
+      range.setStartBefore(openQuoteSpan);
+      range.setEndAfter(closeQuoteSpan);
+    }
+
+    this.triggerAutoCopy();
+  }
+
+  // ====== GUILLEMETS ANGLAIS ======
+
+  toggleEnglishQuotes() {
+    const selection = this.editor.selection.getCurrentSelection();
+    if (!selection?.isValid) return;
+
+    const range = selection.range;
+    const text = range.toString();
+
+    if (text) {
+      range.deleteContents();
+
+      const fragment = document.createDocumentFragment();
+
+      const openQuoteSpan = this.createElement('span', 'english-quote-open');
+      openQuoteSpan.textContent = UNICODE_CHARS.LDQUO;
+
+      const textNode = document.createTextNode(text);
+
+      const closeQuoteSpan = this.createElement('span', 'english-quote-close');
+      closeQuoteSpan.textContent = UNICODE_CHARS.RDQUO;
+
+      fragment.appendChild(openQuoteSpan);
+      fragment.appendChild(textNode);
+      fragment.appendChild(closeQuoteSpan);
+
+      range.insertNode(fragment);
+      range.setStartBefore(openQuoteSpan);
+      range.setEndAfter(closeQuoteSpan);
+    }
+
+    this.triggerAutoCopy();
+  }
+
   // ====== VÉRIFICATIONS ======
 
   hasParentWithTag(element, tagNames, className = null) {
@@ -142,6 +220,8 @@ export class Commands {
 
     return false;
   }
+
+  // ====== INSERTION D'ESPACES ======
 
   insertSpace(className, content) {
     const selection = this.editor.selection.getCurrentSelection();
@@ -239,7 +319,7 @@ export class Commands {
 
   // CORRECTION: triggerAutoCopy corrigé
   triggerAutoCopy() {
-    if (this.editor.options.autoCopy) { // Suppression du ?.
+    if (this.editor.options.autoCopy) {
       setTimeout(() => this.copyElementAsMarkdown(), 100);
     }
   }
@@ -251,7 +331,7 @@ export class Commands {
 
   // CORRECTION: performAutoCopy corrigé
   performAutoCopy() {
-    if (!this.editor.options.autoCopy) return; // Suppression du ?.
+    if (!this.editor.options.autoCopy) return;
 
     const element = this.getCurrentElement();
     if (!element) return;
