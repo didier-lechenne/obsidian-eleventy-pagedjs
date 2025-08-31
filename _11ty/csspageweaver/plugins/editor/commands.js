@@ -1,299 +1,127 @@
-import { UNICODE_CHARS } from "./unicode.js";
+/**
+ * @name Commands
+ * @file Gestion des commandes d'édition pour l'éditeur
+ * @author Editor Plugin
+ */
 
 export class Commands {
   constructor(editor) {
     this.editor = editor;
-    
   }
 
-  // ====== COMMANDES DE FORMATAGE DE BASE ======
+  // ====== CRÉATION D'ÉLÉMENTS ======
 
-  toggleBold() {
+  createElement(tagName, className = null) {
+    const element = document.createElement(tagName);
+    if (className) {
+      element.className = className;
+    }
+    return element;
+  }
+
+  // ====== GESTION DU TEXTE ======
+
+  insertText(text) {
     const selection = this.editor.selection.getCurrentSelection();
     if (!selection?.isValid) return;
 
     const range = selection.range;
-    if (this.isWrappedInTag(range, ["B", "STRONG"])) {
-      this.unwrapTag(range, ["B", "STRONG"]);
-    } else {
-      this.wrapSelection(range, "strong");
-    }
+    range.deleteContents();
+    range.insertNode(document.createTextNode(text));
+    range.collapse(false);
+
+    selection.selection.removeAllRanges();
+    selection.selection.addRange(range);
+
     this.triggerAutoCopy();
   }
 
-  toggleItalic() {
+  // ====== FORMATAGE ======
+
+  toggleFormatting(tagName) {
     const selection = this.editor.selection.getCurrentSelection();
     if (!selection?.isValid) return;
 
     const range = selection.range;
-    if (this.isWrappedInTag(range, ["I", "EM"])) {
-      this.unwrapTag(range, ["I", "EM"]);
+    const selectedText = range.toString();
+
+    if (selectedText.length === 0) return;
+
+    // Vérifier si le texte sélectionné est déjà formaté
+    const parentElement = range.commonAncestorContainer.parentElement;
+    if (parentElement && parentElement.tagName.toLowerCase() === tagName.toLowerCase()) {
+      // Supprimer le formatage
+      this.unwrapElement(parentElement);
     } else {
-      this.wrapSelection(range, "em");
+      // Appliquer le formatage
+      const element = this.createElement(tagName);
+      try {
+        range.surroundContents(element);
+      } catch (e) {
+        // Fallback si surroundContents échoue
+        element.textContent = selectedText;
+        range.deleteContents();
+        range.insertNode(element);
+      }
     }
+
     this.triggerAutoCopy();
   }
+
+  unwrapElement(element) {
+    const parent = element.parentNode;
+    while (element.firstChild) {
+      parent.insertBefore(element.firstChild, element);
+    }
+    parent.removeChild(element);
+  }
+
+  // ====== GESTION DES BALISES SPÉCIFIQUES ======
 
   toggleSmallCaps() {
     const selection = this.editor.selection.getCurrentSelection();
     if (!selection?.isValid) return;
 
     const range = selection.range;
-    if (this.isWrappedInTag(range, ["SPAN"], "small-caps")) {
-      this.unwrapTag(range, ["SPAN"]);
-    } else {
-      this.wrapSelection(range, "span", "small-caps");
+    const selectedText = range.toString();
+
+    if (selectedText.length === 0) return;
+
+    // Vérifier si déjà en petites capitales
+    let container = range.commonAncestorContainer;
+    if (container.nodeType === Node.TEXT_NODE) {
+      container = container.parentElement;
     }
+
+    if (container.classList && container.classList.contains('small-caps')) {
+      // Supprimer les petites capitales
+      this.unwrapElement(container);
+    } else {
+      // Appliquer les petites capitales
+      const span = this.createElement('span', 'small-caps');
+      try {
+        range.surroundContents(span);
+      } catch (e) {
+        span.textContent = selectedText;
+        range.deleteContents();
+        range.insertNode(span);
+      }
+    }
+
     this.triggerAutoCopy();
   }
 
   toggleSuperscript() {
-    const selection = this.editor.selection.getCurrentSelection();
-    if (!selection?.isValid) return;
+    this.toggleFormatting('sup');
+  }
 
-    const range = selection.range;
-    if (this.isWrappedInTag(range, ["SUP"])) {
-      this.unwrapTag(range, ["SUP"]);
-    } else {
-      this.wrapSelection(range, "sup");
+  // ====== VÉRIFICATIONS ======
+
+  hasParentWithTag(element, tagNames, className = null) {
+    if (!Array.isArray(tagNames)) {
+      tagNames = [tagNames];
     }
-    this.triggerAutoCopy();
-  }
-
-
-
-prepareLetterSpacing() {
-  console.log("prepareLetterSpacing APPELÉE");
-  
-  const span = document.querySelector('span[style*="--ls"]');
-  console.log("Span trouvé:", span);
-  
-  if (span) {
-    span.setAttribute('data-ls-active', 'true');
-    console.log("Span marqué");
-  }
-}
-
-toggleLetterSpacing() {
-  const input = document.querySelector(".ls-input");
-  if (!input) return;
-  
-  const value = parseInt(input.value) || 0;
-  
-  // Solution directe : mettre à jour tous les spans avec --ls
-  const spans = document.querySelectorAll('span[style*="--ls"]');
-  
-  if (spans.length > 0) {
-    spans.forEach(span => {
-      span.style.setProperty("--ls", value.toString());
-    });
-    console.log(`${spans.length} span(s) mis à jour avec valeur ${value}`);
-  } else {
-    console.log("Aucun span trouvé");
-  }
-  
-  this.triggerAutoCopy();
-}
-
-
-
-
-  wrapSelectionWithCSSVariable(range, cssVar, value) {
-    const span = document.createElement("span");
-    span.style.setProperty(cssVar, value);
-//     console.log("value wrap = " + value);
-
-    try {
-      range.surroundContents(span);
-    } catch (e) {
-      // Si surroundContents échoue, utiliser une approche alternative
-      const contents = range.extractContents();
-      span.appendChild(contents);
-      range.insertNode(span);
-    }
-  }
-
-  // ====== MÉTHODES POUR GUILLEMETS ======
-
-toggleFrenchQuotes() {
-  const selection = this.editor.selection.getCurrentSelection();
-  if (!selection?.isValid) return;
-
-  const range = selection.range;
-  const text = range.toString();
-
-  if (text) {
-    range.deleteContents();
-
-    const fragment = document.createDocumentFragment();
-
-    // Création simplifiée avec createElement (plus besoin de setAttribute)
-    const openQuoteSpan = this.createElement('span', 'french-quote-open');
-    openQuoteSpan.textContent = UNICODE_CHARS.LAQUO;
-
-    const openSpaceSpan = this.createElement('span', 'i_space no-break-narrow-space');
-    openSpaceSpan.textContent = UNICODE_CHARS.NO_BREAK_THIN_SPACE;
-
-    const textNode = document.createTextNode(text);
-
-    const closeSpaceSpan = this.createElement('span', 'i_space no-break-narrow-space');
-    closeSpaceSpan.textContent = UNICODE_CHARS.NO_BREAK_THIN_SPACE;
-
-    const closeQuoteSpan = this.createElement('span', 'french-quote-close');
-    closeQuoteSpan.textContent = UNICODE_CHARS.RAQUO;
-
-    fragment.appendChild(openQuoteSpan);
-    fragment.appendChild(openSpaceSpan);
-    fragment.appendChild(textNode);
-    fragment.appendChild(closeSpaceSpan);
-    fragment.appendChild(closeQuoteSpan);
-
-    range.insertNode(fragment);
-    range.setStartBefore(openQuoteSpan);
-    range.setEndAfter(closeQuoteSpan);
-  }
-
-  this.triggerAutoCopy();
-}
-
-toggleEnglishQuotes() {
-  const selection = this.editor.selection.getCurrentSelection();
-  if (!selection?.isValid) return;
-
-  const range = selection.range;
-  const text = range.toString();
-
-  if (text) {
-    range.deleteContents();
-
-    const fragment = document.createDocumentFragment();
-
-    // Création simplifiée avec createElement
-    const openQuoteSpan = this.createElement('span', 'english-quote-open');
-    openQuoteSpan.textContent = UNICODE_CHARS.LDQUO;
-
-    const textNode = document.createTextNode(text);
-
-    const closeQuoteSpan = this.createElement('span', 'english-quote-close');
-    closeQuoteSpan.textContent = UNICODE_CHARS.RDQUO;
-
-    fragment.appendChild(openQuoteSpan);
-    fragment.appendChild(textNode);
-    fragment.appendChild(closeQuoteSpan);
-
-    range.insertNode(fragment);
-    range.setStartBefore(openQuoteSpan);
-    range.setEndAfter(closeQuoteSpan);
-  }
-
-  this.triggerAutoCopy();
-}
-
-
-
-  // ====== INSERTION DE TEXTE ======
-
-insertText(text) {
-  const selection = this.editor.selection.getCurrentSelection();
-  if (!selection || !selection.isValid) return;
-
-  const range = selection.range;
-  
-  // Créer un span avec les attributs requis
-  const span = document.createElement('span');
-  span.classList.add('editor-add');
-  span.setAttribute('data-timestamp', Date.now().toString());
-  span.textContent = text;
-  
-  range.deleteContents();
-  range.insertNode(span);
-  
-  // Positionner le curseur après l'insertion
-  range.setStartAfter(span);
-  range.setEndAfter(span);
-  selection.selection.removeAllRanges();
-  selection.selection.addRange(range);
-  
-  this.triggerAutoCopy();
-}
-
-  // ====== UTILITAIRES DE FORMATAGE ======
-
-wrapSelection(range, tagName, className = null, attributes = {}) {
-  const element = document.createElement(tagName);
-  
-  // Ajout automatique de la classe editor-add et data-timestamp
-  element.classList.add('editor-add');
-  element.setAttribute('data-timestamp', Date.now().toString());
-  
-  // Ajout de la classe personnalisée si fournie
-  if (className) {
-    element.classList.add(className);
-  }
-  
-  // Ajout des attributs personnalisés
-  Object.entries(attributes).forEach(([key, value]) => {
-    element.setAttribute(key, value);
-  });
-  
-  try {
-    range.surroundContents(element);
-  } catch (e) {
-    // Fallback si surroundContents échoue
-    element.appendChild(range.extractContents());
-    range.insertNode(element);
-  }
-  
-  this.triggerAutoCopy();
-}
-
-createElement(tagName, className = null, attributes = {}) {
-  const element = document.createElement(tagName);
-  
-  element.classList.add('editor-add');
-  element.setAttribute('data-timestamp', Date.now().toString());
-  
-  if (className) {
-    // Gérer les classes multiples séparées par des espaces
-    className.split(' ').forEach(cls => {
-      if (cls.trim()) {
-        element.classList.add(cls.trim());
-      }
-    });
-  }
-  
-  Object.entries(attributes).forEach(([key, value]) => {
-    element.setAttribute(key, value);
-  });
-  
-  return element;
-}
-
-
-  unwrapTag(range, tagNames, className = null) {
-    let element = range.commonAncestorContainer;
-
-    while (element && element !== document.body) {
-      if (element.nodeType === Node.ELEMENT_NODE) {
-        const tagMatches = tagNames.includes(element.tagName);
-        const classMatches =
-          !className || element.classList.contains(className);
-
-        if (tagMatches && classMatches) {
-          const parent = element.parentNode;
-          while (element.firstChild) {
-            parent.insertBefore(element.firstChild, element);
-          }
-          parent.removeChild(element);
-          break;
-        }
-      }
-      element = element.parentElement;
-    }
-  }
-
-  isWrappedInTag(range, tagNames, className = null) {
-    let element = range.commonAncestorContainer;
+    tagNames = tagNames.map(tag => tag.toUpperCase());
 
     if (element.nodeType === Node.TEXT_NODE) {
       element = element.parentElement;
@@ -316,22 +144,23 @@ createElement(tagName, className = null, attributes = {}) {
   }
 
   insertSpace(className, content) {
-  const selection = this.editor.selection.getCurrentSelection();
-  if (!selection?.isValid) return;
+    const selection = this.editor.selection.getCurrentSelection();
+    if (!selection?.isValid) return;
 
-  const range = selection.range;
-  const span = this.createElement('span', `i_space ${className}`);
-  span.textContent = content;
-  
-  range.deleteContents();
-  range.insertNode(span);
-  range.setStartAfter(span);
-  range.collapse(true);
-  selection.selection.removeAllRanges();
-  selection.selection.addRange(range);
-  
-  this.triggerAutoCopy();
-}
+    const range = selection.range;
+    const span = this.createElement('span', `i_space ${className}`);
+    span.textContent = content;
+    
+    range.deleteContents();
+    range.insertNode(span);
+    range.setStartAfter(span);
+    range.collapse(true);
+    selection.selection.removeAllRanges();
+    selection.selection.addRange(range);
+    
+    this.triggerAutoCopy();
+  }
+
   // ====== ACTIONS UTILITAIRES ======
 
   resetTransformations() {
@@ -376,15 +205,13 @@ createElement(tagName, className = null, attributes = {}) {
 
   exportMarkdownByRange() {
     if (this.editor.toolbar.recovery) {
-//       this.editor.toolbar.recovery.showExportDialog();
-this.editor.toolbar.recovery.showPageRangeModal();
+      this.editor.toolbar.recovery.showPageRangeModal();
     }
   }
 
   // ====== MÉTHODES UTILITAIRES ======
 
   showFeedback(message) {
-    // Affiche un feedback temporaire à l'utilisateur
     const feedback = document.createElement("div");
     feedback.textContent = message;
     feedback.style.cssText = `
@@ -410,56 +237,36 @@ this.editor.toolbar.recovery.showPageRangeModal();
     }, 2000);
   }
 
+  // CORRECTION: triggerAutoCopy corrigé
   triggerAutoCopy() {
-    // Déclenche automatiquement la copie si activée
-    if (this.editor.options?.autoCopy) {
+    if (this.editor.options.autoCopy) { // Suppression du ?.
       setTimeout(() => this.copyElementAsMarkdown(), 100);
     }
   }
 
+  // CORRECTION: Une seule méthode getCurrentElement qui délègue à l'éditeur
   getCurrentElement() {
-    const selection = this.editor.selection.getCurrentSelection();
-    if (!selection?.isValid) return null;
-
-    let element = selection.range.commonAncestorContainer;
-    while (element && !element.hasAttribute?.("data-editable")) {
-      element = element.parentElement;
-    }
-
-    return element;
+    return this.editor.getCurrentElement();
   }
 
-  /**
-   * Méthode manquante - performAutoCopy
-   * Effectue une copie automatique si l'option est activée
-   */
+  // CORRECTION: performAutoCopy corrigé
   performAutoCopy() {
-    if (!this.editor.options?.autoCopy) return;
+    if (!this.editor.options.autoCopy) return; // Suppression du ?.
 
     const element = this.getCurrentElement();
     if (!element) return;
 
-    // Utilise la logique existante de copyElementAsMarkdown
     if (this.editor.toolbar.turndown) {
       const markdown = this.editor.toolbar.turndown.turndown(element.innerHTML);
 
       navigator.clipboard
         .writeText(markdown)
         .then(() => {
-          // Feedback discret pour l'auto-copie
           console.log("Auto-copie effectuée");
         })
         .catch((err) => {
           console.error("Erreur lors de l'auto-copie:", err);
         });
     }
-  }
-
-  /**
-   * Correction de la méthode getCurrentElement dans Commands
-   * (utilise maintenant la méthode de l'éditeur)
-   */
-  getCurrentElement() {
-    return this.editor.getCurrentElement();
   }
 }

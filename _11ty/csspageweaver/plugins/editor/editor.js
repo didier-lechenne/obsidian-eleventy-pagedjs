@@ -15,7 +15,7 @@ export default class Editor extends Handler {
     this.options = {
       selector: "[data-editable], .footnote, figcaption",
       shortcuts: true,
-      autoCopy: false, // Option pour l'auto-copie
+      autoCopy: true, // CORRECTION: Activé par défaut
     };
 
     this.isActive = false;
@@ -118,150 +118,124 @@ export default class Editor extends Handler {
     document.addEventListener("click", (e) => {
       if (!this.isActive) return;
 
-      if (this.isInEditableElement(e.target)) {
-        setTimeout(() => {
-          const selection = this.selection.getCurrentSelection();
-          if (selection && this.toolbar) {
-            this.toolbar.show(selection);
-          }
-        }, 50);
+      const element = e.target.closest(this.options.selector);
+      if (element) {
+        const selection = this.selection.getCurrentSelection();
+        if (selection?.isValid) {
+          this.toolbar.show(selection);
+        }
+      } else {
+        this.toolbar.hide();
       }
     });
   }
 
-  handleFocusIn(event) {
+  handleMouseUp(e) {
     if (!this.isActive) return;
-    if (this.isInEditableElement(event.target)) {
-      // Créer une sélection au curseur
-      const selection = window.getSelection();
-      if (selection.rangeCount > 0) {
-        const currentSelection = this.selection.getCurrentSelection();
-        if (currentSelection) {
-          this.toolbar.show(currentSelection);
-        }
+    this.debounce(() => {
+      const selection = this.selection.getCurrentSelection();
+      if (this.isInEditableElement(e.target) && selection?.isValid) {
+        this.toolbar.show(selection);
       }
-    }
+    }, 100);
   }
 
-  handleMouseUp(event) {
+  handleKeyUp(e) {
     if (!this.isActive) return;
-    this.updateSelection();
+    this.debounce(() => {
+      const selection = this.selection.getCurrentSelection();
+      if (this.isInEditableElement(e.target) && selection?.isValid) {
+        this.toolbar.show(selection);
+      }
+    }, 100);
   }
 
-  handleKeyUp(event) {
-    if (!this.isActive) return;
-    this.updateSelection();
-  }
+  handleKeyDown(e) {
+    if (!this.isActive || !this.options.shortcuts) return;
 
-  handleKeyDown(event) {
-    if (!this.isActive) return;
-
-    if (this.options.shortcuts) {
-      this.handleShortcuts(event);
-    }
-  }
-
-  handleShortcuts(event) {
-    if (event.ctrlKey || event.metaKey) {
-      switch (event.key) {
+    // Raccourcis clavier pour actions communes
+    if (e.ctrlKey || e.metaKey) {
+      switch (e.key.toLowerCase()) {
         case "b":
-          event.preventDefault();
-          this.commands.toggleBold();
+          e.preventDefault();
+          this.commands.toggleFormatting("strong");
           break;
         case "i":
-          event.preventDefault();
-          this.commands.toggleItalic();
+          e.preventDefault();
+          this.commands.toggleFormatting("em");
           break;
       }
     }
   }
 
-  handlePaste(event) {
+  handlePaste(e) {
     if (!this.isActive) return;
-
-    const selection = this.selection.getCurrentSelection();
-    if (!selection?.isValid) return;
-
-    event.preventDefault();
-    const text = event.clipboardData.getData("text/plain");
-    this.commands.insertText(text);
+    
+    // Empêcher le collage de HTML formaté
+    e.preventDefault();
+    const text = e.clipboardData.getData("text/plain");
+    document.execCommand("insertText", false, text);
   }
 
-  debounce(func, wait) {
-    clearTimeout(this._debounceTimer);
-    this._debounceTimer = setTimeout(func, wait);
+  handleFocusIn(e) {
+    if (!this.isActive) return;
+    
+    if (this.isInEditableElement(e.target)) {
+      this.debounce(() => {
+        const selection = this.selection.getCurrentSelection();
+        if (selection?.isValid) {
+          this.toolbar.show(selection);
+        }
+      }, 50);
+    }
   }
+
+  // ====== MÉTHODES D'ACTIVATION ======
 
   activate() {
     if (this.isActive) return;
+    
     this.isActive = true;
-
-    if (this.editableElements) {
-      this.editableElements.forEach((element) => {
-        element.contentEditable = true;
-        element.classList.add("paged-editor-content");
-      });
-    }
-
     document.body.classList.add("paged-editor-active");
+    
+    this.setupEditableElements();
+    // La toolbar est déjà initialisée dans le constructeur
+    
     console.log("✅ Éditeur activé");
   }
 
   deactivate() {
     if (!this.isActive) return;
+    
     this.isActive = false;
-
+    document.body.classList.remove("paged-editor-active");
+    
+    this.toolbar?.hide();
+    
+    // Désactiver l'édition
     if (this.editableElements) {
       this.editableElements.forEach((element) => {
         element.contentEditable = false;
         element.classList.remove("paged-editor-content");
       });
     }
-
-    document.body.classList.remove("paged-editor-active");
-    this.toolbar?.hide();
+    
     console.log("❌ Éditeur désactivé");
   }
 
-  updateSelection() {
-    if (!this.isActive) return;
+  // ====== MÉTHODES UTILITAIRES ======
 
-    const currentSelection = this.selection.getCurrentSelection();
-
-    if (currentSelection?.isValid) {
-      const activeElement = document.activeElement;
-
-      if (
-        this.isInEditableElement(
-          currentSelection.range.commonAncestorContainer
-        ) ||
-        this.isInEditableElement(activeElement) ||
-        activeElement?.classList.contains("footnote")
-      ) {
-        this.toolbar.show(currentSelection);
-        this.autoCopyToClipboard();
-        return;
-      }
-    }
-
-    if (document.querySelector(".external-letterspacing-input")) {
-      return; // Ne pas cacher la toolbar si l'input letter-spacing est actif
-    }
-    this.toolbar.hide();
+  debounce(func, delay) {
+    clearTimeout(this._debounceTimer);
+    this._debounceTimer = setTimeout(func, delay);
   }
 
-  autoCopyToClipboard() {
-    // Délai pour éviter la copie répétée lors du drag
-    this.debounce(() => {
-      this.commands.performAutoCopy();
-    }, 300);
-  }
-
-  isInEditableElement(node) {
-    if (!node) return false;
-
-    const element =
-      node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
+  isInEditableElement(element) {
+    if (!element || !element.nodeType) return false;
+    
+    // Remonter jusqu'à trouver un élément DOM
+    element = element.nodeType === Node.TEXT_NODE ? 
+      element.parentElement : element;
 
     // Vérification rapide avec cache si disponible
     if (this.editableElements) {
@@ -277,7 +251,7 @@ export default class Editor extends Handler {
     return element.closest(this.options.selector) !== null;
   }
 
-  // CORRECTION: Méthode manquante getCurrentElement
+  // MÉTHODE PRINCIPALE - getCurrentElement
   getCurrentElement() {
     const selection = this.selection.getCurrentSelection();
     if (!selection?.isValid) return null;
