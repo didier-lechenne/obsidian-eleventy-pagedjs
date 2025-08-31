@@ -12,15 +12,15 @@ module.exports = function (eleventyConfig) {
         return content;
       }
 
-      // Plus besoin de protéger les alt, le preprocessor s'en charge !
+      
       content = content.replace(
         /\u00A0/g,
-        '<span class="i_space non-breaking-space">&nbsp;</span>'
+        '<span class="i_space no-break-space">&nbsp;</span>'
       );
 
       content = content.replace(
         /\u202F/g,
-        '<span class="i_space narrow-no-break-space">\u202F</span>'
+        '<span class="i_space no-break-narrow-space">\u202F</span>'
       );
 
       content = content.replace(

@@ -70,27 +70,23 @@ export const ACTIONS_REGISTRY = {
 
   // === ACTIONS D'INSERTION ===
 
-  nbsp: {
-    type: "insert",
-    icon: "␣",
-    title: "Espace insécable",
-    execute: (editor) => editor.commands.insertText(UNICODE_CHARS.NBSP),
-  },
 
-  nnbsp: {
-    type: "insert",
-    icon: "⍽",
-    title: "Espace insécable fine",
-    execute: (editor) =>
-      editor.commands.insertText(UNICODE_CHARS.NNBSP || "\u202F"),
-  },
 
-  "thin-space": {
-    type: "insert",
-    icon: "᎐",
-    title: "Espace fine",
-    execute: (editor) => editor.commands.insertText(UNICODE_CHARS.THIN_SPACE),
-  },
+nbsp: {
+  type: "insert",
+  icon: "␣",
+  title: "Espace insécable",
+  execute: (editor) => editor.commands.insertSpace('no-break-space', UNICODE_CHARS.NO_BREAK_SPACE),
+},
+
+nnbsp: {
+  type: "insert",
+  icon: "⍽",
+  title: "Espace insécable fine",
+  execute: (editor) => editor.commands.insertSpace('no-break-narrow-space', UNICODE_CHARS.NO_BREAK_THIN_SPACE),
+},
+
+
 
   "em-dash": {
     type: "insert",
@@ -116,9 +112,7 @@ export const ACTIONS_REGISTRY = {
         const range = selection.getRangeAt(0);
         range.deleteContents();
 
-        const br = document.createElement("br");
-        br.className = "editor-add";
-        br.dataset.timestamp = Date.now();
+        const br = editor.commands.createElement("br");
 
         range.insertNode(br);
         range.setStartAfter(br);
@@ -139,9 +133,7 @@ export const ACTIONS_REGISTRY = {
         const range = selection.getRangeAt(0);
         range.deleteContents();
 
-        const br = document.createElement("br");
-        br.className = "editor-add break-column";
-        br.dataset.timestamp = Date.now();
+        const br = editor.commands.createElement("br", "break-column");
 
         range.insertNode(br);
         range.setStartAfter(br);
@@ -162,9 +154,7 @@ export const ACTIONS_REGISTRY = {
         const range = selection.getRangeAt(0);
         range.deleteContents();
 
-        const br = document.createElement("br");
-        br.className = "editor-add break-page";
-        br.dataset.timestamp = Date.now();
+        const br = editor.commands.createElement("br", "break-column");
 
         range.insertNode(br);
         range.setStartAfter(br);

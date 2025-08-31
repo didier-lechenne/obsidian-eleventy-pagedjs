@@ -137,16 +137,16 @@ toggleFrenchQuotes() {
 
     const fragment = document.createDocumentFragment();
 
-    // Utilisation de createElement pour simplifier
+    // Création simplifiée avec createElement (plus besoin de setAttribute)
     const openQuoteSpan = this.createElement('span', 'french-quote-open');
     openQuoteSpan.textContent = UNICODE_CHARS.LAQUO;
 
-    const openSpaceSpan = this.createElement('span', 'i_space narrow-no-break-space');
+    const openSpaceSpan = this.createElement('span', 'i_space no-break-narrow-space');
     openSpaceSpan.textContent = UNICODE_CHARS.NO_BREAK_THIN_SPACE;
 
     const textNode = document.createTextNode(text);
 
-    const closeSpaceSpan = this.createElement('span', 'i_space narrow-no-break-space');
+    const closeSpaceSpan = this.createElement('span', 'i_space no-break-narrow-space');
     closeSpaceSpan.textContent = UNICODE_CHARS.NO_BREAK_THIN_SPACE;
 
     const closeQuoteSpan = this.createElement('span', 'french-quote-close');
@@ -167,36 +167,38 @@ toggleFrenchQuotes() {
 }
 
 
-  toggleEnglishQuotes() {
-    const selection = this.editor.selection.getCurrentSelection();
-    if (!selection?.isValid) return;
+toggleEnglishQuotes() {
+  const selection = this.editor.selection.getCurrentSelection();
+  if (!selection?.isValid) return;
 
-    const range = selection.range;
-    const text = range.toString();
+  const range = selection.range;
+  const text = range.toString();
 
-    if (text) {
-      range.deleteContents();
+  if (text) {
+    range.deleteContents();
 
-      const openSpan = document.createElement("span");
-      openSpan.className = "english-quote-open";
-      openSpan.textContent = UNICODE_CHARS.LDQUO;
+    const fragment = document.createDocumentFragment();
 
-      const textNode = document.createTextNode(text);
+    // Création simplifiée avec createElement
+    const openQuoteSpan = this.createElement('span', 'english-quote-open');
+    openQuoteSpan.textContent = UNICODE_CHARS.LDQUO;
 
-      const closeSpan = document.createElement("span");
-      closeSpan.className = "english-quote-close";
-      closeSpan.textContent = UNICODE_CHARS.RDQUO;
+    const textNode = document.createTextNode(text);
 
-      range.insertNode(openSpan);
-      range.insertNode(textNode);
-      range.insertNode(closeSpan);
+    const closeQuoteSpan = this.createElement('span', 'english-quote-close');
+    closeQuoteSpan.textContent = UNICODE_CHARS.RDQUO;
 
-      range.setStartBefore(openSpan);
-      range.setEndAfter(closeSpan);
-    }
+    fragment.appendChild(openQuoteSpan);
+    fragment.appendChild(textNode);
+    fragment.appendChild(closeQuoteSpan);
 
-    this.triggerAutoCopy();
+    range.insertNode(fragment);
+    range.setStartBefore(openQuoteSpan);
+    range.setEndAfter(closeQuoteSpan);
   }
+
+  this.triggerAutoCopy();
+}
 
 
 
@@ -259,16 +261,18 @@ wrapSelection(range, tagName, className = null, attributes = {}) {
 createElement(tagName, className = null, attributes = {}) {
   const element = document.createElement(tagName);
   
-  // Ajout automatique de la classe editor-add et data-timestamp
   element.classList.add('editor-add');
   element.setAttribute('data-timestamp', Date.now().toString());
   
-  // Ajout de la classe personnalisée si fournie
   if (className) {
-    element.classList.add(className);
+    // Gérer les classes multiples séparées par des espaces
+    className.split(' ').forEach(cls => {
+      if (cls.trim()) {
+        element.classList.add(cls.trim());
+      }
+    });
   }
   
-  // Ajout des attributs personnalisés
   Object.entries(attributes).forEach(([key, value]) => {
     element.setAttribute(key, value);
   });
@@ -322,6 +326,23 @@ createElement(tagName, className = null, attributes = {}) {
     return false;
   }
 
+  insertSpace(className, content) {
+  const selection = this.editor.selection.getCurrentSelection();
+  if (!selection?.isValid) return;
+
+  const range = selection.range;
+  const span = this.createElement('span', `i_space ${className}`);
+  span.textContent = content;
+  
+  range.deleteContents();
+  range.insertNode(span);
+  range.setStartAfter(span);
+  range.collapse(true);
+  selection.selection.removeAllRanges();
+  selection.selection.addRange(range);
+  
+  this.triggerAutoCopy();
+}
   // ====== ACTIONS UTILITAIRES ======
 
   resetTransformations() {

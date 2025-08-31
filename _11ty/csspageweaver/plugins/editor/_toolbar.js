@@ -272,7 +272,7 @@ class SpacingExtension {
       range.deleteContents();
 
       const span = document.createElement("span");
-      span.className = "i_space non-breaking-space editor-add";
+      span.className = "i_space no-break-space editor-add";
       span.textContent = UNICODE_CHARS.NO_BREAK_SPACE;
 
       range.insertNode(span);
@@ -297,7 +297,7 @@ class SpacingExtension {
       range.deleteContents();
 
       const span = document.createElement("span");
-      span.className = "i_space narrow-no-break-space editor-add";
+      span.className = "i_space no-break-narrow-space editor-add";
       span.textContent = UNICODE_CHARS.NO_BREAK_THIN_SPACE;
 
       range.insertNode(span);
@@ -355,7 +355,7 @@ class SpacingExtension {
 
     // Espace fine
     const openSpace = document.createElement("span");
-    openSpace.className = "i_space narrow-no-break-space editor-add";
+    openSpace.className = "i_space no-break-narrow-space editor-add";
     openSpace.textContent = UNICODE_CHARS.NO_BREAK_THIN_SPACE;
     wrapper.appendChild(openSpace);
 
@@ -364,7 +364,7 @@ class SpacingExtension {
 
     // Espace fine
     const closeSpace = document.createElement("span");
-    closeSpace.className = "i_space narrow-no-break-space editor-add";
+    closeSpace.className = "i_space no-break-narrow-space editor-add";
     closeSpace.textContent = UNICODE_CHARS.NO_BREAK_THIN_SPACE;
     wrapper.appendChild(closeSpace);
 
