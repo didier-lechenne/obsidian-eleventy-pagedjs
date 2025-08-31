@@ -114,16 +114,18 @@ export default class Editor extends Handler {
     document.addEventListener("paste", this.handlePaste.bind(this));
     document.addEventListener("focusin", this.handleFocusIn.bind(this));
 
-    // CORRECTION: Gestionnaire de clic pour afficher la toolbar
+    // Auto-copie au clic dans un élément éditable
     document.addEventListener("click", (e) => {
       if (!this.isActive) return;
 
       const element = e.target.closest(this.options.selector);
       if (element) {
+        // Copie automatique en Markdown
+        this.copyElementToClipboard(element);
+        
+        // Afficher la toolbar même sans sélection de texte
         const selection = this.selection.getCurrentSelection();
-        if (selection?.isValid) {
-          this.toolbar.show(selection);
-        }
+        this.toolbar.show(selection || { range: null });
       } else {
         this.toolbar.hide();
       }
@@ -133,9 +135,9 @@ export default class Editor extends Handler {
   handleMouseUp(e) {
     if (!this.isActive) return;
     this.debounce(() => {
-      const selection = this.selection.getCurrentSelection();
-      if (this.isInEditableElement(e.target) && selection?.isValid) {
-        this.toolbar.show(selection);
+      if (this.isInEditableElement(e.target)) {
+        const selection = this.selection.getCurrentSelection();
+        this.toolbar.show(selection || { range: null });
       }
     }, 100);
   }
@@ -143,9 +145,9 @@ export default class Editor extends Handler {
   handleKeyUp(e) {
     if (!this.isActive) return;
     this.debounce(() => {
-      const selection = this.selection.getCurrentSelection();
-      if (this.isInEditableElement(e.target) && selection?.isValid) {
-        this.toolbar.show(selection);
+      if (this.isInEditableElement(e.target)) {
+        const selection = this.selection.getCurrentSelection();
+        this.toolbar.show(selection || { range: null });
       }
     }, 100);
   }
@@ -183,9 +185,7 @@ export default class Editor extends Handler {
     if (this.isInEditableElement(e.target)) {
       this.debounce(() => {
         const selection = this.selection.getCurrentSelection();
-        if (selection?.isValid) {
-          this.toolbar.show(selection);
-        }
+        this.toolbar.show(selection || { range: null });
       }, 50);
     }
   }
@@ -302,16 +302,52 @@ export default class Editor extends Handler {
     return null;
   }
 
-  cleanup() {
-    // Nettoyage des timers
-    clearTimeout(this._debounceTimer);
+  // Copie automatique de l'élément en Markdown
+  copyElementToClipboard(element) {
+    if (!this.toolbar?.turndown) {
+      console.warn("Turndown non disponible pour la conversion Markdown");
+      return;
+    }
 
-    // Nettoyage des modules
-    this.toolbar?.destroy();
-    this.selection = null;
-    this.commands = null;
+    const markdown = this.toolbar.turndown.turndown(element.innerHTML);
+    
+    navigator.clipboard.writeText(markdown)
+      .then(() => {
+        console.log("✅ Auto-copie Markdown effectuée");
+        this.showFeedback("Copié !");
+      })
+      .catch((err) => {
+        console.error("❌ Erreur auto-copie:", err);
+      });
+  }
 
-    // Reset du cache
-    this.editableElements = null;
+  // Feedback visuel pour la copie
+  showFeedback(message) {
+    const feedback = document.createElement("div");
+    feedback.textContent = message;
+    feedback.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #4CAF50;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 4px;
+      z-index: 10000;
+      opacity: 1;
+      transition: opacity 0.3s ease;
+      font-size: 14px;
+    `;
+
+    document.body.appendChild(feedback);
+
+    setTimeout(() => {
+      feedback.style.opacity = "0";
+      setTimeout(() => {
+        if (feedback.parentNode) {
+          document.body.removeChild(feedback);
+        }
+      }, 300);
+    }, 1500);
   }
 }
