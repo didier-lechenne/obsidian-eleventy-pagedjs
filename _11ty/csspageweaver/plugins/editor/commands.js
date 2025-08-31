@@ -3,6 +3,7 @@ import { UNICODE_CHARS } from "./unicode.js";
 export class Commands {
   constructor(editor) {
     this.editor = editor;
+    
   }
 
   // ====== COMMANDES DE FORMATAGE DE BASE ======
@@ -59,54 +60,43 @@ export class Commands {
     this.triggerAutoCopy();
   }
 
-  toggleLetterSpacing() {
-    const selection = this.editor.selection.getCurrentSelection();
-    if (!selection?.isValid) return;
 
-    const range = selection.range;
-    const input = document.querySelector(".ls-input");
-    if (!input) return;
 
-    console.log("input.value = " + input.value);
-
-    const value = parseInt(input.value) || 0;
-
-    // Vérifier si la sélection est déjà dans un span avec --ls
-    const existingSpan = this.findParentWithLetterSpacing(range);
-
-    if (existingSpan) {
-      // Mettre à jour le span existant avec CSS variable
-      existingSpan.style.setProperty("--ls", value);
-      console.log("value = " + value);
-    } else {
-      // Créer un nouveau span avec CSS variable
-      this.wrapSelectionWithCSSVariable(range, "--ls", value);
-      console.log("value else = " + value);
-    }
-
-    this.triggerAutoCopy();
+prepareLetterSpacing() {
+  console.log("prepareLetterSpacing APPELÉE");
+  
+  const span = document.querySelector('span[style*="--ls"]');
+  console.log("Span trouvé:", span);
+  
+  if (span) {
+    span.setAttribute('data-ls-active', 'true');
+    console.log("Span marqué");
   }
+}
 
-  findParentWithLetterSpacing(range) {
-    let node = range.commonAncestorContainer;
-
-    if (node.nodeType === Node.TEXT_NODE) {
-      node = node.parentElement;
-    }
-
-    while (node && node !== document.body) {
-      if (
-        node.tagName === "SPAN" &&
-        (node.style.getPropertyValue("--ls") !== "" ||
-          node.getAttribute("style")?.includes("--ls"))
-      ) {
-        return node;
-      }
-      node = node.parentElement;
-    }
-
-    return null;
+toggleLetterSpacing() {
+  const input = document.querySelector(".ls-input");
+  if (!input) return;
+  
+  const value = parseInt(input.value) || 0;
+  
+  // Solution directe : mettre à jour tous les spans avec --ls
+  const spans = document.querySelectorAll('span[style*="--ls"]');
+  
+  if (spans.length > 0) {
+    spans.forEach(span => {
+      span.style.setProperty("--ls", value.toString());
+    });
+    console.log(`${spans.length} span(s) mis à jour avec valeur ${value}`);
+  } else {
+    console.log("Aucun span trouvé");
   }
+  
+  this.triggerAutoCopy();
+}
+
+
+
 
   wrapSelectionWithCSSVariable(range, cssVar, value) {
     const span = document.createElement("span");
@@ -165,7 +155,6 @@ toggleFrenchQuotes() {
 
   this.triggerAutoCopy();
 }
-
 
 toggleEnglishQuotes() {
   const selection = this.editor.selection.getCurrentSelection();
@@ -387,7 +376,8 @@ createElement(tagName, className = null, attributes = {}) {
 
   exportMarkdownByRange() {
     if (this.editor.toolbar.recovery) {
-      this.editor.toolbar.recovery.showExportDialog();
+//       this.editor.toolbar.recovery.showExportDialog();
+this.editor.toolbar.recovery.showPageRangeModal();
     }
   }
 

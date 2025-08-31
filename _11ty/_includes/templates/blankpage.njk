@@ -5,5 +5,6 @@
          {% if p.data.bgColor %}data-bg-color="{{ p.data.bgColor }}" {% endif %}
          {% if p.data.show %}data-show="{{ p.data.show }}" {% endif %}
          {% if p.data.moveTo %}data-page-move-to="{{ p.data.moveTo }}" {% endif %}
-         class="{% if p.data.toc %}toc-{{ p.data.toc }}{% endif %} blankpage {% if p.data.class %} {{ p.data.class }}{% endif %}">
+         class="{% if p.data.toc %}toc-{{ p.data.toc }}{% endif %} blankpage {% if p.data.class %} {{ p.data.class }}{% endif %}"
+	{% include "partials/frontmatter-attrs.njk" %}>
 </section>

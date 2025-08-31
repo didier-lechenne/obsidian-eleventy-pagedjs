@@ -2,7 +2,8 @@
 <!-- _11ty/_layouts/toc.njk -->
 <section id="{{ p.fileSlug | cleanTitle | slug }}"  
          data-template="toc"
-         class="toc marker">
+         class="toc marker"
+	{% include "partials/frontmatter-attrs.njk" %}>
 
 {{ p.templateContent | safe  }} 
 

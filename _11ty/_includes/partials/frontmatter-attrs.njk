@@ -1,0 +1,6 @@
+  {# Boucle pour ajouter TOUTES les entrées du front matter en data-* (version ultra-simple) #}
+  {% for key, value in p.data %}
+    {% if value is string or value is number %}
+      frontmatter-{{ key }}="{{ value }}"
+    {% endif %}
+  {% endfor %}

@@ -47,7 +47,6 @@ export const ACTIONS_REGISTRY = {
     if (input.classList.contains("ls-hide")) {
       input.classList.remove("ls-hide");
       button.classList.add("active");
-      editor.commands.toggleLetterSpacing();
     } else {
       input.classList.add("ls-hide");
       button.classList.remove("active");
@@ -57,8 +56,7 @@ export const ACTIONS_REGISTRY = {
     let current = element;
     while (current && current !== document.body) {
       if (current.tagName === "SPAN" && 
-          (current.style.getPropertyValue('--ls') !== '' ||
-           current.getAttribute('style')?.includes('--ls'))) {
+          current.style.getPropertyValue("--ls") !== "") {
         return true;
       }
       current = current.parentElement;
@@ -67,26 +65,29 @@ export const ACTIONS_REGISTRY = {
   },
 },
 
-
   // === ACTIONS D'INSERTION ===
 
+  "nbsp": {
+    type: "insert",
+    icon: "␣",
+    title: "Espace insécable",
+    execute: (editor) =>
+      editor.commands.insertSpace(
+        "no-break-space",
+        UNICODE_CHARS.NO_BREAK_SPACE
+      ),
+  },
 
-
-nbsp: {
-  type: "insert",
-  icon: "␣",
-  title: "Espace insécable",
-  execute: (editor) => editor.commands.insertSpace('no-break-space', UNICODE_CHARS.NO_BREAK_SPACE),
-},
-
-nnbsp: {
-  type: "insert",
-  icon: "⍽",
-  title: "Espace insécable fine",
-  execute: (editor) => editor.commands.insertSpace('no-break-narrow-space', UNICODE_CHARS.NO_BREAK_THIN_SPACE),
-},
-
-
+  "nnbsp": {
+    type: "insert",
+    icon: "⍽",
+    title: "Espace insécable fine",
+    execute: (editor) =>
+      editor.commands.insertSpace(
+        "no-break-narrow-space",
+        UNICODE_CHARS.NO_BREAK_THIN_SPACE
+      ),
+  },
 
   "em-dash": {
     type: "insert",

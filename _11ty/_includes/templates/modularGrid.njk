@@ -6,7 +6,8 @@
          {% if p.data.show %}data-show="{{ p.data.show }}"{% endif %}
          {% if p.data.toc %}data-toc="{{ p.data.toc }}"{% endif %}
          {% if p.data.moveTo %}data-page-move-to="{{ p.data.moveTo }}" {% endif %}
-         class="{% if p.data.toc %}toc-{{ p.data.toc }}{% endif %} {% if p.data.class %}{{ p.data.class }}{% endif %}  modularGrid marker ">
+         class="{% if p.data.toc %}toc-{{ p.data.toc }}{% endif %} {% if p.data.class %}{{ p.data.class }}{% endif %}  modularGrid marker "
+	{% include "partials/frontmatter-attrs.njk" %}>
 
   {{ p.templateContent | safe  }} 
 

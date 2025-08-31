@@ -6,6 +6,7 @@
 export class Selection {
   constructor(editor) {
     this.editor = editor;
+    
   }
   
   getCurrentSelection() {
@@ -54,8 +55,6 @@ export class Selection {
     selection.addRange(range);
   }
   
-
-  
   getSelectionBounds() {
     const selection = window.getSelection();
     if (selection.rangeCount === 0) return null;
@@ -63,8 +62,6 @@ export class Selection {
     const range = selection.getRangeAt(0);
     return range.getBoundingClientRect();
   }
-  
-
   
   isSelectionInEditableElement() {
     const selection = window.getSelection();

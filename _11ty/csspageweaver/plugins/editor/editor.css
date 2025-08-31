@@ -121,12 +121,12 @@ body.interface-preview .paged-editor-content:focus {
  */
 
 /* Highlighting visuel pour tous les éléments formatés */
-.paged-editor-active .small-caps,
-.paged-editor-active sup,
-.paged-editor-active br,
-.paged-editor-active figcaption .small-caps,
-.paged-editor-active figcaption sup,
-.paged-editor-active figcaption br {
+.paged-editor-active .paged-editor-content:focus .small-caps,
+.paged-editor-active .paged-editor-content:focus sup,
+.paged-editor-active .paged-editor-content:focus br,
+.paged-editor-active .paged-editor-content:focus figcaption .small-caps,
+.paged-editor-active .paged-editor-content:focus figcaption sup,
+.paged-editor-active .paged-editor-content:focus figcaption br {
   background-color: var(--editor-primary-highlight);
 }
 
@@ -438,30 +438,4 @@ span[style*="--ls"] {
   display: none;
 }
 
-/* ========================================
- * RESPONSIVE DESIGN
- * ========================================
- * Adaptations pour les écrans plus petits
- */
 
-@media (max-width: 768px) {
-  /* Réduction de la taille des boutons sur mobile */
-  .paged-editor-toolbar button {
-    padding: 6px 8px;
-    min-width: 16px;
-    height: 16px;
-    font-size: 12px;
-  }
-
-  /* Réduction de la taille des inputs letter-spacing */
-  .letterspacing-input {
-    width: 35px !important;
-    font-size: 10px !important;
-  }
-
-  /* Tooltips désactivés sur mobile (pour éviter les problèmes tactiles) */
-  .paged-editor-toolbar button[data-tooltip]:hover::after,
-  .paged-editor-toolbar button[data-tooltip]:hover::before {
-    display: none;
-  }
-}

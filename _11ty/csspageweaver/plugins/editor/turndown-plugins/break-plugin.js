@@ -1,7 +1,8 @@
-export function breakColumnPlugin(turndownService) {
+export function breakPlugin(turndownService) {
+
   turndownService.addRule("breakcolumn", {
-    filter: function (node) {
-      return node.nodeName === "SPAN" && node.classList.contains("breakcolumn");
+    filter: function (node, options) {
+      return node.nodeName === "DIV" && node.classList.contains("breakcolumn");
     },
     replacement: function (content, node) {
       return `<breakcolumn>`;
