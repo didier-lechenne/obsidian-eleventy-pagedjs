@@ -1,16 +1,16 @@
 export function coreRulesPlugin(turndownService) {
   // Override des règles de base pour garder certains éléments
-  turndownService.keep(function (node) {
-    return (
-      (node.nodeName === "SPAN" && node.style.getPropertyValue("--ls")) ||
-      (node.nodeName === "DIV" && node.classList.contains("breakcolumn")) ||
-      node.nodeName === "SUP" ||
-      node.nodeName === "BREAKPAGE" ||
-      node.nodeName === "BREAKCOLUMN" ||
-      node.nodeName === "BREAKSCREEN" ||
-      node.nodeName === "BREAKPRINT"
-    );
-  });
+//   turndownService.keep(function (node) {
+//     return (
+//       (node.nodeName === "SPAN" && node.style.getPropertyValue("--ls")) ||
+//       (node.nodeName === "DIV" && node.classList.contains("breakcolumn")) ||
+//       node.nodeName === "SUP" ||
+//       node.nodeName === "BREAKPAGE" ||
+//       node.nodeName === "BREAKCOLUMN" ||
+//       node.nodeName === "BREAKSCREEN" ||
+//       node.nodeName === "BREAKPRINT"
+//     );
+//   });
 
 //   turndownService.addRule("lineBreak", {
 //     filter: "br",
