@@ -28,10 +28,18 @@ export class Commands {
     if (!selection?.isValid) return;
 
     const range = selection.range;
+    
+    // Créer un span avec timestamp et classe pour pouvoir annuler
+    const span = this.createElement('span', 'editor-add');
+    span.setAttribute('data-timestamp', Date.now().toString());
+    span.textContent = text;
+    
     range.deleteContents();
-    range.insertNode(document.createTextNode(text));
-    range.collapse(false);
-
+    range.insertNode(span);
+    
+    // Positionner le curseur après l'insertion
+    range.setStartAfter(span);
+    range.setEndAfter(span);
     selection.selection.removeAllRanges();
     selection.selection.addRange(range);
 
@@ -131,22 +139,21 @@ export class Commands {
 
       const fragment = document.createDocumentFragment();
 
-      const openQuoteSpan = this.createElement('span', 'french-quote-open');
-      openQuoteSpan.textContent = UNICODE_CHARS.LAQUO;
-
-      const openSpaceSpan = this.createElement('span', 'i_space no-break-narrow-space');
-      openSpaceSpan.textContent = UNICODE_CHARS.NO_BREAK_THIN_SPACE;
+      const openQuoteSpan = this.createElement('span', 'french-quote-open editor-add');
+      openQuoteSpan.setAttribute('data-timestamp', Date.now().toString());
+      openQuoteSpan.textContent = UNICODE_CHARS.LAQUO + UNICODE_CHARS.NO_BREAK_SPACE;
 
       const textNode = document.createTextNode(text);
 
-      const closeSpaceSpan = this.createElement('span', 'i_space no-break-narrow-space');
+      const closeSpaceSpan = this.createElement('span', 'i_space no-break-narrow-space editor-add');
+      closeSpaceSpan.setAttribute('data-timestamp', Date.now().toString());
       closeSpaceSpan.textContent = UNICODE_CHARS.NO_BREAK_THIN_SPACE;
 
-      const closeQuoteSpan = this.createElement('span', 'french-quote-close');
+      const closeQuoteSpan = this.createElement('span', 'french-quote-close editor-add');
+      closeQuoteSpan.setAttribute('data-timestamp', Date.now().toString());
       closeQuoteSpan.textContent = UNICODE_CHARS.RAQUO;
 
       fragment.appendChild(openQuoteSpan);
-      fragment.appendChild(openSpaceSpan);
       fragment.appendChild(textNode);
       fragment.appendChild(closeSpaceSpan);
       fragment.appendChild(closeQuoteSpan);
@@ -173,12 +180,14 @@ export class Commands {
 
       const fragment = document.createDocumentFragment();
 
-      const openQuoteSpan = this.createElement('span', 'english-quote-open');
+      const openQuoteSpan = this.createElement('span', 'english-quote-open editor-add');
+      openQuoteSpan.setAttribute('data-timestamp', Date.now().toString());
       openQuoteSpan.textContent = UNICODE_CHARS.LDQUO;
 
       const textNode = document.createTextNode(text);
 
-      const closeQuoteSpan = this.createElement('span', 'english-quote-close');
+      const closeQuoteSpan = this.createElement('span', 'english-quote-close editor-add');
+      closeQuoteSpan.setAttribute('data-timestamp', Date.now().toString());
       closeQuoteSpan.textContent = UNICODE_CHARS.RDQUO;
 
       fragment.appendChild(openQuoteSpan);
@@ -228,7 +237,8 @@ export class Commands {
     if (!selection?.isValid) return;
 
     const range = selection.range;
-    const span = this.createElement('span', `i_space ${className}`);
+    const span = this.createElement('span', `i_space ${className} editor-add`);
+    span.setAttribute('data-timestamp', Date.now().toString());
     span.textContent = content;
     
     range.deleteContents();
