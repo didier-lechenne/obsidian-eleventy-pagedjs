@@ -6,7 +6,7 @@ export function textColPlugin(turndownService) {
     replacement: function (content, node) {
       let processedContent = content;
       let innerHTML = node.innerHTML;
-      let breakRegex = /<span[^>]*breakcolumn[^>]*><\/span>\s*(\w+)/g;
+      let breakRegex = /<div[^>]*breakcolumn[^>]*><\/div>\s*(\w+)/g;
       let match;
       while ((match = breakRegex.exec(innerHTML)) !== null) {
         let wordAfter = match[1];
