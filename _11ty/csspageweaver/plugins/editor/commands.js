@@ -222,6 +222,58 @@ export class Commands {
     this.triggerAutoCopy();
   }
 
+
+
+toggleLetterSpacing() {
+  const input = document.querySelector(".ls-input");
+  const value = input?.value || "0";
+  
+  const selection = this.editor.selection.getCurrentSelection();
+  if (!selection?.isValid) return;
+  
+  const span = this.createElement("span", null);
+  span.style.setProperty("--ls", value);
+  span.setAttribute("tabindex", "0"); // Rendre focusable
+  
+  
+  this.setupLetterSpacingControls(span);
+  
+  try {
+    selection.range.surroundContents(span);
+  } catch (e) {
+    span.textContent = selection.range.toString();
+    selection.range.deleteContents();
+    selection.range.insertNode(span);
+  }
+  
+  this.triggerAutoCopy();
+}
+
+setupLetterSpacingControls(span) {
+  span.addEventListener("wheel", (e) => {
+    e.preventDefault();
+    
+    let currentValue = parseInt(span.style.getPropertyValue("--ls")) || 0;
+    const step = e.shiftKey ? 10 : 1;
+    
+    if (e.deltaY < 0) { // Molette vers le haut
+      currentValue += step;
+    } else { // Molette vers le bas
+      currentValue -= step;
+    }
+    
+    span.style.setProperty("--ls", currentValue.toString());
+    this.triggerAutoCopy();
+  });
+  
+  // Feedback visuel au survol
+  span.addEventListener("mouseenter", () => {
+    span.style.cursor = "ns-resize";
+    span.title = "Molette pour ajuster le letter-spacing";
+  });
+}
+
+
   // ====== VÉRIFICATIONS ======
 
   hasParentWithTag(element, tagNames, className = null) {

@@ -41,16 +41,8 @@ export const ACTIONS_REGISTRY = {
   icon: "A ↔ A", 
   title: "Lettrage (Letter-spacing)",
   execute: (editor) => {
-    const input = document.querySelector(".ls-input");
-    const button = document.querySelector('[data-command="letter-spacing"]');
-
-    if (input.classList.contains("ls-hide")) {
-      input.classList.remove("ls-hide");
-      button.classList.add("active");
-    } else {
-      input.classList.add("ls-hide");
-      button.classList.remove("active");
-    }
+    // Appliquer le letter-spacing sur la sélection
+    editor.commands.toggleLetterSpacing();
   },
   isActive: (element) => {
     let current = element;
