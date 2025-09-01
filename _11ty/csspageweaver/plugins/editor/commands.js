@@ -202,7 +202,6 @@ toggleFrenchQuotes() {
         "span",
         "english-quote-close editor-add"
       );
-      closeQuoteSpan.setAttribute("data-timestamp", Date.now().toString());
       closeQuoteSpan.textContent = UNICODE_CHARS.RDQUO;
 
       fragment.appendChild(openQuoteSpan);

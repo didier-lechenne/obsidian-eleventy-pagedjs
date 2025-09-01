@@ -124,6 +124,7 @@ bindEvents() {
    // Gestion des triggers de dropdown
    const trigger = e.target.closest(".select-trigger");
    if (trigger) {
+     e.stopPropagation();
      this.toggleCustomDropdown(trigger);
      return;
    }

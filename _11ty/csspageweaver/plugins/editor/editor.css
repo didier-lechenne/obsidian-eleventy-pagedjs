@@ -121,9 +121,7 @@ body.interface-preview .paged-editor-content:focus {
  */
 
 /* Highlighting visuel pour tous les éléments formatés */
-.paged-editor-active .paged-editor-content:focus .small-caps,
-.paged-editor-active .paged-editor-content:focus sup,
-.paged-editor-active .paged-editor-content:focus br,
+.paged-editor-active .paged-editor-content:focus .editor-add,
 .paged-editor-active .paged-editor-content:focus figcaption .small-caps,
 .paged-editor-active .paged-editor-content:focus figcaption sup,
 .paged-editor-active .paged-editor-content:focus figcaption br {
