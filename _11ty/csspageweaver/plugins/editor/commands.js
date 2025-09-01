@@ -267,26 +267,112 @@ toggleFrenchQuotes() {
 
   // ====== ACTIONS UTILITAIRES ======
 
-  resetTransformations() {
-    const editableElement = this.editor.getCurrentElement();
-    if (!editableElement) return;
 
-    const addedElements = editableElement.querySelectorAll("[data-timestamp]");
-    addedElements.forEach((element) => {
-      element.parentNode?.removeChild(element);
-    });
+resetTransformations() {
+  const editableElement = this.editor.getCurrentElement();
+  if (!editableElement) return;
 
-    const spans = editableElement.querySelectorAll("span.editor-add");
-    spans.forEach((span) => {
-      const parent = span.parentNode;
-      while (span.firstChild) {
-        parent.insertBefore(span.firstChild, span);
+  // Supprimer tous les éléments avec timestamp (mécanisme existant)
+  const addedElements = editableElement.querySelectorAll("[data-timestamp]");
+  addedElements.forEach((element) => {
+    element.parentNode?.removeChild(element);
+  });
+
+  // Supprimer les spans .editor-add (mais préserver leur contenu)
+  const spans = editableElement.querySelectorAll("span.editor-add");
+  spans.forEach((span) => {
+    const parent = span.parentNode;
+    while (span.firstChild) {
+      parent.insertBefore(span.firstChild, span);
+    }
+    parent.removeChild(span);
+  });
+
+  this.triggerAutoCopy();
+
+  // SOLUTION : Forcer la toolbar à rester visible après reset
+  setTimeout(() => {
+    if (this.editor.toolbar.isVisible) {
+      // Créer une sélection factice pour maintenir la toolbar
+      const range = document.createRange();
+      range.selectNodeContents(editableElement);
+      range.collapse(true); // Curseur au début
+      
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      
+      // Utiliser les méthodes existantes
+      const currentSelection = this.editor.selection.getCurrentSelection();
+      if (currentSelection) {
+        this.editor.toolbar.show(currentSelection);
       }
-      parent.removeChild(span);
-    });
+    }
+  }, 10);
+}
 
-    this.triggerAutoCopy();
+undoLastTransformation() {
+  const editableElement = this.editor.getCurrentElement();
+  if (!editableElement) return;
+
+  // 1. Récupérer TOUS les éléments avec timestamp
+  const timestampedElements = Array.from(editableElement.querySelectorAll("[data-timestamp]"));
+  
+  if (timestampedElements.length === 0) {
+    console.log("Aucune transformation à annuler");
+    return;
   }
+
+  // 2. Trier par timestamp (le plus récent en premier)
+  timestampedElements.sort((a, b) => {
+    const timestampA = parseInt(a.getAttribute("data-timestamp"));
+    const timestampB = parseInt(b.getAttribute("data-timestamp"));
+    return timestampB - timestampA; // Tri décroissant (plus récent d'abord)
+  });
+
+  // 3. Prendre le timestamp le plus récent (premier dans la liste triée)
+  const latestTimestamp = timestampedElements[0].getAttribute("data-timestamp");
+  
+  // 4. Supprimer TOUS les éléments qui ont ce timestamp
+  // (car une seule action peut créer plusieurs éléments)
+  const elementsToRemove = editableElement.querySelectorAll(`[data-timestamp="${latestTimestamp}"]`);
+  
+  console.log(`Annulation de ${elementsToRemove.length} élément(s) avec timestamp ${latestTimestamp}`);
+  
+  elementsToRemove.forEach((element) => {
+    // Si c'est un span avec contenu, on préserve le contenu
+    if (element.tagName === 'SPAN' && element.hasChildNodes()) {
+      const parent = element.parentNode;
+      while (element.firstChild) {
+        parent.insertBefore(element.firstChild, element);
+      }
+      parent.removeChild(element);
+    } else {
+      // Sinon, supprimer complètement l'élément
+      element.parentNode?.removeChild(element);
+    }
+  });
+
+  this.triggerAutoCopy();
+
+  // 5. Maintenir la toolbar visible après l'undo
+  setTimeout(() => {
+    // Créer une sélection pour garder la toolbar
+    const range = document.createRange();
+    range.selectNodeContents(editableElement);
+    range.collapse(true);
+    
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    
+    const currentSelection = this.editor.selection.getCurrentSelection();
+    if (currentSelection) {
+      this.editor.toolbar.show(currentSelection);
+    }
+  }, 10);
+}
+
 
   copyElementAsMarkdown() {
     const element = this.editor.getCurrentElement();

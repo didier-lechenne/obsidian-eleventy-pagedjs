@@ -255,20 +255,20 @@ export const ACTIONS_REGISTRY = {
 
   // === ACTIONS UTILITAIRES ===
 
-  reset: {
-    type: "utility",
-    icon: "⟲",
-    title: "Annuler dernière transformation",
-    execute: (editor) => {
-      if (editor.commands.resetTransformations) {
-        editor.commands.resetTransformations();
-      } else {
-        console.warn(
-          "Méthode resetTransformations non disponible dans commands.js"
-        );
-      }
-    },
+reset: {
+  type: "utility",
+  icon: "⟲",
+  title: "Annuler dernière transformation",
+  execute: (editor) => {
+    if (editor.commands.undoLastTransformation) {
+      editor.commands.undoLastTransformation();
+    } else {
+      console.warn(
+        "Méthode undoLastTransformation non disponible dans commands.js"
+      );
+    }
   },
+},
 
   "copy-md": {
     type: "utility",
