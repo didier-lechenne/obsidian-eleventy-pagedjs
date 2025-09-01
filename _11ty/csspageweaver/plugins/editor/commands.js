@@ -33,7 +33,6 @@ export class Commands {
 
     // Créer un span avec timestamp et classe pour pouvoir annuler
     const span = this.createElement("span", "editor-add");
-    span.setAttribute("data-timestamp", Date.now().toString());
     span.textContent = text;
 
     range.deleteContents();
@@ -314,12 +313,17 @@ toggleFrenchQuotes() {
 
 
 undoLastTransformation() {
+
+
   const editableElement = this.editor.getCurrentElement();
   if (!editableElement) return;
 
   // 1. Récupérer TOUS les éléments avec timestamp
   const timestampedElements = Array.from(editableElement.querySelectorAll("[data-timestamp]"));
   
+console.log("Éléments avec timestamp trouvés:", timestampedElements);
+timestampedElements.forEach(el => console.log("Timestamp:", el.getAttribute("data-timestamp")));
+
   if (timestampedElements.length === 0) {
     console.log("Aucune transformation à annuler");
     return;
