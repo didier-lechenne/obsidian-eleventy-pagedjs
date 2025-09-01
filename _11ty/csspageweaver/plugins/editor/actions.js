@@ -260,10 +260,7 @@ reset: {
   icon: "⟲", 
   title: "Annuler dernière transformation",
   execute: (editor) => {
-    console.log("Reset execute called");
-    console.log("editor.commands:", editor.commands);
-    console.log("undoLastTransformation exists:", typeof editor.commands.undoLastTransformation);
-    
+
     if (editor.commands.undoLastTransformation) {
       console.log("Calling undoLastTransformation...");
       editor.commands.undoLastTransformation();

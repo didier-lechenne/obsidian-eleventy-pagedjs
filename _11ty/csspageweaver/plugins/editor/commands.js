@@ -313,17 +313,22 @@ toggleFrenchQuotes() {
 
 
 undoLastTransformation() {
+  let editableElement = document.activeElement;
+  
+  // S'assurer que c'est bien un élément éditable
+  if (!editableElement || !editableElement.hasAttribute('data-editable')) {
+    console.log("Aucun élément éditable en focus");
+    return;
+  }
 
-
-  const editableElement = this.editor.getCurrentElement();
-  if (!editableElement) return;
+  console.log("Element en focus:", editableElement);
 
   // 1. Récupérer TOUS les éléments avec timestamp
   const timestampedElements = Array.from(editableElement.querySelectorAll("[data-timestamp]"));
   
-console.log("Éléments avec timestamp trouvés:", timestampedElements);
-timestampedElements.forEach(el => console.log("Timestamp:", el.getAttribute("data-timestamp")));
-
+  console.log("Éléments avec timestamp trouvés:", timestampedElements);
+  timestampedElements.forEach(el => console.log("Timestamp:", el.getAttribute("data-timestamp")));
+  
   if (timestampedElements.length === 0) {
     console.log("Aucune transformation à annuler");
     return;
@@ -333,10 +338,10 @@ timestampedElements.forEach(el => console.log("Timestamp:", el.getAttribute("dat
   timestampedElements.sort((a, b) => {
     const timestampA = parseInt(a.getAttribute("data-timestamp"));
     const timestampB = parseInt(b.getAttribute("data-timestamp"));
-    return timestampB - timestampA; // Tri décroissant (plus récent d'abord)
+    return timestampB - timestampA;
   });
 
-  // 3. Prendre le timestamp le plus récent (premier dans la liste triée)
+  // 3. Prendre le timestamp le plus récent
   const latestTimestamp = timestampedElements[0].getAttribute("data-timestamp");
   
   // 4. Supprimer TOUS les éléments qui ont ce timestamp
@@ -345,36 +350,20 @@ timestampedElements.forEach(el => console.log("Timestamp:", el.getAttribute("dat
   console.log(`Annulation de ${elementsToRemove.length} élément(s) avec timestamp ${latestTimestamp}`);
   
   elementsToRemove.forEach((element) => {
-    // Si c'est un span avec contenu, on préserve le contenu
     if (element.tagName === 'SPAN' && element.hasChildNodes()) {
+      // Préserver le contenu pour les spans
       const parent = element.parentNode;
       while (element.firstChild) {
         parent.insertBefore(element.firstChild, element);
       }
       parent.removeChild(element);
     } else {
-      // Sinon, supprimer complètement l'élément
+      // Supprimer complètement l'élément (comme <sup>, etc.)
       element.parentNode?.removeChild(element);
     }
   });
 
   this.triggerAutoCopy();
-
-  // 5. Maintenir la toolbar visible
-  setTimeout(() => {
-    const range = document.createRange();
-    range.selectNodeContents(editableElement);
-    range.collapse(true);
-    
-    const selection = window.getSelection();
-    selection.removeAllRanges();
-    selection.addRange(range);
-    
-    const currentSelection = this.editor.selection.getCurrentSelection();
-    if (currentSelection) {
-      this.editor.toolbar.show(currentSelection);
-    }
-  }, 10);
 }
 
 
@@ -431,19 +420,19 @@ timestampedElements.forEach(el => console.log("Timestamp:", el.getAttribute("dat
     }, 2000);
   }
 
-  // CORRECTION: triggerAutoCopy corrigé
+  
   triggerAutoCopy() {
     if (this.editor.options.autoCopy) {
       setTimeout(() => this.copyElementAsMarkdown(), 100);
     }
   }
 
-  // CORRECTION: Une seule méthode getCurrentElement qui délègue à l'éditeur
+  
   getCurrentElement() {
     return this.editor.getCurrentElement();
   }
 
-  // CORRECTION: performAutoCopy corrigé
+ 
   performAutoCopy() {
     if (!this.editor.options.autoCopy) return;
 
