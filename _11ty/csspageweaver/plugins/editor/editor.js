@@ -15,7 +15,7 @@ export default class Editor extends Handler {
     this.options = {
       selector: "[data-editable], .footnote, figcaption",
       shortcuts: true,
-      autoCopy: true, // CORRECTION: Activé par défaut
+      autoCopy: true, 
     };
 
     this.isActive = false;

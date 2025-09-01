@@ -252,24 +252,29 @@ export class Commands {
 
   // ====== INSERTION D'ESPACES ======
 
-  insertSpace(className, content) {
-    const selection = this.editor.selection.getCurrentSelection();
-    if (!selection?.isValid) return;
+ insertSpace(className, content) {
+  const selection = window.getSelection();
+  
+  if (selection.rangeCount === 0) return;
+  
+  const range = selection.getRangeAt(0);
+  const span = this.createElement("span", `i_space ${className} editor-add`);
+  span.setAttribute("data-timestamp", Date.now());
+  span.textContent = content;
 
-    const range = selection.range;
-    const span = this.createElement("span", `i_space ${className} editor-add`);
-    span.setAttribute("data-timestamp", Date.now().toString());
-    span.textContent = content;
-
+  // Supprimer sélection si elle existe
+  if (!range.collapsed) {
     range.deleteContents();
-    range.insertNode(span);
-    range.setStartAfter(span);
-    range.collapse(true);
-    selection.selection.removeAllRanges();
-    selection.selection.addRange(range);
-
-    this.triggerAutoCopy();
   }
+  
+  range.insertNode(span);
+  range.setStartAfter(span);
+  range.collapse(true);
+  selection.removeAllRanges();
+  selection.addRange(range);
+
+  this.triggerAutoCopy();
+}
 
   // ====== ACTIONS UTILITAIRES ======
 
