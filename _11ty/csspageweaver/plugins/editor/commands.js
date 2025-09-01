@@ -18,6 +18,8 @@ export class Commands {
     if (className) {
       element.className = className;
     }
+    element.classList.add("editor-add");
+    element.setAttribute("data-timestamp", Date.now());
     return element;
   }
 
@@ -28,15 +30,15 @@ export class Commands {
     if (!selection?.isValid) return;
 
     const range = selection.range;
-    
+
     // Créer un span avec timestamp et classe pour pouvoir annuler
-    const span = this.createElement('span', 'editor-add');
-    span.setAttribute('data-timestamp', Date.now().toString());
+    const span = this.createElement("span", "editor-add");
+    span.setAttribute("data-timestamp", Date.now().toString());
     span.textContent = text;
-    
+
     range.deleteContents();
     range.insertNode(span);
-    
+
     // Positionner le curseur après l'insertion
     range.setStartAfter(span);
     range.setEndAfter(span);
@@ -59,7 +61,10 @@ export class Commands {
 
     // Vérifier si le texte sélectionné est déjà formaté
     const parentElement = range.commonAncestorContainer.parentElement;
-    if (parentElement && parentElement.tagName.toLowerCase() === tagName.toLowerCase()) {
+    if (
+      parentElement &&
+      parentElement.tagName.toLowerCase() === tagName.toLowerCase()
+    ) {
       // Supprimer le formatage
       this.unwrapElement(parentElement);
     } else {
@@ -103,12 +108,12 @@ export class Commands {
       container = container.parentElement;
     }
 
-    if (container.classList && container.classList.contains('small-caps')) {
+    if (container.classList && container.classList.contains("small-caps")) {
       // Supprimer les petites capitales
       this.unwrapElement(container);
     } else {
       // Appliquer les petites capitales
-      const span = this.createElement('span', 'small-caps');
+      const span = this.createElement("span", "small-caps");
       try {
         range.surroundContents(span);
       } catch (e) {
@@ -122,49 +127,53 @@ export class Commands {
   }
 
   toggleSuperscript() {
-    this.toggleFormatting('sup');
+    this.toggleFormatting("sup");
   }
 
   // ====== GUILLEMETS FRANÇAIS ======
 
-  toggleFrenchQuotes() {
-    const selection = this.editor.selection.getCurrentSelection();
-    if (!selection?.isValid) return;
+toggleFrenchQuotes() {
+  const selection = this.editor.selection.getCurrentSelection();
+  if (!selection?.isValid) return;
 
-    const range = selection.range;
-    const text = range.toString();
+  const range = selection.range;
+  const text = range.toString();
 
-    if (text) {
-      range.deleteContents();
+  if (text) {
+    range.deleteContents();
 
-      const fragment = document.createDocumentFragment();
+    const fragment = document.createDocumentFragment();
 
-      const openQuoteSpan = this.createElement('span', 'french-quote-open editor-add');
-      openQuoteSpan.setAttribute('data-timestamp', Date.now().toString());
-      openQuoteSpan.textContent = UNICODE_CHARS.LAQUO + UNICODE_CHARS.NO_BREAK_SPACE;
+    // Si createElement() a été modifié, ces éléments auront automatiquement
+    // la classe 'editor-add' et l'attribut 'data-timestamp'
+    const openQuoteSpan = this.createElement("span", "french-quote-open");
+    openQuoteSpan.textContent = UNICODE_CHARS.LAQUO; // Guillemet ouvrant français
 
-      const textNode = document.createTextNode(text);
+    const openSpaceSpan = this.createElement("span", "i_space no-break-narrow-space");
+    openSpaceSpan.textContent = UNICODE_CHARS.NO_BREAK_THIN_SPACE;
 
-      const closeSpaceSpan = this.createElement('span', 'i_space no-break-narrow-space editor-add');
-      closeSpaceSpan.setAttribute('data-timestamp', Date.now().toString());
-      closeSpaceSpan.textContent = UNICODE_CHARS.NO_BREAK_THIN_SPACE;
+    const textNode = document.createTextNode(text);
 
-      const closeQuoteSpan = this.createElement('span', 'french-quote-close editor-add');
-      closeQuoteSpan.setAttribute('data-timestamp', Date.now().toString());
-      closeQuoteSpan.textContent = UNICODE_CHARS.RAQUO;
+    const closeSpaceSpan = this.createElement("span", "i_space no-break-narrow-space");
+    closeSpaceSpan.textContent = UNICODE_CHARS.NO_BREAK_THIN_SPACE;
 
-      fragment.appendChild(openQuoteSpan);
-      fragment.appendChild(textNode);
-      fragment.appendChild(closeSpaceSpan);
-      fragment.appendChild(closeQuoteSpan);
+    const closeQuoteSpan = this.createElement("span", "french-quote-close");
+    closeQuoteSpan.textContent = UNICODE_CHARS.RAQUO; // Guillemet fermant français
 
-      range.insertNode(fragment);
-      range.setStartBefore(openQuoteSpan);
-      range.setEndAfter(closeQuoteSpan);
-    }
+    // Ordre correct : « [espace fine] texte [espace fine] »
+    fragment.appendChild(openQuoteSpan);
+    fragment.appendChild(openSpaceSpan);
+    fragment.appendChild(textNode);
+    fragment.appendChild(closeSpaceSpan);
+    fragment.appendChild(closeQuoteSpan);
 
-    this.triggerAutoCopy();
+    range.insertNode(fragment);
+    range.setStartBefore(openQuoteSpan);
+    range.setEndAfter(closeQuoteSpan);
   }
+
+  this.triggerAutoCopy();
+}
 
   // ====== GUILLEMETS ANGLAIS ======
 
@@ -180,14 +189,20 @@ export class Commands {
 
       const fragment = document.createDocumentFragment();
 
-      const openQuoteSpan = this.createElement('span', 'english-quote-open editor-add');
-      openQuoteSpan.setAttribute('data-timestamp', Date.now().toString());
+      const openQuoteSpan = this.createElement(
+        "span",
+        "english-quote-open "
+      );
+     
       openQuoteSpan.textContent = UNICODE_CHARS.LDQUO;
 
       const textNode = document.createTextNode(text);
 
-      const closeQuoteSpan = this.createElement('span', 'english-quote-close editor-add');
-      closeQuoteSpan.setAttribute('data-timestamp', Date.now().toString());
+      const closeQuoteSpan = this.createElement(
+        "span",
+        "english-quote-close editor-add"
+      );
+      closeQuoteSpan.setAttribute("data-timestamp", Date.now().toString());
       closeQuoteSpan.textContent = UNICODE_CHARS.RDQUO;
 
       fragment.appendChild(openQuoteSpan);
@@ -208,7 +223,7 @@ export class Commands {
     if (!Array.isArray(tagNames)) {
       tagNames = [tagNames];
     }
-    tagNames = tagNames.map(tag => tag.toUpperCase());
+    tagNames = tagNames.map((tag) => tag.toUpperCase());
 
     if (element.nodeType === Node.TEXT_NODE) {
       element = element.parentElement;
@@ -237,17 +252,17 @@ export class Commands {
     if (!selection?.isValid) return;
 
     const range = selection.range;
-    const span = this.createElement('span', `i_space ${className} editor-add`);
-    span.setAttribute('data-timestamp', Date.now().toString());
+    const span = this.createElement("span", `i_space ${className} editor-add`);
+    span.setAttribute("data-timestamp", Date.now().toString());
     span.textContent = content;
-    
+
     range.deleteContents();
     range.insertNode(span);
     range.setStartAfter(span);
     range.collapse(true);
     selection.selection.removeAllRanges();
     selection.selection.addRange(range);
-    
+
     this.triggerAutoCopy();
   }
 
