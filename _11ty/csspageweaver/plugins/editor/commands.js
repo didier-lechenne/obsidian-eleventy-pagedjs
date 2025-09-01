@@ -131,48 +131,58 @@ export class Commands {
 
   // ====== GUILLEMETS FRANÇAIS ======
 
-toggleFrenchQuotes() {
-  const selection = this.editor.selection.getCurrentSelection();
-  if (!selection?.isValid) return;
+  toggleFrenchQuotes() {
+    const selection = this.editor.selection.getCurrentSelection();
+    if (!selection?.isValid) return;
 
-  const range = selection.range;
-  const text = range.toString();
+    const range = selection.range;
+    const text = range.toString();
 
-  if (text) {
-    range.deleteContents();
+    if (text) {
+      range.deleteContents();
 
-    const fragment = document.createDocumentFragment();
+      const timestamp = Date.now();
 
-    // Si createElement() a été modifié, ces éléments auront automatiquement
-    // la classe 'editor-add' et l'attribut 'data-timestamp'
-    const openQuoteSpan = this.createElement("span", "french-quote-open");
-    openQuoteSpan.textContent = UNICODE_CHARS.LAQUO; // Guillemet ouvrant français
+      const fragment = document.createDocumentFragment();
 
-    const openSpaceSpan = this.createElement("span", "i_space no-break-narrow-space");
-    openSpaceSpan.textContent = UNICODE_CHARS.NO_BREAK_THIN_SPACE;
+      const openQuoteSpan = this.createElement("span", "french-quote-open");
+      openQuoteSpan.setAttribute("data-timestamp", timestamp);
+      openQuoteSpan.textContent = UNICODE_CHARS.LAQUO; // Guillemet ouvrant français
 
-    const textNode = document.createTextNode(text);
+      const openSpaceSpan = this.createElement(
+        "span",
+        "i_space no-break-narrow-space"
+      );
+      openQuoteSpan.setAttribute("data-timestamp", timestamp);
+      openSpaceSpan.textContent = UNICODE_CHARS.NO_BREAK_THIN_SPACE;
 
-    const closeSpaceSpan = this.createElement("span", "i_space no-break-narrow-space");
-    closeSpaceSpan.textContent = UNICODE_CHARS.NO_BREAK_THIN_SPACE;
+      const textNode = document.createTextNode(text);
 
-    const closeQuoteSpan = this.createElement("span", "french-quote-close");
-    closeQuoteSpan.textContent = UNICODE_CHARS.RAQUO; // Guillemet fermant français
+      const closeSpaceSpan = this.createElement(
+        "span",
+        "i_space no-break-narrow-space"
+      );
+      closeSpaceSpan.setAttribute("data-timestamp", timestamp);
+      closeSpaceSpan.textContent = UNICODE_CHARS.NO_BREAK_THIN_SPACE;
 
-    // Ordre correct : « [espace fine] texte [espace fine] »
-    fragment.appendChild(openQuoteSpan);
-    fragment.appendChild(openSpaceSpan);
-    fragment.appendChild(textNode);
-    fragment.appendChild(closeSpaceSpan);
-    fragment.appendChild(closeQuoteSpan);
+      const closeQuoteSpan = this.createElement("span", "french-quote-close");
+      closeQuoteSpan.setAttribute("data-timestamp", timestamp);
+      closeQuoteSpan.textContent = UNICODE_CHARS.RAQUO; // Guillemet fermant français
 
-    range.insertNode(fragment);
-    range.setStartBefore(openQuoteSpan);
-    range.setEndAfter(closeQuoteSpan);
+      // Ordre correct : « [espace fine] texte [espace fine] »
+      fragment.appendChild(openQuoteSpan);
+      fragment.appendChild(openSpaceSpan);
+      fragment.appendChild(textNode);
+      fragment.appendChild(closeSpaceSpan);
+      fragment.appendChild(closeQuoteSpan);
+
+      range.insertNode(fragment);
+      range.setStartBefore(openQuoteSpan);
+      range.setEndAfter(closeQuoteSpan);
+    }
+
+    this.triggerAutoCopy();
   }
-
-  this.triggerAutoCopy();
-}
 
   // ====== GUILLEMETS ANGLAIS ======
 
@@ -188,11 +198,8 @@ toggleFrenchQuotes() {
 
       const fragment = document.createDocumentFragment();
 
-      const openQuoteSpan = this.createElement(
-        "span",
-        "english-quote-open "
-      );
-     
+      const openQuoteSpan = this.createElement("span", "english-quote-open ");
+
       openQuoteSpan.textContent = UNICODE_CHARS.LDQUO;
 
       const textNode = document.createTextNode(text);
@@ -266,106 +273,74 @@ toggleFrenchQuotes() {
 
   // ====== ACTIONS UTILITAIRES ======
 
+  undoLastTransformation() {
+    let editableElement = document.activeElement;
 
-// resetTransformations() {
-//   const editableElement = this.editor.getCurrentElement();
-//   if (!editableElement) return;
-
-//   // Supprimer tous les éléments avec timestamp (mécanisme existant)
-//   const addedElements = editableElement.querySelectorAll("[data-timestamp]");
-//   addedElements.forEach((element) => {
-//     element.parentNode?.removeChild(element);
-//   });
-
-//   // Supprimer les spans .editor-add (mais préserver leur contenu)
-//   const spans = editableElement.querySelectorAll("span.editor-add");
-//   spans.forEach((span) => {
-//     const parent = span.parentNode;
-//     while (span.firstChild) {
-//       parent.insertBefore(span.firstChild, span);
-//     }
-//     parent.removeChild(span);
-//   });
-
-//   this.triggerAutoCopy();
-
-//   // SOLUTION : Forcer la toolbar à rester visible après reset
-//   setTimeout(() => {
-//     if (this.editor.toolbar.isVisible) {
-//       // Créer une sélection factice pour maintenir la toolbar
-//       const range = document.createRange();
-//       range.selectNodeContents(editableElement);
-//       range.collapse(true); // Curseur au début
-      
-//       const selection = window.getSelection();
-//       selection.removeAllRanges();
-//       selection.addRange(range);
-      
-//       // Utiliser les méthodes existantes
-//       const currentSelection = this.editor.selection.getCurrentSelection();
-//       if (currentSelection) {
-//         this.editor.toolbar.show(currentSelection);
-//       }
-//     }
-//   }, 10);
-// }
-
-
-
-undoLastTransformation() {
-  let editableElement = document.activeElement;
-  
-  // S'assurer que c'est bien un élément éditable
-  if (!editableElement || !editableElement.hasAttribute('data-editable')) {
-    console.log("Aucun élément éditable en focus");
-    return;
-  }
-
-  console.log("Element en focus:", editableElement);
-
-  // 1. Récupérer TOUS les éléments avec timestamp
-  const timestampedElements = Array.from(editableElement.querySelectorAll("[data-timestamp]"));
-  
-  console.log("Éléments avec timestamp trouvés:", timestampedElements);
-  timestampedElements.forEach(el => console.log("Timestamp:", el.getAttribute("data-timestamp")));
-  
-  if (timestampedElements.length === 0) {
-    console.log("Aucune transformation à annuler");
-    return;
-  }
-
-  // 2. Trier par timestamp (le plus récent en premier)
-  timestampedElements.sort((a, b) => {
-    const timestampA = parseInt(a.getAttribute("data-timestamp"));
-    const timestampB = parseInt(b.getAttribute("data-timestamp"));
-    return timestampB - timestampA;
-  });
-
-  // 3. Prendre le timestamp le plus récent
-  const latestTimestamp = timestampedElements[0].getAttribute("data-timestamp");
-  
-  // 4. Supprimer TOUS les éléments qui ont ce timestamp
-  const elementsToRemove = editableElement.querySelectorAll(`[data-timestamp="${latestTimestamp}"]`);
-  
-  console.log(`Annulation de ${elementsToRemove.length} élément(s) avec timestamp ${latestTimestamp}`);
-  
-  elementsToRemove.forEach((element) => {
-    if (element.tagName === 'SPAN' && element.hasChildNodes()) {
-      // Préserver le contenu pour les spans
-      const parent = element.parentNode;
-      while (element.firstChild) {
-        parent.insertBefore(element.firstChild, element);
-      }
-      parent.removeChild(element);
-    } else {
-      // Supprimer complètement l'élément (comme <sup>, etc.)
-      element.parentNode?.removeChild(element);
+    if (!editableElement || !editableElement.hasAttribute("data-editable")) {
+      //       console.log("Aucun élément éditable en focus");
+      return;
     }
-  });
 
-  this.triggerAutoCopy();
-}
+    console.log("Element en focus:", editableElement);
 
+    // 1. Récupérer TOUS les éléments avec timestamp
+    const timestampedElements = Array.from(
+      editableElement.querySelectorAll("[data-timestamp]")
+    );
+
+    console.log("Éléments avec timestamp trouvés:", timestampedElements);
+    timestampedElements.forEach((el) =>
+      console.log("Timestamp:", el.getAttribute("data-timestamp"))
+    );
+
+    if (timestampedElements.length === 0) {
+      console.log("Aucune transformation à annuler");
+      return;
+    }
+
+    // 2. Trier par timestamp (le plus récent en premier)
+    timestampedElements.sort((a, b) => {
+      const timestampA = parseInt(a.getAttribute("data-timestamp"));
+      const timestampB = parseInt(b.getAttribute("data-timestamp"));
+      return timestampB - timestampA;
+    });
+
+    // 3. Prendre le timestamp le plus récent
+    const latestTimestamp =
+      timestampedElements[0].getAttribute("data-timestamp");
+
+    // 4. Supprimer TOUS les éléments qui ont ce timestamp
+    const elementsToRemove = editableElement.querySelectorAll(
+      `[data-timestamp="${latestTimestamp}"]`
+    );
+
+    console.log(
+      `Annulation de ${elementsToRemove.length} élément(s) avec timestamp ${latestTimestamp}`
+    );
+
+    elementsToRemove.forEach((element) => {
+      const classes = element.className;
+
+      // Supprimer complètement guillemets et espaces
+      if (
+        classes.includes("french-quote") ||
+        classes.includes("english-quote") ||
+        classes.includes("i_space") ||
+        element.tagName === "BR"
+      ) {
+        element.parentNode?.removeChild(element);
+      } else {
+        // Préserver le contenu pour autres spans
+        const parent = element.parentNode;
+        while (element.firstChild) {
+          parent.insertBefore(element.firstChild, element);
+        }
+        parent.removeChild(element);
+      }
+    });
+
+    this.triggerAutoCopy();
+  }
 
   copyElementAsMarkdown() {
     const element = this.editor.getCurrentElement();
@@ -420,19 +395,16 @@ undoLastTransformation() {
     }, 2000);
   }
 
-  
   triggerAutoCopy() {
     if (this.editor.options.autoCopy) {
       setTimeout(() => this.copyElementAsMarkdown(), 100);
     }
   }
 
-  
   getCurrentElement() {
     return this.editor.getCurrentElement();
   }
 
- 
   performAutoCopy() {
     if (!this.editor.options.autoCopy) return;
 
