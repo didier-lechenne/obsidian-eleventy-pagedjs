@@ -114,22 +114,28 @@ export default class Editor extends Handler {
     document.addEventListener("paste", this.handlePaste.bind(this));
     document.addEventListener("focusin", this.handleFocusIn.bind(this));
 
-    // Auto-copie au clic dans un élément éditable
-    document.addEventListener("click", (e) => {
-      if (!this.isActive) return;
+document.addEventListener("click", (e) => {
+  if (!this.isActive) return;
 
-      const element = e.target.closest(this.options.selector);
-      if (element) {
-        // Copie automatique en Markdown
-        this.copyElementToClipboard(element);
-        
-        // Afficher la toolbar même sans sélection de texte
-        const selection = this.selection.getCurrentSelection();
-        this.toolbar.show(selection || { range: null });
-      } else {
-        this.toolbar.hide();
-      }
-    });
+  
+  if (e.target.closest('.paged-editor-toolbar')) {
+    return;
+  }
+
+  const element = e.target.closest(this.options.selector);
+  if (element) {
+    // Copie automatique en Markdown
+    this.copyElementToClipboard(element);
+    
+    // Afficher la toolbar même sans sélection de texte
+    const selection = this.selection.getCurrentSelection();
+    this.toolbar.show(selection || { range: null });
+  } else {
+    this.toolbar.hide();
+  }
+});
+
+  
   }
 
   handleMouseUp(e) {
