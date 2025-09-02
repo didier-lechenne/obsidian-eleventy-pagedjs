@@ -52,6 +52,8 @@ export class PagedMarkdownRecovery {
 
     // Groupe les éléments par data-ref
     section.querySelectorAll("[data-ref]").forEach((element) => {
+      if (element.classList.contains("breakcolumn")) return;
+
       const ref = element.getAttribute("data-ref");
       if (!fragmentGroups.has(ref)) {
         fragmentGroups.set(ref, []);
@@ -88,139 +90,143 @@ export class PagedMarkdownRecovery {
       footnotesSection.remove();
     }
 
-//     console.log("HTML reconstruit:", content.innerHTML);
+    //     console.log("HTML reconstruit:", content.innerHTML);
   }
 
   // === EXPORT PAR PLAGE DE PAGES ===
-//   exportPageRange(startPage, endPage, filename = "pages-selection.md") {
-//     // 1. Récupérer le data-template de la page de départ
-//     const startPageElement = document.querySelector(
-//       `[data-page-number="${startPage}"] section`
-//     );
-//     if (!startPageElement) {
-//       console.warn(`❌ Page ${startPage} introuvable`);
-//       return;
-//     }
+  //   exportPageRange(startPage, endPage, filename = "pages-selection.md") {
+  //     // 1. Récupérer le data-template de la page de départ
+  //     const startPageElement = document.querySelector(
+  //       `[data-page-number="${startPage}"] section`
+  //     );
+  //     if (!startPageElement) {
+  //       console.warn(`❌ Page ${startPage} introuvable`);
+  //       return;
+  //     }
 
-//     const targetTemplate = startPageElement.getAttribute("data-template");
+  //     const targetTemplate = startPageElement.getAttribute("data-template");
 
+  //     // 2. Collecter SEULEMENT les sections qui ont le même data-template
+  //     const selectedPages = [];
 
-//     // 2. Collecter SEULEMENT les sections qui ont le même data-template
-//     const selectedPages = [];
+  //     for (let i = startPage; i <= endPage; i++) {
+  //       const page = document.querySelector(`[data-page-number="${i}"] section`);
 
-//     for (let i = startPage; i <= endPage; i++) {
-//       const page = document.querySelector(`[data-page-number="${i}"] section`);
+  //       if (page) {
+  //         const pageTemplate = page.getAttribute("data-template");
 
-//       if (page) {
-//         const pageTemplate = page.getAttribute("data-template");
+  //         // Ne collecter que si le data-template correspond
+  //         if (pageTemplate === targetTemplate) {
+  //           selectedPages.push(page.cloneNode(true));
+  //           console.log(`✅ Page ${i} collectée (template: "${pageTemplate}")`);
+  //         } else {
+  //           console.log(
+  //             `⏭️ Page ${i} ignorée (template: "${pageTemplate}" ≠ "${targetTemplate}")`
+  //           );
+  //         }
+  //       } else {
+  //         console.warn(`⚠️ Page ${i} introuvable`);
+  //       }
+  //     }
 
-//         // Ne collecter que si le data-template correspond
-//         if (pageTemplate === targetTemplate) {
-//           selectedPages.push(page.cloneNode(true));
-//           console.log(`✅ Page ${i} collectée (template: "${pageTemplate}")`);
-//         } else {
-//           console.log(
-//             `⏭️ Page ${i} ignorée (template: "${pageTemplate}" ≠ "${targetTemplate}")`
-//           );
-//         }
-//       } else {
-//         console.warn(`⚠️ Page ${i} introuvable`);
-//       }
-//     }
+  //     // 3. Vérification qu'on a au moins une page
+  //     if (selectedPages.length === 0) {
+  //       console.error(
+  //         `❌ Aucune page trouvée avec le template "${targetTemplate}"`
+  //       );
+  //       return;
+  //     }
 
+  //     // 4. Crée un container temporaire
+  //     const container = document.createElement("div");
+  //     selectedPages.forEach((page) => container.appendChild(page));
 
+  //     //     console.log("📄 Contenu avant reconstitution:", container.innerHTML);
 
-//     // 3. Vérification qu'on a au moins une page
-//     if (selectedPages.length === 0) {
-//       console.error(
-//         `❌ Aucune page trouvée avec le template "${targetTemplate}"`
-//       );
-//       return;
-//     }
+  //     // 5. Reconstitue les éléments scindés dans le container
+  //     this.reconstructSplitElements(container);
 
-//     // 4. Crée un container temporaire
-//     const container = document.createElement("div");
-//     selectedPages.forEach((page) => container.appendChild(page));
+  //     //     console.log("🔧 Contenu après reconstitution:", container.innerHTML);
 
-//     //     console.log("📄 Contenu avant reconstitution:", container.innerHTML);
+  //     // 6. Conversion en Markdown
+  //     const markdown = this.getTurndownService().turndown(container.innerHTML);
+  //     //     console.log("📝 Markdown Content:", markdown);
 
-//     // 5. Reconstitue les éléments scindés dans le container
-//     this.reconstructSplitElements(container);
+  //     // 7. Téléchargement avec nom de fichier enrichi
+  //     const templateSuffix = targetTemplate ? `-${targetTemplate}` : "";
+  //     const enrichedFilename = filename.replace(".md", `${templateSuffix}.md`);
 
-//     //     console.log("🔧 Contenu après reconstitution:", container.innerHTML);
-
-//     // 6. Conversion en Markdown
-//     const markdown = this.getTurndownService().turndown(container.innerHTML);
-//     //     console.log("📝 Markdown Content:", markdown);
-
-//     // 7. Téléchargement avec nom de fichier enrichi
-//     const templateSuffix = targetTemplate ? `-${targetTemplate}` : "";
-//     const enrichedFilename = filename.replace(".md", `${templateSuffix}.md`);
-
-//     this.downloadFile(markdown, enrichedFilename, "text/markdown");
-//     return markdown;
-//   }
-exportPageRange(startPage, endPage, filename = "pages-selection.md") {
-  // 1. Récupérer le data-template et le front matter de la page de départ
-  const startPageElement = document.querySelector(`[data-page-number="${startPage}"] section`);
-  if (!startPageElement) {
-    console.warn(`❌ Page ${startPage} introuvable`);
-    return;
-  }
-  const targetTemplate = startPageElement.getAttribute("data-template");
-
-  // 2. Extraire le front matter depuis les attributs frontmatter-* de la section
-  const frontMatter = {};
-  for (const attr of startPageElement.attributes) {
-    if (attr.name.startsWith("frontmatter-")) {
-      const key = attr.name.replace("frontmatter-", "").replace(/-/g, "_");
-      frontMatter[key] = attr.value;
+  //     this.downloadFile(markdown, enrichedFilename, "text/markdown");
+  //     return markdown;
+  //   }
+  exportPageRange(startPage, endPage, filename = "pages-selection.md") {
+    // 1. Récupérer le data-template et le front matter de la page de départ
+    const startPageElement = document.querySelector(
+      `[data-page-number="${startPage}"] section`
+    );
+    if (!startPageElement) {
+      console.warn(`❌ Page ${startPage} introuvable`);
+      return;
     }
-  }
+    const targetTemplate = startPageElement.getAttribute("data-template");
 
-  // 3. Collecter les sections cibles
-  const selectedPages = [];
-  for (let i = startPage; i <= endPage; i++) {
-    const page = document.querySelector(`[data-page-number="${i}"] section`);
-    if (page && page.getAttribute("data-template") === targetTemplate) {
-      selectedPages.push(page.cloneNode(true));
+    // 2. Extraire le front matter depuis les attributs frontmatter-* de la section
+    const frontMatter = {};
+    for (const attr of startPageElement.attributes) {
+      if (attr.name.startsWith("frontmatter-")) {
+        const key = attr.name.replace("frontmatter-", "").replace(/-/g, "_");
+        frontMatter[key] = attr.value;
+      }
     }
-  }
 
-  // 4. Vérification
-  if (selectedPages.length === 0) {
-    console.error(`❌ Aucune page trouvée avec le template "${targetTemplate}"`);
-    return;
-  }
+    // 3. Collecter les sections cibles
+    const selectedPages = [];
+    for (let i = startPage; i <= endPage; i++) {
+      const page = document.querySelector(`[data-page-number="${i}"] section`);
+      if (page && page.getAttribute("data-template") === targetTemplate) {
+        selectedPages.push(page.cloneNode(true));
+      }
+    }
 
-  // 5. Reconstituer le contenu
-  const container = document.createElement("div");
-  selectedPages.forEach((page) => container.appendChild(page));
-  this.reconstructSplitElements(container);
-console.log("HTML avant turndown:", container.innerHTML);
-console.log("Breakcolumns présents:", container.querySelectorAll('.breakcolumn').length);
+    // 4. Vérification
+    if (selectedPages.length === 0) {
+      console.error(
+        `❌ Aucune page trouvée avec le template "${targetTemplate}"`
+      );
+      return;
+    }
 
-  // 6. Convertir en Markdown
-  const markdownContent = this.getTurndownService().turndown(container.innerHTML);
+    // 5. Reconstituer le contenu
+    const container = document.createElement("div");
+    selectedPages.forEach((page) => container.appendChild(page));
+    this.reconstructSplitElements(container);
+    console.log("HTML avant turndown:", container.innerHTML);
+    console.log(
+      "Breakcolumns présents:",
+      container.querySelectorAll(".breakcolumn").length
+    );
 
-  // 7. Ajouter le front matter au Markdown
-  const frontMatterYaml = `---
+    // 6. Convertir en Markdown
+    const markdownContent = this.getTurndownService().turndown(
+      container.innerHTML
+    );
+
+    // 7. Ajouter le front matter au Markdown
+    const frontMatterYaml = `---
 ${Object.entries(frontMatter)
   .map(([key, value]) => `${key}: ${value}`)
   .join("\n")}
 ---
 `;
-  const fullMarkdown = frontMatterYaml + markdownContent;
+    const fullMarkdown = frontMatterYaml + markdownContent;
 
-  // 8. Télécharger le fichier
-  const templateSuffix = targetTemplate ? `-${targetTemplate}` : "";
-  const enrichedFilename = filename.replace(".md", `${templateSuffix}.md`);
-  this.downloadFile(fullMarkdown, enrichedFilename, "text/markdown");
+    // 8. Télécharger le fichier
+    const templateSuffix = targetTemplate ? `-${targetTemplate}` : "";
+    const enrichedFilename = filename.replace(".md", `${templateSuffix}.md`);
+    this.downloadFile(fullMarkdown, enrichedFilename, "text/markdown");
 
-  return fullMarkdown;
-}
-
-
+    return fullMarkdown;
+  }
 
   // === INTERFACE UTILISATEUR ===
   showPageRangeModal() {
