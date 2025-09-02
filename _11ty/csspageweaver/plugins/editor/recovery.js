@@ -29,79 +29,93 @@ export class PagedMarkdownRecovery {
 
   // === RECONSTITUTION ELEMENTS SCINDÉS ===
 
-  reconstructSplitElements(content) {
-    // Trouve toutes les sections
-    const sections = content.querySelectorAll("section");
+// === RECONSTITUTION ELEMENTS SCINDÉS + POST-TRAITEMENT ===
 
-    if (sections.length === 0) {
-      return; // Aucune section trouvée
-    }
+reconstructSplitElements(content) {
+  // Trouve toutes les sections
+  const sections = content.querySelectorAll("section");
 
-    // Collecte tout le contenu de toutes les sections
-    let combinedContent = "";
-    sections.forEach((section) => {
-      combinedContent += section.innerHTML;
-    });
-
-    // Vide le contenu principal et ne garde qu'une seule section avec tout le contenu
-    content.innerHTML = `<section>${combinedContent}</section>`;
-
-    // Maintenant réunit les paragraphes scindés
-    const section = content.querySelector("section");
-    const fragmentGroups = new Map();
-
-    // Groupe les éléments par data-ref
-    section.querySelectorAll("[data-ref]").forEach((element) => {
-      if (element.classList.contains("breakcolumn")) return;
-
-      const ref = element.getAttribute("data-ref");
-      if (!fragmentGroups.has(ref)) {
-        fragmentGroups.set(ref, []);
-      }
-      fragmentGroups.get(ref).push(element);
-    });
-
-    console.log(
-      "Breakcolumns AVANT fusion:",
-      section.querySelectorAll(".breakcolumn").length
-    );
-
-    // Réunit les fragments
-    fragmentGroups.forEach((fragments) => {
-      if (fragments.length > 1) {
-        console.log("Fusion de fragments:", fragments[0].className);
-        const firstFragment = fragments[0];
-        let completeContent = "";
-
-        fragments.forEach((fragment) => {
-          completeContent += fragment.innerHTML;
-        });
-
-        firstFragment.innerHTML = completeContent;
-
-        // Supprime les fragments suivants
-        for (let i = 1; i < fragments.length; i++) {
-          fragments[i].remove();
-        }
-      }
-    });
-    console.log(
-      "Breakcolumns APRÈS fusion:",
-      section.querySelectorAll(".breakcolumn").length
-    );
-
-    const footnotesSep = section.querySelector("hr.footnotes-sep");
-    if (footnotesSep) {
-      footnotesSep.remove();
-    }
-
-    const footnotesSection = section.querySelector("section.footnotes");
-    if (footnotesSection) {
-      footnotesSection.remove();
-    }
-
-    //     console.log("HTML reconstruit:", content.innerHTML);
+  if (sections.length === 0) {
+    return; // Aucune section trouvée
   }
+
+  // Collecte tout le contenu de toutes les sections
+  let combinedContent = "";
+  sections.forEach((section) => {
+    combinedContent += section.innerHTML;
+  });
+
+  // Vide le contenu principal et ne garde qu'une seule section avec tout le contenu
+  content.innerHTML = `<section>${combinedContent}</section>`;
+
+  // Maintenant réunit les paragraphes scindés
+  const section = content.querySelector("section");
+  const fragmentGroups = new Map();
+
+  // Groupe les éléments par data-ref
+  section.querySelectorAll("[data-ref]").forEach((element) => {
+    const ref = element.getAttribute("data-ref");
+    if (!fragmentGroups.has(ref)) {
+      fragmentGroups.set(ref, []);
+    }
+    fragmentGroups.get(ref).push(element);
+  });
+
+  // Réunit les fragments
+  fragmentGroups.forEach((fragments) => {
+    if (fragments.length > 1) {
+      const firstFragment = fragments[0];
+      let completeContent = "";
+
+      fragments.forEach((fragment) => {
+        completeContent += fragment.innerHTML;
+      });
+
+      firstFragment.innerHTML = completeContent;
+
+      // Supprime les fragments suivants
+      for (let i = 1; i < fragments.length; i++) {
+        fragments[i].remove();
+      }
+    }
+  });
+
+  // POST-TRAITEMENT : Répare les blockquotes cassées
+  this.fixBrokenBlockquotes(section);
+
+  // Nettoyage des footnotes
+  const footnotesSep = section.querySelector("hr.footnotes-sep");
+  if (footnotesSep) {
+    footnotesSep.remove();
+  }
+
+  const footnotesSection = section.querySelector("section.footnotes");
+  if (footnotesSection) {
+    footnotesSection.remove();
+  }
+}
+
+// POST-TRAITEMENT : Répare les blockquotes avec contenu coupé
+fixBrokenBlockquotes(container) {
+  const blockquotes = container.querySelectorAll('blockquote');
+  
+  blockquotes.forEach(blockquote => {
+    const paragraphs = blockquote.querySelectorAll('p');
+    
+    // Trouve les paragraphes qui se terminent sans ponctuation
+    paragraphs.forEach((p, index) => {
+      const text = p.textContent.trim();
+      const nextP = paragraphs[index + 1];
+      
+      // Si le paragraphe se termine par un caractère non-final ET qu'il y a un suivant
+      if (nextP && text && !text.match(/[.!?»"]\s*$/)) {
+        // Fusionne avec le paragraphe suivant
+        p.innerHTML += ' ' + nextP.innerHTML;
+        nextP.remove();
+      }
+    });
+  });
+}
 
   exportPageRange(startPage, endPage, filename = "pages-selection.md") {
     // 1. Récupérer le data-template et le front matter de la page de départ
