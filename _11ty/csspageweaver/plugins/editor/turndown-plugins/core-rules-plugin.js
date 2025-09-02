@@ -5,9 +5,6 @@ turndownService.keep([
     return node.nodeName === "SPAN" && node.style.getPropertyValue("--ls");
   },
 
-  function (node) {
-    return node.nodeName === "DIV" && node.classList.contains('breakcolumn');
-  },
 
   "sup",
   "sub",
