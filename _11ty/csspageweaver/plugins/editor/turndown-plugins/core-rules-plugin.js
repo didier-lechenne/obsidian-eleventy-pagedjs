@@ -3,13 +3,21 @@ export function coreRulesPlugin(turndownService) {
     function (node) {
       return node.nodeName === "SPAN" && node.style.getPropertyValue("--ls");
     },
-    function (node) {
-      return node.nodeName === "BREAKCOLUMN";
-    },
+
+    
     "sup",
     "sub",
   ]);
+turndownService.remove(function (node) {
+  return node.nodeName === "BREAKCOLUMN";
+});
 
+turndownService.addRule("breakcolumn", {
+  filter: "breakcolumn",
+  replacement: function() {
+    return "\n\n<breakcolumn>\n\n";
+  }
+});
   // Sauvegarde la fonction escape originale
   var originalEscape = turndownService.escape;
 

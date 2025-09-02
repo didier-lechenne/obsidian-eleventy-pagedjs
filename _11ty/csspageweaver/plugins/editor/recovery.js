@@ -103,72 +103,6 @@ export class PagedMarkdownRecovery {
     //     console.log("HTML reconstruit:", content.innerHTML);
   }
 
-  // === EXPORT PAR PLAGE DE PAGES ===
-  //   exportPageRange(startPage, endPage, filename = "pages-selection.md") {
-  //     // 1. Récupérer le data-template de la page de départ
-  //     const startPageElement = document.querySelector(
-  //       `[data-page-number="${startPage}"] section`
-  //     );
-  //     if (!startPageElement) {
-  //       console.warn(`❌ Page ${startPage} introuvable`);
-  //       return;
-  //     }
-
-  //     const targetTemplate = startPageElement.getAttribute("data-template");
-
-  //     // 2. Collecter SEULEMENT les sections qui ont le même data-template
-  //     const selectedPages = [];
-
-  //     for (let i = startPage; i <= endPage; i++) {
-  //       const page = document.querySelector(`[data-page-number="${i}"] section`);
-
-  //       if (page) {
-  //         const pageTemplate = page.getAttribute("data-template");
-
-  //         // Ne collecter que si le data-template correspond
-  //         if (pageTemplate === targetTemplate) {
-  //           selectedPages.push(page.cloneNode(true));
-  //           console.log(`✅ Page ${i} collectée (template: "${pageTemplate}")`);
-  //         } else {
-  //           console.log(
-  //             `⏭️ Page ${i} ignorée (template: "${pageTemplate}" ≠ "${targetTemplate}")`
-  //           );
-  //         }
-  //       } else {
-  //         console.warn(`⚠️ Page ${i} introuvable`);
-  //       }
-  //     }
-
-  //     // 3. Vérification qu'on a au moins une page
-  //     if (selectedPages.length === 0) {
-  //       console.error(
-  //         `❌ Aucune page trouvée avec le template "${targetTemplate}"`
-  //       );
-  //       return;
-  //     }
-
-  //     // 4. Crée un container temporaire
-  //     const container = document.createElement("div");
-  //     selectedPages.forEach((page) => container.appendChild(page));
-
-  //     //     console.log("📄 Contenu avant reconstitution:", container.innerHTML);
-
-  //     // 5. Reconstitue les éléments scindés dans le container
-  //     this.reconstructSplitElements(container);
-
-  //     //     console.log("🔧 Contenu après reconstitution:", container.innerHTML);
-
-  //     // 6. Conversion en Markdown
-  //     const markdown = this.getTurndownService().turndown(container.innerHTML);
-  //     //     console.log("📝 Markdown Content:", markdown);
-
-  //     // 7. Téléchargement avec nom de fichier enrichi
-  //     const templateSuffix = targetTemplate ? `-${targetTemplate}` : "";
-  //     const enrichedFilename = filename.replace(".md", `${templateSuffix}.md`);
-
-  //     this.downloadFile(markdown, enrichedFilename, "text/markdown");
-  //     return markdown;
-  //   }
   exportPageRange(startPage, endPage, filename = "pages-selection.md") {
     // 1. Récupérer le data-template et le front matter de la page de départ
     const startPageElement = document.querySelector(
@@ -210,20 +144,25 @@ export class PagedMarkdownRecovery {
     const container = document.createElement("div");
     selectedPages.forEach((page) => container.appendChild(page));
     this.reconstructSplitElements(container);
-    
-
 
     container.innerHTML = container.innerHTML.replace(
       /<div[^>]*class="[^"]*breakcolumn[^"]*"[^>]*><\/div>/g,
       "\n\n<breakcolumn />\n\n"
     );
-console.log("HTML avant turndown:", container.innerHTML);
+
+    container.innerHTML = container.innerHTML.replace(/<\/breakcolumn>/g, "");
+    console.log("HTML avant turndown:", container.innerHTML);
 
     // 6. Convertir en Markdown
     const markdownContent = this.getTurndownService().turndown(
       container.innerHTML
     );
 
+    markdownContent = markdownContent.replace(
+      /<breakcolumn[^>]*>[\s\S]*?<\/breakcolumn>/g,
+      "\n<breakcolumn>\n"
+    );
+    
     // 7. Ajouter le front matter au Markdown
     const frontMatterYaml = `---
 ${Object.entries(frontMatter)
