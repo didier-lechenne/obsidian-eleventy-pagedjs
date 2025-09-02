@@ -14,8 +14,14 @@ export function breakPlugin(turndownService) {
 
   turndownService.addRule("breakcolumn", {
     filter: function (node) {
-      console.log("Testing breakcolumn:", node.nodeName, node.className);
-      return node.nodeName === "DIV" && node.classList.contains("breakcolumn");
+      const isBreakColumn =
+        node.nodeName === "DIV" && node.classList.contains("breakcolumn");
+      if (isBreakColumn) {
+        console.log("FOUND BREAKCOLUMN DIV!", node);
+        // Forcer le traitement même si vide
+        node.isBlank = false;
+      }
+      return isBreakColumn;
     },
     replacement: function (content, node) {
       console.log("Rule breakcolumn triggered!", node);

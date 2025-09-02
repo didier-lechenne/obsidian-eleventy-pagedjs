@@ -61,9 +61,12 @@ export class PagedMarkdownRecovery {
       fragmentGroups.get(ref).push(element);
     });
 
+    console.log("Breakcolumns AVANT fusion:", section.querySelectorAll('.breakcolumn').length);
+
     // Réunit les fragments
     fragmentGroups.forEach((fragments) => {
       if (fragments.length > 1) {
+	console.log("Fusion de fragments:", fragments[0].className);
         const firstFragment = fragments[0];
         let completeContent = "";
 
@@ -79,6 +82,9 @@ export class PagedMarkdownRecovery {
         }
       }
     });
+    console.log("Breakcolumns APRÈS fusion:", section.querySelectorAll('.breakcolumn').length);
+
+    
 
     const footnotesSep = section.querySelector("hr.footnotes-sep");
     if (footnotesSep) {
