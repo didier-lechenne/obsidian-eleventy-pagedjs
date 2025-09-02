@@ -58,7 +58,7 @@ eleventyConfig.addPreprocessor("break", "*", (data, content) => {
 
   content = content.replace(
     /<breakcolumn>/gi, 
-    '<div class="breakcolumn"></div>'
+    '<hr class="breakcolumn">'
   );
 
   content = content.replace(

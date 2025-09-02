@@ -145,23 +145,13 @@ export class PagedMarkdownRecovery {
     selectedPages.forEach((page) => container.appendChild(page));
     this.reconstructSplitElements(container);
 
-    container.innerHTML = container.innerHTML.replace(
-      /<div[^>]*class="[^"]*breakcolumn[^"]*"[^>]*><\/div>/g,
-      "\n\n<breakcolumn />\n\n"
-    );
-
-    container.innerHTML = container.innerHTML.replace(/<\/breakcolumn>/g, "");
-    console.log("HTML avant turndown:", container.innerHTML);
 
     // 6. Convertir en Markdown
     const markdownContent = this.getTurndownService().turndown(
       container.innerHTML
     );
 
-    markdownContent = markdownContent.replace(
-      /<breakcolumn[^>]*>[\s\S]*?<\/breakcolumn>/g,
-      "\n<breakcolumn>\n"
-    );
+
     
     // 7. Ajouter le front matter au Markdown
     const frontMatterYaml = `---

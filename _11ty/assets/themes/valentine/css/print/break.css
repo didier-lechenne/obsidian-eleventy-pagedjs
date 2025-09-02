@@ -14,8 +14,8 @@
   break-inside: avoid
 } */
 
-breakcolumn,
-.breakcolumn {
+
+hr.breakcolumn {
     /* -webkit-column-break-before: always; */
     -webkit-column-break-after: always;
     /* column-break-before: always; */
