@@ -87,6 +87,8 @@ export class PagedMarkdownRecovery {
     if (footnotesSection) {
       footnotesSection.remove();
     }
+
+//     console.log("HTML reconstruit:", content.innerHTML);
   }
 
   // === EXPORT PAR PLAGE DE PAGES ===

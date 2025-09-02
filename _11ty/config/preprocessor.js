@@ -5,22 +5,7 @@ module.exports = function (eleventyConfig) {
     globalImageCounter = 0;
   });
 
-    eleventyConfig.addPreprocessor("break", "*", (data, content) => {
-    content = content.replace(
-//       /<br\s+class=["']breakcolumn["'](\s*\/?)>/gi,
-      /<br\s+class=["']breakcolumn["'][^>]*>/gi,
-      '<div class="breakcolumn"></div>'
-    );
 
-    content = content.replace(
-      /<breakcolumn>/gi,
-      '<div class="breakcolumn"></div>'
-    );
-
-    content = content.replace(/<breakpage>/gi, '<br class="breakpage">');
-
-    return content;
-  });
 
  eleventyConfig.addPreprocessor("textCol", "*", (data, content) => {
     // Transforme <textCol gridCol="12" gridColGutter="3mm"></textCol>
@@ -67,6 +52,22 @@ module.exports = function (eleventyConfig) {
 
     return content;
   });
+
+
+eleventyConfig.addPreprocessor("break", "*", (data, content) => {
+
+  content = content.replace(
+    /<breakcolumn>/gi, 
+    '<div class="breakcolumn"></div>'
+  );
+
+  content = content.replace(
+    /<breakpage>/gi, 
+    '<br class="breakpage">'
+  );
+
+  return content;
+});
 
 
 

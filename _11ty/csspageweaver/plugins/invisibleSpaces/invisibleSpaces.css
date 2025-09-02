@@ -16,21 +16,21 @@
     background-position: center;
     background-color: unset;
     line-height: var(--labeur-size);
-    display: inline-block;
+    /* display: inline-block; */
     vertical-align: middle;
   }
 
   .no-break-space {
     background-color: var(--color-no-break-space);
     line-height: var(--labeur-size);
-    display: inline-block;
+    /* display: inline-block; */
     vertical-align: middle;
   }
 
   .no-break-narrow-space {
     background-color: var(--color-no-break-narrow-space);
     line-height: var(--labeur-size);
-    display: inline-block;
+    /* display: inline-block; */
     vertical-align: middle;
   }
 }

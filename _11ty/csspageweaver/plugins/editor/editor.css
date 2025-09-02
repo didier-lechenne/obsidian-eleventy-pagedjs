@@ -149,11 +149,11 @@ body.interface-preview .paged-editor-content:focus {
 
 /* Style pour les spans contenant du letter-spacing */
 span[style*="--ls"] {
-  background: var(--editor-primary-highlight);
-  padding: 1px 3px; /* Espacement subtil pour délimiter visuellement */
+  /* background: var(--editor-primary-highlight); */
+  /* padding: 1px 3px; 
   border-radius: var(--editor-border-radius);
-  position: relative; /* Permet le positionnement relatif des enfants */
-  display: inline-block; /* Nécessaire pour que padding/margin fonctionnent correctement */
+  position: relative; 
+  display: inline-block;  */
 }
 
 /* Style pour les inputs letter-spacing intégrés dans le texte */

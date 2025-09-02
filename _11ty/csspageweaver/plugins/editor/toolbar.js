@@ -1,4 +1,3 @@
-import * as turndownPlugins from "./turndown-plugins/index.js";
 import { PagedMarkdownRecovery } from "./recovery.js";
 import { TOOLBAR_CONFIG } from "./toolbar-config.js";
 import {
@@ -9,15 +8,7 @@ import {
 } from "./ui-factory.js";
 import { ACTIONS_REGISTRY } from "./actions.js";
 
-/**
- * @name Toolbar
- * @description Barre d'outils refactorisée - Version nettoyée
- *
- * Responsabilités claires :
- * - Interface utilisateur (affichage, positionnement, événements)
- * - Coordination avec les actions (pas de logique métier)
- * - Gestion Turndown pour les actions d'export
- */
+
 export class Toolbar {
   constructor(editor, customConfig = null) {
     this.editor = editor;
@@ -48,23 +39,10 @@ export class Toolbar {
     this.createToolbar();
   }
 
-  /**
-   * Configuration Turndown - utilisée par commands.js via this.editor.toolbar.turndown
-   */
+  
   setupTurndown() {
-    this.turndown = new window.TurndownService({
-      headingStyle: "atx",
-      emDelimiter: "_",
-      strongDelimiter: "**",
-      linkStyle: "inlined",
-      hr: "---",
-      bulletListMarker: "-",
-      codeBlockStyle: "fenced",
-      fence: "```",
-    });
-
-    this.turndown.use(Object.values(turndownPlugins));
-    window.mainTurndownService = this.turndown;
+      this.turndown = this.recovery.turndownService;
+      window.mainTurndownService = this.turndown;
   }
 
   /**

@@ -1,45 +1,46 @@
 export function coreRulesPlugin(turndownService) {
-  // Override des règles de base pour garder certains éléments
-//   turndownService.keep(function (node) {
-//     return (
-//       (node.nodeName === "SPAN" && node.style.getPropertyValue("--ls")) ||
-//       (node.nodeName === "DIV" && node.classList.contains("breakcolumn")) ||
-//       node.nodeName === "SUP" ||
-//       node.nodeName === "BREAKPAGE" ||
-//       node.nodeName === "BREAKCOLUMN" ||
-//       node.nodeName === "BREAKSCREEN" ||
-//       node.nodeName === "BREAKPRINT"
-//     );
-//   });
 
-//   turndownService.addRule("lineBreak", {
-//     filter: "br",
-//     replacement: function () {
-//       return " <br>\n";
-//     },
-//   });
+turndownService.keep([
+  function (node) {
+    return node.nodeName === "SPAN" && node.style.getPropertyValue("--ls");
+  },
 
-  // Custom escape function
-  turndownService.escape = function (string) {
-    var customEscapes = [
-      [/\\/g, "\\\\"],
-      [/\*/g, "\\*"],
-      [/^-/g, "\\-"],
-      [/^\+ /g, "\\+ "],
-      [/^(=+)/g, "\\$1"],
-      [/^(#{1,6}) /g, "\\$1 "],
-      [/`/g, "\\`"],
-      [/^~~~/g, "\\~~~"],
-      [/^>/g, "\\>"],
-      [/_/g, "\\_"],
-      [/^(\d+)\. /g, "$1\\. "],
-      [/(\s)(#)/g, "$1\\$2"],
-      [/\[\[/g, "\\[\\["], // Échappe les crochets doubles ouvrants
-      [/\]\]/g, "\\]\\]"], // Échappe les crochets doubles fermants
-    ];
+  function (node) {
+    return node.nodeName === "DIV" && node.classList.contains('breakcolumn');
+  },
 
-    return customEscapes.reduce(function (accumulator, escape) {
-      return accumulator.replace(escape[0], escape[1]);
-    }, string);
-  };
+  "sup",
+  "sub",
+]);
+
+
+
+
+// Sauvegarde la fonction escape originale
+var originalEscape = turndownService.escape;
+
+turndownService.escape = function (string) {
+  // Applique d'abord l'échappement standard
+  string = originalEscape.call(this, string);
+  
+  // Puis ajoute vos échappements personnalisés
+  var customEscapes = [
+    [/\[\[/g, "\\[\\["],
+    [/\]\]/g, "\\]\\]"],
+  ];
+
+  return customEscapes.reduce(function (accumulator, escape) {
+    return accumulator.replace(escape[0], escape[1]);
+  }, string);
+};
+
+
+// turndownService.addRule("blockquote", {
+//   filter: 'blockquote',
+//   replacement: function (content) {
+//     content = content.trim();
+//     return '\n\n> ' + content.replace(/\n/g, '\n> ') + '\n\n';
+//   }
+// });
+
 }
