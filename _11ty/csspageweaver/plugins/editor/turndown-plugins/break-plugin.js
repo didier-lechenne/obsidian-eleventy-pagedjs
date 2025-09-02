@@ -8,16 +8,14 @@ export function breakPlugin(turndownService) {
     },
   });
 
- turndownService.addRule("breakcolumn", {
+  turndownService.addRule("breakcolumn", {
     filter: function (node) {
       return node.nodeName === "DIV" && node.classList.contains("breakcolumn");
-    }, 
-  replacement: function() {
-    return "<breakcolumn>";
-  }
-});
+    },
 
-
-
-
+    replacement: function (content, node) {
+      console.log("Rule breakcolumn triggered!", node);
+      return "\n<breakcolumn>\n";
+    },
+  });
 }
