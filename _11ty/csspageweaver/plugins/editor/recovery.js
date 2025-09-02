@@ -197,6 +197,8 @@ exportPageRange(startPage, endPage, filename = "pages-selection.md") {
   const container = document.createElement("div");
   selectedPages.forEach((page) => container.appendChild(page));
   this.reconstructSplitElements(container);
+console.log("HTML avant turndown:", container.innerHTML);
+console.log("Breakcolumns présents:", container.querySelectorAll('.breakcolumn').length);
 
   // 6. Convertir en Markdown
   const markdownContent = this.getTurndownService().turndown(container.innerHTML);
