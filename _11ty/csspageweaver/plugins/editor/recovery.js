@@ -20,12 +20,6 @@ export class PagedMarkdownRecovery {
       bulletListMarker: "-",
       codeBlockStyle: "fenced",
       fence: "```",
-      keepReplacement: function (content, node) {
-        if (node.classList && node.classList.contains("breakcolumn")) {
-          return "\n<breakcolumn>\n";
-        }
-        return node.outerHTML;
-      },
     });
 
     turndown.use(Object.values(turndownPlugins));
@@ -216,11 +210,14 @@ export class PagedMarkdownRecovery {
     const container = document.createElement("div");
     selectedPages.forEach((page) => container.appendChild(page));
     this.reconstructSplitElements(container);
-    console.log("HTML avant turndown:", container.innerHTML);
-    console.log(
-      "Breakcolumns présents:",
-      container.querySelectorAll(".breakcolumn").length
+    
+
+
+    container.innerHTML = container.innerHTML.replace(
+      /<div[^>]*class="[^"]*breakcolumn[^"]*"[^>]*><\/div>/g,
+      "\n\n<breakcolumn />\n\n"
     );
+console.log("HTML avant turndown:", container.innerHTML);
 
     // 6. Convertir en Markdown
     const markdownContent = this.getTurndownService().turndown(

@@ -1,13 +1,11 @@
 export function coreRulesPlugin(turndownService) {
-  turndownService.keep(function (node) {
-    return node.nodeName === "DIV" && node.classList.contains("breakcolumn");
-  });
-
   turndownService.keep([
     function (node) {
       return node.nodeName === "SPAN" && node.style.getPropertyValue("--ls");
     },
-
+    function (node) {
+      return node.nodeName === "BREAKCOLUMN";
+    },
     "sup",
     "sub",
   ]);
