@@ -399,33 +399,74 @@ export class Commands {
 
   // ====== MÉTHODES UTILITAIRES ======
 
+//   showFeedback(message) {
+//     const feedback = document.createElement("div");
+//     feedback.textContent = message;
+//     feedback.style.cssText = `
+//       position: fixed;
+//       top: 20px;
+//       right: 20px;
+//       background: #ac4cafff;
+//       color: white;
+//       padding: 10px;
+//       border-radius: 4px;
+//       z-index: 10000;
+//       opacity: 1;
+//       transition: opacity 0.3s ease;
+//     `;
 
-  triggerAutoCopy() {
+//     document.body.appendChild(feedback);
+
+//     setTimeout(() => {
+//       feedback.style.opacity = "0";
+//       setTimeout(() => {
+//         document.body.removeChild(feedback);
+//       }, 300);
+//     }, 2000);
+//   }
+
+  fusionFragments(dataRef) {
+    const allFragments = document.querySelectorAll(`[data-ref="${dataRef}"]`);
+
+    let fullHTML = "";
+    allFragments.forEach((fragment, index) => {
+      let html = fragment.innerHTML;
+
+      // Nettoyer les césures en fin de fragment
+      if (index < allFragments.length - 1) {
+        html = html.replace(/‑\s*$/, "");
+      }
+
+      fullHTML += html;
+    });
+
+    return fullHTML;
+  }
+
+  triggerAutoCopy(elementParam = null) {
     if (!this.editor.options.autoCopy) return;
 
-    const element = this.getCurrentElement();
+    const element = elementParam || this.getCurrentElement();
     if (!element) return;
 
-    // Cloner et reconstituer même pour un seul élément
-    const clone = element.cloneNode(true);
-    const container = document.createElement("div");
-    container.appendChild(clone);
+    const dataRef = element.getAttribute("data-ref");
+    let content;
 
-    if (this.editor.toolbar.recovery) {
-      this.editor.toolbar.recovery.reconstructSplitElements(container);
-      this.editor.toolbar.recovery.fixBrokenBlockquotes(container);
+    if (dataRef) {
+      // Fragment scindé - fusionner manuellement
+      content = this.fusionFragments(dataRef);
+    } else {
+      // Élément normal
+      content = element.innerHTML;
     }
 
-    const turndown =
-      this.editor.toolbar.recovery?.getTurndownService() ||
-      this.editor.toolbar.turndown;
-
-    const markdown = turndown.turndown(container.innerHTML);
+    const markdown = this.editor.toolbar.recovery
+      .getTurndownService()
+      .turndown(content);
 
     navigator.clipboard
       .writeText(markdown)
-      .then(() => console.log("Auto-copie avec reconstruction effectuée"))
-      .catch((err) => console.error("Erreur auto-copie:", err));
+      .then(() => this.editor.showFeedback("Copié !"));
   }
 
   exportMarkdownByRange() {

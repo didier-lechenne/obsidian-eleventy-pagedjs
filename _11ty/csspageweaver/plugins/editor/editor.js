@@ -124,7 +124,7 @@ export default class Editor extends Handler {
       const element = e.target.closest(this.options.selector);
       if (element) {
         // Copie automatique en Markdown
-        this.commands.triggerAutoCopy();
+        this.commands.triggerAutoCopy(element);
 
         // Afficher la toolbar même sans sélection de texte
         const selection = this.selection.getCurrentSelection();
