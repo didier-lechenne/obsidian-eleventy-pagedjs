@@ -15,7 +15,7 @@ export default class Editor extends Handler {
     this.options = {
       selector: "[data-editable], .footnote, figcaption",
       shortcuts: true,
-      autoCopy: true, 
+      autoCopy: true,
     };
 
     this.isActive = false;
@@ -114,28 +114,25 @@ export default class Editor extends Handler {
     document.addEventListener("paste", this.handlePaste.bind(this));
     document.addEventListener("focusin", this.handleFocusIn.bind(this));
 
-document.addEventListener("click", (e) => {
-  if (!this.isActive) return;
+    document.addEventListener("click", (e) => {
+      if (!this.isActive) return;
 
-  
-  if (e.target.closest('.paged-editor-toolbar')) {
-    return;
-  }
+      if (e.target.closest(".paged-editor-toolbar")) {
+        return;
+      }
 
-  const element = e.target.closest(this.options.selector);
-  if (element) {
-    // Copie automatique en Markdown
-    this.editor.toolbar.editor.triggerAutoCopy();
-    
-    // Afficher la toolbar même sans sélection de texte
-    const selection = this.selection.getCurrentSelection();
-    this.toolbar.show(selection || { range: null });
-  } else {
-    this.toolbar.hide();
-  }
-});
+      const element = e.target.closest(this.options.selector);
+      if (element) {
+        // Copie automatique en Markdown
+        this.commands.triggerAutoCopy();
 
-  
+        // Afficher la toolbar même sans sélection de texte
+        const selection = this.selection.getCurrentSelection();
+        this.toolbar.show(selection || { range: null });
+      } else {
+        this.toolbar.hide();
+      }
+    });
   }
 
   handleMouseUp(e) {
@@ -178,7 +175,7 @@ document.addEventListener("click", (e) => {
 
   handlePaste(e) {
     if (!this.isActive) return;
-    
+
     // Empêcher le collage de HTML formaté
     e.preventDefault();
     const text = e.clipboardData.getData("text/plain");
@@ -187,7 +184,7 @@ document.addEventListener("click", (e) => {
 
   handleFocusIn(e) {
     if (!this.isActive) return;
-    
+
     if (this.isInEditableElement(e.target)) {
       this.debounce(() => {
         const selection = this.selection.getCurrentSelection();
@@ -200,24 +197,24 @@ document.addEventListener("click", (e) => {
 
   activate() {
     if (this.isActive) return;
-    
+
     this.isActive = true;
     document.body.classList.add("paged-editor-active");
-    
+
     this.setupEditableElements();
     // La toolbar est déjà initialisée dans le constructeur
-    
+
     console.log("✅ Éditeur activé");
   }
 
   deactivate() {
     if (!this.isActive) return;
-    
+
     this.isActive = false;
     document.body.classList.remove("paged-editor-active");
-    
+
     this.toolbar?.hide();
-    
+
     // Désactiver l'édition
     if (this.editableElements) {
       this.editableElements.forEach((element) => {
@@ -225,7 +222,7 @@ document.addEventListener("click", (e) => {
         element.classList.remove("paged-editor-content");
       });
     }
-    
+
     console.log("❌ Éditeur désactivé");
   }
 
@@ -238,10 +235,10 @@ document.addEventListener("click", (e) => {
 
   isInEditableElement(element) {
     if (!element || !element.nodeType) return false;
-    
+
     // Remonter jusqu'à trouver un élément DOM
-    element = element.nodeType === Node.TEXT_NODE ? 
-      element.parentElement : element;
+    element =
+      element.nodeType === Node.TEXT_NODE ? element.parentElement : element;
 
     // Vérification rapide avec cache si disponible
     if (this.editableElements) {
@@ -307,8 +304,6 @@ document.addEventListener("click", (e) => {
 
     return null;
   }
-
-
 
   // Feedback visuel pour la copie
   showFeedback(message) {

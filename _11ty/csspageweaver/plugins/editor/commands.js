@@ -445,7 +445,7 @@ export class Commands {
   //     .catch(err => console.error("❌ Erreur auto-copie:", err));
   // }
 
-  triggerAutoCopy(element) {
+  triggerAutoCopy() {
     if (!this.editor.options.autoCopy) return;
 
     const element = this.getCurrentElement();
