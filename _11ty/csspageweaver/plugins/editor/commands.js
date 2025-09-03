@@ -67,16 +67,20 @@ export class Commands {
       // Supprimer le formatage
       this.unwrapElement(parentElement);
     } else {
-      // Appliquer le formatage
+      // Ajouter le formatage
       const element = this.createElement(tagName);
       try {
         range.surroundContents(element);
       } catch (e) {
-        // Fallback si surroundContents échoue
-        element.textContent = selectedText;
-        range.deleteContents();
+        // Si surroundContents échoue, utiliser une méthode alternative
+        element.appendChild(range.extractContents());
         range.insertNode(element);
       }
+      
+      // Restaurer la sélection
+      range.selectNodeContents(element);
+      selection.selection.removeAllRanges();
+      selection.selection.addRange(range);
     }
 
     this.triggerAutoCopy();
@@ -90,46 +94,27 @@ export class Commands {
     parent.removeChild(element);
   }
 
-  // ====== GESTION DES BALISES SPÉCIFIQUES ======
+  // ====== CARACTÈRES SPÉCIAUX ======
 
-  toggleSmallCaps() {
-    const selection = this.editor.selection.getCurrentSelection();
-    if (!selection?.isValid) return;
+  insertUnicodeChar(type, variant = null) {
+    const chars = UNICODE_CHARS[type];
+    if (!chars) return;
 
-    const range = selection.range;
-    const selectedText = range.toString();
-
-    if (selectedText.length === 0) return;
-
-    // Vérifier si déjà en petites capitales
-    let container = range.commonAncestorContainer;
-    if (container.nodeType === Node.TEXT_NODE) {
-      container = container.parentElement;
-    }
-
-    if (container.classList && container.classList.contains("small-caps")) {
-      // Supprimer les petites capitales
-      this.unwrapElement(container);
+    let char;
+    if (variant && chars[variant]) {
+      char = chars[variant];
+    } else if (typeof chars === 'string') {
+      char = chars;
+    } else if (chars.default) {
+      char = chars.default;
     } else {
-      // Appliquer les petites capitales
-      const span = this.createElement("span", "small-caps");
-      try {
-        range.surroundContents(span);
-      } catch (e) {
-        span.textContent = selectedText;
-        range.deleteContents();
-        range.insertNode(span);
-      }
+      return;
     }
 
-    this.triggerAutoCopy();
+    this.insertText(char);
   }
 
-  toggleSuperscript() {
-    this.toggleFormatting("sup");
-  }
-
-  // ====== GUILLEMETS FRANÇAIS ======
+  // ====== GUILLEMETS ======
 
   toggleFrenchQuotes() {
     const selection = this.editor.selection.getCurrentSelection();
@@ -147,29 +132,22 @@ export class Commands {
 
       const openQuoteSpan = this.createElement("span", "french-quote-open");
       openQuoteSpan.setAttribute("data-timestamp", timestamp);
-      openQuoteSpan.textContent = UNICODE_CHARS.LAQUO; // Guillemet ouvrant français
+      openQuoteSpan.textContent = UNICODE_CHARS.LAQUO;
 
-      const openSpaceSpan = this.createElement(
-        "span",
-        "i_space no-break-narrow-space"
-      );
-      openQuoteSpan.setAttribute("data-timestamp", timestamp);
+      const openSpaceSpan = this.createElement("span", "i_space no-break-narrow-space");
+      openSpaceSpan.setAttribute("data-timestamp", timestamp);
       openSpaceSpan.textContent = UNICODE_CHARS.NO_BREAK_THIN_SPACE;
 
       const textNode = document.createTextNode(text);
 
-      const closeSpaceSpan = this.createElement(
-        "span",
-        "i_space no-break-narrow-space"
-      );
+      const closeSpaceSpan = this.createElement("span", "i_space no-break-narrow-space");
       closeSpaceSpan.setAttribute("data-timestamp", timestamp);
       closeSpaceSpan.textContent = UNICODE_CHARS.NO_BREAK_THIN_SPACE;
 
       const closeQuoteSpan = this.createElement("span", "french-quote-close");
       closeQuoteSpan.setAttribute("data-timestamp", timestamp);
-      closeQuoteSpan.textContent = UNICODE_CHARS.RAQUO; // Guillemet fermant français
+      closeQuoteSpan.textContent = UNICODE_CHARS.RAQUO;
 
-      // Ordre correct : « [espace fine] texte [espace fine] »
       fragment.appendChild(openQuoteSpan);
       fragment.appendChild(openSpaceSpan);
       fragment.appendChild(textNode);
@@ -184,187 +162,105 @@ export class Commands {
     this.triggerAutoCopy();
   }
 
-  // ====== GUILLEMETS ANGLAIS ======
-
-  toggleEnglishQuotes() {
+  insertEnglishQuotes() {
     const selection = this.editor.selection.getCurrentSelection();
     if (!selection?.isValid) return;
 
     const range = selection.range;
-    const text = range.toString();
+    const selectedText = range.toString();
 
-    if (text) {
-      range.deleteContents();
+    if (selectedText.length === 0) return;
 
-      const fragment = document.createDocumentFragment();
+    const openQuote = this.createElement("span", "english-quote");
+    const closeQuote = this.createElement("span", "english-quote");
 
-      const openQuoteSpan = this.createElement("span", "english-quote-open ");
+    openQuote.textContent = UNICODE_CHARS.LDQUO;
+    closeQuote.textContent = UNICODE_CHARS.RDQUO;
 
-      openQuoteSpan.textContent = UNICODE_CHARS.LDQUO;
+    const container = this.createElement("span");
+    container.appendChild(openQuote);
+    container.appendChild(document.createTextNode(selectedText));
+    container.appendChild(closeQuote);
 
-      const textNode = document.createTextNode(text);
+    range.deleteContents();
+    range.insertNode(container);
 
-      const closeQuoteSpan = this.createElement(
-        "span",
-        "english-quote-close editor-add"
-      );
-      closeQuoteSpan.textContent = UNICODE_CHARS.RDQUO;
-
-      fragment.appendChild(openQuoteSpan);
-      fragment.appendChild(textNode);
-      fragment.appendChild(closeQuoteSpan);
-
-      range.insertNode(fragment);
-      range.setStartBefore(openQuoteSpan);
-      range.setEndAfter(closeQuoteSpan);
-    }
+    range.setStartAfter(container);
+    range.setEndAfter(container);
+    selection.selection.removeAllRanges();
+    selection.selection.addRange(range);
 
     this.triggerAutoCopy();
   }
 
-  toggleLetterSpacing() {
-    const input = document.querySelector(".ls-input");
-    const value = input?.value || "0";
+  // ====== ESPACES ======
+
+  insertSpace(className, unicodeChar) {
+    const span = this.createElement("span", className);
+    span.textContent = unicodeChar;
 
     const selection = this.editor.selection.getCurrentSelection();
     if (!selection?.isValid) return;
 
-    const span = this.createElement("span", null);
-    span.style.setProperty("--ls", value);
-    span.setAttribute("tabindex", "0"); // Rendre focusable
-
-    this.setupLetterSpacingControls(span);
-
-    try {
-      selection.range.surroundContents(span);
-    } catch (e) {
-      span.textContent = selection.range.toString();
-      selection.range.deleteContents();
-      selection.range.insertNode(span);
-    }
-
-    this.triggerAutoCopy();
-  }
-
-  setupLetterSpacingControls(span) {
-    span.addEventListener("wheel", (e) => {
-      e.preventDefault();
-
-      let currentValue = parseInt(span.style.getPropertyValue("--ls")) || 0;
-      const step = e.shiftKey ? 10 : 1;
-
-      if (e.deltaY < 0) {
-        // Molette vers le haut
-        currentValue += step;
-      } else {
-        // Molette vers le bas
-        currentValue -= step;
-      }
-
-      span.style.setProperty("--ls", currentValue.toString());
-      this.triggerAutoCopy();
-    });
-
-    // Feedback visuel au survol
-    span.addEventListener("mouseenter", () => {
-      span.style.cursor = "ns-resize";
-      span.title = "Molette pour ajuster le letter-spacing";
-    });
-  }
-
-  // ====== VÉRIFICATIONS ======
-
-  hasParentWithTag(element, tagNames, className = null) {
-    if (!Array.isArray(tagNames)) {
-      tagNames = [tagNames];
-    }
-    tagNames = tagNames.map((tag) => tag.toUpperCase());
-
-    if (element.nodeType === Node.TEXT_NODE) {
-      element = element.parentElement;
-    }
-
-    while (element && element !== document.body) {
-      if (element.nodeType === Node.ELEMENT_NODE) {
-        const tagMatches = tagNames.includes(element.tagName);
-        const classMatches =
-          !className || element.classList.contains(className);
-
-        if (tagMatches && classMatches) {
-          return true;
-        }
-      }
-      element = element.parentElement;
-    }
-
-    return false;
-  }
-
-  // ====== INSERTION D'ESPACES ======
-
-  insertSpace(className, content) {
-    const selection = window.getSelection();
-
-    if (selection.rangeCount === 0) return;
-
-    const range = selection.getRangeAt(0);
-    const span = this.createElement("span", `i_space ${className} editor-add`);
-    span.setAttribute("data-timestamp", Date.now());
-    span.textContent = content;
-
-    // Supprimer sélection si elle existe
-    if (!range.collapsed) {
-      range.deleteContents();
-    }
-
+    const range = selection.range;
+    range.deleteContents();
     range.insertNode(span);
+
     range.setStartAfter(span);
-    range.collapse(true);
-    selection.removeAllRanges();
-    selection.addRange(range);
+    range.setEndAfter(span);
+    selection.selection.removeAllRanges();
+    selection.selection.addRange(range);
 
     this.triggerAutoCopy();
   }
 
-  // ====== ACTIONS UTILITAIRES ======
+  insertLineBreak() {
+    const br = this.createElement("br");
+    
+    const selection = this.editor.selection.getCurrentSelection();
+    if (!selection?.isValid) return;
+
+    const range = selection.range;
+    range.deleteContents();
+    range.insertNode(br);
+
+    range.setStartAfter(br);
+    range.setEndAfter(br);
+    selection.selection.removeAllRanges();
+    selection.selection.addRange(range);
+
+    this.triggerAutoCopy();
+  }
+
+  // ====== ANNULATION ======
 
   undoLastTransformation() {
-    let editableElement = document.activeElement;
-
-    if (!editableElement || !editableElement.hasAttribute("data-editable")) {
-      //       console.log("Aucun élément éditable en focus");
+    const editableElement = this.getCurrentElement();
+    if (!editableElement) {
+      console.warn("Aucun élément éditable trouvé");
       return;
     }
 
-    console.log("Element en focus:", editableElement);
-
-    // 1. Récupérer TOUS les éléments avec timestamp
     const timestampedElements = Array.from(
       editableElement.querySelectorAll("[data-timestamp]")
     );
 
-    console.log("Éléments avec timestamp trouvés:", timestampedElements);
-    timestampedElements.forEach((el) =>
-      console.log("Timestamp:", el.getAttribute("data-timestamp"))
-    );
-
     if (timestampedElements.length === 0) {
-      console.log("Aucune transformation à annuler");
+      console.warn("Aucune transformation à annuler");
       return;
     }
 
-    // 2. Trier par timestamp (le plus récent en premier)
+    // Trier par timestamp décroissant
     timestampedElements.sort((a, b) => {
       const timestampA = parseInt(a.getAttribute("data-timestamp"));
       const timestampB = parseInt(b.getAttribute("data-timestamp"));
       return timestampB - timestampA;
     });
 
-    // 3. Prendre le timestamp le plus récent
-    const latestTimestamp =
-      timestampedElements[0].getAttribute("data-timestamp");
+    // Prendre le timestamp le plus récent
+    const latestTimestamp = timestampedElements[0].getAttribute("data-timestamp");
 
-    // 4. Supprimer TOUS les éléments qui ont ce timestamp
+    // Supprimer TOUS les éléments qui ont ce timestamp
     const elementsToRemove = editableElement.querySelectorAll(
       `[data-timestamp="${latestTimestamp}"]`
     );
@@ -373,7 +269,7 @@ export class Commands {
       `Annulation de ${elementsToRemove.length} élément(s) avec timestamp ${latestTimestamp}`
     );
 
-    elementsToRemove.forEach((element) => {
+    elementsToRemove.forEach(element => {
       const classes = element.className;
 
       // Supprimer complètement guillemets et espaces
@@ -397,35 +293,15 @@ export class Commands {
     this.triggerAutoCopy();
   }
 
-  // ====== MÉTHODES UTILITAIRES ======
+  // ====== EXPORT & COPY ======
 
-//   showFeedback(message) {
-//     const feedback = document.createElement("div");
-//     feedback.textContent = message;
-//     feedback.style.cssText = `
-//       position: fixed;
-//       top: 20px;
-//       right: 20px;
-//       background: #ac4cafff;
-//       color: white;
-//       padding: 10px;
-//       border-radius: 4px;
-//       z-index: 10000;
-//       opacity: 1;
-//       transition: opacity 0.3s ease;
-//     `;
+  copyElementAsMarkdown() {
+    const element = this.getCurrentElement();
+    if (!element) return;
 
-//     document.body.appendChild(feedback);
-
-//     setTimeout(() => {
-//       feedback.style.opacity = "0";
-//       setTimeout(() => {
-//         document.body.removeChild(feedback);
-//       }, 300);
-//     }, 2000);
-//   }
-
-
+    // Déléguer à recovery pour la conversion
+    this.editor.toolbar.recovery.copyElementToClipboard(element);
+  }
 
   exportMarkdownByRange() {
     if (this.editor.toolbar.recovery) {
@@ -433,7 +309,24 @@ export class Commands {
     }
   }
 
+  // ====== UTILITAIRES ======
+
   getCurrentElement() {
     return this.editor.getCurrentElement();
+  }
+
+  // AutoCopy simplifié - délègue à recovery
+  triggerAutoCopy(elementParam = null) {
+    if (!this.editor.options.autoCopy) return;
+    
+    const element = elementParam || this.getCurrentElement();
+    if (!element) return;
+
+    // Déléguer à recovery (vérifier que toolbar et recovery existent)
+    if (this.editor.toolbar?.recovery) {
+      this.editor.toolbar.recovery.copyElementToClipboard(element);
+    } else {
+      console.warn("Recovery service non disponible pour autoCopy");
+    }
   }
 }

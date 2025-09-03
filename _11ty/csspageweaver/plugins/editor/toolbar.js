@@ -186,9 +186,18 @@ export class Toolbar {
     }
   }
 
-  show(x, y) {
-    this.element.style.left = `${x}px`;
-    this.element.style.top = `${y}px`;
+  show(selection) {
+    if (!selection || !selection.range) {
+      this.element.style.display = "none";
+      return;
+    }
+
+    const rect = selection.range.getBoundingClientRect();
+    const x = rect.left + rect.width / 2 - this.element.offsetWidth / 2;
+    const y = rect.top - this.element.offsetHeight - 10;
+
+    this.element.style.left = `${Math.max(10, x)}px`;
+    this.element.style.top = `${Math.max(10, y)}px`;
     this.element.style.display = "flex";
     this.isVisible = true;
   }
