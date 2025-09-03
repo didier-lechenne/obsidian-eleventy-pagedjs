@@ -59,7 +59,7 @@ module.exports = function (eleventyConfig) {
     watch: ["_11ty/**/*", config.publicFolder + "/**/*"],
     showAllHosts: true,
     domDiff: true,
-    ignored: ["node_modules/**", ".git/**", "**/.DS_Store"],
+    ignored: ["node_modules/**", ".git/**", "**/.DS_Store", "_site/**/*", "**/*.tmp"],
   });
 
   // === CONFIGURATION DES DOSSIERS ===

@@ -52,8 +52,12 @@
   line-height: 33.6pt;
   font-weight: normal;
   text-align: center;
-  /* supprime le folio */
-  page: clean;
+
+  margin-bottom: 1ch;
+
+  /* supprime le folio et ajoute un saut de page*/
+  /* page: clean; */
+  
 }
 
 [data-template="textCol"] p,

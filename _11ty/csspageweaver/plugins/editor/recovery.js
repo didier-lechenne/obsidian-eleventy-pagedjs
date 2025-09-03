@@ -27,10 +27,6 @@ export class PagedMarkdownRecovery {
     return turndown;
   }
 
-  // === RECONSTITUTION ELEMENTS SCINDÉS ===
-
-  // === RECONSTITUTION ELEMENTS SCINDÉS + POST-TRAITEMENT ===
-
   reconstructSplitElements(content) {
     // Trouve toutes les sections
     const sections = content.querySelectorAll("section");
@@ -230,4 +226,8 @@ ${Object.entries(frontMatter)
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   }
+
+
+
+
 }

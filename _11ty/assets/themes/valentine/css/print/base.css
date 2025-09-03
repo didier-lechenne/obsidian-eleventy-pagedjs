@@ -74,15 +74,16 @@ table {
 main p {
   text-rendering: optimizeLegibility;
 
-  orphans: 2;
+  orphans: 3;
   widows: 2;
 
   word-break: break-word;
+   -webkit-hyphens: auto;
   hyphens: auto;
-  hyphenate-limit-chars: 6 3 3;
+  hyphenate-limit-chars: 6 3 2;
 }
 
-section.textCol h2,
+
 section.default h2 {
   font-family: var(--heading);
   font-size: 28pt;
@@ -92,8 +93,8 @@ section.default h2 {
 
   margin: 0;
   padding: 0;
-  /* supprime le folio */
-  page: clean;
+  /* supprime le folio mais ajoute un suat de page*/
+  /* page: clean; */
 
 }
 
@@ -134,6 +135,10 @@ blockquote {
 	   ──────────────────────────────────────── */
 
   font-style: italic;
+}
+
+section[data-split-from] > blockquote {
+  margin-block-start: unset !important;
 }
 
 /* ────────────────────────────────────────

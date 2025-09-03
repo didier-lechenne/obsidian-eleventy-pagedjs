@@ -222,57 +222,55 @@ export class Commands {
     this.triggerAutoCopy();
   }
 
+  toggleLetterSpacing() {
+    const input = document.querySelector(".ls-input");
+    const value = input?.value || "0";
 
+    const selection = this.editor.selection.getCurrentSelection();
+    if (!selection?.isValid) return;
 
-toggleLetterSpacing() {
-  const input = document.querySelector(".ls-input");
-  const value = input?.value || "0";
-  
-  const selection = this.editor.selection.getCurrentSelection();
-  if (!selection?.isValid) return;
-  
-  const span = this.createElement("span", null);
-  span.style.setProperty("--ls", value);
-  span.setAttribute("tabindex", "0"); // Rendre focusable
-  
-  
-  this.setupLetterSpacingControls(span);
-  
-  try {
-    selection.range.surroundContents(span);
-  } catch (e) {
-    span.textContent = selection.range.toString();
-    selection.range.deleteContents();
-    selection.range.insertNode(span);
-  }
-  
-  this.triggerAutoCopy();
-}
+    const span = this.createElement("span", null);
+    span.style.setProperty("--ls", value);
+    span.setAttribute("tabindex", "0"); // Rendre focusable
 
-setupLetterSpacingControls(span) {
-  span.addEventListener("wheel", (e) => {
-    e.preventDefault();
-    
-    let currentValue = parseInt(span.style.getPropertyValue("--ls")) || 0;
-    const step = e.shiftKey ? 10 : 1;
-    
-    if (e.deltaY < 0) { // Molette vers le haut
-      currentValue += step;
-    } else { // Molette vers le bas
-      currentValue -= step;
+    this.setupLetterSpacingControls(span);
+
+    try {
+      selection.range.surroundContents(span);
+    } catch (e) {
+      span.textContent = selection.range.toString();
+      selection.range.deleteContents();
+      selection.range.insertNode(span);
     }
-    
-    span.style.setProperty("--ls", currentValue.toString());
-    this.triggerAutoCopy();
-  });
-  
-  // Feedback visuel au survol
-  span.addEventListener("mouseenter", () => {
-    span.style.cursor = "ns-resize";
-    span.title = "Molette pour ajuster le letter-spacing";
-  });
-}
 
+    this.triggerAutoCopy();
+  }
+
+  setupLetterSpacingControls(span) {
+    span.addEventListener("wheel", (e) => {
+      e.preventDefault();
+
+      let currentValue = parseInt(span.style.getPropertyValue("--ls")) || 0;
+      const step = e.shiftKey ? 10 : 1;
+
+      if (e.deltaY < 0) {
+        // Molette vers le haut
+        currentValue += step;
+      } else {
+        // Molette vers le bas
+        currentValue -= step;
+      }
+
+      span.style.setProperty("--ls", currentValue.toString());
+      this.triggerAutoCopy();
+    });
+
+    // Feedback visuel au survol
+    span.addEventListener("mouseenter", () => {
+      span.style.cursor = "ns-resize";
+      span.title = "Molette pour ajuster le letter-spacing";
+    });
+  }
 
   // ====== VÉRIFICATIONS ======
 
@@ -304,29 +302,29 @@ setupLetterSpacingControls(span) {
 
   // ====== INSERTION D'ESPACES ======
 
- insertSpace(className, content) {
-  const selection = window.getSelection();
-  
-  if (selection.rangeCount === 0) return;
-  
-  const range = selection.getRangeAt(0);
-  const span = this.createElement("span", `i_space ${className} editor-add`);
-  span.setAttribute("data-timestamp", Date.now());
-  span.textContent = content;
+  insertSpace(className, content) {
+    const selection = window.getSelection();
 
-  // Supprimer sélection si elle existe
-  if (!range.collapsed) {
-    range.deleteContents();
+    if (selection.rangeCount === 0) return;
+
+    const range = selection.getRangeAt(0);
+    const span = this.createElement("span", `i_space ${className} editor-add`);
+    span.setAttribute("data-timestamp", Date.now());
+    span.textContent = content;
+
+    // Supprimer sélection si elle existe
+    if (!range.collapsed) {
+      range.deleteContents();
+    }
+
+    range.insertNode(span);
+    range.setStartAfter(span);
+    range.collapse(true);
+    selection.removeAllRanges();
+    selection.addRange(range);
+
+    this.triggerAutoCopy();
   }
-  
-  range.insertNode(span);
-  range.setStartAfter(span);
-  range.collapse(true);
-  selection.removeAllRanges();
-  selection.addRange(range);
-
-  this.triggerAutoCopy();
-}
 
   // ====== ACTIONS UTILITAIRES ======
 
@@ -399,31 +397,7 @@ setupLetterSpacingControls(span) {
     this.triggerAutoCopy();
   }
 
-  copyElementAsMarkdown() {
-    const element = this.editor.getCurrentElement();
-    if (!element) return;
-
-    if (this.editor.toolbar.turndown) {
-      const markdown = this.editor.toolbar.turndown.turndown(element.innerHTML);
-
-      navigator.clipboard
-        .writeText(markdown)
-        .then(() => {
-          console.log("Élément copié en Markdown");
-          this.showFeedback("Copié !");
-        })
-        .catch((err) => {
-          console.error("Erreur lors de la copie:", err);
-        });
-    }
-  }
-
-  exportMarkdownByRange() {
-    if (this.editor.toolbar.recovery) {
-      this.editor.toolbar.recovery.showPageRangeModal();
-    }
-  }
-
+ 
   // ====== MÉTHODES UTILITAIRES ======
 
   showFeedback(message) {
@@ -452,33 +426,36 @@ setupLetterSpacingControls(span) {
     }, 2000);
   }
 
-  triggerAutoCopy() {
-    if (this.editor.options.autoCopy) {
-      setTimeout(() => this.copyElementAsMarkdown(), 100);
-    }
+triggerAutoCopy() {
+  if (!this.editor.options.autoCopy) return;
+
+  const element = this.getCurrentElement();
+  if (!element) return;
+
+  // ✅ Cloner et reconstituer AVANT conversion
+  const clone = element.cloneNode(true);
+  const container = document.createElement('div');
+  container.appendChild(clone);
+  
+  // Appliquer les traitements de recovery.js
+  if (this.editor.toolbar.recovery) {
+    this.editor.toolbar.recovery.reconstructSplitElements(container);
+    this.editor.toolbar.recovery.fixBrokenBlockquotes(container);
   }
+
+  const turndown = this.editor.toolbar.recovery?.getTurndownService() 
+    || this.editor.toolbar.turndown;
+    
+  const markdown = turndown.turndown(container.innerHTML);
+
+  navigator.clipboard.writeText(markdown)
+    .then(() => console.log("Auto-copie effectuée"))
+    .catch(err => console.error("Erreur auto-copie:", err));
+}
 
   getCurrentElement() {
     return this.editor.getCurrentElement();
   }
 
-  performAutoCopy() {
-    if (!this.editor.options.autoCopy) return;
 
-    const element = this.getCurrentElement();
-    if (!element) return;
-
-    if (this.editor.toolbar.turndown) {
-      const markdown = this.editor.toolbar.turndown.turndown(element.innerHTML);
-
-      navigator.clipboard
-        .writeText(markdown)
-        .then(() => {
-          console.log("Auto-copie effectuée");
-        })
-        .catch((err) => {
-          console.error("Erreur lors de l'auto-copie:", err);
-        });
-    }
-  }
 }
