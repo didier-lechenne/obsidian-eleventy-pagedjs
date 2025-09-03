@@ -425,49 +425,7 @@ export class Commands {
 //     }, 2000);
 //   }
 
-  fusionFragments(dataRef) {
-    const allFragments = document.querySelectorAll(`[data-ref="${dataRef}"]`);
 
-    let fullHTML = "";
-    allFragments.forEach((fragment, index) => {
-      let html = fragment.innerHTML;
-
-      // Nettoyer les césures en fin de fragment
-      if (index < allFragments.length - 1) {
-        html = html.replace(/‑\s*$/, "");
-      }
-
-      fullHTML += html;
-    });
-
-    return fullHTML;
-  }
-
-  triggerAutoCopy(elementParam = null) {
-    if (!this.editor.options.autoCopy) return;
-
-    const element = elementParam || this.getCurrentElement();
-    if (!element) return;
-
-    const dataRef = element.getAttribute("data-ref");
-    let content;
-
-    if (dataRef) {
-      // Fragment scindé - fusionner manuellement
-      content = this.fusionFragments(dataRef);
-    } else {
-      // Élément normal
-      content = element.innerHTML;
-    }
-
-    const markdown = this.editor.toolbar.recovery
-      .getTurndownService()
-      .turndown(content);
-
-    navigator.clipboard
-      .writeText(markdown)
-      .then(() => this.editor.showFeedback("Copié !"));
-  }
 
   exportMarkdownByRange() {
     if (this.editor.toolbar.recovery) {

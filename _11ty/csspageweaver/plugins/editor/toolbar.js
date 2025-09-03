@@ -8,7 +8,6 @@ import {
 } from "./ui-factory.js";
 import { ACTIONS_REGISTRY } from "./actions.js";
 
-
 export class Toolbar {
   constructor(editor, customConfig = null) {
     this.editor = editor;
@@ -31,23 +30,19 @@ export class Toolbar {
     this.buttons = new Map();
     this.selects = new Map();
 
-    // Recovery pour les actions d'export
-    this.recovery = new PagedMarkdownRecovery();
+    // Recovery centralisé pour HTML→MD
+    this.recovery = new PagedMarkdownRecovery(editor);
 
     // Initialisation
-    this.setupTurndown();
+    this.setupGlobalTurndown();
     this.createToolbar();
   }
 
-  
-  setupTurndown() {
-      this.turndown = this.recovery.turndownService;
-      window.mainTurndownService = this.turndown;
+  setupGlobalTurndown() {
+    // Service global pour compatibilité
+    window.mainTurndownService = this.recovery.getTurndownService();
   }
 
-  /**
-   * Création de la toolbar via factory
-   */
   createToolbar() {
     this.element = document.createElement("div");
     this.element.className = "paged-editor-toolbar";
@@ -73,241 +68,144 @@ export class Toolbar {
     this.bindEvents();
   }
 
-  /**
-   * Gestion des événements DOM
-   */
-bindEvents() {
- // Empêcher la perte de sélection
- this.element.addEventListener("mousedown", (e) => {
-   if (!e.target.classList.contains("ls-input")) {
-     e.preventDefault();
-   }
- });
-
- // Délégation d'événements unifiée
- this.element.addEventListener("click", (e) => {
-   // Input letter-spacing - ne rien faire sur click
-   if (e.target.classList.contains("ls-input")) {
-     e.stopPropagation();
-     return;
-   }
-
-   // Gestion des options de dropdown
-   const option = e.target.closest(".custom-option");
-   if (option) {
-     this.handleCustomOptionClick(option);
-     return;
-   }
-
-   // Gestion des triggers de dropdown
-   const trigger = e.target.closest(".select-trigger");
-   if (trigger) {
-     e.stopPropagation();
-     this.toggleCustomDropdown(trigger);
-     return;
-   }
-
-   // Gestion des boutons normaux
-   const button = e.target.closest("button[data-command]");
-   if (button) {
-     const command = button.dataset.command;
-     const buttonElement = this.buttons.get(command);
-
-     if (buttonElement?.action) {
-       buttonElement.action();
-       this.updateButtonStates();
-     }
-   }
- });
-
- // Event listener unique pour l'input letter-spacing
- this.element.addEventListener("input", (e) => {
-   if (e.target.classList.contains("ls-input")) {
-     e.stopPropagation();
-     
-     // Appliquer le letter-spacing immédiatement
-     this.editor.commands.toggleLetterSpacing();
-     this.updateButtonStates();
-   }
- });
-}
-
-  /**
-   * Gestion des dropdowns personnalisés
-   */
-  toggleCustomDropdown(trigger) {
-    const wrapper = trigger.closest(".toolbar-select-wrapper");
-    const dropdown = wrapper.querySelector(".custom-dropdown");
-
-    // Fermer les autres dropdowns
-    this.element
-      .querySelectorAll(".custom-dropdown")
-      .forEach((otherDropdown) => {
-        if (otherDropdown !== dropdown) {
-          otherDropdown.style.display = "none";
-        }
-      });
-
-    // Toggle du dropdown actuel
-    const isCurrentlyVisible = dropdown.style.display !== "none";
-    dropdown.style.display = isCurrentlyVisible ? "none" : "block";
-  }
-
-  /**
-   * Gestion des sélections dans les dropdowns
-   */
-  handleCustomOptionClick(optionElement) {
-    const wrapper = optionElement.closest(".toolbar-select-wrapper");
-    const command = wrapper.dataset.command;
-    const value = optionElement.dataset.value;
-
-    const selectElement = this.selects.get(command);
-    if (selectElement?.action && value) {
-      selectElement.action(value);
-    }
-
-    // Fermer le dropdown
-    const dropdown = wrapper.querySelector(".custom-dropdown");
-    dropdown.style.display = "none";
-  }
-
-  /**
-   * Affichage de la toolbar
-   */
-  show(selection) {
-    if (!selection?.range) return;
-
-    this.isVisible = true;
-    this.element.classList.add("visible");
-
-    this.positionToolbar(selection.range);
-    this.updateButtonStates();
-  }
-
-  /**
-   * Masquage de la toolbar
-   */
-  hide() {
-    if (document.activeElement?.classList.contains("ls-input")) {
-      return;
-    }
-
-    // Fermer tous les dropdowns
-    this.element.querySelectorAll(".custom-dropdown").forEach((dropdown) => {
-      dropdown.style.display = "none";
+  bindEvents() {
+    // Empêcher la perte de sélection
+    this.element.addEventListener("mousedown", (e) => {
+      if (!e.target.classList.contains("ls-input")) {
+        e.preventDefault();
+      }
     });
 
-    this.isVisible = false;
-    this.element.classList.remove("visible");
-  }
+    // Délégation d'événements unifiée
+    this.element.addEventListener("click", (e) => {
+      // Input letter-spacing - ne rien faire sur click
+      if (e.target.classList.contains("ls-input")) {
+        e.stopPropagation();
+        return;
+      }
 
-  /**
-   * Positionnement de la toolbar
-   */
-  positionToolbar(range) {
-    const rect = range.getBoundingClientRect();
+      // Gestion des options de dropdown
+      const option = e.target.closest(".custom-option");
+      if (option) {
+        this.handleCustomOptionClick(option);
+        return;
+      }
 
-    if (rect.width === 0 && rect.height === 0) {
-      this.hide();
-      return;
-    }
+      // Gestion des triggers de dropdown
+      const trigger = e.target.closest(".select-trigger");
+      if (trigger) {
+        e.stopPropagation();
+        this.toggleDropdown(trigger);
+        return;
+      }
 
-    const toolbarRect = this.element.getBoundingClientRect();
+      // Gestion des boutons
+      const button = e.target.closest(".toolbar-button");
+      if (button && !button.disabled) {
+        const actionId = button.getAttribute("data-action");
+        this.executeAction(actionId);
+        return;
+      }
+    });
 
-    // Position centrée horizontalement
-    let left = rect.left + rect.width / 2 - toolbarRect.width / 2;
-    let top = rect.top - toolbarRect.height - 80;
+    // Gestion des inputs letter-spacing
+    this.element.addEventListener("input", (e) => {
+      if (e.target.classList.contains("ls-input")) {
+        this.handleLetterSpacingInput(e);
+      }
+    });
 
-    // Ajustements pour rester dans l'écran
-    const margin = 80;
-    if (left < margin) left = margin;
-    if (left + toolbarRect.width > window.innerWidth - margin) {
-      left = window.innerWidth - toolbarRect.width - margin;
-    }
-
-    // Afficher en-dessous si pas de place au-dessus
-    if (top < margin) {
-      top = rect.bottom + 80;
-    }
-
-    // Application avec scroll
-    this.element.style.left = `${left + window.scrollX}px`;
-    this.element.style.top = `${top + window.scrollY}px`;
-  }
-
-  /**
-   * Mise à jour des états des boutons
-   * Délègue la logique métier aux actions via checkActive
-   */
-  updateButtonStates() {
-    const selection = window.getSelection();
-    if (selection.rangeCount === 0) return;
-
-    const range = selection.getRangeAt(0);
-    const ancestor = range.commonAncestorContainer;
-    const element =
-      ancestor.nodeType === Node.TEXT_NODE ? ancestor.parentElement : ancestor;
-
-    // Utilise les fonctions checkActive définies dans actions.js
-    this.buttons.forEach((buttonElement, actionId) => {
-      if (buttonElement.isToggle) {
-        const isActive = buttonElement.updateActiveState(element);
-        const domButton = this.element.querySelector(
-          `[data-command="${actionId}"]`
-        );
-        domButton?.classList.toggle("active", isActive);
+    // Fermer dropdowns en cliquant ailleurs
+    document.addEventListener("click", (e) => {
+      if (!this.element.contains(e.target)) {
+        this.closeAllDropdowns();
       }
     });
   }
 
-  /**
-   * Méthodes utilitaires pour l'extensibilité
-   */
-  getAction(actionId) {
-    return ACTIONS_REGISTRY[actionId] || null;
+  handleCustomOptionClick(option) {
+    const select = option.closest(".toolbar-select");
+    const actionId = select.getAttribute("data-action");
+    const value = option.getAttribute("data-value");
+
+    this.executeAction(actionId, value);
+    this.closeDropdown(select);
+    this.updateSelectDisplay(select, option);
   }
 
-  addAction(actionId, position = -1) {
-    if (position === -1) {
-      this.config.elements.push(actionId);
-    } else {
-      this.config.elements.splice(position, 0, actionId);
+  handleLetterSpacingInput(e) {
+    const value = parseFloat(e.target.value) || 0;
+    this.executeAction("letter-spacing", value);
+  }
+
+  toggleDropdown(trigger) {
+    const select = trigger.parentElement;
+    const dropdown = select.querySelector(".select-dropdown");
+    const isOpen = dropdown.style.display === "block";
+
+    this.closeAllDropdowns();
+
+    if (!isOpen) {
+      dropdown.style.display = "block";
+      select.classList.add("active");
+    }
+  }
+
+  closeDropdown(select) {
+    const dropdown = select.querySelector(".select-dropdown");
+    dropdown.style.display = "none";
+    select.classList.remove("active");
+  }
+
+  closeAllDropdowns() {
+    this.element.querySelectorAll(".select-dropdown").forEach(dropdown => {
+      dropdown.style.display = "none";
+    });
+    this.element.querySelectorAll(".toolbar-select.active").forEach(select => {
+      select.classList.remove("active");
+    });
+  }
+
+  updateSelectDisplay(select, option) {
+    const trigger = select.querySelector(".select-trigger");
+    const label = trigger.querySelector(".select-label");
+    label.textContent = option.textContent;
+  }
+
+  executeAction(actionId, value = null) {
+    const action = ACTIONS_REGISTRY[actionId];
+    if (!action) {
+      console.warn(`Action inconnue: ${actionId}`);
+      return;
     }
 
-    this.rebuildToolbar();
-  }
-
-  removeAction(actionId) {
-    const index = this.config.elements.indexOf(actionId);
-    if (index > -1) {
-      this.config.elements.splice(index, 1);
-      this.rebuildToolbar();
+    try {
+      action.execute(this.editor, value);
+    } catch (error) {
+      console.error(`Erreur lors de l'exécution de l'action ${actionId}:`, error);
     }
   }
 
-  rebuildToolbar() {
-    this.element.innerHTML = "";
-    this.buttons.clear();
-    this.selects.clear();
-    this.createToolbar();
+  show(x, y) {
+    this.element.style.left = `${x}px`;
+    this.element.style.top = `${y}px`;
+    this.element.style.display = "flex";
+    this.isVisible = true;
   }
 
-  /**
-   * Nettoyage
-   */
+  hide() {
+    this.element.style.display = "none";
+    this.isVisible = false;
+    this.closeAllDropdowns();
+  }
+
+  isVisible() {
+    return this.isVisible;
+  }
+
   destroy() {
-    if (this.element) {
-      this.element.querySelectorAll(".custom-dropdown").forEach((dropdown) => {
-        dropdown.style.display = "none";
-      });
-    }
-
-    if (this.element?.parentNode) {
+    if (this.element && this.element.parentNode) {
       this.element.parentNode.removeChild(this.element);
     }
-
-    this.buttons.clear();
-    this.selects.clear();
-    this.element = null;
   }
 }
