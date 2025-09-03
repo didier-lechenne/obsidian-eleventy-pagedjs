@@ -397,7 +397,6 @@ export class Commands {
     this.triggerAutoCopy();
   }
 
- 
   // ====== MÉTHODES UTILITAIRES ======
 
   showFeedback(message) {
@@ -425,37 +424,62 @@ export class Commands {
       }, 300);
     }, 2000);
   }
+  // copyElementToClipboard(element) {
+  //   if (!this.toolbar?.recovery) return;
 
-triggerAutoCopy() {
-  if (!this.editor.options.autoCopy) return;
+  //   // Cloner et reconstituer
+  //   const clone = element.cloneNode(true);
+  //   const container = document.createElement('div');
+  //   container.appendChild(clone);
 
-  const element = this.getCurrentElement();
-  if (!element) return;
+  //   this.toolbar.recovery.reconstructSplitElements(container);
+  //   this.toolbar.recovery.fixBrokenBlockquotes(container);
 
-  // ✅ Cloner et reconstituer AVANT conversion
-  const clone = element.cloneNode(true);
-  const container = document.createElement('div');
-  container.appendChild(clone);
-  
-  // Appliquer les traitements de recovery.js
-  if (this.editor.toolbar.recovery) {
-    this.editor.toolbar.recovery.reconstructSplitElements(container);
-    this.editor.toolbar.recovery.fixBrokenBlockquotes(container);
+  //   const markdown = this.toolbar.recovery.getTurndownService().turndown(container.innerHTML);
+
+  //   navigator.clipboard.writeText(markdown)
+  //     .then(() => {
+  //       console.log("✅ Auto-copie avec reconstruction effectuée");
+  //       this.showFeedback("Copié !");
+  //     })
+  //     .catch(err => console.error("❌ Erreur auto-copie:", err));
+  // }
+
+  triggerAutoCopy(element) {
+    if (!this.editor.options.autoCopy) return;
+
+    const element = this.getCurrentElement();
+    if (!element) return;
+
+    // Cloner et reconstituer même pour un seul élément
+    const clone = element.cloneNode(true);
+    const container = document.createElement("div");
+    container.appendChild(clone);
+
+    if (this.editor.toolbar.recovery) {
+      this.editor.toolbar.recovery.reconstructSplitElements(container);
+      this.editor.toolbar.recovery.fixBrokenBlockquotes(container);
+    }
+
+    const turndown =
+      this.editor.toolbar.recovery?.getTurndownService() ||
+      this.editor.toolbar.turndown;
+
+    const markdown = turndown.turndown(container.innerHTML);
+
+    navigator.clipboard
+      .writeText(markdown)
+      .then(() => console.log("Auto-copie avec reconstruction effectuée"))
+      .catch((err) => console.error("Erreur auto-copie:", err));
   }
 
-  const turndown = this.editor.toolbar.recovery?.getTurndownService() 
-    || this.editor.toolbar.turndown;
-    
-  const markdown = turndown.turndown(container.innerHTML);
-
-  navigator.clipboard.writeText(markdown)
-    .then(() => console.log("Auto-copie effectuée"))
-    .catch(err => console.error("Erreur auto-copie:", err));
-}
+  exportMarkdownByRange() {
+    if (this.editor.toolbar.recovery) {
+      this.editor.toolbar.recovery.showPageRangeModal();
+    }
+  }
 
   getCurrentElement() {
     return this.editor.getCurrentElement();
   }
-
-
 }

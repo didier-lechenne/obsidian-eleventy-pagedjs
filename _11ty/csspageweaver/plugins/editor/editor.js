@@ -125,7 +125,7 @@ document.addEventListener("click", (e) => {
   const element = e.target.closest(this.options.selector);
   if (element) {
     // Copie automatique en Markdown
-    this.copyElementToClipboard(element);
+    this.editor.toolbar.editor.triggerAutoCopy();
     
     // Afficher la toolbar même sans sélection de texte
     const selection = this.selection.getCurrentSelection();
@@ -308,24 +308,7 @@ document.addEventListener("click", (e) => {
     return null;
   }
 
-  // Copie automatique de l'élément en Markdown
-  copyElementToClipboard(element) {
-    if (!this.toolbar?.turndown) {
-      console.warn("Turndown non disponible pour la conversion Markdown");
-      return;
-    }
 
-    const markdown = this.toolbar.turndown.turndown(element.innerHTML);
-    
-    navigator.clipboard.writeText(markdown)
-      .then(() => {
-        console.log("✅ Auto-copie Markdown effectuée");
-        this.showFeedback("Copié !");
-      })
-      .catch((err) => {
-        console.error("❌ Erreur auto-copie:", err);
-      });
-  }
 
   // Feedback visuel pour la copie
   showFeedback(message) {
