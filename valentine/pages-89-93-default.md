@@ -1,15 +1,9 @@
 ---
 template: default
 ---
-{% image "images/carte_skate-01.jpg", { 
-  id: "figure-10"
-} %}
-
-Légende de carte sensible, Valentine Saint-Martin, 2022.
-
 ## \## \[\[VÉLO\]\]
 
-<breakpage />
+<breakpage>
 
 Bruno Latour, dans son livre _où atterrir ?_ propose une manière de repenser et s’orienter en politique en interrogant nos attachements, les territoires, et les réseaux de dépendance. Dans le but de comprendre ce à quoi nous tenons, ce qui nous permet de vivre, de nous déplacer, de produire ou de respirer. Dans un monde en basculement, où les repères s’effondrent, cette méthode permet de relocaliser les enjeux politiques autour de questions simple et fondamentales : de quoi dépendons-nous ? Qui dépend de nous ? Avec qui partageons-nous le territoire ? Que voulons-nous préserver ou transformer ?
 
@@ -29,4 +23,4 @@ Dans _Énergie et équité_ Ivan Illich montre que les transports motorisés, et
 
 > « Le vélo nécessite une moindre place. Là où se gare une seule voiture, on peut ranger dix-huit vélos, et l’espace qu’il faut pour faire passer une voiture livre passage à trente vélos. Pour faire franchir un pont à 40 000 personnes en une heure, il faut deux voies d’une certaine largeur si l’on utilise des trains, quatre si l’on utilise des autobus, douze pour des voitures, et une seule si tous traversent à bicyclette. Le vélo est le seul véhicule qui conduise l’homme de porte à porte, à n’importe quelle heure, et par l’itinéraire de son choix. Le cycliste peut atteindre de nouveaux endroits sans que son vélo désorganise un espace qui pourrait mieux servir à la vie.»^[ILLICH, Ivan. _Énergie, et équité_. Arthaud poche. \[S. l.\] : \[s. n.\], 2018. Les fondamentaux de l’écologie]
 
-Finalement les ateliers participatifs de réparation de vélo sont aussi des lieux où des lignes se dessinent, ce sont des lignes de vie, de <sup>gestes</sup> et <smallcaps>d’apprentissages</smallcaps>. Dans cette perspective, le vélo n’est pas un objet parmi d’autres, <span style="--ls:15">mais plutôt un modèle</span>. Il incarne une relation au monde à l’échelle humaine, et une forme de résistance douce face à l’injonction à aller toujours plus vite, et à posséder toujours plus.
+Finalement les ateliers participatifs de réparation de vélo sont aussi des lieux où des lignes se dessinent, ce sont des lignes de vie, de gestes et d’apprentissages. Dans cette perspective, le vélo n’est pas un objet parmi d’autres, mais plutôt un modèle. Il incarne une relation au monde à l’échelle humaine, et une forme de résistance douce face à l’injonction à aller toujours plus vite, et à posséder toujours plus.

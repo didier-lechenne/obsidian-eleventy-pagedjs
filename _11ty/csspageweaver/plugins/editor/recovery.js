@@ -29,93 +29,93 @@ export class PagedMarkdownRecovery {
 
   // === RECONSTITUTION ELEMENTS SCINDÉS ===
 
-// === RECONSTITUTION ELEMENTS SCINDÉS + POST-TRAITEMENT ===
+  // === RECONSTITUTION ELEMENTS SCINDÉS + POST-TRAITEMENT ===
 
-reconstructSplitElements(content) {
-  // Trouve toutes les sections
-  const sections = content.querySelectorAll("section");
+  reconstructSplitElements(content) {
+    // Trouve toutes les sections
+    const sections = content.querySelectorAll("section");
 
-  if (sections.length === 0) {
-    return; // Aucune section trouvée
-  }
-
-  // Collecte tout le contenu de toutes les sections
-  let combinedContent = "";
-  sections.forEach((section) => {
-    combinedContent += section.innerHTML;
-  });
-
-  // Vide le contenu principal et ne garde qu'une seule section avec tout le contenu
-  content.innerHTML = `<section>${combinedContent}</section>`;
-
-  // Maintenant réunit les paragraphes scindés
-  const section = content.querySelector("section");
-  const fragmentGroups = new Map();
-
-  // Groupe les éléments par data-ref
-  section.querySelectorAll("[data-ref]").forEach((element) => {
-    const ref = element.getAttribute("data-ref");
-    if (!fragmentGroups.has(ref)) {
-      fragmentGroups.set(ref, []);
+    if (sections.length === 0) {
+      return; // Aucune section trouvée
     }
-    fragmentGroups.get(ref).push(element);
-  });
 
-  // Réunit les fragments
-  fragmentGroups.forEach((fragments) => {
-    if (fragments.length > 1) {
-      const firstFragment = fragments[0];
-      let completeContent = "";
+    // Collecte tout le contenu de toutes les sections
+    let combinedContent = "";
+    sections.forEach((section) => {
+      combinedContent += section.innerHTML;
+    });
 
-      fragments.forEach((fragment) => {
-        completeContent += fragment.innerHTML;
-      });
+    // Vide le contenu principal et ne garde qu'une seule section avec tout le contenu
+    content.innerHTML = `<section>${combinedContent}</section>`;
 
-      firstFragment.innerHTML = completeContent;
+    // Maintenant réunit les paragraphes scindés
+    const section = content.querySelector("section");
+    const fragmentGroups = new Map();
 
-      // Supprime les fragments suivants
-      for (let i = 1; i < fragments.length; i++) {
-        fragments[i].remove();
+    // Groupe les éléments par data-ref
+    section.querySelectorAll("[data-ref]").forEach((element) => {
+      const ref = element.getAttribute("data-ref");
+      if (!fragmentGroups.has(ref)) {
+        fragmentGroups.set(ref, []);
       }
-    }
-  });
+      fragmentGroups.get(ref).push(element);
+    });
 
-  // POST-TRAITEMENT : Répare les blockquotes cassées
-  this.fixBrokenBlockquotes(section);
+    // Réunit les fragments
+    fragmentGroups.forEach((fragments) => {
+      if (fragments.length > 1) {
+        const firstFragment = fragments[0];
+        let completeContent = "";
 
-  // Nettoyage des footnotes
-  const footnotesSep = section.querySelector("hr.footnotes-sep");
-  if (footnotesSep) {
-    footnotesSep.remove();
-  }
+        fragments.forEach((fragment) => {
+          completeContent += fragment.innerHTML;
+        });
 
-  const footnotesSection = section.querySelector("section.footnotes");
-  if (footnotesSection) {
-    footnotesSection.remove();
-  }
-}
+        firstFragment.innerHTML = completeContent;
 
-// POST-TRAITEMENT : Répare les blockquotes avec contenu coupé
-fixBrokenBlockquotes(container) {
-  const blockquotes = container.querySelectorAll('blockquote');
-  
-  blockquotes.forEach(blockquote => {
-    const paragraphs = blockquote.querySelectorAll('p');
-    
-    // Trouve les paragraphes qui se terminent sans ponctuation
-    paragraphs.forEach((p, index) => {
-      const text = p.textContent.trim();
-      const nextP = paragraphs[index + 1];
-      
-      // Si le paragraphe se termine par un caractère non-final ET qu'il y a un suivant
-      if (nextP && text && !text.match(/[.!?»"]\s*$/)) {
-        // Fusionne avec le paragraphe suivant
-        p.innerHTML += ' ' + nextP.innerHTML;
-        nextP.remove();
+        // Supprime les fragments suivants
+        for (let i = 1; i < fragments.length; i++) {
+          fragments[i].remove();
+        }
       }
     });
-  });
-}
+
+    // POST-TRAITEMENT : Répare les blockquotes cassées
+    this.fixBrokenBlockquotes(section);
+
+    // Nettoyage des footnotes
+    const footnotesSep = section.querySelector("hr.footnotes-sep");
+    if (footnotesSep) {
+      footnotesSep.remove();
+    }
+
+    const footnotesSection = section.querySelector("section.footnotes");
+    if (footnotesSection) {
+      footnotesSection.remove();
+    }
+  }
+
+  // POST-TRAITEMENT : Répare les blockquotes avec contenu coupé
+  fixBrokenBlockquotes(container) {
+    const blockquotes = container.querySelectorAll("blockquote");
+
+    blockquotes.forEach((blockquote) => {
+      const paragraphs = blockquote.querySelectorAll("p");
+
+      // Trouve les paragraphes qui se terminent sans ponctuation
+      paragraphs.forEach((p, index) => {
+        const text = p.textContent.trim();
+        const nextP = paragraphs[index + 1];
+
+        // Si le paragraphe se termine par un caractère non-final ET qu'il y a un suivant
+        if (nextP && text && !text.match(/[.!?»"]\s*$/)) {
+          // Fusionne avec le paragraphe suivant
+          p.innerHTML += " " + nextP.innerHTML;
+          nextP.remove();
+        }
+      });
+    });
+  }
 
   exportPageRange(startPage, endPage, filename = "pages-selection.md") {
     // 1. Récupérer le data-template et le front matter de la page de départ
@@ -159,14 +159,15 @@ fixBrokenBlockquotes(container) {
     selectedPages.forEach((page) => container.appendChild(page));
     this.reconstructSplitElements(container);
 
-
     // 6. Convertir en Markdown
-    const markdownContent = this.getTurndownService().turndown(
+    let markdownContent = this.getTurndownService().turndown(
       container.innerHTML
     );
 
+    markdownContent = markdownContent
+      .replace(/<breakcolumn>(?!\s*\/)/g, "<breakcolumn />")
+      .replace(/<breakpage>(?!\s*\/)/g, "<breakpage />");
 
-    
     // 7. Ajouter le front matter au Markdown
     const frontMatterYaml = `---
 ${Object.entries(frontMatter)
