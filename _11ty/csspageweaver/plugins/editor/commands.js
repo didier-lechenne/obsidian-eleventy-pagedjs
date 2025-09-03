@@ -399,32 +399,6 @@ export class Commands {
 
   // ====== MÉTHODES UTILITAIRES ======
 
-  showFeedback(message) {
-    const feedback = document.createElement("div");
-    feedback.textContent = message;
-    feedback.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #4CAF50;
-      color: white;
-      padding: 10px;
-      border-radius: 4px;
-      z-index: 10000;
-      opacity: 1;
-      transition: opacity 0.3s ease;
-    `;
-
-    document.body.appendChild(feedback);
-
-    setTimeout(() => {
-      feedback.style.opacity = "0";
-      setTimeout(() => {
-        document.body.removeChild(feedback);
-      }, 300);
-    }, 2000);
-  }
-
 
   triggerAutoCopy() {
     if (!this.editor.options.autoCopy) return;
