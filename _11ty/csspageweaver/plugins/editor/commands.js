@@ -424,26 +424,7 @@ export class Commands {
       }, 300);
     }, 2000);
   }
-  // copyElementToClipboard(element) {
-  //   if (!this.toolbar?.recovery) return;
 
-  //   // Cloner et reconstituer
-  //   const clone = element.cloneNode(true);
-  //   const container = document.createElement('div');
-  //   container.appendChild(clone);
-
-  //   this.toolbar.recovery.reconstructSplitElements(container);
-  //   this.toolbar.recovery.fixBrokenBlockquotes(container);
-
-  //   const markdown = this.toolbar.recovery.getTurndownService().turndown(container.innerHTML);
-
-  //   navigator.clipboard.writeText(markdown)
-  //     .then(() => {
-  //       console.log("✅ Auto-copie avec reconstruction effectuée");
-  //       this.showFeedback("Copié !");
-  //     })
-  //     .catch(err => console.error("❌ Erreur auto-copie:", err));
-  // }
 
   triggerAutoCopy() {
     if (!this.editor.options.autoCopy) return;
