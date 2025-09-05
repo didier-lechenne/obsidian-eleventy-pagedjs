@@ -52,3 +52,5 @@ build": "npm run clean && npm run build:screen && npm run build:print
 Prends en compte les écritures spécifiques à Obsidian
 
 https://help.obsidian.md/embeds
+
+Alla
