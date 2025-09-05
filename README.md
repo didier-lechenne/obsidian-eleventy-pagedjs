@@ -49,7 +49,8 @@ start": "npm run clean && npx eleventy --serve --config=.eleventyStart.js
 build": "npm run clean && npm run build:screen && npm run build:print
 ```
 
-
 Prends en compte les écritures spécifiques à Obsidian
 
 https://help.obsidian.md/embeds
+
+
