@@ -53,4 +53,5 @@ Prends en compte les écritures spécifiques à Obsidian
 
 https://help.obsidian.md/embeds
 
-Alla
+Allo
+
