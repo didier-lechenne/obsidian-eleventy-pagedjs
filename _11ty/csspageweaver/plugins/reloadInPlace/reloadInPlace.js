@@ -10,7 +10,7 @@
  */
 
 
-import { Handler } from '/csspageweaver/lib/paged.esm.js';
+import { Handler } from "../../../lib/paged.esm.js";
 
 
 export default class reloadInPlace extends Handler {

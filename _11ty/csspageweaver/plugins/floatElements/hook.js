@@ -5,8 +5,8 @@
  * @see { @link https://jsdoc.app/about-getting-started }
  */
 
-import { Handler } from '/csspageweaver/lib/paged.esm.js';
-import * as csstree from '/csspageweaver/lib/csstree.min.js';
+import { Handler } from "../../../lib/paged.esm.js";
+import * as csstree from '../../../lib/csstree.min.js';
 
 export class floatElems extends Handler {
   constructor(chunker, polisher, caller) {

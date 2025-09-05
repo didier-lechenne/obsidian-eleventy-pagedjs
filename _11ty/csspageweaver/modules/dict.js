@@ -46,23 +46,22 @@ class CssPageWeaver_Dict {
 
 	/*-- Dict 		--*/
 
-	setSharedDictionnary(){
+setSharedDictionnary(){
+    window.cssPageWeaver = {}
+    cssPageWeaver.docTitle = document.getElementsByTagName("title")[0].text.replace(/ /g, "");
 
-		window.cssPageWeaver = {}
-		// Get the document title and remove spaces for use as a variable
-		cssPageWeaver.docTitle =  document.getElementsByTagName("title")[0].text.replace(/ /g, "");
+    cssPageWeaver.directory = {}
+    
+    // Récupère le chemin complet de la page actuelle
+    const currentPath = window.location.pathname;
+    const basePath = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
+    
+    cssPageWeaver.directory.root = `${window.location.origin}${basePath}csspageweaver`
+    cssPageWeaver.directory.plugins = `${cssPageWeaver.directory.root}/plugins`
 
-		// Set path & directory
-		cssPageWeaver.directory = {}
-		cssPageWeaver.directory.root = `${window.location.origin}/csspageweaver`
-		cssPageWeaver.directory.plugins = `${cssPageWeaver.directory.root}/plugins`
-
-		// Initialise user custom files
-		cssPageWeaver.user = {}
-
-		// Object to hold all features
-		cssPageWeaver.features = {}
-	}
+    cssPageWeaver.user = {}
+    cssPageWeaver.features = {}
+}
 
 	/*-- Import or list files   --*/
 
@@ -79,7 +78,7 @@ class CssPageWeaver_Dict {
 		
 		try{
 			// Attempt to read the manifest file to get the list of features
-			return await this.importJson(`${cssPageWeaver.directory.root}`,`manifest.json`);
+			return await this.importJson(`${cssPageWeaver.directory.root}`,`./manifest.json`);
 		} catch(error){
 			console.log('Manifest not found, trying alternative method.');
 			// If the manifest is not found, list feature names from the plugin directory

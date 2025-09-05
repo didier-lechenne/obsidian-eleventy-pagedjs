@@ -4,7 +4,7 @@
  * @see { @link https://gitlab.com/csspageweaver/plugins/table_of_content/ }
  */
 
-import { Handler } from '/csspageweaver/lib/paged.esm.js';
+import { Handler } from "../../../lib/paged.esm.js";
 
 export default class tableOfContent extends Handler {
 

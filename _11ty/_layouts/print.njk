@@ -6,7 +6,7 @@
     <title>{% if title %}{{ title }} | {% endif %}{{ config.title }}</title>
     <meta name="description" content="{{ subtitle or config.subtitle }}" />
 
-    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
 
     <meta property="og:title" content="{{ title or config.title }}" />
     <meta
@@ -17,6 +17,7 @@
     <meta property="og:url" content="{{ config.url }}{{ page.url }}" />
 
    
+    
     <script src="./csspageweaver/lib/csstree.min.js"></script>
     <script src="./csspageweaver/main.js" type="module"></script>
   </head>

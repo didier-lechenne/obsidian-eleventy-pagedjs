@@ -1,4 +1,4 @@
-import { Handler } from "/csspageweaver/lib/paged.esm.js";
+import { Handler } from "../../../lib/paged.esm.js";
 import { TurndownService } from './turndown.js';
 
 export default class Layout extends Handler {

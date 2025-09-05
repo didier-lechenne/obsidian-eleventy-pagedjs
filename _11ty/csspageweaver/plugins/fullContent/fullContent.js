@@ -4,7 +4,7 @@
  * @author Didier Lechenne <didier@lechenne.fr>
  * @see { @link https://gitlab.com/csspageweaver/plugins/fullContent }
  */
-import { Handler } from "/csspageweaver/lib/paged.esm.js";
+import { Handler } from "../../../lib/paged.esm.js";
 
 let bleedFull = "6mm";
 

@@ -3,7 +3,7 @@
  * @file Plugin éditeur Medium-like pour PagedJS avec formatage français
  * @author Editor Plugin
  */
-import { Handler } from "/csspageweaver/lib/paged.esm.js";
+import { Handler } from "../../../lib/paged.esm.js";
 import { Toolbar } from "./toolbar.js";
 import { Selection } from "./selection.js";
 import { Commands } from "./commands.js";

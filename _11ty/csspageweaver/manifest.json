@@ -20,7 +20,7 @@
     },
     
     "css": [
-       
+       "/valentine/assets/css/print.css",
         "/assets/css/print.css"
     ],
     
