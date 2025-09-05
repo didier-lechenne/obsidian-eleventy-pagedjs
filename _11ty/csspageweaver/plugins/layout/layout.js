@@ -206,10 +206,6 @@ setupTurndown() {
             this.cleanupElement(this.state.hoveredElement);
             this.state.hoveredElement = null;
         }
-        // const alignSelect = document.querySelector('#align-self');
-        // if (alignSelect) alignSelect.value = 'auto';
-
-        // this.updateUI(null);
     }
 
     // Sélectionne un élément pour édition

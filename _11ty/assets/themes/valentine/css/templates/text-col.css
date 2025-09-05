@@ -27,8 +27,8 @@
   --g-column-gutter: var(--grid-col-gutter, var(--gutter));
   columns: var(--g-column-count);
   column-gap: var(--g-column-gutter);
-  column-fill: auto;
-  display: inline-block;
+  column-fill: balance;
+  /* display: inline-block; */
   /*columnn-fill: balance; */
 }
 
@@ -59,6 +59,15 @@
   /* page: clean; */
   
 }
+
+[data-template="textCol"] h3,
+[data-template="bibliographie"] h3,
+.bibliographie h3 {
+    /* column-span: all;
+    max-width: 100% !important; */
+}
+
+
 
 [data-template="textCol"] p,
 [data-template="bibliographie"] p,

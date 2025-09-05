@@ -116,7 +116,7 @@ export const ACTIONS_REGISTRY = {
     },
   },
 
-  "break-column": {
+  "breakcolumn": {
     type: "insert",
     icon: "⤋",
     title: "Saut de colonne",
@@ -126,7 +126,7 @@ export const ACTIONS_REGISTRY = {
         const range = selection.getRangeAt(0);
         range.deleteContents();
 
-        const br = editor.commands.createElement("br", "break-column");
+        const br = editor.commands.createElement("hr", "breakcolumn");
 
         range.insertNode(br);
         range.setStartAfter(br);
@@ -137,7 +137,7 @@ export const ACTIONS_REGISTRY = {
     },
   },
 
-  "break-page": {
+  "breakpage": {
     type: "insert",
     icon: "⤓",
     title: "Saut de page",
@@ -147,7 +147,7 @@ export const ACTIONS_REGISTRY = {
         const range = selection.getRangeAt(0);
         range.deleteContents();
 
-        const br = editor.commands.createElement("br", "break-column");
+        const br = editor.commands.createElement("br", "breakpage");
 
         range.insertNode(br);
         range.setStartAfter(br);

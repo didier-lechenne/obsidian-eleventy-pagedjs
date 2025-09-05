@@ -25,12 +25,42 @@
 
 
 
-    <link rel="stylesheet" href="assets/css/style.css" />
+    <link rel="stylesheet" href="assets/css/screen.css" />
+    <script  src="assets/js/screen.js"></script>
     <script  src="assets/js/sideNotes.js"></script>
     
-
   </head>
   <body class="screen {{ bodyClass }}" lang="fr">
+
+<header id="header">
+    <h1>{{ config.title }}</h1>
+    <h2>{{ config.subtitle }}</h2>
+
+<div class="meta">
+ <div>
+  <div class="meta-name">{{ config.name }}</div>
+  <div class="meta-year">{{ config.year }}</div>
+ </div>
+
+<div>
+ <p>
+  {{ config.mention }} <br>
+  {{ config.option }} <br>
+  {{ config.tutor }} <br>
+  {{ config.university }}  
+ </p>   
+</div>
+
+<div>
+ <p>
+
+ </p>   
+</div>
+
+</div>
+
+
+</header>
 
 
     <main id="main">
@@ -40,31 +70,16 @@
       <ul class="nav-ul">
         {% for p in collections.screenPages %}
         <li id="nav-{{ p.fileSlug | cleanTitle | slug }}" class="nav-{{ p.data.template | default("default") }}">
-          <a href="#{{ p.fileSlug | cleanTitle | slug }}">
-            {{ p.templateContent | extractTitle  }}
-          </a>
+          <a href="#{{ p.fileSlug | cleanTitle | slug }}">{{ p.templateContent | extractTitle  }}</a>
         </li>
         {% endfor %}
       </ul>
     </nav>
 
       {% for p in collections.screenPages %}
-      <section id="{{ p.fileSlug | cleanTitle | slug }}" class="{{ p.data.template | default('default') }}">
-      
-         {{ p.templateContent | safe  }} 
-
-          {% if backlinks.length > 0 %}
-          <aside class="backlinks">
-            <h3>Pages qui pointent vers celle-ci</h3>
-            <ul>
-              {% for link in backlinks %}
-              <li><a href="{{ link.url }}">{{ link.title }}</a></li>
-              {% endfor %}
-            </ul>
-          </aside>
-          {% endif %}
-
-      </section>
+         {% set templateName =
+        p.data.template | default('default') %} {% include "templates/" +
+        templateName + ".njk" %} 
       {% endfor %}
     </main>
   </body>

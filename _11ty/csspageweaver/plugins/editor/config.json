@@ -13,7 +13,7 @@
 	},
 
 	"hook": "editor.js",
-	"script": "turndown.js",
+	"script": "lib/turndown.js",
 	"stylesheet": "editor.css"
 	
 }

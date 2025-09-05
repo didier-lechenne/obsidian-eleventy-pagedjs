@@ -1,1 +1,0 @@
-RACINE, M. La vie future des objets : une contribution à la réflexion sur la durabilité à travers l’expérience spéculative du projet ADN. _Sciences du Design_. 2019, n° 10(2), p. 51‑60

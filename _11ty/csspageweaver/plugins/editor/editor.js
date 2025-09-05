@@ -204,7 +204,7 @@ export default class Editor extends Handler {
     this.setupEditableElements();
     // La toolbar est déjà initialisée dans le constructeur
 
-    console.log("✅ Éditeur activé");
+//     console.log("✅ Éditeur activé");
   }
 
   deactivate() {
@@ -223,7 +223,7 @@ export default class Editor extends Handler {
       });
     }
 
-    console.log("❌ Éditeur désactivé");
+//     console.log("❌ Éditeur désactivé");
   }
 
   // ====== MÉTHODES UTILITAIRES ======
@@ -316,11 +316,11 @@ export default class Editor extends Handler {
       background: #4CAF50;
       color: white;
       padding: 8px 12px;
-      border-radius: 4px;
+      border-radius: 0px;
       z-index: 10000;
       opacity: 1;
       transition: opacity 0.3s ease;
-      font-size: 14px;
+      font-size: 12px;
     `;
 
     document.body.appendChild(feedback);
