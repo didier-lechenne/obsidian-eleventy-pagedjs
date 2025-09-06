@@ -62,12 +62,23 @@ module.exports = function (eleventyConfig) {
     ignored: ["node_modules/**", ".git/**", "**/.DS_Store", "_site/**/*", "**/*.tmp"],
   });
 
+function slugify(text) {
+  return text
+    .toLowerCase()
+    .normalize('NFD')                   
+    .replace(/[\u0300-\u036f]/g, '')     
+    .replace(/[^a-z0-9\s-]/g, '')       
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .trim('-')
+}
+
   // === CONFIGURATION DES DOSSIERS ===
   return {
     markdownTemplateEngine: "njk",
     htmlTemplateEngine: "njk",
     dataTemplateEngine: "njk",
-    pathPrefix: "/valentine/",
+    pathPrefix: "/" + slugify(config.title) + "/",
     dir: {
       input: config.publicFolder,
       output: "_site/",

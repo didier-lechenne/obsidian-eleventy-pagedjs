@@ -2,11 +2,13 @@ module.exports = function(eleventyConfig) {
 
   eleventyConfig.addFilter("slug", function(text) {
     return text
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .trim('-');
+    .toLowerCase()
+    .normalize('NFD')                    
+    .replace(/[\u0300-\u036f]/g, '')     
+    .replace(/[^a-z0-9\s-]/g, '')        
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .trim('-')
   });
   
   eleventyConfig.addFilter("extractTitle", function(content) {

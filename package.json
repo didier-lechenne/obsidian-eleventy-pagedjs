@@ -12,7 +12,7 @@
     "serve:print": "npm run clean && cross-env BUILD_ENV=print npx @11ty/eleventy --serve ",
     "serve": "npm run clean && cross-env npx @11ty/eleventy --serve ",
     "sync": "rsync -avz --progress --delete public/ accentgrave@ssh-accentgrave.alwaysdata.net:/home/accentgrave/radicalweb.test/",
-    "deploy": "npm run build && cd _site && git init && git branch -M pages && git remote add origin git@codeberg.org:didierlechenne/valentine.git && git add . && git commit -m 'Deploy' && git push -f origin pages",
+    "deploy": "./deploy.sh",
     "stop": "kill-port 3000"
   },
   "keywords": ["eleventy", "print", "web", "paged-js", "static-site"],
