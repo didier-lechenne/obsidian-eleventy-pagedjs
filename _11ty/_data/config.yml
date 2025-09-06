@@ -1,23 +1,26 @@
+# === C'EST LA PARTIE CENTRALE DU DOCUMENT, CE SONT LES CHAPITRES/SECTIONS .md ===
+# === THIS IS THE CENTRAL PART OF THE DOCUMENT, THESE ARE THE CHAPTERS/SECTIONS .md ===
 publicFolder: "valentine"
+
+# === C'EST ICI QU'ON TRAVAILLE L'APPARENCE VISUELLE ET LA MISE EN PAGE (CSS)  ===
+# === THIS IS WHERE WE WORK ON VISUAL APPEARANCE AND LAYOUT (CSS) ===
 theme: "valentine"
 
-
-# === INFORMATIONS DU DOCUMENT ===
+# === DOCUMENT INFORMATION ===
 title: "Désencombrement"
 subtitle: "Index d’une société à venir, allégée de ses objets"
-runningtitle: ""
 
-# === AUTEUR ===
-name: "VALENTINE SAINT-MARTIN"
-mention: "Mémoire de Diplôme National Supérieur d’Expression Plastique"
-option: "option Design "
-year: "2025-2026 "
+# === AUTHORS (MULTIPLE): "name firstname, name firstname" ===
+author: "VALENTINE SAINT-MARTIN"
+year: "2025-2026"
 
-# === INSTITUTION ===
-tutor: "sous la direction de Jean Charles Zebo "
-university: "ebabx – école supérieure des beaux-arts de Bordeaux"
+# === A PERSONNALISER / CUSTOMIZABLE ===
+meta_1: "Mémoire de Diplôme National Supérieur d’Expression Plastique"
+meta_2: "option Design "
+meta_3: "sous la direction de Jean Charles Zebo "
+meta_4: "ebabx – école supérieure des beaux-arts de Bordeaux"
 
-  
+# === LE LIVRE ===
 # === DIMENSIONS DE LA PAGE (mm) ===
 width: 165
 height: 240

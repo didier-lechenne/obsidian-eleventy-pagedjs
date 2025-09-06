@@ -33,27 +33,28 @@
   <body class="screen {{ bodyClass }}" lang="fr">
 
 <header id="header">
-    <h1>{{ config.title }}</h1>
-    <h2>{{ config.subtitle }}</h2>
+
+{% if config.title %} <h1>{{ config.title }}</h1> {% endif %}
+{% if config.subtitle %} <h2>{{ config.subtitle }}</h2> {% endif %}
+
 
 <div class="meta">
  <div>
-  <div class="meta-name">{{ config.name }}</div>
-  <div class="meta-year">{{ config.year }}</div>
+ {% if config.author %} <div class="meta-name">{{ config.author }}</div> {% endif %}
+ {% if cconfig.year %} <div class="meta-name">{{ config.author }}</div> {% endif %}
  </div>
 
 <div>
  <p>
-  {{ config.mention }} <br>
-  {{ config.option }} <br>
-  {{ config.tutor }} <br>
-  {{ config.university }}  
+  {% if config.meta_1 %} {{ config.meta_1 }} <br> {% endif %}
+  {% if config.meta_2 %} {{ config.meta_2 }} <br> {% endif %}
+  {% if config.meta_3 %} {{ config.meta_3 }} <br> {% endif %}
+  {% if config.meta_4 %} {{ config.meta_4 }} <br> {% endif %}
  </p>   
 </div>
 
 <div>
  <p>
-
  </p>   
 </div>
 
