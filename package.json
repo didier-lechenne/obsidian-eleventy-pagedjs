@@ -12,7 +12,7 @@
     "serve:print": "npm run clean && cross-env BUILD_ENV=print npx @11ty/eleventy --serve ",
     "serve": "npm run clean && cross-env npx @11ty/eleventy --serve ",
     "sync": "rsync -avz --progress --delete public/ accentgrave@ssh-accentgrave.alwaysdata.net:/home/accentgrave/radicalweb.test/",
-    "deploy": "./deploy.sh",
+    "deploy": "sh deploy.sh",
     "stop": "kill-port 3000"
   },
   "keywords": ["eleventy", "print", "web", "paged-js", "static-site"],

@@ -11,11 +11,11 @@ cd _site
 git init 2>/dev/null || true
 git branch -M pages 2>/dev/null || true
 git remote remove origin 2>/dev/null || true
-git remote add origin git@codeberg.org:didierlechenne/desencombrement.git  # ← Changé ici
+git remote add origin git@codeberg.org:didierlechenne/desencombrement.git  
 
 # Déploiement
 git add .
 git commit -m "Deploy $(date '+%Y-%m-%d %H:%M')"
 git push -f origin pages
 
-echo "✅ Site deployed to https://didierlechenne.codeberg.page/desencombrement"  # ← Changé ici
+echo "✅ Site deployed to https://didierlechenne.codeberg.page/desencombrement"  
