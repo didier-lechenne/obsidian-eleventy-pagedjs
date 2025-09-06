@@ -9,7 +9,7 @@
     "start:print": "npx eleventy --serve --config=.eleventyPrint.js",
     "start": "npm run clean && cross-env  ELEVENTY_ENV=dev npx eleventy --serve --config=.eleventyStart.js ",
     "build:screen": "cross-env ELEVENTY_ENV=prod npx eleventy --config=.eleventy.js",
-    "build:print": "cross-env ELEVENTY_ENV=prod npx eleventy --config=.eleventyStart.js",
+    "build:print": "cross-env BUILD_ENV=print ELEVENTY_ENV=prod npx eleventy --config=.eleventyStart.js",
     "build": "npm run clean && npm run build:print",
     "css": "lightningcss --minify --targets \">= 0.25%\" ./static/css/main.css -o ./static/css/output.css",
     "sync": "rsync -avz --progress --delete public/ accentgrave@ssh-accentgrave.alwaysdata.net:/home/accentgrave/radicalweb.test/",
