@@ -24,7 +24,7 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addTransform("fixImagePaths", function (content, outputPath) {
     if (outputPath && outputPath.endsWith(".html")) {
       // Transformer les chemins relatifs en chemins absolus
-      content = content.replace(/src="images\//g, 'src="/images/');
+      content = content.replace(/src="images\//g, 'src="./images/');
       return content;
     }
     return content;
@@ -67,7 +67,7 @@ module.exports = function (eleventyConfig) {
     markdownTemplateEngine: "njk",
     htmlTemplateEngine: "njk",
     dataTemplateEngine: "njk",
-    pathPrefix: "",
+    pathPrefix: "/valentine/",
     dir: {
       input: config.publicFolder,
       output: "_site/",
