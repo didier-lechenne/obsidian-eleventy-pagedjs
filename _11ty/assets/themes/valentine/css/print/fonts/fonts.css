@@ -1,5 +1,5 @@
 	@import "IBM-plex-sans/index.css";
-	/*  @import "WorkSans/index.css";  */
+	@import "WorkSans/index.css";
 	@import "Hershey-Futural-15/index.css";
 	@import "Hershey-Futural-30/index.css";
 	@import "PostGrotesk/index.css";
