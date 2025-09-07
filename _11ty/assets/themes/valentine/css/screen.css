@@ -27,6 +27,8 @@ Sommaire :
 
 /* ------------------------------------------------------------------------ Fonts */
   @import "print/fonts/fonts.css";
+
+
 /* ------------------------------------------------------------------------ Variables */
 :root {
   --heading: "Hershey-Futural-15", serif;
@@ -46,7 +48,7 @@ Sommaire :
 
   --footnote: var(--labeur), sans-serif;
   --footnote-size: 10pt;
-  --footnote-line-height: 05ch;
+  --footnote-line-height: 140%;
   --footnote-weight: 300;
   --footnote-bold-weight: 400;
 
@@ -626,7 +628,12 @@ sup a.footnote-ref {
 }
 .sn-note {
   top: 0.25em;
-  font-size: 0.85rem;
+  font-family: var(--footnote);
+  font-size: var(--footnote-size);
+  line-height: var(--footnote-line-height);
+  font-weight: var( --footnote-weight);
+  color: var(--text-color);
+
   float: right;
   clear: right;
   width: var(--sn-width);
@@ -635,6 +642,11 @@ sup a.footnote-ref {
   position: relative;
   font-style: normal;
 }
+
+.sn-note strong {
+  font-weight: var(--footnote-bold-weight);
+}
+
 .sn-note em,
 .sn-note i {
   font-style: italic;

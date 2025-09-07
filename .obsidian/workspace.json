@@ -32,18 +32,31 @@
             }
           },
           {
+            "id": "8ff0af27e348de2a",
+            "type": "leaf",
+            "state": {
+              "type": "vscode-editor",
+              "state": {
+                "file": "_11ty/assets/themes/valentine/css/screen.css"
+              },
+              "icon": "lucide-file",
+              "title": "screen"
+            }
+          },
+          {
             "id": "e53a0f3e1186b4d6",
             "type": "leaf",
             "state": {
               "type": "vscode-editor",
               "state": {
-                "file": "_site/assets/css/print/fonts/PostGrotesk/index.css"
+                "file": "_11ty/assets/themes/valentine/css/print.css"
               },
               "icon": "lucide-file",
-              "title": "index"
+              "title": "print"
             }
           }
-        ]
+        ],
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -263,10 +276,29 @@
       "cmdr:Shell commands: Execute: npm run deploy": false
     }
   },
-  "active": "93f14d335999116c",
+  "active": "8ff0af27e348de2a",
   "lastOpenFiles": [
-    "_11ty/assets/themes/valentine/css/print/fonts/IBM-plex-sans/index.css",
-    "_11ty/assets/themes/valentine/css/screen.css",
+    "_site/csspageweaver/lib/paged.esm.js",
+    "_site/csspageweaver/lib/csstree.min.js",
+    "_site/assets/css/print/fonts/GTMaru/GTMaru-LightOblique.woff",
+    "_site/assets/css/print/fonts/GTMaru/GTMaru-Light.woff",
+    "_site/assets/css/print/figures_page.css",
+    "_site/assets/css/print/figures.css",
+    "_site/assets/css/print/fonts/BBBBaskervvol/BBBBaskervvol-Fondue.woff2",
+    "_site/assets/css/print/fonts/BBBBaskervvol/index.css",
+    "_site/assets/css/print/fonts/BBBBaskervvol/BBBBaskervvol-Base.woff2",
+    "_site/assets/css/print/fonts/BBBBaskervvol/BBBBaskervvol-Base.woff",
+    "_site/assets/css/print/base.css",
+    "_site/csspageweaver/plugins/fullPage/README.md",
+    "_site/csspageweaver/plugins/fullContent/README.md",
+    "_site/csspageweaver/plugins/footnotesFix/README.md",
+    "_site/csspageweaver/README.md",
+    "_site/csspageweaver/plugins/tableOfContent/README.md",
+    "_site/csspageweaver/plugins/reloadInPlace/Readme.md",
+    "_site/csspageweaver/plugins/layout/README.md",
+    "_site/csspageweaver/plugins/inlineNotes/README.md",
+    "_site/csspageweaver/plugins/pageMove/README.md",
+    "_site/csspageweaver/plugins/marker/README.md",
     "_site/images/archery-outdoors-women-dithered.png",
     "_site/images/lowtech2.png",
     "_site/images/img_test.jpg",
@@ -276,29 +308,10 @@
     "_site/images/intro.JPG",
     "_site/images/home-made-solar-system2_dithered.png",
     "_site/images/intro-plastic-waste-in-fuel-tank-gijs-schalkx_dithered.png",
-    "_11ty/assets/themes/valentine/css/print/fonts/IBM-plex-sans/license.txt",
-    "_site/assets/css/print/fonts/IBM-plex-sans/IBMPlexSans-ThinItalic.woff2",
-    "_11ty/assets/themes/valentine/css/print/fonts/IBM-plex-sans/IBMPlexSans-ThinItalic.woff2",
-    "_site/assets/css/print/fonts/IBM-plex-sans/IBMPlexSans-Thin.woff2",
-    "_11ty/assets/themes/valentine/css/print/fonts/IBM-plex-sans/IBMPlexSans-Thin.woff2",
-    "_site/assets/css/print/fonts/IBM-plex-sans/IBMPlexSans-TextItalic.woff2",
-    "_site/assets/css/print/fonts/IBM-plex-sans/IBMPlexSans-SemiBoldItalic.woff2",
-    "_site/assets/css/print/fonts/IBM-plex-sans/IBMPlexSans-Text.woff2",
-    "_11ty/assets/themes/valentine/css/print/fonts/IBM-plex-sans/IBMPlexSans-Text.woff2",
-    "_site/csspageweaver/plugins/tableOfContent/README.md",
-    "_site/csspageweaver/plugins/reloadInPlace/Readme.md",
-    "_site/csspageweaver/plugins/pageMove/README.md",
-    "_site/csspageweaver/plugins/marker/README.md",
-    "_site/csspageweaver/plugins/layout/README.md",
-    "_site/csspageweaver/plugins/inlineNotes/README.md",
-    "_site/csspageweaver/plugins/fullPage/README.md",
-    "_site/csspageweaver/plugins/fullContent/README.md",
-    "_site/csspageweaver/plugins/footnotesFix/README.md",
     "_site/csspageweaver/plugins/editor/README.md",
     "_site/csspageweaver/plugins/editor/README-DEV-TURNDOWN.md",
     "_site/csspageweaver/plugins/editor/README-DEV-TOOLBAR.md",
     "_site/csspageweaver/plugins/baseline/README.md",
-    "_site/csspageweaver/README.md",
     "_site/images/velo4.jpg",
     "README.md",
     "node_modules/.js-yaml-AQWwbR6J/README.md",
