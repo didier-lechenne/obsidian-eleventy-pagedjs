@@ -41,6 +41,12 @@
       "icon": "lucide-rocket",
       "name": "Shell commands: Execute: npm run deploy",
       "mode": "any"
+    },
+    {
+      "id": "obsidian-shellcommands:shell-command-x66rzcif8k",
+      "icon": "lucide-send",
+      "name": "Shell commands: Execute: npm run start",
+      "mode": "any"
     }
   ],
   "rightRibbon": [],
