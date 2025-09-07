@@ -16,11 +16,42 @@ Sommaire :
 */
 
 /* ------------------------------------------------------------------------ Fonts */
-
+  @import "print/fonts/fonts.css";
 /* ------------------------------------------------------------------------ Variables */
 :root {
+  --heading: "Hershey-Futural-15", serif;
+  --labeur: "Work Sans", sans-serif;
+  --sommaire: "Hershey-Futural-15", serif;
+
+  --text-color: rgba(0, 0, 0, 1);
+
+  --heading-size: 28pt;
+  --heading-line-height: 28pt;
+  --heading-weight: normal;
+
+  --labeur-size: 18px;
+  --labeur-line-height: 24px;
+  --labeur-weight: 400; /* light */
+  --labeur-bold-weight: 500;
+
+  --footnote: var(--labeur), sans-serif;
+  --footnote-size: 8.9pt;
+  --footnote-line-height: 11pt;
+  --footnote-weight: 300;
+  --footnote-bold-weight: normal;
+
+  --caption: var(--labeur), sans-serif;
+  --caption-size: 9pt;
+  --caption-line-height: 12pt;
+  --caption-weight: 300;
+  --caption-bold-weight: normal;
+
+  --baseline: 1ch;
+  --gutter: 3mm;
+
+
   /* typographie */
-  --fontfamily: "Ecole", sans-serif;
+
   --bigsize: clamp(2.5rem, calc(1.83rem + 3.33vw), 6rem);
   --basesize: 1.15rem;
   --color: rgba(0, 0, 0, 0.85);
@@ -59,14 +90,24 @@ html {
   }
 }
 /* page defaults */
+
+
 body {
-  font-family: var(--fontfamily);
-  color: var(--color);
-  font-size: var(--basesize);
+  font-family: var(--labeur);
+  font-size: var(--labeur-size);
+  line-height: var(--labeur-line-height);
+  font-weight: var(--labeur-weight);
+  color: var(--text-color);
   line-height: 1.45;
   margin: 0;
   overflow-x: hidden;
 }
+
+p {
+  margin-top: calc(1ch / 1);
+  margin-bottom: calc(1ch / 1);
+}
+
 p:first-child {
   margin-top: 0;
 }
