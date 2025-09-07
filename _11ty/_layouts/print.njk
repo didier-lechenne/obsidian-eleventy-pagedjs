@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ lang }}">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -21,7 +21,7 @@
     <script src="./csspageweaver/main.js" type="module"></script>
   </head>
 
-  <body class="print {{ bodyClass }}" lang="fr">
+  <body class="print {{ bodyClass }}" lang="{{ lang }}">
     <main class="main-content">
       <div class="container">
         {% for p in collections.printPages %} {% set templateName =
