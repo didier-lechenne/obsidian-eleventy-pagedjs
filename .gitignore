@@ -32,8 +32,7 @@ build/
 /img
 /.env
 
-# Note: main.js DOIT être versionné pour les plugins Obsidian
-# car les utilisateurs finaux ne compilent pas le code
+
 
 # Development
 .hotreload
@@ -79,3 +78,7 @@ pids
 tmp/
 temp/
 
+
+/a_garder_config/
+/aide/
+/.github/

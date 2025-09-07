@@ -4,19 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "fb28f7360f94e48d",
+        "id": "2a6be7253c022dfe",
         "type": "tabs",
         "children": [
           {
-            "id": "26270b63e69c4631",
+            "id": "93f14d335999116c",
             "type": "leaf",
             "state": {
-              "type": "vscode-editor",
-              "state": {
-                "file": "_11ty/_data/config.yml"
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "config"
+              "title": "Nouvel onglet"
             }
           }
         ]
@@ -239,8 +237,10 @@
       "cmdr:Shell commands: Execute: npm run deploy": false
     }
   },
-  "active": "26270b63e69c4631",
+  "active": "93f14d335999116c",
   "lastOpenFiles": [
+    "deploy.sh",
+    "_11ty/_data/config.yml",
     "_site/index.html",
     "_site/print.html",
     "_site/images/carte_skate-03.jpg",
@@ -255,8 +255,6 @@
     "_site/assets/css/print/fonts/PostGrotesk/postgrotesk-light.woff2",
     "_site/assets/css/print/fonts/PostGrotesk/postgrotesk-bookitalic.woff2",
     "_site/assets/css/print/fonts/PostGrotesk/postgrotesk-book.woff2",
-    "_site/assets/css/print/fonts/PostGrotesk/index.css",
-    "_site/assets/css/print/fonts/PostGrotesk/postgrotesk-bold.woff2",
     "_site/images/intro0.png",
     "_site/images/intro_domestique.png",
     "_site/images/intro_heritage.png",
