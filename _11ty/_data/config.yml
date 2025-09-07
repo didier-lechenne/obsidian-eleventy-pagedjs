@@ -20,33 +20,32 @@ meta_2: "option Design "
 meta_3: "sous la direction de Jean Charles Zebo "
 meta_4: "ebabx – école supérieure des beaux-arts de Bordeaux"
 
-# === LE LIVRE ===
-# === DIMENSIONS DE LA PAGE (mm) ===
+# === BOOK PAGE DIMENSIONS (mm) ===
 width: 165
 height: 240
 
-# === MARGES GÉNÉRALES (mm) ===
+# === GENERAL MARGINS (mm) ===
 margin_top: 10
 margin_right: 10
 margin_bottom: 10
 margin_left: 10
 
-# === MARGES PAGES GAUCHE (mm) ===
+# === LEFT PAGE MARGINS (mm) ===
 page_left_margin_top: 10
 page_left_margin_bottom: 10
 page_left_margin_left: 25
 page_left_margin_right: 10
 
-# === MARGES PAGES DROITE (mm) ===
+# === RIGHT PAGE MARGINS (mm) ===
 page_right_margin_top: 10
 page_right_margin_bottom: 10
 page_right_margin_left: 10
 page_right_margin_right: 25
 
-# === OPTIONS DE MISE EN PAGE ===
+# === LAYOUT OPTIONS ===
 bleed: true
 marks: true
 
-# === OPTIONS DES NOTES ===
+# === NOTES OPTIONS ===
 printNotes: "bottom"
 imageNotes: false
