@@ -43,14 +43,14 @@ Sommaire :
 
   --labeur-size: 18px;
   --labeur-line-height: 160%;
-  --labeur-weight: 400; 
-  --labeur-bold-weight: 600;
+  --labeur-weight: 600; 
+  --labeur-bold-weight: 700;
 
   --footnote: var(--labeur), sans-serif;
   --footnote-size: 10pt;
   --footnote-line-height: 140%;
-  --footnote-weight: 300;
-  --footnote-bold-weight: 400;
+  --footnote-weight: 400;
+  --footnote-bold-weight: 500;
 
   --caption: var(--labeur), sans-serif;
   --caption-size: 9pt;
