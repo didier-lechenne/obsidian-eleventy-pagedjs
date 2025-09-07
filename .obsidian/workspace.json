@@ -13,10 +13,10 @@
             "state": {
               "type": "vscode-editor",
               "state": {
-                "file": "valentine/templates/layout.css.njk"
+                "file": "_11ty/_data/config.yml"
               },
               "icon": "lucide-file",
-              "title": "layout.css"
+              "title": "config"
             }
           }
         ]
@@ -239,8 +239,9 @@
       "cmdr:Shell commands: Execute: npm run start": false
     }
   },
-  "active": "0eba038119f666d3",
+  "active": "26270b63e69c4631",
   "lastOpenFiles": [
+    "valentine/templates/layout.css.njk",
     "node_modules/.js-yaml-AQWwbR6J/LICENSE",
     "node_modules/.js-yaml-AQWwbR6J/index.js",
     "node_modules/.js-yaml-AQWwbR6J/README.md",
@@ -253,7 +254,6 @@
     "deploy.js",
     "_site/assets/css/print/fonts/Hershey-Futural-15/Hershey-Futural--15.woff2",
     "_site/assets/css/print/fonts/Hershey-Futural-30/index.css",
-    "_site/assets/css/print/fonts/Hershey-Futural-30/Hershey-Futural-30.woff2",
     "_site/csspageweaver/plugins/marker/README.md",
     "_site/csspageweaver/plugins/layout/README.md",
     "_site/csspageweaver/plugins/pageMove/README.md",
