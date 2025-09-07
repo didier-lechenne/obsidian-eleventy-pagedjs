@@ -1,0 +1,70 @@
+{
+  "confirmDeletion": true,
+  "showAddCommand": true,
+  "debug": false,
+  "editorMenu": [],
+  "fileMenu": [
+    {
+      "id": "microtypographie-v2:insert-non-breaking-space",
+      "icon": "space",
+      "name": "Microtypographie: Insérer espace insécable",
+      "mode": "any"
+    }
+  ],
+  "leftRibbon": [
+    {
+      "id": "obsidian-shellcommands:shell-command-49asp0447g",
+      "icon": "lucide-server-off",
+      "name": "Shell commands: Execute: npm run stop",
+      "mode": "any"
+    },
+    {
+      "id": "microtypographie-v2:fix-entire-note",
+      "icon": "lucide-type-outline",
+      "name": "Microtypographie: Corriger toute la note",
+      "mode": "any"
+    },
+    {
+      "id": "microtypographie-v2:fix-selection",
+      "icon": "type",
+      "name": "Microtypographie: Corriger la sélection",
+      "mode": "any"
+    },
+    {
+      "id": "obsidian-shellcommands:shell-command-61tx68h76s",
+      "icon": "lucide-server-cog",
+      "name": "Shell commands: Execute: npm run serve",
+      "mode": "any"
+    },
+    {
+      "id": "obsidian-shellcommands:shell-command-q7xuamppak",
+      "icon": "lucide-rocket",
+      "name": "Shell commands: Execute: npm run deploy",
+      "mode": "any"
+    }
+  ],
+  "rightRibbon": [],
+  "titleBar": [],
+  "statusBar": [],
+  "pageHeader": [],
+  "macros": [],
+  "explorer": [],
+  "hide": {
+    "statusbar": [],
+    "leftRibbon": [
+      "BRAT",
+      "Shell commands: Custom variables"
+    ]
+  },
+  "spacing": "8",
+  "advancedToolbar": {
+    "rowHeight": 48,
+    "rowCount": 1,
+    "spacing": 0,
+    "buttonWidth": 48,
+    "columnLayout": false,
+    "mappedIcons": [],
+    "tooltips": false,
+    "heightOffset": 0
+  }
+}

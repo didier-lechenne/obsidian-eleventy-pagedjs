@@ -1,0 +1,134 @@
+@media screen {
+  :root {
+    /* --space-size: 1em; */
+    --space-opacity: 0.8;
+    --color-non-breaking-space: rgba(248, 116, 215, 0.4);
+    --color-narrow-no-break-space: rgba(0, 255, 255, 0.4);
+    --color-regular-space: rgba(175, 140, 166, 0.9);
+  }
+
+  .nonBreakingSpace,
+  .thinSpace {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: unset;
+    font-family: var(--font-text);
+    line-height: var(--line-height-normal);
+    /* display: inline-block; */
+    vertical-align: middle;
+  }
+
+  .typography-show-invisible .nonBreakingSpace {
+    background-color: var(--color-non-breaking-space);
+    font-family: var(--font-text);
+    line-height: var(--line-height-normal);
+    /* display: inline-block; */
+    vertical-align: middle;
+  }
+
+  .typography-show-invisible .thinSpace {
+    font-family: var(--font-text);
+    line-height: var(--line-height-normal);
+    background-color: var(--color-narrow-no-break-space);
+
+    /* display: inline-block; */
+    vertical-align: middle;
+  }
+
+  /* ========================================
+   BOUTONS DE CONTRÔLE
+   ======================================== */
+
+  /* Bouton barre d'état */
+  #highlight-status-bar-button {
+    opacity: 0.5;
+    transition: opacity 0.2s ease;
+    cursor: pointer;
+  }
+
+  #highlight-status-bar-button:hover {
+    opacity: 0.8;
+  }
+
+  /* Bouton barre de titre */
+  #highlight-tab-title-button {
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+    margin-right: 8px;
+  }
+
+  #highlight-tab-title-button:hover {
+    opacity: 0.9;
+  }
+
+  #highlight-tab-title-button.is-active,
+  #highlight-status-bar-button.is-active {
+    opacity: 1;
+    color: var(--interactive-accent);
+  }
+
+  /* ========================================
+   INTERFACE DE PARAMÈTRES
+   ======================================== */
+
+  .typography-category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 24px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--background-modifier-border);
+  }
+
+  .typography-toggle-category {
+    font-size: 0.8em;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+
+  .typography-recommended-badge {
+    display: inline-block;
+    background: var(--color-accent);
+    color: var(--text-on-accent);
+    font-size: 0.7em;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-left: 8px;
+    font-weight: 500;
+  }
+
+  .typography-example {
+    margin-top: 12px;
+    padding: 12px;
+    background: var(--background-primary);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 6px;
+    font-size: 0.85em;
+    line-height: 1.4;
+  }
+
+  .typography-example-label {
+    font-weight: 600;
+    color: var(--text-accent);
+    margin-right: 6px;
+  }
+
+  .typography-example code {
+    background: var(--background-modifier-form-field);
+    color: var(--text-normal);
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-family: var(--font-monospace);
+    font-size: 0.9em;
+    border: 1px solid var(--background-modifier-border-hover);
+  }
+
+  .typography-example-before {
+    margin-bottom: 6px;
+  }
+
+  .typography-example-after {
+    margin-top: 6px;
+  }
+}

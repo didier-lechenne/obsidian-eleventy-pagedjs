@@ -8,8 +8,7 @@
 a_garder/
 **/pas_utilisé/
 
-# Obsidian
-.obsidian/
+
 
 # Eleventy
 _site/

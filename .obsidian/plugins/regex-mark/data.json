@@ -1,0 +1,19 @@
+{
+  "mark": [
+    {
+      "regex": "note: \"[^\"]+\"\\n",
+      "class": "css",
+      "hide": false
+    },
+    {
+      "regex": "{%\\s*grid\\s*\"[^\"]*\",\\s*{[^}]*}\\s*%}",
+      "class": "grid-shortcode",
+      "hide": false
+    }
+  ],
+  "pattern": {
+    "open": "{{open:(.*?)}}",
+    "close": "{{close:(.*?)}}"
+  },
+  "propertyName": "regex_mark"
+}

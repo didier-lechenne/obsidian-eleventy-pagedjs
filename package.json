@@ -5,7 +5,7 @@
   "main": ".eleventy.js",
   "scripts": {
     "clean": "rimraf .cache _site",
-    "install": "install",
+    "start": "npm install && npm run clean",
     "build:web": "npm run clean && cross-env BUILD_ENV=web npx @11ty/eleventy",
     "build:print": "npm run clean && cross-env BUILD_ENV=print npx @11ty/eleventy",
     "build": "npm run build:print",

@@ -1,0 +1,27 @@
+{
+  "pluginList": [
+    "polyipseity/obsidian-show-hidden-files",
+    "didier-lechenne/microtypographie-v2"
+  ],
+  "pluginSubListFrozenVersion": [
+    {
+      "repo": "polyipseity/obsidian-show-hidden-files",
+      "version": "2.5.0"
+    },
+    {
+      "repo": "didier-lechenne/microtypographie-v2",
+      "version": "latest"
+    }
+  ],
+  "themesList": [],
+  "updateAtStartup": true,
+  "updateThemesAtStartup": true,
+  "enableAfterInstall": true,
+  "loggingEnabled": false,
+  "loggingPath": "BRAT-log",
+  "loggingVerboseEnabled": false,
+  "debuggingMode": false,
+  "notificationsEnabled": true,
+  "personalAccessToken": "",
+  "selectLatestPluginVersionByDefault": true
+}

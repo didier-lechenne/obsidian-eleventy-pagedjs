@@ -1,0 +1,20 @@
+{
+  "window:zoom-out": [
+    {
+      "modifiers": [
+        "Mod"
+      ],
+      "key": "Numpad1"
+    }
+  ],
+  "window:zoom-in": [
+    {
+      "modifiers": [
+        "Mod"
+      ],
+      "key": "Numpad2"
+    }
+  ],
+  "microtypographie-v2:insert-right-double-quote": [],
+  "microtypographie-v2:insert-left-double-quote": []
+}

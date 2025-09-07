@@ -1,0 +1,33 @@
+{
+  "cascadeColors": false,
+  "colorBackground": false,
+  "palette": [
+    {
+      "id": "QJKA9nifhH0vQN0_VizXk",
+      "name": "",
+      "value": "#62f7f9"
+    }
+  ],
+  "fileColors": [
+    {
+      "path": "valentine",
+      "color": "QJKA9nifhH0vQN0_VizXk"
+    },
+    {
+      "path": "_11ty/_data/config.yml",
+      "color": "QJKA9nifhH0vQN0_VizXk"
+    },
+    {
+      "path": "_11ty/assets/themes",
+      "color": "QJKA9nifhH0vQN0_VizXk"
+    },
+    {
+      "path": "_11ty/_data",
+      "color": "QJKA9nifhH0vQN0_VizXk"
+    },
+    {
+      "path": "_11ty/assets",
+      "color": "QJKA9nifhH0vQN0_VizXk"
+    }
+  ]
+}

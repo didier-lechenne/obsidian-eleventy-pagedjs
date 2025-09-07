@@ -1,0 +1,290 @@
+{
+  "main": {
+    "id": "8135db8df6f5a071",
+    "type": "split",
+    "children": [
+      {
+        "id": "fb28f7360f94e48d",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "26270b63e69c4631",
+            "type": "leaf",
+            "state": {
+              "type": "vscode-editor",
+              "state": {
+                "file": "package.json"
+              },
+              "icon": "lucide-file",
+              "title": "package"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "c80e257e4dced81d",
+    "type": "split",
+    "children": [
+      {
+        "id": "6b78632933cef2b8",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "0eba038119f666d3",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Explorateur de fichiers"
+            }
+          },
+          {
+            "id": "5bf9ad3099fb998a",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Rechercher"
+            }
+          },
+          {
+            "id": "4167d66b12dae353",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Signet"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 401.5
+  },
+  "right": {
+    "id": "f936c776b5bb9c42",
+    "type": "split",
+    "children": [
+      {
+        "id": "06653d7c7fc430a9",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "ff26b23928197002",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "memoire-Valentine/content/text/10.introduction.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Rétrolien pour 10.introduction"
+            }
+          },
+          {
+            "id": "077991e86e64c5dd",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "memoire-Valentine/content/text/00.cover.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Liens sortants de 00.cover"
+            }
+          },
+          {
+            "id": "507271c8586ec2cd",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Mots-clés"
+            }
+          },
+          {
+            "id": "1ec6d527f0224a88",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "package.json",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Plan de package"
+            }
+          },
+          {
+            "id": "04c68b545908a968",
+            "type": "leaf",
+            "state": {
+              "type": "SC-custom-variables-view",
+              "state": {},
+              "icon": "code-glyph",
+              "title": "Shell commands: Custom variables"
+            }
+          },
+          {
+            "id": "f72882e4e4469f9f",
+            "type": "leaf",
+            "state": {
+              "type": "SC-custom-variables-view",
+              "state": {},
+              "icon": "code-glyph",
+              "title": "Shell commands: Custom variables"
+            }
+          },
+          {
+            "id": "ca491329183c0c0b",
+            "type": "leaf",
+            "state": {
+              "type": "SC-custom-variables-view",
+              "state": {},
+              "icon": "code-glyph",
+              "title": "Shell commands: Custom variables"
+            }
+          },
+          {
+            "id": "d3189af0e915f8a2",
+            "type": "leaf",
+            "state": {
+              "type": "git-view",
+              "state": {},
+              "icon": "git-pull-request",
+              "title": "Source Control"
+            }
+          },
+          {
+            "id": "69e51b0e2de3c9cf",
+            "type": "leaf",
+            "state": {
+              "type": "footnotes",
+              "state": {
+                "file": "package.json"
+              },
+              "icon": "lucide-file-signature",
+              "title": "Footnotes"
+            }
+          },
+          {
+            "id": "9c24151b4dd1b7d8",
+            "type": "leaf",
+            "state": {
+              "type": "SC-custom-variables-view",
+              "state": {},
+              "icon": "code-glyph",
+              "title": "Shell commands: Custom variables"
+            }
+          }
+        ],
+        "currentTab": 7
+      }
+    ],
+    "direction": "horizontal",
+    "width": 713.5
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "templates:Insérer le modèle": false,
+      "bases:Create new base": false,
+      "switcher:Ouvrir le sélecteur rapide": false,
+      "graph:Ouvrir la vue graphique": false,
+      "canvas:Créer une nouvelle toile": false,
+      "daily-notes:Ouvrir la note quotidienne": false,
+      "command-palette:Ouvrir la palette de commandes": false,
+      "obsidian-shellcommands:Shell commands: Custom variables": false,
+      "obsidian42-brat:BRAT": false,
+      "obsidian-git:Open Git source control": false,
+      "vscode-editor:Create Code File": false,
+      "cmdr:Shell commands: Execute: npm run serve": false,
+      "cmdr:Shell commands: Execute: npm run stop": false,
+      "cmdr:Shell commands: Execute: npm run deploy": false,
+      "cmdr:Microtypographie: Corriger toute la note": false,
+      "cmdr:Microtypographie: Corriger la sélection": false
+    }
+  },
+  "active": "26270b63e69c4631",
+  "lastOpenFiles": [
+    "_site/csspageweaver/interface/fonts/IBM_Plex_Mono/IBMPlexMono-MediumItalic.woff2",
+    "_site/csspageweaver/interface/fonts/IBM_Plex_Mono/IBMPlexMono-Medium.woff",
+    "_site/csspageweaver/interface/fonts/IBM_Plex_Mono/IBMPlexMono-Medium.woff2",
+    "_site/csspageweaver/interface/css/interface.css",
+    "_site/csspageweaver/interface/fonts/IBM_Plex_Mono/IBMPlexMono-Italic.woff",
+    "_site/csspageweaver/interface/css/panel.css",
+    "_site/csspageweaver/interface/fonts/IBM_Plex_Mono/IBMPlexMono-Italic.woff2",
+    "_site/csspageweaver/interface/css/grid.css",
+    "_site/csspageweaver/plugins/a_garder.zip",
+    "_site/csspageweaver/lib/paged.esm.js",
+    ".eleventy.js",
+    "_site/csspageweaver/plugins/tableOfContent/README.md",
+    "_site/csspageweaver/plugins/reloadInPlace/Readme.md",
+    "_site/csspageweaver/plugins/pageMove/README.md",
+    "_site/csspageweaver/plugins/marker/README.md",
+    "_site/csspageweaver/plugins/layout/README.md",
+    "_site/csspageweaver/plugins/inlineNotes/README.md",
+    "_site/csspageweaver/plugins/fullPage/README.md",
+    "_site/csspageweaver/plugins/fullContent/README.md",
+    "_site/csspageweaver/plugins/footnotesFix/README.md",
+    "_site/csspageweaver/plugins/editor/README.md",
+    "_site/csspageweaver/plugins/editor/README-DEV-TURNDOWN.md",
+    "_site/csspageweaver/plugins/editor/README-DEV-TOOLBAR.md",
+    "_site/csspageweaver/plugins/baseline/README.md",
+    "_site/csspageweaver/README.md",
+    "_site/images/velo4.jpg",
+    "_site/images/velo3.jpg",
+    "_site/images/velo2.jpg",
+    "_site/images/siege.jpg",
+    "_site/images/reparer1.png",
+    "_site/images/velo.jpg",
+    "_site/images/mongolian-child-archer-Nasanbat_Nasaa_dithered.png",
+    "_site/images/tomeIII-candle_dithered.png",
+    "_site/images/nobody-at-table-edited_dithered.png",
+    "_site/images/maxresdefault.webp",
+    "deploy.js.md",
+    "node_modules/shelljs/node_modules/minimatch/README.md",
+    "node_modules/shelljs/node_modules/glob/README.md",
+    "node_modules/shelljs/README.md",
+    "node_modules/shelljs/CHANGELOG.md",
+    "node_modules/interpret/README.md",
+    "node_modules/function-bind/.github/SECURITY.md",
+    "node_modules/function-bind/README.md",
+    "node_modules/function-bind/CHANGELOG.md",
+    "node_modules/hasown/README.md",
+    "node_modules/hasown/CHANGELOG.md"
+  ]
+}
