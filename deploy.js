@@ -3,9 +3,12 @@
 const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const yaml = require('js-yaml');
 
-const REPO_URL = 'https://codeberg.org/didierlechenne/desencombrement.git';
-const SITE_URL = 'https://didierlechenne.codeberg.page/desencombrement';
+// Charger la configuration
+const config = yaml.load(fs.readFileSync('./_11ty/_data/config.yml', 'utf8'));
+const REPO_URL = config.repository_url;
+const SITE_URL = config.site_url;
 
 function run(command, options = {}) {
   try {
@@ -37,11 +40,11 @@ async function deploy() {
   // Configuration Git
   const gitCommands = [
     'git init',
-    'git branch -M pages',
     'git remote remove origin 2>/dev/null || true',
     `git remote add origin ${REPO_URL}`,
     'git add .',
     `git commit -m "Deploy ${new Date().toISOString().slice(0, 16).replace('T', ' ')}"`,
+    'git branch -M pages',
     'git push -f origin pages'
   ];
 
