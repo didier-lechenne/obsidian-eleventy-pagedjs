@@ -11,10 +11,12 @@
             "id": "93f14d335999116c",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "vscode-editor",
+              "state": {
+                "file": "_11ty/assets/themes/valentine/css/print/variables.css"
+              },
               "icon": "lucide-file",
-              "title": "Nouvel onglet"
+              "title": "variables"
             }
           }
         ]
@@ -239,6 +241,15 @@
   },
   "active": "93f14d335999116c",
   "lastOpenFiles": [
+    "_11ty/assets/themes/valentine/css/print.css",
+    "_11ty/assets/themes/valentine/css/screen.css",
+    "README.md",
+    "_site/images/alternative_crasset.png",
+    "_site/images/velo2.jpg",
+    "_site/images/intro_objet.png",
+    "_site/images/alternative1.jpg",
+    "_site/images/siege.jpg",
+    "_site/images/reparer1.png",
     "deploy.sh",
     "_11ty/_data/config.yml",
     "_site/index.html",
@@ -247,18 +258,11 @@
     "_site/images/velo4.jpg",
     "_site/images/velo.jpg",
     "_site/images/velo3.jpg",
-    "_site/images/lowtech2.png",
     "_site/assets/css/print/fonts/PostGrotesk/postgrotesk-bolditalic.woff2",
     "_site/assets/css/print/fonts/PostGrotesk/postgrotesk-mediumitalic.woff2",
     "_site/assets/css/print/fonts/PostGrotesk/postgrotesk-medium.woff2",
     "_site/assets/css/print/fonts/PostGrotesk/postgrotesk-lightitalic.woff2",
     "_site/assets/css/print/fonts/PostGrotesk/postgrotesk-light.woff2",
-    "_site/assets/css/print/fonts/PostGrotesk/postgrotesk-bookitalic.woff2",
-    "_site/assets/css/print/fonts/PostGrotesk/postgrotesk-book.woff2",
-    "_site/images/intro0.png",
-    "_site/images/intro_domestique.png",
-    "_site/images/intro_heritage.png",
-    "_site/images/intro.JPG",
     "_site/csspageweaver/plugins/reloadInPlace/Readme.md",
     "_site/csspageweaver/plugins/tableOfContent/README.md",
     "_site/csspageweaver/plugins/pageMove/README.md",
@@ -273,7 +277,6 @@
     "_site/csspageweaver/plugins/editor/README-DEV-TURNDOWN.md",
     "_site/csspageweaver/plugins/baseline/README.md",
     "_site/csspageweaver/README.md",
-    "_site/images/rebar-foundation-wind-turbine_dithered.png",
     "node_modules/.js-yaml-AQWwbR6J/README.md",
     "node_modules/.js-yaml-AQWwbR6J/CHANGELOG.md",
     "deploy.js.md",
@@ -283,7 +286,6 @@
     "node_modules/shelljs/CHANGELOG.md",
     "node_modules/interpret/README.md",
     "node_modules/function-bind/.github/SECURITY.md",
-    "node_modules/function-bind/README.md",
-    "node_modules/function-bind/CHANGELOG.md"
+    "node_modules/function-bind/README.md"
   ]
 }
