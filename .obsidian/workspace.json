@@ -43,8 +43,7 @@
               "title": "index"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -264,8 +263,10 @@
       "cmdr:Shell commands: Execute: npm run deploy": false
     }
   },
-  "active": "632fb151f218cdef",
+  "active": "93f14d335999116c",
   "lastOpenFiles": [
+    "_11ty/assets/themes/valentine/css/print/fonts/IBM-plex-sans/index.css",
+    "_11ty/assets/themes/valentine/css/screen.css",
     "_site/images/archery-outdoors-women-dithered.png",
     "_site/images/lowtech2.png",
     "_site/images/img_test.jpg",
@@ -284,7 +285,6 @@
     "_site/assets/css/print/fonts/IBM-plex-sans/IBMPlexSans-SemiBoldItalic.woff2",
     "_site/assets/css/print/fonts/IBM-plex-sans/IBMPlexSans-Text.woff2",
     "_11ty/assets/themes/valentine/css/print/fonts/IBM-plex-sans/IBMPlexSans-Text.woff2",
-    "_11ty/assets/themes/valentine/css/print/fonts/IBM-plex-sans/IBMPlexSans-SemiBoldItalic.woff2",
     "_site/csspageweaver/plugins/tableOfContent/README.md",
     "_site/csspageweaver/plugins/reloadInPlace/Readme.md",
     "_site/csspageweaver/plugins/pageMove/README.md",
@@ -300,7 +300,6 @@
     "_site/csspageweaver/plugins/baseline/README.md",
     "_site/csspageweaver/README.md",
     "_site/images/velo4.jpg",
-    "_site/images/velo2.jpg",
     "README.md",
     "node_modules/.js-yaml-AQWwbR6J/README.md",
     "node_modules/.js-yaml-AQWwbR6J/CHANGELOG.md",
