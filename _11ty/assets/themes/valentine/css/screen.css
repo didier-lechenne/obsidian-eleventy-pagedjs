@@ -98,7 +98,6 @@ body {
   line-height: var(--labeur-line-height);
   font-weight: var(--labeur-weight);
   color: var(--text-color);
-  line-height: 1.45;
   margin: 0;
   overflow-x: hidden;
 }

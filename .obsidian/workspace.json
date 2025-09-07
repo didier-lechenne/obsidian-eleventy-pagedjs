@@ -37,10 +37,10 @@
             "state": {
               "type": "vscode-editor",
               "state": {
-                "file": "_11ty/assets/themes/valentine/css/print.css"
+                "file": "_site/assets/css/print/fonts/PostGrotesk/index.css"
               },
               "icon": "lucide-file",
-              "title": "print"
+              "title": "index"
             }
           }
         ],
@@ -266,17 +266,17 @@
   },
   "active": "632fb151f218cdef",
   "lastOpenFiles": [
-    "_11ty/assets/themes/valentine/css/screen.css",
-    "_site/index.html",
-    "_site/print.html",
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-Regular.woff2",
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-Light.woff",
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-Italic.woff2",
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-Regular.woff",
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-LightItalic.woff2",
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-LightItalic.woff",
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-Light.woff2",
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-Italic.woff",
+    "_11ty/assets/themes/valentine/css/print/fonts/IBM-plex-sans/IBMPlexSans-Thin.woff",
+    "_site/assets/css/print/fonts/PostGrotesk/index.css",
+    "_site/assets/css/print/fonts/IBM-plex-sans/IBMPlexSans-Regular.woff",
+    "_site/assets/css/print/fonts/IBM-plex-sans/IBMPlexSans-MediumItalic.woff",
+    "_site/assets/css/print/fonts/IBM-plex-sans/IBMPlexSans-TextItalic.woff",
+    "_site/assets/css/print/fonts/IBM-plex-sans/IBMPlexSans-SemiBoldItalic.woff",
+    "_site/assets/css/print/fonts/IBM-plex-sans/IBMPlexSans-Text.woff",
+    "_site/assets/css/print/fonts/IBM-plex-sans/IBMPlexSans-SemiBold.woff",
+    "_11ty/assets/themes/valentine/css/print/fonts/IBM-plex-sans/IBMPlexSans-TextItalic.woff",
+    "_11ty/assets/themes/valentine/css/print/fonts/IBM-plex-sans/IBMPlexSans-Text.woff",
+    "_11ty/assets/themes/valentine/css/print/fonts/IBM-plex-sans/IBMPlexSans-SemiBoldItalic.woff",
     "_site/csspageweaver/plugins/tableOfContent/README.md",
     "_site/csspageweaver/plugins/reloadInPlace/Readme.md",
     "_site/csspageweaver/plugins/pageMove/README.md",
