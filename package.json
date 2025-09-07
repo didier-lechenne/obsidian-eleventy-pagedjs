@@ -9,9 +9,10 @@
     "build:print": "npm run clean && cross-env BUILD_ENV=print npx @11ty/eleventy",
     "build": "npm run build:print",
     "serve:web": "npm run clean && cross-env BUILD_ENV=web npx @11ty/eleventy --serve",
-    "serve:print": "npm run clean && cross-env BUILD_ENV=print npx @11ty/eleventy --serve ",
-    "serve": "npm run clean && cross-env npx @11ty/eleventy --serve ",
-    "deploy": "sh deploy.sh",
+    "serve:print": "npm run clean && cross-env BUILD_ENV=print npx @11ty/eleventy --serve",
+    "serve": "npm run clean && cross-env npx @11ty/eleventy --serve",
+    "deploy": "node deploy.js",
+    "deploy:bash": "bash deploy.sh",
     "stop": "kill-port 3000"
   },
   "keywords": ["eleventy", "print", "web", "paged-js", "static-site"],
@@ -51,6 +52,7 @@
     "markdown-it-sub": "^2.0.0",
     "markdown-it-sup": "^2.0.0",
     "markdown-it-toc-done-right": "^4.2.0",
-    "rimraf": "^6.0.1"
+    "rimraf": "^6.0.1",
+    "shelljs": "^0.8.5"
   }
 }
