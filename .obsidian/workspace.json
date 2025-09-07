@@ -20,6 +20,18 @@
             }
           },
           {
+            "id": "632fb151f218cdef",
+            "type": "leaf",
+            "state": {
+              "type": "vscode-editor",
+              "state": {
+                "file": "_site/assets/css/print/fonts/IBM-plex-sans/index.css"
+              },
+              "icon": "lucide-file",
+              "title": "index"
+            }
+          },
+          {
             "id": "e53a0f3e1186b4d6",
             "type": "leaf",
             "state": {
@@ -31,7 +43,8 @@
               "title": "print"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -251,43 +264,43 @@
       "cmdr:Shell commands: Execute: npm run deploy": false
     }
   },
-  "active": "93f14d335999116c",
+  "active": "632fb151f218cdef",
   "lastOpenFiles": [
-    "_11ty/assets/themes/valentine/css/print/fonts/fonts.css",
     "_11ty/assets/themes/valentine/css/screen.css",
-    "_11ty/assets/themes/valentine/css/print.css",
-    "_11ty/assets/themes/valentine/css/print/base.css",
     "_site/index.html",
     "_site/print.html",
-    "_site/assets/css/print/layout.css",
-    "_site/csspageweaver/plugins/tableOfContent/.gitignore",
-    "_site/csspageweaver/plugins/previewPage/.gitignore",
-    "_site/csspageweaver/plugins/spread/.gitignore",
-    "_site/csspageweaver/plugins/reloadInPlace/.gitignore",
+    "_site/assets/css/print/fonts/WorkSans/WorkSans-Regular.woff2",
+    "_site/assets/css/print/fonts/WorkSans/WorkSans-Light.woff",
+    "_site/assets/css/print/fonts/WorkSans/WorkSans-Italic.woff2",
+    "_site/assets/css/print/fonts/WorkSans/WorkSans-Regular.woff",
+    "_site/assets/css/print/fonts/WorkSans/WorkSans-LightItalic.woff2",
+    "_site/assets/css/print/fonts/WorkSans/WorkSans-LightItalic.woff",
+    "_site/assets/css/print/fonts/WorkSans/WorkSans-Light.woff2",
+    "_site/assets/css/print/fonts/WorkSans/WorkSans-Italic.woff",
     "_site/csspageweaver/plugins/tableOfContent/README.md",
-    "_site/csspageweaver/plugins/pageMove/README.md",
     "_site/csspageweaver/plugins/reloadInPlace/Readme.md",
+    "_site/csspageweaver/plugins/pageMove/README.md",
     "_site/csspageweaver/plugins/marker/README.md",
-    "_site/csspageweaver/plugins/fullPage/README.md",
     "_site/csspageweaver/plugins/layout/README.md",
     "_site/csspageweaver/plugins/inlineNotes/README.md",
-    "_site/csspageweaver/plugins/footnotesFix/README.md",
+    "_site/csspageweaver/plugins/fullPage/README.md",
     "_site/csspageweaver/plugins/fullContent/README.md",
-    "_site/csspageweaver/plugins/editor/README-DEV-TURNDOWN.md",
+    "_site/csspageweaver/plugins/footnotesFix/README.md",
     "_site/csspageweaver/plugins/editor/README.md",
+    "_site/csspageweaver/plugins/editor/README-DEV-TURNDOWN.md",
     "_site/csspageweaver/plugins/editor/README-DEV-TOOLBAR.md",
     "_site/csspageweaver/plugins/baseline/README.md",
     "_site/csspageweaver/README.md",
-    "_site/images/velo2.jpg",
     "_site/images/velo4.jpg",
-    "_site/images/velo.jpg",
+    "_site/images/velo2.jpg",
+    "_site/images/home-made-solar-system_dithered.png",
     "_site/images/velo3.jpg",
+    "_site/images/siege.jpg",
+    "_site/images/velo.jpg",
     "_site/images/tomeIII-candle_dithered.png",
     "_site/images/reparer1.png",
-    "_site/images/lowtech_distilateur.png",
-    "_site/images/mongolian-child-archer-Nasanbat_Nasaa_dithered.png",
-    "_site/images/siege.jpg",
     "_site/images/rebar-foundation-wind-turbine_dithered.png",
+    "_site/images/intro_heritage.png",
     "README.md",
     "node_modules/.js-yaml-AQWwbR6J/README.md",
     "node_modules/.js-yaml-AQWwbR6J/CHANGELOG.md",
