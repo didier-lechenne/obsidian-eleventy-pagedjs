@@ -79,6 +79,6 @@ tmp/
 temp/
 
 
-/a_garder_config/
+a_garder_config/
 /aide/
-/.github/
+.github/
