@@ -1,5 +1,6 @@
 # === CONFIG FOR CODEBERG ===
 # === UTILE POUR DEPLOYER LE SITE AVEC LES SERVICES DE CODEBERG ===
+# === npm run deploy (l'icône 🚀) ===
 
 # === ADRESSE DU DEPOT===
 repository_url: "https://codeberg.org/didierlechenne/desencombrement.git"
