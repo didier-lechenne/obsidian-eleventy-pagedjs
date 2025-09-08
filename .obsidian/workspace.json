@@ -20,6 +20,18 @@
             }
           },
           {
+            "id": "b474b13da5bf8ced",
+            "type": "leaf",
+            "state": {
+              "type": "vscode-editor",
+              "state": {
+                "file": "deploy.js"
+              },
+              "icon": "lucide-file",
+              "title": "deploy"
+            }
+          },
+          {
             "id": "8ff0af27e348de2a",
             "type": "leaf",
             "state": {
@@ -43,7 +55,8 @@
               "title": "figures"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -263,12 +276,15 @@
       "cmdr:Shell commands: Execute: npm run deploy": false
     }
   },
-  "active": "93f14d335999116c",
+  "active": "b474b13da5bf8ced",
   "lastOpenFiles": [
+    "_11ty/_data/config.yml",
+    "_11ty/_data/token.yml",
+    "deploy.js",
+    "_11ty/assets/themes/valentine/css/screen.css",
     "_11ty/assets/themes/valentine/css/print/figures.css",
     "_11ty/assets/themes/valentine/css/print/base.css",
     "_11ty/assets/themes/valentine/css/print.css",
-    "_11ty/assets/themes/valentine/css/screen.css",
     "_11ty/assets/themes/valentine/css/print/fonts/fonts.css",
     "_site/images/velo.jpg",
     "_site/images/velo2.jpg",
@@ -283,9 +299,6 @@
     "_11ty/assets/themes/valentine/css/print/fonts/IBM-plex-sans/index.css",
     "_site/index.html",
     "_site/print.html",
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-Regular.woff2",
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-Regular.woff",
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-LightItalic.woff2",
     "_site/csspageweaver/plugins/tableOfContent/README.md",
     "_site/csspageweaver/plugins/reloadInPlace/Readme.md",
     "_site/csspageweaver/plugins/pageMove/README.md",

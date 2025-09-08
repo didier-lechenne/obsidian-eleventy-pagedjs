@@ -5,10 +5,10 @@ const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
 
-// Charger la configuration
-const config = yaml.load(fs.readFileSync('./_11ty/_data/config.yml', 'utf8'));
-const REPO_URL = config.repository_url;
-const SITE_URL = config.site_url;
+// Charger les clefs personnelles
+const token = yaml.load(fs.readFileSync('./_11ty/_data/config.yml', 'utf8'));
+const REPO_URL = token.repository_url;
+const SITE_URL = token.site_url;
 
 function run(command, options = {}) {
   try {
