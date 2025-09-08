@@ -13,10 +13,10 @@
             "state": {
               "type": "vscode-editor",
               "state": {
-                "file": "_11ty/assets/themes/valentine/css/print/fonts/fonts.css"
+                "file": "_11ty/assets/themes/valentine/css/screen.css"
               },
               "icon": "lucide-file",
-              "title": "fonts"
+              "title": "screen"
             }
           },
           {
@@ -37,10 +37,10 @@
             "state": {
               "type": "vscode-editor",
               "state": {
-                "file": "_11ty/assets/themes/valentine/css/print.css"
+                "file": "_11ty/assets/themes/valentine/css/print/figures.css"
               },
               "icon": "lucide-file",
-              "title": "print"
+              "title": "figures"
             }
           }
         ]
@@ -265,6 +265,11 @@
   },
   "active": "93f14d335999116c",
   "lastOpenFiles": [
+    "_11ty/assets/themes/valentine/css/print/figures.css",
+    "_11ty/assets/themes/valentine/css/print/base.css",
+    "_11ty/assets/themes/valentine/css/print.css",
+    "_11ty/assets/themes/valentine/css/screen.css",
+    "_11ty/assets/themes/valentine/css/print/fonts/fonts.css",
     "_site/images/velo.jpg",
     "_site/images/velo2.jpg",
     "_site/images/lowtech2.png",
@@ -275,17 +280,12 @@
     "_site/images/lowtech_distilateur.png",
     "_site/images/maxresdefault.webp",
     "_site/images/nobody-at-table-edited_dithered.png",
-    "_site/images/intro_heritage.png",
-    "_11ty/assets/themes/valentine/css/print.css",
-    "_11ty/assets/themes/valentine/css/screen.css",
     "_11ty/assets/themes/valentine/css/print/fonts/IBM-plex-sans/index.css",
     "_site/index.html",
     "_site/print.html",
     "_site/assets/css/print/fonts/WorkSans/WorkSans-Regular.woff2",
     "_site/assets/css/print/fonts/WorkSans/WorkSans-Regular.woff",
     "_site/assets/css/print/fonts/WorkSans/WorkSans-LightItalic.woff2",
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-LightItalic.woff",
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-Light.woff2",
     "_site/csspageweaver/plugins/tableOfContent/README.md",
     "_site/csspageweaver/plugins/reloadInPlace/Readme.md",
     "_site/csspageweaver/plugins/pageMove/README.md",
