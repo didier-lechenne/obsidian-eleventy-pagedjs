@@ -4,59 +4,22 @@
     "type": "split",
     "children": [
       {
-        "id": "2a6be7253c022dfe",
+        "id": "c7fdd58740eae262",
         "type": "tabs",
         "children": [
           {
-            "id": "93f14d335999116c",
+            "id": "8091794f82162ab9",
             "type": "leaf",
             "state": {
               "type": "vscode-editor",
               "state": {
-                "file": "_11ty/assets/themes/valentine/css/screen.css"
+                "file": "_11ty/_data/token.yml"
               },
               "icon": "lucide-file",
-              "title": "screen"
-            }
-          },
-          {
-            "id": "b474b13da5bf8ced",
-            "type": "leaf",
-            "state": {
-              "type": "vscode-editor",
-              "state": {
-                "file": "deploy.js"
-              },
-              "icon": "lucide-file",
-              "title": "deploy"
-            }
-          },
-          {
-            "id": "8ff0af27e348de2a",
-            "type": "leaf",
-            "state": {
-              "type": "vscode-editor",
-              "state": {
-                "file": "_11ty/assets/themes/valentine/css/screen.css"
-              },
-              "icon": "lucide-file",
-              "title": "screen"
-            }
-          },
-          {
-            "id": "e53a0f3e1186b4d6",
-            "type": "leaf",
-            "state": {
-              "type": "vscode-editor",
-              "state": {
-                "file": "_11ty/assets/themes/valentine/css/print/figures.css"
-              },
-              "icon": "lucide-file",
-              "title": "figures"
+              "title": "token"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -276,12 +239,12 @@
       "cmdr:Shell commands: Execute: npm run deploy": false
     }
   },
-  "active": "b474b13da5bf8ced",
+  "active": "8091794f82162ab9",
   "lastOpenFiles": [
+    "_11ty/assets/themes/valentine/css/screen.css",
+    "deploy.js",
     "_11ty/_data/config.yml",
     "_11ty/_data/token.yml",
-    "deploy.js",
-    "_11ty/assets/themes/valentine/css/screen.css",
     "_11ty/assets/themes/valentine/css/print/figures.css",
     "_11ty/assets/themes/valentine/css/print/base.css",
     "_11ty/assets/themes/valentine/css/print.css",
