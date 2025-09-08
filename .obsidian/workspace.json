@@ -13,10 +13,10 @@
             "state": {
               "type": "vscode-editor",
               "state": {
-                "file": "deploy.js"
+                "file": "_11ty/_data/token.yml"
               },
               "icon": "lucide-file",
-              "title": "deploy"
+              "title": "token"
             }
           }
         ]
@@ -241,30 +241,30 @@
   },
   "active": "8091794f82162ab9",
   "lastOpenFiles": [
-    "_11ty/_data/config.yml",
-    "_11ty/_data/token.yml",
-    "deploy.js",
-    "_11ty/assets/themes/valentine/css/screen.css",
-    "_11ty/assets/themes/valentine/css/print/figures.css",
-    "_11ty/assets/themes/valentine/css/print/base.css",
-    "_11ty/assets/themes/valentine/css/print.css",
-    "_11ty/assets/themes/valentine/css/print/fonts/fonts.css",
-    "_site/images/velo.jpg",
-    "_site/images/velo2.jpg",
-    "_site/images/lowtech2.png",
-    "_site/images/tomeIII-candle_dithered.png",
-    "_site/images/rebar-foundation-wind-turbine_dithered.png",
-    "_site/images/mongolian-child-archer-Nasanbat_Nasaa_dithered.png",
-    "_site/images/siege.jpg",
-    "_site/images/lowtech_distilateur.png",
-    "_site/images/maxresdefault.webp",
-    "_site/images/nobody-at-table-edited_dithered.png",
-    "_11ty/assets/themes/valentine/css/print/fonts/IBM-plex-sans/index.css",
     "_site/index.html",
+    "deploy.js",
+    "_site/images/velo3.jpg",
+    "_site/images/velo2.jpg",
+    "_site/images/tomeIII-candle_dithered.png",
+    "_site/images/reparer1.png",
+    "_site/images/rebar-foundation-wind-turbine_dithered.png",
+    "_site/images/nobody-at-table-edited_dithered.png",
+    "_site/images/mongolian-child-archer-Nasanbat_Nasaa_dithered.png",
+    "_site/images/maxresdefault.webp",
+    "_site/images/lowtech_distilateur.png",
+    "_site/images/lowtech2.png",
     "_site/print.html",
+    "_site/assets/css/print/fonts/GTMaru/index.css",
+    "_site/assets/css/print/fonts/GTMaru/GTMaru-RegularOblique.woff2",
+    "_site/assets/css/print/fonts/GTMaru/GTMaru-RegularOblique.woff",
+    "_site/assets/css/print/fonts/GTMaru/GTMaru-Regular.woff2",
+    "_site/assets/css/print/fonts/GTMaru/GTMaru-Regular.woff",
+    "_site/assets/css/print/fonts/GTMaru/GTMaru-LightOblique.woff2",
+    "_site/assets/css/print/fonts/GTMaru/GTMaru-Light.woff2",
+    "_site/assets/css/print/fonts/GTMaru/GTMaru-LightOblique.woff",
     "_site/csspageweaver/plugins/tableOfContent/README.md",
-    "_site/csspageweaver/plugins/reloadInPlace/Readme.md",
     "_site/csspageweaver/plugins/pageMove/README.md",
+    "_site/csspageweaver/plugins/reloadInPlace/Readme.md",
     "_site/csspageweaver/plugins/marker/README.md",
     "_site/csspageweaver/plugins/layout/README.md",
     "_site/csspageweaver/plugins/inlineNotes/README.md",
