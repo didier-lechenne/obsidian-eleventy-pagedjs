@@ -13,10 +13,10 @@
             "state": {
               "type": "vscode-editor",
               "state": {
-                "file": "_11ty/_data/token.yml"
+                "file": "deploy.js"
               },
               "icon": "lucide-file",
-              "title": "token"
+              "title": "deploy"
             }
           }
         ]
@@ -241,10 +241,10 @@
   },
   "active": "8091794f82162ab9",
   "lastOpenFiles": [
-    "_11ty/assets/themes/valentine/css/screen.css",
-    "deploy.js",
     "_11ty/_data/config.yml",
     "_11ty/_data/token.yml",
+    "deploy.js",
+    "_11ty/assets/themes/valentine/css/screen.css",
     "_11ty/assets/themes/valentine/css/print/figures.css",
     "_11ty/assets/themes/valentine/css/print/base.css",
     "_11ty/assets/themes/valentine/css/print.css",

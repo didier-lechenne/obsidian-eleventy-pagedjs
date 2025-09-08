@@ -6,7 +6,7 @@ const path = require('path');
 const yaml = require('js-yaml');
 
 // Charger les clefs personnelles
-const token = yaml.load(fs.readFileSync('./_11ty/_data/config.yml', 'utf8'));
+const token = yaml.load(fs.readFileSync('./_11ty/_data/token.yml', 'utf8'));
 const REPO_URL = token.repository_url;
 const SITE_URL = token.site_url;
 
