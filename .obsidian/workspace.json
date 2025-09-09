@@ -13,10 +13,10 @@
             "state": {
               "type": "vscode-editor",
               "state": {
-                "file": "_11ty/_data/token.yml"
+                "file": "_11ty/assets/themes/valentine/css/screen.css"
               },
               "icon": "lucide-file",
-              "title": "token"
+              "title": "screen"
             }
           }
         ]
@@ -216,7 +216,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 713.5
+    "width": 713.5,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -241,6 +242,7 @@
   },
   "active": "8091794f82162ab9",
   "lastOpenFiles": [
+    "_11ty/_data/token.yml",
     "_site/index.html",
     "deploy.js",
     "_site/images/velo3.jpg",
@@ -261,7 +263,6 @@
     "_site/assets/css/print/fonts/GTMaru/GTMaru-Regular.woff",
     "_site/assets/css/print/fonts/GTMaru/GTMaru-LightOblique.woff2",
     "_site/assets/css/print/fonts/GTMaru/GTMaru-Light.woff2",
-    "_site/assets/css/print/fonts/GTMaru/GTMaru-LightOblique.woff",
     "_site/csspageweaver/plugins/tableOfContent/README.md",
     "_site/csspageweaver/plugins/pageMove/README.md",
     "_site/csspageweaver/plugins/reloadInPlace/Readme.md",
