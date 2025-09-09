@@ -1,4 +1,3 @@
-
 // === CONFIGURATION DE BASE ===
 const yamlPlugin = require("./_11ty/config/yaml.js");
 const globalDataPlugin = require("./_11ty/config/globalData.js");
@@ -54,13 +53,24 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPlugin(afterBuild);
 
   // === CONFIGURATION SERVEUR DE DEV ===
-  eleventyConfig.setServerOptions({
+  const serverOptions = {
     port: 3000,
     watch: ["_11ty/**/*", config.publicFolder + "/**/*"],
     showAllHosts: true,
     domDiff: true,
     ignored: ["node_modules/**", ".git/**", "**/.DS_Store", "_site/**/*", "**/*.tmp"],
-  });
+  };
+
+  // Désactiver le rechargement automatique si NO_RELOAD est défini
+  if (process.env.NO_RELOAD === 'true') {
+    serverOptions.liveReload = false;
+    serverOptions.domDiff = false;
+    console.log("🚫 Rechargement automatique désactivé - rafraîchissez manuellement votre navigateur");
+  } else {
+    console.log("🔄 Rechargement automatique activé");
+  }
+
+  eleventyConfig.setServerOptions(serverOptions);
 
 function slugify(text) {
   return text

@@ -15,7 +15,8 @@
     "json",
     "njk",
     "html",
-    "sh"
+    "sh",
+    ".gitignore"
   ],
   "folding": true,
   "lineNumbers": true,

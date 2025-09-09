@@ -5,15 +5,15 @@ import { TurndownService } from "./turndown.js";
 const CONFIG = {
   ZONES: { edge: 20, corner: 25 },
   CURSORS: {
-    'start-start': 'nw-resize',
-    'start-end': 'ne-resize', 
-    'end-start': 'sw-resize',
-    'end-end': 'se-resize',
-    'start-middle': 'n-resize',
-    'end-middle': 's-resize',
-    'middle-start': 'w-resize',
-    'middle-end': 'e-resize',
-    'move': 'move'
+    "start-start": "nw-resize",
+    "start-end": "ne-resize",
+    "end-start": "sw-resize",
+    "end-end": "se-resize",
+    "start-middle": "n-resize",
+    "end-middle": "s-resize",
+    "middle-start": "w-resize",
+    "middle-end": "e-resize",
+    move: "move",
   },
   GRID_POSITIONS: [
     { id: "top_left", x: 0, y: 0 },
@@ -24,15 +24,15 @@ const CONFIG = {
     { id: "middle_right", x: 1, y: 0.5 },
     { id: "bottom_left", x: 0, y: 1 },
     { id: "bottom_middle", x: 0.5, y: 1 },
-    { id: "bottom_right", x: 1, y: 1 }
-  ]
+    { id: "bottom_right", x: 1, y: 1 },
+  ],
 };
 
 // Gestionnaire d'état centralisé
 class LayoutState {
   constructor() {
     this.selectedElement = null;
-    this.mode = 'idle'; // idle, resizing, dragging
+    this.mode = "idle"; // idle, resizing, dragging
     this.resizeData = null;
     this.isShiftPressed = false;
     // console.log('🏗️ LayoutState créé');
@@ -41,60 +41,60 @@ class LayoutState {
   select(element) {
     this.deselect();
     this.selectedElement = element;
-    element.classList.add('selected');
+    element.classList.add("selected");
     // console.log('📌 Élément sélectionné:', element.dataset.grid);
     return element;
   }
 
   deselect() {
     if (this.selectedElement) {
-      this.selectedElement.classList.remove('selected', 'resizable', 'hover');
-      this.selectedElement.style.cursor = 'default';
+      this.selectedElement.classList.remove("selected", "resizable", "hover");
+      this.selectedElement.style.cursor = "default";
       this.cleanupElement(this.selectedElement);
     }
     this.selectedElement = null;
   }
 
   startResize(element, mode, mousePos, startValues) {
-    this.mode = 'resizing';
+    this.mode = "resizing";
     this.resizeData = { element, mode, mousePos, startValues };
-    document.body.classList.add('grid-resizing');
-    element.classList.add('resizing');
+    document.body.classList.add("grid-resizing");
+    element.classList.add("resizing");
     // console.log('🔧 Début redimensionnement:', mode);
   }
 
   endResize() {
-    if (this.mode !== 'resizing' || !this.resizeData) return;
-    
-    document.body.classList.remove('grid-resizing');
-    this.resizeData.element.classList.remove('resizing');
-    this.mode = 'idle';
+    if (this.mode !== "resizing" || !this.resizeData) return;
+
+    document.body.classList.remove("grid-resizing");
+    this.resizeData.element.classList.remove("resizing");
+    this.mode = "idle";
     this.resizeData = null;
     // console.log('✅ Fin redimensionnement');
   }
 
   startDrag(image) {
-    this.mode = 'dragging';
+    this.mode = "dragging";
     this.dragData = { image };
-    image.style.cursor = 'grab';
+    image.style.cursor = "grab";
     // console.log('🖱️ Début drag image');
   }
 
   endDrag() {
-    if (this.mode !== 'dragging' || !this.dragData) return;
-    
-    this.dragData.image.style.cursor = 'default';
-    this.mode = 'idle';
+    if (this.mode !== "dragging" || !this.dragData) return;
+
+    this.dragData.image.style.cursor = "default";
+    this.mode = "idle";
     this.dragData = null;
     // console.log('✅ Fin drag image');
   }
 
   cleanupElement(element) {
-    element.classList.remove('resizable', 'resizing', 'selected', 'hover');
-    element.style.cursor = 'default';
+    element.classList.remove("resizable", "resizing", "selected", "hover");
+    element.style.cursor = "default";
     delete element.dataset.resizeMode;
-    
-    const moveButton = element.querySelector('.move-button');
+
+    const moveButton = element.querySelector(".move-button");
     if (moveButton) moveButton.remove();
   }
 }
@@ -103,20 +103,27 @@ class LayoutState {
 class DOMUtils {
   static getGridElement(target) {
     if (!target || !target.closest) return null;
-    
+
     // Cas spécial : figcaption → remonte au figure parent
-    if (target.tagName?.toLowerCase() === 'figcaption' || target.classList.contains('figcaption')) {
+    if (
+      target.tagName?.toLowerCase() === "figcaption" ||
+      target.classList.contains("figcaption")
+    ) {
       const figure = target.previousElementSibling;
-      if (figure && figure.tagName?.toLowerCase() === 'figure' && figure.hasAttribute('data-grid')) {
+      if (
+        figure &&
+        figure.tagName?.toLowerCase() === "figure" &&
+        figure.hasAttribute("data-grid")
+      ) {
         return figure;
       }
     }
-    
-    return target.closest('[data-grid]');
+
+    return target.closest("[data-grid]");
   }
 
   static isInModularGrid(element) {
-    return element && element.closest('.modularGrid') !== null;
+    return element && element.closest(".modularGrid") !== null;
   }
 
   static getResizeZone(element, clientX, clientY) {
@@ -125,35 +132,43 @@ class DOMUtils {
     const y = clientY - rect.top;
 
     const isNearLeft = x >= -CONFIG.ZONES.corner && x <= CONFIG.ZONES.corner;
-    const isNearRight = x >= rect.width - CONFIG.ZONES.corner && x <= rect.width + CONFIG.ZONES.corner;
+    const isNearRight =
+      x >= rect.width - CONFIG.ZONES.corner &&
+      x <= rect.width + CONFIG.ZONES.corner;
     const isNearTop = y >= -CONFIG.ZONES.corner && y <= CONFIG.ZONES.corner;
-    const isNearBottom = y >= rect.height - CONFIG.ZONES.corner && y <= rect.height + CONFIG.ZONES.corner;
+    const isNearBottom =
+      y >= rect.height - CONFIG.ZONES.corner &&
+      y <= rect.height + CONFIG.ZONES.corner;
 
     const isEdgeLeft = x >= -CONFIG.ZONES.edge && x <= CONFIG.ZONES.edge;
-    const isEdgeRight = x >= rect.width - CONFIG.ZONES.edge && x <= rect.width + CONFIG.ZONES.edge;
+    const isEdgeRight =
+      x >= rect.width - CONFIG.ZONES.edge &&
+      x <= rect.width + CONFIG.ZONES.edge;
     const isEdgeTop = y >= -CONFIG.ZONES.edge && y <= CONFIG.ZONES.edge;
-    const isEdgeBottom = y >= rect.height - CONFIG.ZONES.edge && y <= rect.height + CONFIG.ZONES.edge;
+    const isEdgeBottom =
+      y >= rect.height - CONFIG.ZONES.edge &&
+      y <= rect.height + CONFIG.ZONES.edge;
 
     // Coins
-    if (isNearLeft && isNearTop) return 'start-start';
-    if (isNearRight && isNearTop) return 'start-end';
-    if (isNearLeft && isNearBottom) return 'end-start';
-    if (isNearRight && isNearBottom) return 'end-end';
+    if (isNearLeft && isNearTop) return "start-start";
+    if (isNearRight && isNearTop) return "start-end";
+    if (isNearLeft && isNearBottom) return "end-start";
+    if (isNearRight && isNearBottom) return "end-end";
 
     // Bords
-    if (isEdgeLeft) return 'middle-start';
-    if (isEdgeRight) return 'middle-end';
-    if (isEdgeTop) return 'start-middle';
-    if (isEdgeBottom) return 'end-middle';
+    if (isEdgeLeft) return "middle-start";
+    if (isEdgeRight) return "middle-end";
+    if (isEdgeTop) return "start-middle";
+    if (isEdgeBottom) return "end-middle";
 
     return null;
   }
 
   static createMoveButton() {
-    const button = document.createElement('div');
-    button.className = 'move-button';
-    button.dataset.mode = 'move';
-    button.title = 'Déplacer dans la grille';
+    const button = document.createElement("div");
+    button.className = "move-button";
+    button.dataset.mode = "move";
+    button.title = "Déplacer dans la grille";
     return button;
   }
 }
@@ -170,19 +185,29 @@ class InteractionManager {
 
   setupEventListeners() {
     // console.log('📡 Configuration des event listeners');
-    document.addEventListener('click', this.handleClick.bind(this), true);
-    document.addEventListener('mouseover', this.handleMouseOver.bind(this));
-    document.addEventListener('mouseout', this.handleMouseOut.bind(this));
-    document.addEventListener('mousemove', this.handleMouseMove.bind(this), true);
-    document.addEventListener('mousedown', this.handleMouseDown.bind(this), true);
-    document.addEventListener('mouseup', this.handleMouseUp.bind(this), true);
-    document.addEventListener('keydown', this.handleKeyDown.bind(this));
-    document.addEventListener('keyup', this.handleKeyUp.bind(this));
-    document.addEventListener('wheel', this.handleWheel.bind(this), { passive: false });
+    document.addEventListener("click", this.handleClick.bind(this), true);
+    document.addEventListener("mouseover", this.handleMouseOver.bind(this));
+    document.addEventListener("mouseout", this.handleMouseOut.bind(this));
+    document.addEventListener(
+      "mousemove",
+      this.handleMouseMove.bind(this),
+      true
+    );
+    document.addEventListener(
+      "mousedown",
+      this.handleMouseDown.bind(this),
+      true
+    );
+    document.addEventListener("mouseup", this.handleMouseUp.bind(this), true);
+    document.addEventListener("keydown", this.handleKeyDown.bind(this));
+    document.addEventListener("keyup", this.handleKeyUp.bind(this));
+    document.addEventListener("wheel", this.handleWheel.bind(this), {
+      passive: false,
+    });
   }
 
   handleClick(e) {
-    if (!document.body.classList.contains('layout')) return;
+    if (!document.body.classList.contains("layout")) return;
 
     const element = DOMUtils.getGridElement(e.target);
     if (!element || !DOMUtils.isInModularGrid(element)) return;
@@ -194,7 +219,7 @@ class InteractionManager {
   }
 
   handleMouseOver(e) {
-    if (!document.body.classList.contains('layout')) return;
+    if (!document.body.classList.contains("layout")) return;
 
     const element = DOMUtils.getGridElement(e.target);
     if (!element || !DOMUtils.isInModularGrid(element)) return;
@@ -206,15 +231,15 @@ class InteractionManager {
 
   handleMouseOut(e) {
     const element = DOMUtils.getGridElement(e.target);
-    if (element && !element.classList.contains('selected')) {
-      element.classList.remove('hover');
+    if (element && !element.classList.contains("selected")) {
+      element.classList.remove("hover");
     }
   }
 
   handleMouseMove(e) {
-    if (this.state.mode === 'resizing') {
+    if (this.state.mode === "resizing") {
       this.resizeManager.handleMove(e);
-    } else if (this.state.mode === 'dragging') {
+    } else if (this.state.mode === "dragging") {
       this.handleImageDrag(e);
     } else {
       this.updateCursor(e);
@@ -222,10 +247,10 @@ class InteractionManager {
   }
 
   handleMouseDown(e) {
-    if (!document.body.classList.contains('layout')) return;
+    if (!document.body.classList.contains("layout")) return;
 
     // Drag d'image avec Shift
-    if (e.shiftKey && this.state.mode === 'idle') {
+    if (e.shiftKey && this.state.mode === "idle") {
       const img = this.findImageElement(e.target);
       if (img) {
         this.state.startDrag(img);
@@ -237,12 +262,17 @@ class InteractionManager {
 
     // Redimensionnement
     const element = DOMUtils.getGridElement(e.target);
-    if (!element || !DOMUtils.isInModularGrid(element) || this.state.mode !== 'idle') return;
+    if (
+      !element ||
+      !DOMUtils.isInModularGrid(element) ||
+      this.state.mode !== "idle"
+    )
+      return;
 
     let resizeMode = null;
-    
-    if (e.target.classList.contains('move-button')) {
-      resizeMode = 'move';
+
+    if (e.target.classList.contains("move-button")) {
+      resizeMode = "move";
     } else {
       resizeMode = DOMUtils.getResizeZone(element, e.clientX, e.clientY);
     }
@@ -251,20 +281,23 @@ class InteractionManager {
       e.preventDefault();
       e.stopPropagation();
       // console.log('🎯 Début redimensionnement mode:', resizeMode);
-      this.resizeManager.start(element, resizeMode, { x: e.clientX, y: e.clientY });
+      this.resizeManager.start(element, resizeMode, {
+        x: e.clientX,
+        y: e.clientY,
+      });
     }
   }
 
   handleMouseUp(e) {
-    if (this.state.mode === 'resizing') {
+    if (this.state.mode === "resizing") {
       this.resizeManager.end();
-    } else if (this.state.mode === 'dragging') {
+    } else if (this.state.mode === "dragging") {
       this.state.endDrag();
     }
   }
 
   handleKeyDown(e) {
-    if (e.key === 'Shift' && !this.state.isShiftPressed) {
+    if (e.key === "Shift" && !this.state.isShiftPressed) {
       this.state.isShiftPressed = true;
       this.toggleMoveButtons(false);
     }
@@ -277,9 +310,9 @@ class InteractionManager {
     // Déplacement d'image avec flèches
     const moves = {
       ArrowUp: [0, -2],
-      ArrowDown: [0, 2], 
+      ArrowDown: [0, 2],
       ArrowLeft: [-2, 0],
-      ArrowRight: [2, 0]
+      ArrowRight: [2, 0],
     };
 
     const move = moves[e.key];
@@ -296,7 +329,7 @@ class InteractionManager {
       Equal: 1.005,
       Minus: 0.995,
       NumpadAdd: 1.005,
-      NumpadSubtract: 0.995
+      NumpadSubtract: 0.995,
     };
 
     const zoomScale = zoomActions[e.code];
@@ -309,14 +342,19 @@ class InteractionManager {
   }
 
   handleKeyUp(e) {
-    if (e.key === 'Shift' && this.state.isShiftPressed) {
+    if (e.key === "Shift" && this.state.isShiftPressed) {
       this.state.isShiftPressed = false;
       this.toggleMoveButtons(true);
     }
   }
 
   handleWheel(e) {
-    if (!e.shiftKey || !e.target.tagName || e.target.tagName.toLowerCase() !== 'img') return;
+    if (
+      !e.shiftKey ||
+      !e.target.tagName ||
+      e.target.tagName.toLowerCase() !== "img"
+    )
+      return;
 
     const element = e.target.closest('[data-grid="image"]');
     if (!element) return;
@@ -325,21 +363,26 @@ class InteractionManager {
     const delta = Math.max(-1, Math.min(1, e.wheelDelta || -e.detail));
     const scaleAmount = 1.0 + (delta * 5) / 90.0;
 
-    this.zoomImage(e.target, scaleAmount, e.layerX / e.target.width, e.layerY / e.target.height);
-    
+    this.zoomImage(
+      e.target,
+      scaleAmount,
+      e.layerX / e.target.width,
+      e.layerY / e.target.height
+    );
+
     // console.log('🔍 Zoom avec molette, génération du code...');
     this.onCodeGenerate?.(element, true);
   }
 
   // Méthodes d'aide
   shouldActivateElement(element, event) {
-    const isImage = element.dataset.grid === 'image';
+    const isImage = element.dataset.grid === "image";
     return isImage ? event.shiftKey : true;
   }
 
   activateElement(element) {
-    if (!element.classList.contains('selected')) {
-      element.classList.add('hover');
+    if (!element.classList.contains("selected")) {
+      element.classList.add("hover");
       this.selectElement(element);
     }
   }
@@ -352,12 +395,12 @@ class InteractionManager {
   }
 
   setupElementControls(element) {
-    element.classList.add('resizable');
+    element.classList.add("resizable");
     const moveButton = DOMUtils.createMoveButton();
     element.appendChild(moveButton);
-    
+
     if (this.state.isShiftPressed) {
-      moveButton.style.display = 'none';
+      moveButton.style.display = "none";
     }
   }
 
@@ -366,22 +409,22 @@ class InteractionManager {
     if (!element) return;
 
     const zone = DOMUtils.getResizeZone(element, e.clientX, e.clientY);
-    const cursor = CONFIG.CURSORS[zone] || 'default';
-    
+    const cursor = CONFIG.CURSORS[zone] || "default";
+
     element.style.cursor = cursor;
-    element.dataset.resizeMode = zone || 'hover';
+    element.dataset.resizeMode = zone || "hover";
   }
 
   toggleMoveButtons(show) {
-    document.querySelectorAll('.move-button').forEach(button => {
-      button.style.display = show ? 'flex' : 'none';
+    document.querySelectorAll(".move-button").forEach((button) => {
+      button.style.display = show ? "flex" : "none";
     });
   }
 
   findImageElement(target) {
-    if (target.tagName?.toLowerCase() === 'img') return target;
+    if (target.tagName?.toLowerCase() === "img") return target;
     const container = target.closest('[data-grid="image"]');
-    return container ? container.querySelector('img') : null;
+    return container ? container.querySelector("img") : null;
   }
 
   handleImageDrag(e) {
@@ -393,7 +436,7 @@ class InteractionManager {
 
     this.translateImage(this.state.dragData.image, deltaX, deltaY);
     this.prevMousePos = { x: e.clientX, y: e.clientY };
-    
+
     const element = this.state.dragData.image.closest('[data-grid="image"]');
     if (element) {
       // console.log('🖱️ Drag image, génération du code...');
@@ -408,15 +451,17 @@ class InteractionManager {
     const parentWidth = parent.offsetWidth;
     const parentHeight = parent.offsetHeight;
 
-    const currentX = parseFloat(getComputedStyle(parent).getPropertyValue('--img-x')) || 0;
-    const currentY = parseFloat(getComputedStyle(parent).getPropertyValue('--img-y')) || 0;
+    const currentX =
+      parseFloat(getComputedStyle(parent).getPropertyValue("--img-x")) || 0;
+    const currentY =
+      parseFloat(getComputedStyle(parent).getPropertyValue("--img-y")) || 0;
 
     const newX = currentX + (deltaX / parentWidth) * 100;
     const newY = currentY + (deltaY / parentHeight) * 100;
 
     this.setCSSProperties(parent, {
-      'img-x': newX,
-      'img-y': newY
+      "img-x": newX,
+      "img-y": newY,
     });
   }
 
@@ -433,13 +478,15 @@ class InteractionManager {
     const parentHeight = parent.offsetHeight;
 
     const newWidthPercentage = (newWidth / parentWidth) * 100;
-    const newLeftPercentage = ((-oldWidth * resizeFract * relX + img.offsetLeft) / parentWidth) * 100;
-    const newTopPercentage = ((-oldHeight * resizeFract * relY + img.offsetTop) / parentHeight) * 100;
+    const newLeftPercentage =
+      ((-oldWidth * resizeFract * relX + img.offsetLeft) / parentWidth) * 100;
+    const newTopPercentage =
+      ((-oldHeight * resizeFract * relY + img.offsetTop) / parentHeight) * 100;
 
     this.setCSSProperties(parent, {
-      'img-w': newWidthPercentage,
-      'img-x': newLeftPercentage,
-      'img-y': newTopPercentage
+      "img-w": newWidthPercentage,
+      "img-x": newLeftPercentage,
+      "img-y": newTopPercentage,
     });
   }
 
@@ -467,14 +514,20 @@ class ResizeManager {
 
   handleMove(e) {
     if (!this.state.resizeData) return;
-    
+
     e.preventDefault();
     const { element, mode, mousePos, startValues } = this.state.resizeData;
-    
+
     const deltaX = e.clientX - mousePos.x;
     const deltaY = e.clientY - mousePos.y;
-    
-    const newValues = this.calculateNewValues(element, mode, deltaX, deltaY, startValues);
+
+    const newValues = this.calculateNewValues(
+      element,
+      mode,
+      deltaX,
+      deltaY,
+      startValues
+    );
     this.applyGridChanges(element, newValues);
   }
 
@@ -489,57 +542,62 @@ class ResizeManager {
 
   getStartValues(element) {
     return {
-      width: parseInt(element.style.getPropertyValue('--print-width')) || 6,
-      height: parseInt(element.style.getPropertyValue('--print-height')) || 3,
-      col: parseInt(element.style.getPropertyValue('--print-col')) || 1,
-      row: parseInt(element.style.getPropertyValue('--print-row')) || 1
+      width: parseInt(element.style.getPropertyValue("--print-width")) || 6,
+      height: parseInt(element.style.getPropertyValue("--print-height")) || 3,
+      col: parseInt(element.style.getPropertyValue("--print-col")) || 1,
+      row: parseInt(element.style.getPropertyValue("--print-row")) || 1,
     };
   }
 
   calculateNewValues(element, mode, deltaX, deltaY, startValues) {
     const container = element.parentElement;
-    const modularGrid = element.closest('.modularGrid');
+    const modularGrid = element.closest(".modularGrid");
     const gridConfig = this.getGridConfig(modularGrid);
-    
-    const { deltaCol, deltaRow } = this.convertPixelsToGrid(deltaX, deltaY, container, gridConfig);
-    
+
+    const { deltaCol, deltaRow } = this.convertPixelsToGrid(
+      deltaX,
+      deltaY,
+      container,
+      gridConfig
+    );
+
     let newValues = { ...startValues };
 
     switch (mode) {
-      case 'move':
+      case "move":
         newValues.col = startValues.col + deltaCol;
         newValues.row = startValues.row + deltaRow;
         break;
-      case 'start-middle':
+      case "start-middle":
         newValues.height = startValues.height - deltaRow;
         newValues.row = startValues.row + deltaRow;
         break;
-      case 'end-middle':
+      case "end-middle":
         newValues.height = startValues.height + deltaRow;
         break;
-      case 'middle-end':
+      case "middle-end":
         newValues.width = startValues.width + deltaCol;
         break;
-      case 'middle-start':
+      case "middle-start":
         newValues.width = startValues.width - deltaCol;
         newValues.col = startValues.col + deltaCol;
         break;
-      case 'start-end':
+      case "start-end":
         newValues.height = startValues.height - deltaRow;
         newValues.row = startValues.row + deltaRow;
         newValues.width = startValues.width + deltaCol;
         break;
-      case 'start-start':
+      case "start-start":
         newValues.height = startValues.height - deltaRow;
         newValues.row = startValues.row + deltaRow;
         newValues.width = startValues.width - deltaCol;
         newValues.col = startValues.col + deltaCol;
         break;
-      case 'end-end':
+      case "end-end":
         newValues.height = startValues.height + deltaRow;
         newValues.width = startValues.width + deltaCol;
         break;
-      case 'end-start':
+      case "end-start":
         newValues.height = startValues.height + deltaRow;
         newValues.width = startValues.width - deltaCol;
         newValues.col = startValues.col + deltaCol;
@@ -551,12 +609,12 @@ class ResizeManager {
 
   applyGridChanges(element, values) {
     const { col, row, width, height } = values;
-    
+
     const updates = [
-      ['--print-col', col],
-      ['--print-row', row],
-      ['--print-width', width],
-      ['--print-height', height]
+      ["--print-col", col],
+      ["--print-row", row],
+      ["--print-width", width],
+      ["--print-height", height],
     ];
 
     updates.forEach(([prop, value]) => {
@@ -565,7 +623,7 @@ class ResizeManager {
 
     // Synchronise la figcaption
     const figcaption = element.nextElementSibling;
-    if (figcaption && figcaption.tagName.toLowerCase() === 'figcaption') {
+    if (figcaption && figcaption.tagName.toLowerCase() === "figcaption") {
       updates.forEach(([prop, value]) => {
         figcaption.style.setProperty(prop, value);
       });
@@ -576,8 +634,10 @@ class ResizeManager {
     if (!section) return { cols: 12, rows: 10 };
 
     const computedStyle = getComputedStyle(section);
-    const cols = parseInt(computedStyle.getPropertyValue('--grid-col').trim()) || 12;
-    const rows = parseInt(computedStyle.getPropertyValue('--grid-row').trim()) || 10;
+    const cols =
+      parseInt(computedStyle.getPropertyValue("--grid-col").trim()) || 12;
+    const rows =
+      parseInt(computedStyle.getPropertyValue("--grid-row").trim()) || 10;
 
     return { cols, rows };
   }
@@ -588,7 +648,7 @@ class ResizeManager {
 
     return {
       deltaCol: Math.round(deltaX / gridStepX),
-      deltaRow: Math.round(deltaY / gridStepY)
+      deltaRow: Math.round(deltaY / gridStepY),
     };
   }
 
@@ -599,7 +659,7 @@ class ResizeManager {
       col: Math.max(1, Math.min(gridConfig.cols, col)),
       row: Math.max(1, Math.min(gridConfig.rows, row)),
       width: Math.max(1, Math.min(gridConfig.cols - col + 1, width)),
-      height: Math.max(1, Math.min(gridConfig.rows - row + 1, height))
+      height: Math.max(1, Math.min(gridConfig.rows - row + 1, height)),
     };
   }
 }
@@ -613,36 +673,36 @@ class CodeGenerator {
 
   setupTurndown() {
     const turndown = new TurndownService({
-      headingStyle: 'atx',
-      emDelimiter: '*',
-      strongDelimiter: '**',
-      linkStyle: 'inlined'
+      headingStyle: "atx",
+      emDelimiter: "*",
+      strongDelimiter: "**",
+      linkStyle: "inlined",
     });
 
-    turndown.addRule('lineBreak', {
-      filter: 'br',
-      replacement: () => ' <br/>'
+    turndown.addRule("lineBreak", {
+      filter: "br",
+      replacement: () => " <br/>",
     });
 
-    turndown.addRule('emphasis', {
-      filter: ['em', 'i'],
-      replacement: (content) => content.trim() ? `*${content}*` : ''
+    turndown.addRule("emphasis", {
+      filter: ["em", "i"],
+      replacement: (content) => (content.trim() ? `*${content}*` : ""),
     });
 
     return turndown;
   }
 
   generateCode(element, shouldCopy = false) {
-    if (!element) return '';
+    if (!element) return "";
 
     const type = element.dataset.grid;
-    let code = '';
+    let code = "";
 
     switch (type) {
-      case 'markdown':
+      case "markdown":
         code = this.generateMarkdownCode(element);
         break;
-      case 'image':
+      case "image":
         code = this.generateImageCode(element);
         break;
       default:
@@ -661,7 +721,7 @@ class CodeGenerator {
   generateMarkdownCode(element) {
     const classes = this.getCleanClasses(element);
     const properties = this.buildPropertiesObject(element);
-    const markdown = element.getAttribute('data-md') || '';
+    const markdown = element.getAttribute("data-md") || "";
 
     if (classes) properties.class = `"${classes}"`;
 
@@ -670,8 +730,8 @@ class CodeGenerator {
   }
 
   generateImageCode(element) {
-    const img = element.querySelector('img');
-    const url = img ? this.getRelativePath(img.src) : '';
+    const img = element.querySelector("img");
+    const url = img ? this.getRelativePath(img.src) : "";
     const classes = this.getCleanClasses(element);
     const caption = this.getCaption(element);
     const properties = this.buildPropertiesObject(element);
@@ -695,16 +755,16 @@ class CodeGenerator {
 
   buildPropertiesObject(element) {
     const cssVarMapping = {
-      col: '--col',
-      printCol: '--print-col',
-      width: '--width',
-      printWidth: '--print-width',
-      printRow: '--print-row',
-      printHeight: '--print-height',
-      alignSelf: '--align-self',
-      imgX: '--img-x',
-      imgY: '--img-y',
-      imgW: '--img-w'
+      col: "--col",
+      printCol: "--print-col",
+      width: "--width",
+      printWidth: "--print-width",
+      printRow: "--print-row",
+      printHeight: "--print-height",
+      alignSelf: "--align-self",
+      imgX: "--img-x",
+      imgY: "--img-y",
+      imgW: "--img-w",
     };
 
     const properties = {};
@@ -712,7 +772,7 @@ class CodeGenerator {
     Object.entries(cssVarMapping).forEach(([key, cssVar]) => {
       const value = element.style.getPropertyValue(cssVar);
       if (value && value.trim()) {
-        if (key === 'alignSelf') {
+        if (key === "alignSelf") {
           properties[key] = `"${value.trim()}"`;
         } else {
           properties[key] = parseFloat(value.trim()) || value.trim();
@@ -724,20 +784,20 @@ class CodeGenerator {
   }
 
   formatPropertiesObject(properties) {
-    if (Object.keys(properties).length === 0) return '{}';
+    if (Object.keys(properties).length === 0) return "{}";
 
     const entries = Object.entries(properties).map(([key, value]) => {
       return `  ${key}: ${value}`;
     });
 
-    return `{ \n${entries.join(',\n')}\n}`;
+    return `{ \n${entries.join(",\n")}\n}`;
   }
 
   getCleanClasses(element) {
-    const exclude = ['selected', 'hover', 'cursor', 'resizable', 'resizing'];
+    const exclude = ["selected", "hover", "cursor", "resizable", "resizing"];
     return Array.from(element.classList)
-      .filter(cls => !exclude.includes(cls))
-      .join(' ')
+      .filter((cls) => !exclude.includes(cls))
+      .join(" ")
       .trim();
   }
 
@@ -745,7 +805,7 @@ class CodeGenerator {
     try {
       const urlObj = new URL(url);
       let path = urlObj.pathname + urlObj.search + urlObj.hash;
-      return path.startsWith('/') ? path.substring(1) : path;
+      return path.startsWith("/") ? path.substring(1) : path;
     } catch {
       return url;
     }
@@ -753,24 +813,26 @@ class CodeGenerator {
 
   getCaption(element) {
     let figcaption = element.nextElementSibling;
-    if (figcaption && figcaption.tagName.toLowerCase() === 'figcaption') {
+    if (figcaption && figcaption.tagName.toLowerCase() === "figcaption") {
       const clone = figcaption.cloneNode(true);
-      const toRemove = clone.querySelectorAll('.figure_call_back, .figure_reference');
-      toRemove.forEach(el => el.remove());
+      const toRemove = clone.querySelectorAll(
+        ".figure_call_back, .figure_reference"
+      );
+      toRemove.forEach((el) => el.remove());
 
       if (this.turndownService) {
         try {
           return this.turndownService.turndown(clone.innerHTML);
         } catch (error) {
-          console.warn('Erreur Turndown:', error);
+          console.warn("Erreur Turndown:", error);
         }
       }
     }
 
-    const img = element.querySelector('img');
+    const img = element.querySelector("img");
     if (img && img.alt) return img.alt;
 
-    return '';
+    return "";
   }
 
   escapeQuotes(str) {
@@ -781,23 +843,23 @@ class CodeGenerator {
     try {
       await navigator.clipboard.writeText(text);
       // console.log('📋 Code copié dans le presse-papier:', text.length, 'caractères');
-      
-      const copyElement = document.querySelector('.copy');
+
+      const copyElement = document.querySelector(".copy");
       if (copyElement) {
-        copyElement.classList.add('copied');
-        setTimeout(() => copyElement.classList.remove('copied'), 1000);
+        copyElement.classList.add("copied");
+        setTimeout(() => copyElement.classList.remove("copied"), 1000);
       }
-      
+
       return true;
     } catch (err) {
-      console.warn('⚠️ Erreur copie clipboard, fallback vers execCommand');
-      const input = document.querySelector('#showCode');
+      console.warn("⚠️ Erreur copie clipboard, fallback vers execCommand");
+      const input = document.querySelector("#showCode");
       if (input) {
         input.select();
-        document.execCommand('copy');
+        document.execCommand("copy");
         return true;
       }
-      console.error('❌ Échec copie:', err);
+      console.error("❌ Échec copie:", err);
       return false;
     }
   }
@@ -812,16 +874,20 @@ export default class Layout extends Handler {
 
     this.state = new LayoutState();
     this.codeGenerator = new CodeGenerator();
-    
+
     // Callback pour générer le code avec ou sans copie
     const onCodeGenerate = (element, shouldCopy = false) => {
       // console.log('🔧 Génération du code pour:', element.dataset.grid, shouldCopy ? 'AVEC copie' : 'sans copie');
       return this.codeGenerator.generateCode(element, shouldCopy);
     };
-    
+
     this.resizeManager = new ResizeManager(this.state, onCodeGenerate);
-    this.interactionManager = new InteractionManager(this.state, this.resizeManager, onCodeGenerate);
-    
+    this.interactionManager = new InteractionManager(
+      this.state,
+      this.resizeManager,
+      onCodeGenerate
+    );
+
     // Lien avec la génération de code pour la sélection
     this.interactionManager.onElementSelected = (element) => {
       this.updateUI(element);
@@ -861,9 +927,9 @@ export default class Layout extends Handler {
   // === INTERFACE UTILISATEUR ===
 
   setupPanelControls() {
-    // console.log('🎛️ Configuration des contrôles du panneau');
+    // console.log("🎛️ Configuration des contrôles du panneau");
     // Grille 9 points pour positionnement d'images
-    CONFIG.GRID_POSITIONS.forEach(pos => {
+    CONFIG.GRID_POSITIONS.forEach((pos) => {
       const element = document.querySelector(`#${pos.id}`);
       if (element) {
         element.onclick = () => this.positionImage(pos.x, pos.y);
@@ -872,46 +938,68 @@ export default class Layout extends Handler {
 
     // Inputs de propriétés CSS
     const properties = [
-      { id: '#col', property: '--col' },
-      { id: '#width', property: '--width' },
-      { id: '#printcol', property: '--print-col' },
-      { id: '#printwidth', property: '--print-width' },
-      { id: '#printrow', property: '--print-row' },
-      { id: '#printheight', property: '--print-height' },
-      { id: '#alignself', property: '--align-self' },
-      { id: '#figcaption_arrow', property: '--figcaption_arrow' }
+      { id: "#col", property: "--col" },
+      { id: "#width", property: "--width" },
+      { id: "#printcol", property: "--print-col" },
+      { id: "#printwidth", property: "--print-width" },
+      { id: "#printrow", property: "--print-row" },
+      { id: "#printheight", property: "--print-height" },
+      { id: "#align-self", property: "--align-self" },
+      { id: "#figcaption_arrow", property: "--figcaption_arrow" },
     ];
 
-    properties.forEach(prop => {
+    properties.forEach((prop) => {
       const element = document.querySelector(prop.id);
       if (element) {
         const newElement = element.cloneNode(true);
         element.parentNode.replaceChild(newElement, element);
 
-        newElement.addEventListener('change', (e) => {
+        newElement.addEventListener("change", (e) => {
           if (this.state.selectedElement) {
-            const propName = prop.property.replace('--', '');
-            this.interactionManager.setCSSProperties(this.state.selectedElement, {
-              [propName]: e.target.value
-            });
+            const propName = prop.property.replace("--", "");
+            this.interactionManager.setCSSProperties(
+              this.state.selectedElement,
+              {
+                [propName]: e.target.value,
+              }
+            );
             this.codeGenerator.generateCode(this.state.selectedElement);
           }
         });
       }
     });
 
-    // Boutons d'action pour les images
-    const fillBlock = document.querySelector('#remplir_bloc');
-    const adjustContent = document.querySelector('#ajuster_contenu');
+    // Boutons d'action pour les images - comportement mutuellement exclusif
+    const fillBlock = document.querySelector("#remplir_bloc");
+    const adjustContent = document.querySelector("#ajuster_contenu");
 
-    if (fillBlock) fillBlock.onclick = () => this.fillBlock();
-    if (adjustContent) adjustContent.onclick = () => this.adjustContent();
+    if (fillBlock && adjustContent) {
+      fillBlock.onchange = (e) => {
+        if (e.target.checked) {
+          adjustContent.checked = false;
+          this.fillBlock();
+        }
+      };
+
+      adjustContent.onchange = (e) => {
+        if (e.target.checked) {
+          fillBlock.checked = false;
+          this.adjustContent();
+        }
+      };
+    }
   }
 
   positionImage(alignX, alignY) {
-    if (!this.state.selectedElement || this.state.selectedElement.dataset.grid !== 'image') return;
+    if (
+      !this.state.selectedElement ||
+      this.state.selectedElement.dataset.grid !== "image"
+    )
+      return;
 
-    const img = this.interactionManager.findImageElement(this.state.selectedElement);
+    const img = this.interactionManager.findImageElement(
+      this.state.selectedElement
+    );
     if (!img) return;
 
     const parentWidth = this.state.selectedElement.offsetWidth;
@@ -923,8 +1011,8 @@ export default class Layout extends Handler {
     const imgY = (((parentHeight - imgHeight) * alignY) / parentHeight) * 100;
 
     this.interactionManager.setCSSProperties(this.state.selectedElement, {
-      'img-x': imgX,
-      'img-y': imgY
+      "img-x": imgX,
+      "img-y": imgY,
     });
 
     // console.log('📍 Position image grille 9 points, génération du code...');
@@ -932,19 +1020,31 @@ export default class Layout extends Handler {
   }
 
   fillBlock() {
-    if (!this.state.selectedElement || this.state.selectedElement.dataset.grid !== 'image') return;
+    if (
+      !this.state.selectedElement ||
+      this.state.selectedElement.dataset.grid !== "image"
+    )
+      return;
 
-    this.interactionManager.setCSSProperties(this.state.selectedElement, { 'img-w': 100 });
+    this.interactionManager.setCSSProperties(this.state.selectedElement, {
+      "img-w": 100,
+    });
     this.positionImage(0.5, 0.5);
-    
+
     // console.log('🔳 Remplir bloc, génération du code...');
     this.codeGenerator.generateCode(this.state.selectedElement, true);
   }
 
   adjustContent() {
-    if (!this.state.selectedElement || this.state.selectedElement.dataset.grid !== 'image') return;
+    if (
+      !this.state.selectedElement ||
+      this.state.selectedElement.dataset.grid !== "image"
+    )
+      return;
 
-    const img = this.interactionManager.findImageElement(this.state.selectedElement);
+    const img = this.interactionManager.findImageElement(
+      this.state.selectedElement
+    );
     if (!img || !img.naturalWidth || !img.naturalHeight) return;
 
     const parentWidth = this.state.selectedElement.offsetWidth;
@@ -958,9 +1058,9 @@ export default class Layout extends Handler {
     const imgX = ((parentWidth - imgWidth) / 2 / parentWidth) * 100;
 
     this.interactionManager.setCSSProperties(this.state.selectedElement, {
-      'img-w': imgW,
-      'img-y': 0,
-      'img-x': imgX
+      "img-w": imgW,
+      "img-y": 0,
+      "img-x": imgX,
     });
 
     // console.log('📏 Ajuster contenu, génération du code...');
@@ -968,19 +1068,19 @@ export default class Layout extends Handler {
   }
 
   updateUI(element) {
-    const label = document.querySelector('#label_rd1');
-    const position = document.querySelector('#position');
+    const label = document.querySelector("#label_rd1");
+    const position = document.querySelector("#position");
 
     if (element) {
       const cssProperties = this.getCSSProperties(element);
-      const elementId = element.getAttribute('data-id') || element.id || '0';
+      const elementId = element.getAttribute("data-id") || element.id || "0";
       const type = element.dataset.grid;
 
       // Met à jour les inputs
       Object.entries(cssProperties).forEach(([key, value]) => {
         const input = document.querySelector(`#${key}`);
         if (input) {
-          if (input.tagName === 'SELECT') {
+          if (input.tagName === "SELECT") {
             input.value = value || input.options[0].value;
           } else {
             input.value = Number(value) || 0;
@@ -989,24 +1089,32 @@ export default class Layout extends Handler {
       });
 
       // Met à jour les labels
-      if (label) label.setAttribute('data-name', `${elementId}`);
-      if (position) position.setAttribute('data-shortcode', type);
+      if (label) label.setAttribute("data-name", `${elementId}`);
+      if (position) position.setAttribute("data-shortcode", type);
     } else {
-      if (label) label.setAttribute('data-name', '');
-      if (position) position.setAttribute('data-shortcode', '');
+      if (label) label.setAttribute("data-name", "");
+      if (position) position.setAttribute("data-shortcode", "");
     }
   }
 
   getCSSProperties(element) {
     const properties = [
-      'col', 'width', 'print-col', 'print-width', 'print-row',
-      'print-height', 'align-self', 'figcaption_arrow',
-      'img-x', 'img-y', 'img-w'
+      "col",
+      "width",
+      "print-col",
+      "print-width",
+      "print-row",
+      "print-height",
+      "align-self",
+      "figcaption_arrow",
+      "img-x",
+      "img-y",
+      "img-w",
     ];
 
     const result = {};
-    properties.forEach(prop => {
-      result[prop] = element.style.getPropertyValue(`--${prop}`) || '';
+    properties.forEach((prop) => {
+      result[prop] = element.style.getPropertyValue(`--${prop}`) || "";
     });
 
     return result;
@@ -1023,10 +1131,10 @@ export default class Layout extends Handler {
     if (!toggleInput) {
       const selectors = [
         'input[data-plugin="layout"]',
-        '#layout-toggle',
+        "#layout-toggle",
         'input[name="layout"]',
-        '.layout-toggle input',
-        '[data-toggle="layout"]'
+        ".layout-toggle input",
+        '[data-toggle="layout"]',
       ];
 
       for (const selector of selectors) {
@@ -1037,19 +1145,19 @@ export default class Layout extends Handler {
       if (!toggleInput) return;
     }
 
-    const preference = localStorage.getItem('layout') === 'true';
+    const preference = localStorage.getItem("layout") === "true";
 
-    body.classList.toggle('layout', preference);
+    body.classList.toggle("layout", preference);
     toggleInput.checked = preference;
 
     this.toggleHandler = (e) => {
       const isEnabled = e.target.checked;
-      body.classList.toggle('layout', isEnabled);
-      localStorage.setItem('layout', isEnabled);
+      body.classList.toggle("layout", isEnabled);
+      localStorage.setItem("layout", isEnabled);
       // console.log('🔄 Mode layout:', isEnabled ? 'ACTIVÉ' : 'DÉSACTIVÉ');
     };
 
-    toggleInput.addEventListener('input', this.toggleHandler);
+    toggleInput.addEventListener("input", this.toggleHandler);
   }
 
   // === NETTOYAGE ET DESTRUCTION ===
@@ -1061,15 +1169,18 @@ export default class Layout extends Handler {
       // console.log('🧹 Nettoyage du plugin...');
       // L'InteractionManager gère ses propres event listeners
       this.state.deselect();
-      
-      document.querySelectorAll('.resizable, .resizing').forEach(element => {
+
+      document.querySelectorAll(".resizable, .resizing").forEach((element) => {
         this.state.cleanupElement(element);
       });
 
-      document.body.classList.remove('grid-resizing');
+      document.body.classList.remove("grid-resizing");
 
       if (this.toggleHandler && cssPageWeaver?.ui?.layout?.toggleInput) {
-        cssPageWeaver.ui.layout.toggleInput.removeEventListener('input', this.toggleHandler);
+        cssPageWeaver.ui.layout.toggleInput.removeEventListener(
+          "input",
+          this.toggleHandler
+        );
         this.toggleHandler = null;
       }
 

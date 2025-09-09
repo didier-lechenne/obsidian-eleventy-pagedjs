@@ -24,13 +24,13 @@
   "max_visible_lines_in_shell_command_fields": false,
   "shell_commands": [
     {
-      "id": "61tx68h76s",
+      "id": "9way2ugn3g",
       "platform_specific_commands": {
-        "default": "npm run serve"
+        "default": "npm run install"
       },
       "shells": {},
       "alias": "",
-      "icon": "lucide-moon",
+      "icon": null,
       "confirm_execution": false,
       "ignore_error_codes": [],
       "input_contents": {
@@ -60,9 +60,9 @@
       "variable_default_values": {}
     },
     {
-      "id": "49asp0447g",
+      "id": "4horjvrpdb",
       "platform_specific_commands": {
-        "default": "npm run stop"
+        "default": "npm run serve"
       },
       "shells": {},
       "alias": "",
@@ -74,7 +74,7 @@
       },
       "output_handlers": {
         "stdout": {
-          "handler": "notification",
+          "handler": "ignore",
           "convert_ansi_code": true
         },
         "stderr": {
@@ -96,7 +96,43 @@
       "variable_default_values": {}
     },
     {
-      "id": "l4x4u5njol",
+      "id": "5gq95exd5i",
+      "platform_specific_commands": {
+        "default": "npm run serve:static"
+      },
+      "shells": {},
+      "alias": "",
+      "icon": null,
+      "confirm_execution": false,
+      "ignore_error_codes": [],
+      "input_contents": {
+        "stdin": null
+      },
+      "output_handlers": {
+        "stdout": {
+          "handler": "ignore",
+          "convert_ansi_code": true
+        },
+        "stderr": {
+          "handler": "notification",
+          "convert_ansi_code": true
+        }
+      },
+      "output_wrappers": {
+        "stdout": null,
+        "stderr": null
+      },
+      "output_channel_order": "stdout-first",
+      "output_handling_mode": "buffered",
+      "execution_notification_mode": null,
+      "events": {},
+      "debounce": null,
+      "command_palette_availability": "enabled",
+      "preactions": [],
+      "variable_default_values": {}
+    },
+    {
+      "id": "3qbqwxxp2u",
       "platform_specific_commands": {
         "default": "npm run build"
       },
@@ -132,13 +168,13 @@
       "variable_default_values": {}
     },
     {
-      "id": "q7xuamppak",
+      "id": "p8wzy8yuu2",
       "platform_specific_commands": {
         "default": "npm run deploy"
       },
       "shells": {},
       "alias": "",
-      "icon": "lucide-rocket",
+      "icon": null,
       "confirm_execution": false,
       "ignore_error_codes": [],
       "input_contents": {
@@ -168,13 +204,49 @@
       "variable_default_values": {}
     },
     {
-      "id": "x66rzcif8k",
+      "id": "nw7fdej20l",
       "platform_specific_commands": {
-        "default": "npm run start"
+        "default": "npm run clean"
       },
       "shells": {},
       "alias": "",
-      "icon": "lucide-star",
+      "icon": null,
+      "confirm_execution": false,
+      "ignore_error_codes": [],
+      "input_contents": {
+        "stdin": null
+      },
+      "output_handlers": {
+        "stdout": {
+          "handler": "ignore",
+          "convert_ansi_code": true
+        },
+        "stderr": {
+          "handler": "notification",
+          "convert_ansi_code": true
+        }
+      },
+      "output_wrappers": {
+        "stdout": null,
+        "stderr": null
+      },
+      "output_channel_order": "stdout-first",
+      "output_handling_mode": "buffered",
+      "execution_notification_mode": null,
+      "events": {},
+      "debounce": null,
+      "command_palette_availability": "enabled",
+      "preactions": [],
+      "variable_default_values": {}
+    },
+    {
+      "id": "1uvwskrc0p",
+      "platform_specific_commands": {
+        "default": "npm run stop"
+      },
+      "shells": {},
+      "alias": "",
+      "icon": null,
       "confirm_execution": false,
       "ignore_error_codes": [],
       "input_contents": {

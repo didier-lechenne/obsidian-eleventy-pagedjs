@@ -1,5 +1,5 @@
 {
-  "confirmDeletion": true,
+  "confirmDeletion": false,
   "showAddCommand": true,
   "debug": false,
   "editorMenu": [],
@@ -9,43 +9,49 @@
       "icon": "space",
       "name": "Microtypographie: Insérer espace insécable",
       "mode": "any"
-    }
-  ],
-  "leftRibbon": [
-    {
-      "id": "obsidian-shellcommands:shell-command-49asp0447g",
-      "icon": "lucide-server-off",
-      "name": "Shell commands: Execute: npm run stop",
-      "mode": "any"
-    },
-    {
-      "id": "microtypographie-v2:fix-entire-note",
-      "icon": "lucide-type-outline",
-      "name": "Microtypographie: Corriger toute la note",
-      "mode": "any"
-    },
-    {
-      "id": "microtypographie-v2:fix-selection",
-      "icon": "type",
-      "name": "Microtypographie: Corriger la sélection",
-      "mode": "any"
-    },
-    {
-      "id": "obsidian-shellcommands:shell-command-61tx68h76s",
-      "icon": "lucide-server-cog",
-      "name": "Shell commands: Execute: npm run serve",
-      "mode": "any"
     },
     {
       "id": "obsidian-shellcommands:shell-command-q7xuamppak",
       "icon": "lucide-rocket",
       "name": "Shell commands: Execute: npm run deploy",
       "mode": "any"
+    }
+  ],
+  "leftRibbon": [
+    {
+      "id": "obsidian-shellcommands:shell-command-9way2ugn3g",
+      "icon": "lucide-package",
+      "name": "Installer le projet",
+      "mode": "any"
     },
     {
-      "id": "obsidian-shellcommands:shell-command-x66rzcif8k",
-      "icon": "lucide-send",
-      "name": "Shell commands: Execute: npm run start",
+      "id": "obsidian-shellcommands:shell-command-4horjvrpdb",
+      "icon": "lucide-play",
+      "name": "Lancer le server (rechargement automatique)",
+      "mode": "any"
+    },
+    {
+      "id": "obsidian-shellcommands:shell-command-5gq95exd5i",
+      "icon": "lucide-globe",
+      "name": "Lancer le server (sans rechargement automatique)",
+      "mode": "any"
+    },
+    {
+      "id": "obsidian-shellcommands:shell-command-p8wzy8yuu2",
+      "icon": "lucide-rocket",
+      "name": "Creer le site",
+      "mode": "any"
+    },
+    {
+      "id": "obsidian-shellcommands:shell-command-nw7fdej20l",
+      "icon": "lucide-trash-2",
+      "name": "Efface le site généré (clean)",
+      "mode": "any"
+    },
+    {
+      "id": "obsidian-shellcommands:shell-command-1uvwskrc0p",
+      "icon": "lucide-stop-circle",
+      "name": "Stop",
       "mode": "any"
     }
   ],
