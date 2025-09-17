@@ -49,26 +49,10 @@
             "id": "5c8b10f24c5d9455",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "valentine/10.cover.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "10.cover"
-            }
-          },
-          {
-            "id": "e40755ca90d8e147",
-            "type": "leaf",
-            "state": {
-              "type": "vscode-editor",
-              "state": {
-                "file": "_11ty/config/mediaShortcodes.js"
-              },
-              "icon": "lucide-file",
-              "title": "mediaShortcodes"
+              "title": "Nouvel onglet"
             }
           },
           {
@@ -86,7 +70,7 @@
             }
           }
         ],
-        "currentTab": 4
+        "currentTab": 3
       }
     ],
     "direction": "vertical"
@@ -307,52 +291,53 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "412a199c2e6c65e4",
+  "active": "0eba038119f666d3",
   "lastOpenFiles": [
-    "valentine/page-de-test.md",
-    "eleventy.config.js",
-    "_11ty/config/mediaShortcodes.js",
-    "valentine/10.cover.md",
-    "valentine/test-v2.md",
-    "_11ty/csspageweaver/plugins/fullPage/README.md",
-    "valentine/modulargrid.md",
-    "valentine/Interview-titre.md",
-    "valentine/interview.md",
-    "valentine/image_double_page.md",
-    "valentine/image.md",
-    "valentine/columnGrid.md",
-    "valentine/210.remerciement.md",
-    "valentine/200.conclusion.md",
-    "valentine/190.bibliographie.md",
-    "valentine/180.velo.md",
-    "valentine/170.skate.md",
-    "valentine/160.siege.md",
-    "valentine/150.reparer.md",
-    "valentine/140.minimal.md",
-    "valentine/130.low_tech.md",
-    "valentine/120.heritage.md",
-    "valentine/111.domotique-image.md",
-    "valentine/110.domotique.md",
-    "valentine/100.domestique.md",
-    "valentine/90.commun.md",
-    "valentine/80.bijoux.md",
-    "_11ty/config/old-mediaShortcodes.js",
-    "_11ty/config/markdown.js",
-    "_11ty/csspageweaver/plugins/fullContent/fullContent.js",
-    "_11ty/config/preprocessor.js",
-    "_11ty/config/shortcodes.js",
-    "_11ty/config/transforms.js",
-    "_11ty/config/afterBuild.js",
-    "valentine/images/Excerpt from Mother of All Demos (1968).ogg",
-    "valentine/images/Aaron_Swartz_profile.jpg",
-    "_site/images/alternative_crasset.png",
-    "_site/images/alternative2.jpg",
-    "_site/images/alternative1.jpg",
-    "_site/images/archery-outdoors-women-dithered.png",
-    "_site/images/lowtech2.png",
-    "_site/images/velo2.jpg",
+    "_site/assets/css/print/fonts/WorkSans/WorkSans-Light.woff2",
+    "_site/assets/css/print/fonts/WorkSans/WorkSans-Light.woff",
+    "_site/assets/css/print/fonts/IBM-plex-sans/IBMPlexSans-Regular.woff2",
+    "_site/assets/css/print/fonts/WorkSans/WorkSans-Regular.woff2",
+    "_site/assets/css/print/fonts/WorkSans/WorkSans-Regular.woff",
+    "_site/assets/css/print/fonts/WorkSans/WorkSans-LightItalic.woff2",
+    "_site/assets/css/print/fonts/WorkSans/WorkSans-LightItalic.woff",
+    "_site/assets/css/print/fonts/WorkSans/WorkSans-Italic.woff2",
+    "_site/assets/css/print/fonts/WorkSans/WorkSans-Italic.woff",
+    "_site/assets/css/print/fonts/WorkSans/WorkSans-ExtraLightItalic.woff2",
+    "_site/assets/css/print/fonts/WorkSans/WorkSans-ExtraLightItalic.woff",
+    "_site/csspageweaver/plugins/tableOfContent/README.md",
+    "_site/csspageweaver/plugins/reloadInPlace/Readme.md",
+    "_site/csspageweaver/plugins/inlineNotes/README.md",
+    "_site/csspageweaver/plugins/pageMove/README.md",
+    "_site/csspageweaver/plugins/marker/README.md",
+    "_site/csspageweaver/plugins/layout/README.md",
+    "_site/csspageweaver/plugins/fullContent/README.md",
+    "_site/csspageweaver/plugins/fullPage/README.md",
+    "_site/csspageweaver/plugins/footnotesFix/README.md",
+    "_site/csspageweaver/plugins/editor/README.md",
+    "_site/csspageweaver/plugins/editor/README-DEV-TURNDOWN.md",
+    "_site/csspageweaver/plugins/editor/README-DEV-TOOLBAR.md",
+    "_site/csspageweaver/plugins/baseline/README.md",
+    "_site/csspageweaver/README.md",
+    "_site/images/mongolian-child-archer-Nasanbat_Nasaa_dithered.png",
+    "_site/images/tomeIII-candle_dithered.png",
+    "_site/images/velo4.jpg",
     "_site/images/velo3.jpg",
+    "_site/images/velo2.jpg",
     "_site/images/velo.jpg",
-    "_site/images/intro_objet.png"
+    "_site/images/siege.jpg",
+    "_site/images/reparer1.png",
+    "_site/images/rebar-foundation-wind-turbine_dithered.png",
+    "_site/images/nobody-at-table-edited_dithered.png",
+    "valentine/10.cover.md",
+    "valentine/templates/screen.md",
+    "valentine/templates/print.md",
+    "valentine/inclure/titre.md",
+    "valentine/inclure/mentions.md",
+    "valentine/inclure/sous-titre.md",
+    "old-valentine/inclure/sous-titre.md",
+    "old-valentine/inclure/titre.md",
+    "old-valentine/templates/screen.md",
+    "old-valentine/templates/print.md",
+    "old-valentine/inclure/mentions.md"
   ]
 }

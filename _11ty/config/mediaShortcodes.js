@@ -1,4 +1,14 @@
+const markdownIt = require("markdown-it");
+
 module.exports = function (eleventyConfig) {
+  // Créer une instance markdown locale pour le rendu des captions
+  const md = markdownIt({
+    html: true,
+    breaks: true,
+    linkify: false,
+    typographer: true,
+  });
+
   // Types de médias par défaut
   const mediaTypes = {
     image: {
@@ -207,6 +217,9 @@ module.exports = function (eleventyConfig) {
       // Générer un ID unique
       const id = this.generateId(parsedData.src || '');
       
+      // Rendre le caption avec markdown
+      const renderedCaption = parsedData.caption ? md.renderInline(parsedData.caption) : '';
+      
       // Données pour le template
       const templateData = {
         type: parsedData.type,
@@ -214,7 +227,7 @@ module.exports = function (eleventyConfig) {
         id: id,
         src: parsedData.src || '',
         media: imgHtml,
-        caption: parsedData.caption
+        caption: renderedCaption
       };
 
       // Générer le HTML
@@ -250,12 +263,6 @@ module.exports = function (eleventyConfig) {
     }
   }
 
-  // Initialiser les composants
-  const typeDetector = new TypeDetector(mediaTypes);
-  const mediaParser = new MediaParser(typeDetector);
-  const templateEngine = new TemplateEngine();
-  const mediaRenderer = new MediaRenderer(templateEngine, mediaTypes);
-
   // Fonction pour traiter les images
   function shouldProcessMedia(parsedData) {
     if (!['image', 'imagenote', 'figure', 'grid'].includes(parsedData.type)) return false;
@@ -277,41 +284,53 @@ module.exports = function (eleventyConfig) {
     );
   }
 
-  // Remplacer le rendu par défaut des images
-  const defaultImageRender = md.renderer.rules.image || function(tokens, idx, options, env, self) {
-    return self.renderToken(tokens, idx, options);
-  };
+  // Initialiser les composants
+  const typeDetector = new TypeDetector(mediaTypes);
+  const mediaParser = new MediaParser(typeDetector);
+  const templateEngine = new TemplateEngine();
+  const mediaRenderer = new MediaRenderer(templateEngine, mediaTypes);
 
-  md.renderer.rules.image = function(tokens, idx, options, env, self) {
-    const token = tokens[idx];
-    const altText = token.content || '';
-    const src = token.attrGet('src') || '';
-    const filename = src.split('/').pop() || '';
-    
-    // Parser les attributs
-    const parsedData = mediaParser.parseAttributes(altText, filename);
-    parsedData.src = src;
-
-    // Vérifier si on doit traiter cette image
-    if (!shouldProcessMedia(parsedData)) {
-      return defaultImageRender(tokens, idx, options, env, self);
+  // Ajouter un filtre pour traiter les images dans le contenu markdown
+  eleventyConfig.addTransform("processMediaImages", function(content, outputPath) {
+    if (outputPath && outputPath.endsWith('.html')) {
+      // Traiter les images avec des attributs spéciaux dans le alt text
+      content = content.replace(/<img([^>]*?)alt=["']([^"']*?)["']([^>]*?)>/gi, (match, beforeAlt, altText, afterAlt) => {
+        const srcMatch = match.match(/src=["']([^"']*?)["']/);
+        if (!srcMatch) return match;
+        
+        const src = srcMatch[1];
+        const filename = src.split('/').pop() || '';
+        
+        // Parser les attributs
+        const parsedData = mediaParser.parseAttributes(altText, filename);
+        parsedData.src = src;
+        
+        // Vérifier si on doit traiter cette image
+        if (!shouldProcessMedia(parsedData)) {
+          return match;
+        }
+        
+        // Traiter avec le renderer
+        return mediaRenderer.renderMedia(match, parsedData);
+      });
     }
-
-    // Générer le HTML de l'image de base
-    const imgHtml = defaultImageRender(tokens, idx, options, env, self);
     
-    // Traiter avec le renderer
-    return mediaRenderer.renderMedia(imgHtml, parsedData);
-  };
+    return content;
+  });
 
-  // Support pour les grilles d'images (code blocks)
-  md.use(require('markdown-it-container'), 'columnGrid', {
-    render: function (tokens, idx) {
-      if (tokens[idx].nesting === 1) {
-        return '<div class="columnGrid">\n';
-      } else {
-        return '</div>\n';
+  // Support pour les grilles d'images (containers)
+  const markdownItContainer = require('markdown-it-container');
+  
+  // Cette partie sera appliquée par le système markdown existant
+  eleventyConfig.amendLibrary("md", mdLib => {
+    mdLib.use(markdownItContainer, 'columnGrid', {
+      render: function (tokens, idx) {
+        if (tokens[idx].nesting === 1) {
+          return '<div class="columnGrid">\n';
+        } else {
+          return '</div>\n';
+        }
       }
-    }
+    });
   });
 };
