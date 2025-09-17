@@ -167,10 +167,12 @@ module.exports = function (eleventyConfig) {
           break;
         case "print-col":
         case "printcol":
+        case "printCol":
           result["print-col"] = value;
           break;
         case "print-width":
         case "printwidth":
+        case "printXidth":
           result["print-width"] = value;
           break;
         case "print-row":
