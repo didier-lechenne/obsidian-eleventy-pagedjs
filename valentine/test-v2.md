@@ -1,3 +1,7 @@
+---
+draft: true
+---
+
 <breakpage />
 
 ![[images/alternative2.jpg|grid|printCol:1|printWidth:12|printRow:1|printHeight:22|imgX:2.014030323602624|imgY:-1.7536648856007684|imgW:96.17560534057479|caption:*Si nous ne conservons pas la nature, la nature ne nous conservera pas*, Yona Friedman.]]

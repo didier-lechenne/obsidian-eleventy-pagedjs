@@ -257,6 +257,15 @@
   "active": "a94aea7a04ed2b66",
   "lastOpenFiles": [
     "valentine/210.remerciement.md",
+    "valentine/columnGrid.md",
+    "valentine/image.md",
+    "valentine/image_double_page.md",
+    "valentine/interview.md",
+    "valentine/Interview-titre.md",
+    "valentine/modulargrid.md",
+    "valentine/page-de-test.md",
+    "valentine/test-v2.md",
+    "_11ty/config/mediaShortcodes.js",
     "_site/index.html",
     "_site/print.html",
     "_site/assets/css/print/fonts/WorkSans/WorkSans-Regular.woff2",
@@ -266,7 +275,6 @@
     "_site/assets/css/print/fonts/WorkSans/WorkSans-Italic.woff",
     "_site/assets/css/print/fonts/WorkSans/WorkSans-Light.woff2",
     "_site/assets/css/print/fonts/WorkSans/WorkSans-Light.woff",
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-Italic.woff2",
     "_site/csspageweaver/plugins/tableOfContent/README.md",
     "_site/csspageweaver/plugins/reloadInPlace/Readme.md",
     "_site/csspageweaver/plugins/pageMove/README.md",
@@ -293,14 +301,6 @@
     "_site/images/nobody-at-table-edited_dithered.png",
     "valentine/200.conclusion.md",
     "valentine/190.bibliographie.md",
-    "valentine/180.velo.md",
-    "valentine/170.skate.md",
-    "valentine/160.siege.md",
-    "valentine/150.reparer.md",
-    "valentine/140.minimal.md",
-    "valentine/130.low_tech.md",
-    "valentine/120.heritage.md",
-    "valentine/111.domotique-image.md",
-    "valentine/110.domotique.md"
+    "valentine/180.velo.md"
   ]
 }
