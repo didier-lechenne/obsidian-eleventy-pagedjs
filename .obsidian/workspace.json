@@ -8,73 +8,20 @@
         "type": "tabs",
         "children": [
           {
-            "id": "5f32f0acd7cb5099",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "_11ty/csspageweaver/plugins/fullPage/README.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "README"
-            }
-          },
-          {
-            "id": "3b3a855111f93598",
-            "type": "leaf",
-            "state": {
-              "type": "vscode-editor",
-              "state": {
-                "file": "_11ty/config/old-mediaShortcodes.js"
-              },
-              "icon": "lucide-file",
-              "title": "old-mediaShortcodes"
-            }
-          },
-          {
-            "id": "df40fd4784261de4",
-            "type": "leaf",
-            "state": {
-              "type": "vscode-editor",
-              "state": {
-                "file": "eleventy.config.js"
-              },
-              "icon": "lucide-file",
-              "title": "eleventy.config"
-            }
-          },
-          {
-            "id": "5c8b10f24c5d9455",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "valentine/40.introduction.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "40.introduction"
-            }
-          },
-          {
             "id": "a94aea7a04ed2b66",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "old-valentine/page-de-test.md",
+                "file": "valentine/41.intro-figure.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "page-de-test"
+              "title": "41.intro-figure"
             }
           }
-        ],
-        "currentTab": 3
+        ]
       }
     ],
     "direction": "vertical"
@@ -271,7 +218,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 449.5
+    "width": 449.5,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -295,53 +243,53 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "5c8b10f24c5d9455",
+  "active": "a94aea7a04ed2b66",
   "lastOpenFiles": [
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-Regular.woff2",
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-Regular.woff",
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-LightItalic.woff2",
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-LightItalic.woff",
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-Light.woff2",
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-Light.woff",
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-Italic.woff2",
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-Italic.woff",
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-ExtraLightItalic.woff2",
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-ExtraLightItalic.woff",
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-ExtraLight.woff2",
-    "_site/csspageweaver/plugins/tableOfContent/README.md",
-    "_site/csspageweaver/plugins/reloadInPlace/Readme.md",
-    "_site/csspageweaver/plugins/pageMove/README.md",
-    "_site/csspageweaver/plugins/marker/README.md",
-    "_site/csspageweaver/plugins/layout/README.md",
-    "_site/csspageweaver/plugins/inlineNotes/README.md",
-    "_site/csspageweaver/plugins/fullPage/README.md",
-    "_site/csspageweaver/plugins/fullContent/README.md",
-    "_site/csspageweaver/plugins/footnotesFix/README.md",
-    "_site/csspageweaver/plugins/editor/README.md",
-    "_site/csspageweaver/plugins/editor/README-DEV-TURNDOWN.md",
-    "_site/csspageweaver/plugins/editor/README-DEV-TOOLBAR.md",
-    "_site/csspageweaver/plugins/baseline/README.md",
-    "_site/images/lowtech2.png",
+    "_site/csspageweaver/interface/css/panel.css",
+    "_site/csspageweaver/plugins/baseline/.gitignore",
+    "_site/csspageweaver/plugins/baseline/baseline.css",
+    "_site/csspageweaver/plugins/baseline/baseline.js",
+    "_site/csspageweaver/interface/css/grid.css",
+    "_site/assets/js/_layout/turndown.js",
+    "_site/assets/js/_print/pagedjs.css",
+    "_site/assets/js/_print/print.js",
+    "_site/assets/js/_layout/layout.js",
+    "_site/assets/js/_layout/layout.css",
+    "_site/assets/css/templates/toc-sommaire.css",
+    "valentine/10.cover.md",
+    "valentine/41.intro-figure.md",
+    "valentine/60.affect.md",
+    "valentine/40.introduction.md",
     "_site/images/velo4.jpg",
     "_site/images/velo3.jpg",
     "_site/images/velo2.jpg",
-    "_site/images/velo.jpg",
-    "_site/images/tomeIII-candle_dithered.png",
-    "_site/images/siege.jpg",
     "_site/images/reparer1.png",
+    "_site/images/velo.jpg",
     "_site/images/rebar-foundation-wind-turbine_dithered.png",
-    "_site/images/nobody-at-table-edited_dithered.png",
+    "_site/images/siege.jpg",
+    "_site/images/lowtech2.png",
+    "_site/images/intro_heritage.png",
+    "_site/images/lowtech_distilateur.png",
+    "_site/csspageweaver/plugins/tableOfContent/README.md",
+    "_site/csspageweaver/plugins/marker/README.md",
+    "_site/csspageweaver/plugins/fullContent/README.md",
+    "_site/csspageweaver/plugins/footnotesFix/README.md",
+    "_site/csspageweaver/plugins/reloadInPlace/Readme.md",
+    "_site/csspageweaver/plugins/pageMove/README.md",
     "_site/csspageweaver/README.md",
-    "valentine/40.introduction.md",
-    "old-valentine/page-de-test.md",
+    "_site/csspageweaver/plugins/layout/README.md",
+    "_site/csspageweaver/plugins/inlineNotes/README.md",
+    "_site/csspageweaver/plugins/fullPage/README.md",
+    "_site/csspageweaver/plugins/editor/README-DEV-TOOLBAR.md",
+    "_site/csspageweaver/plugins/editor/README-DEV-TURNDOWN.md",
+    "_site/csspageweaver/plugins/editor/README.md",
     "valentine/30.sommaire.md",
+    "_site/csspageweaver/plugins/baseline/README.md",
+    "old-valentine/page-de-test.md",
     "valentine/11.blankpage.md",
     "valentine/20.faux_titre.md",
-    "valentine/10.cover.md",
     "valentine/100.domestique.md",
     "valentine/templates/screen.md",
-    "valentine/templates/print.md",
-    "valentine/inclure/titre.md",
-    "valentine/inclure/mentions.md"
+    "valentine/templates/print.md"
   ]
 }
