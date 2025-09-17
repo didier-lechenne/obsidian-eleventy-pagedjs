@@ -9,7 +9,6 @@ _11ty/_data/token.yml
 
 **/*a_garder*/
 
-
 # Eleventy
 _site/
 .cache/
