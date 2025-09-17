@@ -13,10 +13,10 @@
             "state": {
               "type": "vscode-editor",
               "state": {
-                "file": "_11ty/config/mediaShortcodes.js"
+                "file": "eleventy.config.js"
               },
               "icon": "lucide-file",
-              "title": "mediaShortcodes"
+              "title": "eleventy.config"
             }
           },
           {
@@ -256,6 +256,7 @@
   },
   "active": "a94aea7a04ed2b66",
   "lastOpenFiles": [
+    "_11ty/config/mediaShortcodes.js",
     "valentine/210.remerciement.md",
     "valentine/columnGrid.md",
     "valentine/image.md",
@@ -265,7 +266,6 @@
     "valentine/modulargrid.md",
     "valentine/page-de-test.md",
     "valentine/test-v2.md",
-    "_11ty/config/mediaShortcodes.js",
     "_site/index.html",
     "_site/print.html",
     "_site/assets/css/print/fonts/WorkSans/WorkSans-Regular.woff2",
@@ -300,7 +300,6 @@
     "_site/images/mongolian-child-archer-Nasanbat_Nasaa_dithered.png",
     "_site/images/nobody-at-table-edited_dithered.png",
     "valentine/200.conclusion.md",
-    "valentine/190.bibliographie.md",
-    "valentine/180.velo.md"
+    "valentine/190.bibliographie.md"
   ]
 }
