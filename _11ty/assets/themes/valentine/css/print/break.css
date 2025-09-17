@@ -1,6 +1,6 @@
 .breakpage {
   height: 0;
-  page-break-after: always;
+  page-break-before: always;
   display: none;
 }
 

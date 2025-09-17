@@ -14,27 +14,27 @@ module.exports = function (eleventyConfig) {
   const mediaTypes = {
     image: {
       name: 'Image',
-      template: '<figure data-type="{type}" data-grid="image" class="figure {type} {classes}" id="{id}" data-src="{src}"{styles}>{media}<figcaption class="figcaption">{caption}</figcaption></figure>',
+      template: '<figure data-type="{type}" data-grid="image" class="figure {type} {classes}" id="{id}" data-src="{src}"{styles}>{media}{captionHtml}</figure>',
       extensions: ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg']
     },
     imagenote: {
       name: 'Image Note',
-      template: '<span data-type="{type}" class="{type} {classes}" id="{id}" data-src="{src}"{styles}>{media}<span class="figcaption">{caption}</span></span>',
+      template: '<span data-type="{type}" class="{type} {classes}" id="{id}" data-src="{src}"{styles}>{media}{captionHtml}</span>',
       extensions: []
     },
     figure: {
       name: 'Figure',
-      template: '<figure data-type="{type}" data-grid="image" class="{type} {classes}"{styles}>{media}<figcaption class="figcaption">{caption}</figcaption></figure>',
+      template: '<figure id="{id}" data-type="{type}" data-grid="image" class="{type} {classes}"{styles}>{media}{captionHtml}</figure>',
       extensions: []
     },
     grid: {
       name: 'Grid',
-      template: '<figure data-type="{type}" data-grid="image" class="figure {type} {classes}"{styles}>{media}</figure><figcaption class="figcaption"{styles}>{caption}</figcaption>',
+      template: '<figure id="{id}" data-type="{type}" data-grid="image" class="figure {type} {classes}"{styles}>{media}</figure>{captionHtml}',
       extensions: []
     },
     fullpage: {
       name: 'Full Page',
-      template: '<figure data-type="{type}" data-grid="image" class="full-page figure {type} {classes}"{styles}>{media}</figure>',
+      template: '<figure id="{id}" data-type="{type}" data-grid="image" class="full-page figure {type} {classes}"{styles}>{media}</figure>',
       extensions: []
     }
   };
@@ -199,6 +199,7 @@ module.exports = function (eleventyConfig) {
         .replace(/{src}/g, data.src)
         .replace(/{media}/g, data.media)
         .replace(/{caption}/g, data.caption)
+        .replace(/{captionHtml}/g, data.captionHtml)
         .replace(/{styles}/g, data.styles);
     }
   }
@@ -221,13 +222,28 @@ module.exports = function (eleventyConfig) {
             
       const stylesString = this.applyStyles(parsedData);
       
+      // Generate caption HTML only if caption exists
+      let captionHtml = '';
+      if (parsedData.caption) {
+        const renderedCaption = md.renderInline(parsedData.caption);
+        
+        if (parsedData.type === 'imagenote') {
+          captionHtml = `<span class="figcaption">${renderedCaption}</span>`;
+        } else if (parsedData.type === 'grid') {
+          captionHtml = `<figcaption class="figcaption"${stylesString ? ` style="${stylesString}"` : ''}>${renderedCaption}</figcaption>`;
+        } else {
+          captionHtml = `<figcaption class="figcaption">${renderedCaption}</figcaption>`;
+        }
+      }
+      
       const templateData = {
         type: parsedData.type,
         classes: parsedData.classes.join(' '),
         id: this.generateId(filename),
         src: src,
         media: `<img src="${src}" alt="${parsedData.caption || ''}" loading="lazy">`,
-        caption: parsedData.caption ? md.renderInline(parsedData.caption) : '',
+        caption: parsedData.caption || '',
+        captionHtml: captionHtml,
         styles: stylesString ? ` style="${stylesString}"` : ''
       };
 
@@ -289,12 +305,12 @@ module.exports = function (eleventyConfig) {
   const templateEngine = new TemplateEngine();
   const wikilinkProcessor = new WikilinkProcessor(templateEngine, mediaTypes, mediaParser);
 
-eleventyConfig.addPreprocessor("processWikilinks", "*", (data, content) => {
-  const wikilinkRegex = /!\[\[\s*([^|\]]+?)\s*(?:\|([\s\S]*?))?\]\]/g;
-  return content.replace(wikilinkRegex, (match, filename, params) => {
-    return wikilinkProcessor.processWikilink(match, filename, params);
+  eleventyConfig.addPreprocessor("processWikilinks", "*", (data, content) => {
+    const wikilinkRegex = /!\[\[\s*([^|\]]+?)\s*(?:\|([\s\S]*?))?\]\]/g;
+    return content.replace(wikilinkRegex, (match, filename, params) => {
+      return wikilinkProcessor.processWikilink(match, filename, params);
+    });
   });
-});
 
   const markdownItContainer = require('markdown-it-container');
   

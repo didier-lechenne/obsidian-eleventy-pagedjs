@@ -13,12 +13,26 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "valentine/71.alternative-figure.md",
+                "file": "valentine/40.introduction.md",
                 "mode": "source",
                 "source": true
               },
               "icon": "lucide-file",
-              "title": "71.alternative-figure"
+              "title": "40.introduction"
+            }
+          },
+          {
+            "id": "8417fa405a2418e6",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "old-valentine/test-v2.md",
+                "mode": "source",
+                "source": true
+              },
+              "icon": "lucide-file",
+              "title": "test-v2"
             }
           }
         ]
@@ -245,18 +259,17 @@
   },
   "active": "a94aea7a04ed2b66",
   "lastOpenFiles": [
-    "old-valentine/test-v2.md",
-    "valentine/71.alternative-figure.md",
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-Regular.woff",
     "_site/assets/css/print/fonts/WorkSans/WorkSans-Regular.woff2",
+    "_site/assets/css/print/fonts/WorkSans/WorkSans-Regular.woff",
     "_site/assets/css/print/fonts/WorkSans/WorkSans-LightItalic.woff2",
     "_site/assets/css/print/fonts/WorkSans/WorkSans-LightItalic.woff",
     "_site/assets/css/print/fonts/WorkSans/WorkSans-Light.woff2",
     "_site/assets/css/print/fonts/WorkSans/WorkSans-Light.woff",
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-ExtraLight.woff",
     "_site/assets/css/print/fonts/WorkSans/WorkSans-Italic.woff2",
     "_site/assets/css/print/fonts/WorkSans/WorkSans-Italic.woff",
     "_site/assets/css/print/fonts/WorkSans/WorkSans-ExtraLightItalic.woff2",
+    "_site/assets/css/print/fonts/WorkSans/WorkSans-ExtraLightItalic.woff",
+    "_site/assets/css/print/fonts/WorkSans/WorkSans-ExtraLight.woff2",
     "_site/csspageweaver/plugins/tableOfContent/README.md",
     "_site/csspageweaver/plugins/reloadInPlace/Readme.md",
     "_site/csspageweaver/plugins/pageMove/README.md",
@@ -281,14 +294,16 @@
     "_site/images/nobody-at-table-edited_dithered.png",
     "_site/images/mongolian-child-archer-Nasanbat_Nasaa_dithered.png",
     "_site/csspageweaver/README.md",
-    "valentine/20.faux_titre.md",
     "valentine/41.intro-figure.md",
-    "old-valentine/190.bibliographie.md",
-    "old-valentine/111.domotique-image.md",
-    "old-valentine/120.heritage.md",
-    "old-valentine/130.low_tech.md",
-    "old-valentine/140.minimal.md",
-    "old-valentine/150.reparer.md",
-    "old-valentine/160.siege.md"
+    "valentine/40.introduction.md",
+    "valentine/60.affect.md",
+    "valentine/70.alternative.md",
+    "valentine/71.alternative-figure.md",
+    "valentine/11.blankpage.md",
+    "valentine/10.cover.md",
+    "valentine/20.faux_titre.md",
+    "valentine/30.sommaire.md",
+    "old-valentine/200.conclusion.md",
+    "old-valentine/test-v2.md"
   ]
 }
