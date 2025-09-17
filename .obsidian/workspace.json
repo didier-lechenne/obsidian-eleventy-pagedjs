@@ -49,12 +49,14 @@
             "id": "5c8b10f24c5d9455",
             "type": "leaf",
             "state": {
-              "type": "vscode-editor",
+              "type": "markdown",
               "state": {
-                "file": ".obsidian/plugins/mediashortcode/src/main.ts"
+                "file": "valentine/10.cover.md",
+                "mode": "source",
+                "source": false
               },
               "icon": "lucide-file",
-              "title": "main"
+              "title": "10.cover"
             }
           },
           {
@@ -295,6 +297,7 @@
   },
   "active": "5c8b10f24c5d9455",
   "lastOpenFiles": [
+    ".obsidian/plugins/mediashortcode/src/main.ts",
     "_site/index.html",
     "valentine/10.cover.md",
     "_site/assets/css/print/fonts/BBBBaskervvol/BBBBaskervvol-Base.woff",
@@ -306,7 +309,6 @@
     "_site/assets/css/print/fonts/BBBBaskervvol/BBBBaskervvol-Base.woff2",
     "_site/assets/css/print/fonts/BBBBaskervvol/BBBBaskervvol-Base.ttf",
     "_site/assets/css/print/fonts/WorkSans/WorkSans-Regular.woff2",
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-Regular.woff",
     "_site/csspageweaver/plugins/tableOfContent/README.md",
     "_site/csspageweaver/plugins/reloadInPlace/Readme.md",
     "_site/csspageweaver/plugins/pageMove/README.md",

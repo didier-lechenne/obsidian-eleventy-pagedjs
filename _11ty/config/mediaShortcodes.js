@@ -2,29 +2,7 @@ const markdownIt = require("markdown-it");
 const config = require('./siteData.js');
 
 module.exports = function (eleventyConfig) {
-  // Ajouter le preprocessor pour les wikilinks AVANT le reste
-  eleventyConfig.addPreprocessor("wikilinks", "*", (data, content) => {
-    // Convertir ![[image|params]] en ![](image "params")
-    content = content.replace(/!\[\[([^|\]]+)(\|([^\]]+))?\]\]/g, (match, imagePath, _, params) => {
-      // Nettoyer le chemin d'image
-      let cleanPath = imagePath.trim();
-      
-      // Si le chemin ne commence pas par ./ et ne contient pas de dossier, 
-      // l'ajouter au dossier d'images configuré
-      if (!cleanPath.startsWith('./') && !cleanPath.includes('/')) {
-        cleanPath = `./${config.publicFolder}/images/${cleanPath}`;
-      } else if (!cleanPath.startsWith('./')) {
-        cleanPath = `./${config.publicFolder}/${cleanPath}`;
-      }
-      
-      const altText = params ? params.trim() : '';
-      return `![](${cleanPath} "${altText}")`;
-    });
-    
-    return content;
-  });
-
-  // Votre code existant pour les types de médias...
+  // Créer une instance markdown locale pour le rendu des captions
   const md = markdownIt({
     html: true,
     breaks: true,
@@ -56,7 +34,7 @@ module.exports = function (eleventyConfig) {
     },
     fullpage: {
       name: 'Full Page',
-      template: '<figure data-type="{type}" data-grid="image" class="full-page figure {type} {classes}">{media} <figcaption class="figcaption">{caption}</figcaption> </figure>',
+      template: '<figure data-type="{type}" data-grid="image" class="full-page figure {type} {classes}">{media}<figcaption class="figcaption">{caption}</figcaption></figure>',
       extensions: []
     }
   };
@@ -82,7 +60,7 @@ module.exports = function (eleventyConfig) {
     }
 
     detectFromKeyword(params) {
-      const allowedTypes = ['image', 'imagenote', 'figure', 'grid' , 'fullpage'];
+      const allowedTypes = ['image', 'imagenote', 'figure', 'grid', 'fullpage'];
       
       for (const param of params) {
         const lowerParam = param.toLowerCase();
@@ -167,12 +145,12 @@ module.exports = function (eleventyConfig) {
           break;
         case 'fullpage':
         case 'full-page':
-            result['pagedjs-full-page'] = value;
-            break;
+          result['pagedjs-full-page'] = value;
+          break;
         case 'alignself':
         case 'align-self':
-            result['align-self'] = value;
-            break;
+          result['align-self'] = value;
+          break;
         case 'print-col':
         case 'printcol':
           result['print-col'] = value;
@@ -223,7 +201,66 @@ module.exports = function (eleventyConfig) {
     }
   }
 
-  // Renderer de médias
+  // Classe pour traiter les wikilinks
+  class WikilinkProcessor {
+    constructor(templateEngine, mediaTypes, mediaParser) {
+      this.templateEngine = templateEngine;
+      this.mediaTypes = mediaTypes;
+      this.mediaParser = mediaParser;
+    }
+
+    processWikilink(match, filename, params = '') {
+      const parsedData = this.mediaParser.parseAttributes(params, filename);
+      const mediaType = this.mediaTypes[parsedData.type] || this.mediaTypes.figure;
+      
+      // Construire le chemin complet
+      let src = filename.trim();
+      if (!src.startsWith('./')) {
+        src = `./images/${src}`;
+      }
+      
+      // Générer les données du template
+      const templateData = {
+        type: parsedData.type,
+        classes: parsedData.classes.join(' '),
+        id: this.generateId(filename),
+        src: src,
+        media: `<img src="${src}" alt="${parsedData.caption || ''}" loading="lazy">`,
+        caption: parsedData.caption ? md.renderInline(parsedData.caption) : ''
+      };
+
+      // Rendre le template
+      let html = this.templateEngine.render(mediaType.template, templateData);
+      
+      // Ajouter les styles CSS
+      const styles = this.applyStyles(parsedData);
+      if (styles) {
+        html = html.replace(/(<[^>]+)>/, `$1 style="${styles}">`);
+      }
+
+      return html;
+    }
+
+    generateId(filename) {
+      const cleanFilename = filename.replace(/\./g, '').replace(/[^a-zA-Z0-9]/g, '');
+      return `content${cleanFilename}`;
+    }
+
+    applyStyles(parsedData) {
+      const styles = [];
+      const excludedProps = ['type', 'caption', 'classes'];
+      
+      Object.entries(parsedData).forEach(([key, value]) => {
+        if (typeof value === 'string' && !excludedProps.includes(key)) {
+          styles.push(`--${key}: ${value}`);
+        }
+      });
+
+      return styles.join('; ');
+    }
+  }
+
+  // Renderer de médias (pour les images markdown classiques)
   class MediaRenderer {
     constructor(templateEngine, mediaTypes) {
       this.templateEngine = templateEngine;
@@ -237,13 +274,9 @@ module.exports = function (eleventyConfig) {
 
       const mediaType = this.mediaTypes[parsedData.type] || this.mediaTypes.figure;
       
-      // Générer un ID unique
       const id = this.generateId(parsedData.src || '');
-      
-      // Rendre le caption avec markdown
       const renderedCaption = parsedData.caption ? md.renderInline(parsedData.caption) : '';
       
-      // Données pour le template
       const templateData = {
         type: parsedData.type,
         classes: parsedData.classes.join(' '),
@@ -253,10 +286,7 @@ module.exports = function (eleventyConfig) {
         caption: renderedCaption
       };
 
-      // Générer le HTML
       let html = this.templateEngine.render(mediaType.template, templateData);
-      
-      // Appliquer les styles CSS
       html = this.applyStyles(html, parsedData);
       
       return html;
@@ -312,11 +342,18 @@ module.exports = function (eleventyConfig) {
   const mediaParser = new MediaParser(typeDetector);
   const templateEngine = new TemplateEngine();
   const mediaRenderer = new MediaRenderer(templateEngine, mediaTypes);
+  const wikilinkProcessor = new WikilinkProcessor(templateEngine, mediaTypes, mediaParser);
 
-  // Ajouter un filtre pour traiter les images dans le contenu markdown
-  eleventyConfig.addTransform("processMediaImages", function(content, outputPath) {
+  // Transform pour traiter les wikilinks ET les images markdown
+  eleventyConfig.addTransform("processMedia", function(content, outputPath) {
     if (outputPath && outputPath.endsWith('.html')) {
-      // Traiter les images avec des attributs spéciaux dans le alt text
+      // 1. Traiter les wikilinks ![[filename|params]]
+      const wikilinkRegex = /!\[\[\s*([^|\]]+?)\s*(?:\|([\s\S]*?))?\]\]/g;
+      content = content.replace(wikilinkRegex, (match, filename, params) => {
+        return wikilinkProcessor.processWikilink(match, filename, params);
+      });
+
+      // 2. Traiter les images markdown classiques
       content = content.replace(/<img([^>]*?)alt=["']([^"']*?)["']([^>]*?)>/gi, (match, beforeAlt, altText, afterAlt) => {
         const srcMatch = match.match(/src=["']([^"']*?)["']/);
         if (!srcMatch) return match;
@@ -324,16 +361,13 @@ module.exports = function (eleventyConfig) {
         const src = srcMatch[1];
         const filename = src.split('/').pop() || '';
         
-        // Parser les attributs
         const parsedData = mediaParser.parseAttributes(altText, filename);
         parsedData.src = src;
         
-        // Vérifier si on doit traiter cette image
         if (!shouldProcessMedia(parsedData)) {
           return match;
         }
         
-        // Traiter avec le renderer
         return mediaRenderer.renderMedia(match, parsedData);
       });
     }
@@ -344,7 +378,6 @@ module.exports = function (eleventyConfig) {
   // Support pour les grilles d'images (containers)
   const markdownItContainer = require('markdown-it-container');
   
-  // Cette partie sera appliquée par le système markdown existant
   eleventyConfig.amendLibrary("md", mdLib => {
     mdLib.use(markdownItContainer, 'columnGrid', {
       render: function (tokens, idx) {
