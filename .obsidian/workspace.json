@@ -4,24 +4,89 @@
     "type": "split",
     "children": [
       {
-        "id": "d3e28ab093506859",
+        "id": "d3fdc955015ee5e2",
         "type": "tabs",
         "children": [
           {
-            "id": "db154bf58bda9264",
+            "id": "5f32f0acd7cb5099",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "README.md",
+                "file": "_11ty/csspageweaver/plugins/fullPage/README.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
               "title": "README"
             }
+          },
+          {
+            "id": "3b3a855111f93598",
+            "type": "leaf",
+            "state": {
+              "type": "vscode-editor",
+              "state": {
+                "file": "_11ty/config/old-mediaShortcodes.js"
+              },
+              "icon": "lucide-file",
+              "title": "old-mediaShortcodes"
+            }
+          },
+          {
+            "id": "df40fd4784261de4",
+            "type": "leaf",
+            "state": {
+              "type": "vscode-editor",
+              "state": {
+                "file": "eleventy.config.js"
+              },
+              "icon": "lucide-file",
+              "title": "eleventy.config"
+            }
+          },
+          {
+            "id": "5c8b10f24c5d9455",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "valentine/10.cover.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "10.cover"
+            }
+          },
+          {
+            "id": "e40755ca90d8e147",
+            "type": "leaf",
+            "state": {
+              "type": "vscode-editor",
+              "state": {
+                "file": "_11ty/config/mediaShortcodes.js"
+              },
+              "icon": "lucide-file",
+              "title": "mediaShortcodes"
+            }
+          },
+          {
+            "id": "28419554cec5259c",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "valentine/page-de-test.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "page-de-test"
+            }
           }
-        ]
+        ],
+        "currentTab": 4
       }
     ],
     "direction": "vertical"
@@ -78,7 +143,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 401.5
+    "width": 437.5
   },
   "right": {
     "id": "f936c776b5bb9c42",
@@ -177,18 +242,8 @@
             "state": {
               "type": "SC-custom-variables-view",
               "state": {},
-              "icon": "lucide-ghost",
-              "title": "SC-custom-variables-view"
-            }
-          },
-          {
-            "id": "d3189af0e915f8a2",
-            "type": "leaf",
-            "state": {
-              "type": "git-view",
-              "state": {},
-              "icon": "git-pull-request",
-              "title": "Source Control"
+              "icon": "code-glyph",
+              "title": "Shell commands: Custom variables"
             }
           },
           {
@@ -212,16 +267,27 @@
               "icon": "code-glyph",
               "title": "Shell commands: Custom variables"
             }
+          },
+          {
+            "id": "412a199c2e6c65e4",
+            "type": "leaf",
+            "state": {
+              "type": "git-view",
+              "state": {},
+              "icon": "git-pull-request",
+              "title": "Source Control"
+            }
           }
         ],
-        "currentTab": 7
+        "currentTab": 9
       }
     ],
     "direction": "horizontal",
-    "width": 713.5
+    "width": 773.5
   },
   "left-ribbon": {
     "hiddenItems": {
+      "cmdr:Recharger l'application sans enregistrer": false,
       "templates:Insérer le modèle": false,
       "bases:Create new base": false,
       "switcher:Ouvrir le sélecteur rapide": false,
@@ -231,63 +297,62 @@
       "command-palette:Ouvrir la palette de commandes": false,
       "obsidian-shellcommands:Shell commands: Custom variables": false,
       "obsidian42-brat:BRAT": false,
-      "obsidian-git:Open Git source control": false,
       "vscode-editor:Create Code File": false,
       "cmdr:Installer le projet": false,
       "cmdr:Lancer le server (rechargement automatique)": false,
       "cmdr:Lancer le server (sans rechargement automatique)": false,
       "cmdr:Creer le site": false,
       "cmdr:Efface le site généré (clean)": false,
-      "cmdr:Stop": false
+      "cmdr:Stop": false,
+      "obsidian-git:Open Git source control": false
     }
   },
-  "active": "0eba038119f666d3",
+  "active": "412a199c2e6c65e4",
   "lastOpenFiles": [
-    ".obsidian/plugins/Sans titre",
-    ".obsidian/plugins/mediashortcode",
-    "_site/index.html",
-    "_site/print.html",
-    "_site/images/velo4.jpg",
-    "_site/assets/css/print/fonts/GTMaru/index.css",
-    "_site/assets/css/print/fonts/GTMaru/GTMaru-RegularOblique.woff2",
-    "_site/assets/css/print/fonts/GTMaru/GTMaru-RegularOblique.woff",
-    "_site/assets/css/print/fonts/GTMaru/GTMaru-Regular.woff2",
-    "_site/assets/css/print/fonts/GTMaru/GTMaru-Regular.woff",
-    "_site/assets/css/print/fonts/GTMaru/GTMaru-LightOblique.woff",
-    "_site/assets/css/print/fonts/GTMaru/GTMaru-LightOblique.woff2",
-    "_site/csspageweaver/plugins/reloadInPlace/Readme.md",
-    "_site/csspageweaver/plugins/tableOfContent/README.md",
-    "_site/csspageweaver/plugins/pageMove/README.md",
-    "_site/csspageweaver/plugins/marker/README.md",
-    "_site/csspageweaver/plugins/inlineNotes/README.md",
-    "_site/csspageweaver/plugins/layout/README.md",
-    "_site/csspageweaver/plugins/fullPage/README.md",
-    "_site/csspageweaver/plugins/editor/README-DEV-TOOLBAR.md",
-    "_site/csspageweaver/plugins/editor/README-DEV-TURNDOWN.md",
-    "_site/csspageweaver/plugins/editor/README.md",
-    "_site/csspageweaver/plugins/fullContent/README.md",
-    "_site/csspageweaver/plugins/footnotesFix/README.md",
-    "_site/csspageweaver/plugins/baseline/README.md",
-    "_site/csspageweaver/README.md",
-    "_site/images/siege.jpg",
+    "valentine/page-de-test.md",
+    "eleventy.config.js",
+    "_11ty/config/mediaShortcodes.js",
+    "valentine/10.cover.md",
+    "valentine/test-v2.md",
+    "_11ty/csspageweaver/plugins/fullPage/README.md",
+    "valentine/modulargrid.md",
+    "valentine/Interview-titre.md",
+    "valentine/interview.md",
+    "valentine/image_double_page.md",
+    "valentine/image.md",
+    "valentine/columnGrid.md",
+    "valentine/210.remerciement.md",
+    "valentine/200.conclusion.md",
+    "valentine/190.bibliographie.md",
+    "valentine/180.velo.md",
+    "valentine/170.skate.md",
+    "valentine/160.siege.md",
+    "valentine/150.reparer.md",
+    "valentine/140.minimal.md",
+    "valentine/130.low_tech.md",
+    "valentine/120.heritage.md",
+    "valentine/111.domotique-image.md",
+    "valentine/110.domotique.md",
+    "valentine/100.domestique.md",
+    "valentine/90.commun.md",
+    "valentine/80.bijoux.md",
+    "_11ty/config/old-mediaShortcodes.js",
+    "_11ty/config/markdown.js",
+    "_11ty/csspageweaver/plugins/fullContent/fullContent.js",
+    "_11ty/config/preprocessor.js",
+    "_11ty/config/shortcodes.js",
+    "_11ty/config/transforms.js",
+    "_11ty/config/afterBuild.js",
+    "valentine/images/Excerpt from Mother of All Demos (1968).ogg",
+    "valentine/images/Aaron_Swartz_profile.jpg",
+    "_site/images/alternative_crasset.png",
+    "_site/images/alternative2.jpg",
+    "_site/images/alternative1.jpg",
+    "_site/images/archery-outdoors-women-dithered.png",
+    "_site/images/lowtech2.png",
     "_site/images/velo2.jpg",
     "_site/images/velo3.jpg",
     "_site/images/velo.jpg",
-    "_site/images/tomeIII-candle_dithered.png",
-    "_site/images/rebar-foundation-wind-turbine_dithered.png",
-    "_site/images/reparer1.png",
-    "_site/images/maxresdefault.webp",
-    "_site/images/intro_objet.png",
-    "valentine/templates/screen.md",
-    "README.md",
-    "node_modules/@11ty/eleventy-utils/README.md",
-    "./docs/terminology.md",
-    "docs/terminology.md",
-    "./examples/README.md",
-    "examples/README.md",
-    "node_modules/cloneable-readable/node_modules/readable-stream/doc/wg-meetings/2015-01-30.md",
-    "node_modules/chokidar/README.md",
-    "node_modules/duplexer/README.md",
-    "node_modules/rxjs/CHANGELOG.md"
+    "_site/images/intro_objet.png"
   ]
 }

@@ -4,9 +4,10 @@
   "microtypographie",
   "cmdr",
   "regex-mark",
-  "microtypographie-v2",
-  "obsidian-git",
   "vscode-editor",
   "show-hidden-files",
-  "obsidian-file-color"
+  "obsidian-file-color",
+  "hot-reload",
+  "mediashortcode",
+  "obsidian-git"
 ]

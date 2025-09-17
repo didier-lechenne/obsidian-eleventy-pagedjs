@@ -1,0 +1,245 @@
+:root {
+  --fontfamily: "Ecole", sans-serif;
+  --bigsize: clamp(2.5rem, calc(1.83rem + 3.33vw), 6rem);
+  --basesize: 1.15rem;
+  --color: rgba(0, 0, 0, 0.85);
+  --spacer: 1rem;
+  --sn-width: 15rem;
+  --accentcolor: black;
+  --maxwidth: 46rem;
+}
+
+.theme-dark .figure,
+.theme-dark .figcaption {
+  background: unset;
+}
+
+.theme-light .figure,
+.theme-light .figcaption {
+  background: unset;
+}
+
+.markdown-source-view,
+.markdown-preview-view {
+  counter-reset: global-figure;
+}
+
+.markdown-source-view figure,
+.markdown-preview-view figure {
+  counter-increment: global-figure;
+}
+
+.block-language-columnGrid,
+.cm-lang-columnGrid {
+  width: calc(
+    ((100vw - var(--file-line-width)) / 2) + var(--file-line-width) -
+      var(--ribbon-width)
+  );
+  position: relative;
+  overflow-x: hidden;
+  padding-right: var(--file-margins);
+}
+
+/* ------------------------------------------------------------------------ Grid container for multiple images */
+.columnGrid {
+  display: grid !important;
+  grid-template-columns: repeat(12, 1fr);
+  grid-gap: var(--spacer);
+  align-content: start;
+}
+
+/* Default 3-column layout for figures in grid */
+.columnGrid .figure,
+.columnGrid .videofigure {
+  grid-column: span 3; /* 3 columns by default */
+  align-self: start;
+  margin: 0;
+  padding: 0;
+  max-width: none;
+}
+
+/* Allow custom column spans via --col CSS variable */
+.columnGrid .figure,
+.columnGrid .videofigure {
+  grid-column: var(--col, auto) / span var(--width, 3);
+}
+
+/* ------------------------------------------------------------------------ Images annexes (template = appendices) */
+
+/* paragraphs, titles, blocquotes within appendices */
+.appendices .content > :not(figure) {
+  grid-column: span 8;
+}
+
+/* figures and videofigures default : 3 cols  */
+.videofigure,
+.figure {
+  grid-column: span 3;
+  align-self: start;
+  margin: 0;
+  padding: 0;
+  max-width: none;
+}
+
+.figure,
+.videofigure {
+  grid-column: var(--col, auto) / span var(--width, 3);
+}
+
+/* justify image figures at start */
+.figure {
+  justify-self: start;
+}
+.figure img {
+  display: block;
+}
+.videofigure .video {
+  max-width: none;
+}
+
+figcaption,
+.figcaption {
+  font-size: var(--font-smallest);
+  padding: 0.5em 0 0;
+}
+
+html figure .figcaption::before {
+  content: "↑ [fig." counter(global-figure) "] ";
+}
+
+figcaption:empty {
+  display: none;
+}
+
+/* largeur et décalage des .figure et .videofigure, uniquement pour la version écran */
+.screen .figure,
+.screen .videofigure {
+  grid-column: var(--col, auto) / span var(--width, 3);
+}
+
+/* alignement vertical des .figure */
+.figure.top {
+  align-self: start;
+}
+.figure.center {
+  align-self: center;
+}
+.figure.bottom {
+  align-self: end;
+}
+
+@media screen and (max-width: 40rem) {
+  .figure,
+  .videofigure {
+    grid-column: 1 / -1 !important;
+    display: flex;
+    flex-direction: column-reverse;
+  }
+  figcaption::before {
+    content: "↑ [fig." counter(global-figure) "] " !important;
+  }
+}
+
+/* notwhite has a grey background */
+.notwhite {
+  background: rgba(0, 0, 0, 0.05);
+}
+.notwhite img {
+  mix-blend-mode: multiply;
+}
+.notwhite .caption,
+.notwhite figcaption {
+  background: white;
+}
+
+/* ------------------------------------------------------------------------ Videos */
+.video {
+  max-width: var(--maxwidth);
+  aspect-ratio: 16/9;
+  position: relative;
+  margin: 1em 0;
+}
+.video[style] {
+  background: var(--poster);
+  background-size: cover;
+}
+.video iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+.video + figcaption {
+  margin-top: -1em;
+}
+.video > * {
+  aspect-ratio: 16 / 9;
+  display: grid;
+  inline-size: 100%;
+  position: relative;
+  background: var(--poster);
+  background-size: cover;
+}
+.video > * > iframe {
+  block-size: 100%;
+  border: 0;
+  border-radius: inherit;
+  inline-size: 100%;
+  inset: 0;
+  object-fit: cover;
+  position: absolute;
+}
+.video iframe:not([src=""]) + button {
+  display: none;
+}
+.video button {
+  background-color: var(--button-bgc, #f00);
+  block-size: var(--button-h, 50px);
+  border: 0;
+  border-radius: var(--button-bdrs, 14%);
+  display: grid;
+  inline-size: var(--button-w, 75px);
+  opacity: var(--button-op, 0.8);
+  position: absolute;
+  place-self: center;
+  transition: all 0.2s ease-in;
+}
+.video button::before {
+  aspect-ratio: 1;
+  background: #fff;
+  block-size: 1.5em;
+  clip-path: polygon(20% 0%, 20% 100%, 100% 50%);
+  content: "";
+  place-self: center;
+}
+
+vimeo-embed button {
+  --button-bgc: #00adef;
+}
+
+*:has(> .imagenote) {
+  /* styles pour le parent */
+  float: right;
+  clear: right;
+}
+
+.imagenote {
+  float: right;
+  clear: right;
+  width: 250px;
+  font-size: 0.85rem;
+  margin-right: calc(-250px - var(--spacer));
+  margin-bottom: 1rem;
+}
+
+.imagenote img {
+  display: block;
+}
+.imagenote .caption {
+  padding: 0.5em 0;
+  display: block;
+  text-indent: 0;
+  text-wrap: pretty;
+}

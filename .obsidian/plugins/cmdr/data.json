@@ -53,6 +53,12 @@
       "icon": "lucide-stop-circle",
       "name": "Stop",
       "mode": "any"
+    },
+    {
+      "id": "app:reload",
+      "icon": "lucide-rotate-ccw",
+      "name": "Recharger l'application sans enregistrer",
+      "mode": "any"
     }
   ],
   "rightRibbon": [],

@@ -3,30 +3,101 @@ template: default
 toc: ignore
 draft: true
 ---
-## Prefatory Note
-
-PageTypeToPrint is a web + print layout and publishing tool. Originally designed as a template for formatting the thesis papers of the students of the _École supérieure d'art et de design des Pyrénnes_, it focuses on the simplicity of editing process (textual content in markdown format), but can be adapted, expanded and customised. It produces content that can be read online in the form of a web page and generates a downloadable and printable PDF document.
-
-PageTypeToPrint is a tool that...
-
-1. uses the PHP language,
-2. to transform text in markdown format into an HTML page,
-3. so that it can be displayed in a web browser,
-4. and generate a printable PDF using Paged.js and the browser's internal functions.
-
-PageTypeToPrint is free software. Its code is available on [GitHub](https://github.com/esadpyrenees/PageTypeToPrint). The purpose of the following pages is to present the features and the main lines of the default choices made in the tool, from the point of view of editing a master's thesis.
-
-
 ### Markdown
 
-Markdown is a lightweight markup language for creating formatted text using a plain-text editor. John Gruber and Aaron Swartz created Markdown in 2004 as a markup language that is intended to be easy to read in its source code form. Markdown is widely used for blogging and instant messaging, and also used elsewhere in online forums, collaborative software, documentation pages, and readme files[^note1].
+{% fullpage "./images/archery-outdoors-women-dithered.png", { 
+  id: "full-page-cover",
+  class: "cover"
+} %}
+
+
+![[images/alternative_crasset.png|caption: *view* **from** Ma légende [http://wikipedia.org](http://wikipedia.org)|class:classe1,classe2|fullpage: spread|align-self:start]]
+
+
+![[images/alternative_crasset.png|caption: *view* **from** Ma légende [http://wikipedia.org](http://wikipedia.org)|class:classe1,classe2|width:3|align-self:start]]
+
+Markdown is a lightweight markup language for creating formatted text using a plain-text editor. John Gruber![[images/Aaron_Swartz_profile.jpg|imagenote|caption:Aaron Swartz. [texte](https://example.com)]] and Aaron Swartz created Markdown in 2004 as a markup language that is intended to be easy to read in its source code form. Markdown is widely used for blogging and instant messaging, and also used elsewhere in online forums, collaborative software, documentation pages, and readme files.
+Basic formatting includes typesetting _italics_, **bold**, ~~marking text as deleted~~, ==highlighting text==, creating [http://wikipedia.org](http://wikipedia.org) and even `code`. It can also typeset headings and subheadings, images, quotes and lists. Markdown is a lightweight markup language for creating formatted text using a plain-text editor. John Gruber and Aaron Swartz created Markdown in 2004 as a markup language that is intended to be easy to read in its source code form. Markdown is widely used for blogging and instant messaging, and also used elsewhere in online forums, collaborative software, documentation pages, and readme files. Basic formatting includes typesetting _italics_, **bold**, ~~marking text as deleted~~, ==highlighting text==, creating [hyperlinks](http://wikipedia.org) and even `code`. It can also typeset headings and subheadings, images, quotes and lists.
 
 
 
-Basic formatting includes typesetting _italics_, **bold**, ~~marking text as deleted~~, ==highlighting text==, creating [hyperlinks](http://wikipedia.org) and even `code`. It can also typeset headings and subheadings, images, quotes and lists.
+![[Excerpt from Mother of All Demos (1968).ogg|caption: legende son]]
+
+
+
+
+![[images/alternative_crasset.png|caption: Ma et ma legende |class: myClass, autreClass, alla|col: 1|imgX: 1245|imgY: 1200]]
+
+![[images/alternative_crasset.png|caption:*view* **from** Ma légende et encore|class:classe1,classe2,classe8|width:3]]
+
+
+```columnGrid
+![[images/carte_skate-01.jpg
+|caption: *view* **from** Ma belle légende
+|image
+|col:1
+|print-col:2
+|width:4
+|print-width:3
+|class:highlight, allAA
+]]
+
+![[images/alternative_crasset.png|image
+|caption: Ma légende 2
+|width:4
+]]
+
+![[images/alternative_crasset.png
+|image
+|caption: Ma légende 3
+|width: 4
+]]
+
+![[images/alternative_crasset.png
+|image
+|caption: Ma légende 3
+|width:3
+]]
+
+![[images/carte_skate-01.jpg
+|image
+|caption: Ma légende
+|width:3
+|class:highlight
+]]
+
+![[images/alternative_crasset.png
+|image
+|caption: Ma légende 2
+|width:4
+]]
+
+![[images/alternative_crasset.png
+|image
+|caption: Ma légende 3
+|width:2
+]]
+
+![[images/alternative_crasset.png
+|image
+|caption: Ma légende 3
+|width:3
+]]
+```
+
+
+
+
+
+
+****
+
+
+
+
+
 
 > Markdown is intended to be as easy-to-read and easy-to-write as is feasible. Readability, however, is emphasized above all else. A Markdown-formatted document should be publishable as-is, as plain text, without looking like it's been marked up with tags or formatting instructions[^note2].
-
 
 
 ### Markdown Extra

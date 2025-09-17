@@ -1,517 +1,317 @@
-const fs = require("fs");
-const path = require("path");
-
-const config = require("./siteData.js");
-
-const markdownIt = require("markdown-it");
-const markdownItFootnote = require("markdown-it-footnote");
-const md = markdownIt({
-  html: true,
-  breaks: true,
-  linkify: false,
-  typographer: true,
-});
-
-md.use(markdownItFootnote);
-
-// OPTION : Désactiver la sauvegarde JSON
-const ENABLE_JSON_SAVE = false; // Passer à true pour réactiver
-
 module.exports = function (eleventyConfig) {
-  let globalImageCounter = 0;
-  let globalFigureCounter = 0;
-  let globalFigureGridCounter = 0;
-  let globalFullpageCounter = 0;
-  let globalElementCounter = 0;
-
-  // Cache pour les configurations d'images
-  let imageConfigs = {};
-  let configHasChanged = false;
-
-  function getImageConfig(imageId, overrides = {}) {
-    const baseConfig = imageConfigs[imageId] || {};
-    return { ...baseConfig, ...overrides };
+  // Types de médias par défaut
+  const mediaTypes = {
+    image: {
+      name: 'Image',
+      template: '<figure data-type="{type}" data-grid="image" class="figure {type} {classes}" id="{id}" data-src="{src}">{media}<figcaption class="figcaption">{caption}</figcaption></figure>',
+      extensions: ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg']
+    },
+    imagenote: {
+      name: 'Image Note',
+      template: '<span data-type="{type}" class="{type} {classes}" id="{id}" data-src="{src}">{media}<span class="figcaption">{caption}</span></span>',
+      extensions: []
+    },
+    figure: {
+      name: 'Figure',
+      template: '<figure data-type="{type}" data-grid="image" class="{type} {classes}">{media}<figcaption class="figcaption">{caption}</figcaption></figure>',
+      extensions: []
+    },
+    grid: {
+      name: 'Grid',
+      template: '<figure data-type="{type}" data-grid="image" class="figure {type} {classes}">{media}</figure><figcaption class="figcaption">{caption}</figcaption>',
+      extensions: []
+    },
+   fullpage: {
+    name: 'Full Page',
+    template: '<figure data-type="{type}" data-grid="image" class="full-page figure {type} {classes}">{media} <figcaption class="figcaption">{caption}</figcaption> </figure>',
+    extensions: []
   }
+  };
 
-  function generateStyles(config) {
-    const cssVarMapping = {
-      col: "--col",
-      printCol: "--print-col",
-      width: "--width",
-      printWidth: "--print-width",
-      printRow: "--print-row",
-      printHeight: "--print-height",
-      alignSelf: "--align-self",
-      alignself: "--align-self",
-      "align-self": "--align-self",
-      imgX: "--img-x",
-      imgY: "--img-y",
-      imgW: "--img-w",
-      page: "--pagedjs-full-page",
-    };
+  // Classe pour détecter le type
+  class TypeDetector {
+    constructor(mediaTypes) {
+      this.mediaTypes = mediaTypes;
+    }
 
-    let styles = "";
-    Object.entries(config).forEach(([key, value]) => {
-      if (
-        cssVarMapping[key] &&
-        value !== undefined &&
-        value !== null &&
-        value !== ""
-      ) {
-        // Nettoie les guillemets si présents
-        const cleanValue =
-          typeof value === "string" ? value.replace(/^["']|["']$/g, "") : value;
-        styles += `${cssVarMapping[key]}: ${cleanValue}; `;
+    detectFromFilename(filename) {
+      const ext = this.getFileExtension(filename);
+      
+      for (const [typeName, config] of Object.entries(this.mediaTypes)) {
+        if (!['image', 'imagenote', 'figure', 'grid', 'fullpage'].includes(typeName)) continue;
+        
+        if (config.extensions.includes(ext)) {
+          return typeName;
+        }
       }
-    });
-    return styles ? ` style="${styles}"` : "";
-  }
-
-  function generateHTML(type, config) {
-    const styleAttr = generateStyles(config);
-    const classAttr = config.class ? ` ${config.class}` : "";
-    const captionHTML = config.caption ? md.renderInline(config.caption) : "";
-    const id = config.id;
-    let cleanAlt = "";
-    if (config.caption) {
-      cleanAlt = config.caption
-        .replace(/\*([^*]+)\*/g, "$1")
-        .replace(/<[^>]+>/g, " ")
-        .replace(/&[^;]+;/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
+      
+      return 'figure';
     }
 
-    // Incrémenter le compteur pour tous les types qui en ont besoin
-    if (["image", "grid", "fullpage", "figure"].includes(type)) {
-      globalElementCounter++;
+    detectFromKeyword(params) {
+      const allowedTypes = ['image', 'imagenote', 'figure', 'grid' , 'fullpage'];
+      
+      for (const param of params) {
+        const lowerParam = param.toLowerCase();
+        
+        if (allowedTypes.includes(lowerParam)) {
+          return lowerParam;
+        }
+      }
+      
+      return null;
     }
 
-    switch (type) {
-      case "image":
-        return `<figure data-id="${id}" data-grid="image" id="image-${globalElementCounter}" class="figure image${classAttr}"${styleAttr}>
-        <img src="${config.src}" alt="${cleanAlt}" >
-        ${
-          captionHTML
-            ? `<figcaption class="figcaption">${captionHTML}</figcaption>`
-            : ""
-        }
-      </figure>`;
-
-      case "grid":
-        let output = `<figure data-id="${id}" data-grid="image" class="${classAttr}" id="figure-${globalElementCounter}"${styleAttr}>
-        <img src="${config.src}" alt="${cleanAlt}" >
-      </figure>`;
-        if (captionHTML) {
-          output += `<figcaption class="figcaption figcaption-${globalElementCounter}" ${styleAttr}>${captionHTML}</figcaption>`;
-        }
-        return output;
-
-      case "fullpage":
-        return `<figure data-id="${id}" data-grid="image" id="figure-${globalElementCounter}" class="full-page ${classAttr}"${styleAttr}>
-        <img src="${config.src}" alt="${cleanAlt}">
-      </figure>`;
-
-      case "figure":
-        return `<span class="spanMove figure_call" id="fig-${globalElementCounter}-call">
-        [<a href="#fig-${globalElementCounter}">fig. ${globalElementCounter}</a>]
-      </span>
-      <span class="figure figmove${classAttr}" data-grid="image" id="fig-${globalElementCounter}"${styleAttr}>
-        <img src="${config.src}" alt="${cleanAlt}" >
-        ${
-          captionHTML
-            ? `<span class="figcaption"><span class="figure_reference">[fig. ${globalElementCounter}]</span> ${captionHTML}</span>`
-            : ""
-        }
-      </span>`;
-
-      case "imagenote":
-        return `<span class="imagenote sideNote${classAttr}" data-grid="image"${styleAttr}>
-        <img src="${config.src}" alt="${cleanAlt}" >
-        ${captionHTML ? `<span class="caption">${captionHTML}</span>` : ""}
-      </span>`;
-
-      case "video":
-        const posterAttr = config.poster ? ` poster="${config.poster}"` : "";
-        return `<figure class="video${classAttr}" data-grid="content"${styleAttr}>
-        <video controls${posterAttr}>
-          <source src="${config.src}">
-        </video>
-        ${
-          captionHTML
-            ? `<figcaption class="figcaption">${captionHTML}</figcaption>`
-            : ""
-        }
-      </figure>`;
-
-      default:
-        return `<!-- Type ${type} non supporté -->`;
+    getFileExtension(filename) {
+      const lastDot = filename.lastIndexOf('.');
+      return lastDot === -1 ? '' : filename.substring(lastDot).toLowerCase();
     }
   }
 
-  eleventyConfig.on("eleventy.before", () => {
-    globalFigureCounter = 0;
-    globalFigureGridCounter = 0;
-    globalImageCounter = 0;
-    globalElementCounter = 0;
-
-    if (ENABLE_JSON_SAVE) {
-      try {
-        imageConfigs = JSON.parse(
-          fs.readFileSync("_11ty/_data/images.json", "utf8")
-        );
-        console.log(
-          `✅ ${Object.keys(imageConfigs).length} configs d'images chargées`
-        );
-      } catch (e) {
-        imageConfigs = {};
-        console.log("📝 Nouveau fichier images.json sera créé");
-      }
-    } else {
-      imageConfigs = {};
-      console.log("🚫 Sauvegarde JSON désactivée");
+  // Classe pour parser les attributs
+  class MediaParser {
+    constructor(typeDetector) {
+      this.typeDetector = typeDetector;
     }
-    configHasChanged = false;
-  });
 
-  eleventyConfig.on("eleventy.after", () => {
-    if (configHasChanged && ENABLE_JSON_SAVE) {
-      fs.writeFileSync(
-        "_11ty/_data/images.json",
-        JSON.stringify(imageConfigs, null, 2)
-      );
-      console.log(`💾 ${Object.keys(imageConfigs).length} configs sauvées`);
-    }
-  });
-
-  eleventyConfig.addShortcode("image", function (firstParam, options = {}) {
-    let config, imageId;
-
-    if (
-      typeof firstParam === "string" &&
-      !firstParam.includes("/") &&
-      !firstParam.includes(".")
-    ) {
-      imageId = firstParam;
-      config = getImageConfig(imageId, options);
-
-      if (!config.src) {
-        return `<!-- ERROR: Image "${imageId}" non trouvée dans JSON -->`;
-      }
-    } else {
-      imageId = options.id;
-      const existingConfig = imageConfigs[imageId] || {};
-
-      config = {
-        ...existingConfig,
-        ...options,
-        src: firstParam,
+    parseAttributes(altText, filename) {
+      const result = {
+        type: 'figure',
+        caption: '',
+        classes: [],
       };
 
-      if (
-        imageId &&
-        ENABLE_JSON_SAVE &&
-        JSON.stringify(existingConfig) !== JSON.stringify(config)
-      ) {
-        imageConfigs[imageId] = { ...config };
-        configHasChanged = true;
+      if (!altText) {
+        if (filename) {
+          result.type = this.typeDetector.detectFromFilename(filename);
+        }
+        return result;
       }
+
+      const cleanedAltText = altText.replace(/\s+/g, ' ').trim();
+      const parts = cleanedAltText.split('|').map(part => part.trim());
+
+      // Détecter le type depuis les mots-clés
+      const keywordType = this.typeDetector.detectFromKeyword(parts);
+      if (keywordType) {
+        result.type = keywordType;
+        const keywordIndex = parts.findIndex(p => p.toLowerCase() === keywordType);
+        if (keywordIndex !== -1) {
+          parts.splice(keywordIndex, 1);
+        }
+      } else if (filename) {
+        result.type = this.typeDetector.detectFromFilename(filename);
+      }
+
+      // Parser les autres paramètres
+      for (const part of parts) {
+        if (part.includes(':')) {
+          this.parseKeyValuePair(part, result);
+        } else if (part && !result.caption) {
+          result.caption = part;
+        }
+      }
+
+      return result;
     }
 
-    return generateHTML("image", config);
-  });
+    parseKeyValuePair(part, result) {
+      const [key, ...valueParts] = part.split(':');
+      const value = valueParts.join(':').trim();
 
-  eleventyConfig.addAsyncShortcode(
-    "grid",
-    async function (firstParam, options = {}) {
-      let imageConfig, itemId;
+      switch (key.toLowerCase()) {
+        case 'caption':
+          result.caption = value;
+          break;
+        case 'class':
+          result.classes = value.split(',').map(cls => cls.trim());
+          break;
+        case 'width':
+          result.width = value;
+          break;
+        case 'col':
+          result.col = value;
+          break;
+        case 'fullpage':
+        case 'full-page':
+            result['pagedjs-full-page'] = value;
+            break;
+        case 'alignself':
+        case 'align-self':
+            result['align-self'] = value;
+            break;
+        case 'print-col':
+        case 'printcol':
+          result['print-col'] = value;
+          break;
+        case 'print-width':
+        case 'printwidth':
+          result['print-width'] = value;
+          break;
+        case 'print-row':
+        case 'printrow':
+          result['print-row'] = value;
+          break;
+        case 'print-height':
+        case 'printheight':
+          result['print-height'] = value;
+          break;
+        case 'print-x':
+        case 'img-x':
+        case 'imgx':
+          result['print-x'] = value;
+          break;
+        case 'print-y':
+        case 'img-y':
+        case 'imgy':
+          result['print-y'] = value;
+          break;
+        case 'img-w':
+        case 'imgw':
+          result['img-w'] = value;
+          break;
+        default:
+          result[key.toLowerCase()] = value;
+          break;
+      }
+    }
+  }
 
-      // Détection automatique du type de contenu
-      const isMarkdownFile = firstParam.endsWith(".md");
-      const isImageFile = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(firstParam);
+  // Moteur de template
+  class TemplateEngine {
+    render(template, data) {
+      return template
+        .replace(/{type}/g, data.type)
+        .replace(/{classes}/g, data.classes)
+        .replace(/{id}/g, data.id)
+        .replace(/{src}/g, data.src)
+        .replace(/{media}/g, data.media)
+        .replace(/{caption}/g, data.caption);
+    }
+  }
 
-      if (isMarkdownFile) {
-        // Traitement markdown - copie de la logique du shortcode markdown
-        let parsedOptions = {};
-        if (typeof options === "string") {
-          try {
-            const cleanString = options.replace(/,(\s*[}\]])/g, "$1");
-            parsedOptions = Function(`"use strict"; return (${cleanString})`)();
-          } catch (e) {
-            parsedOptions = {};
-          }
-        } else {
-          parsedOptions = options || {};
+  // Renderer de médias
+  class MediaRenderer {
+    constructor(templateEngine, mediaTypes) {
+      this.templateEngine = templateEngine;
+      this.mediaTypes = mediaTypes;
+    }
+
+    renderMedia(imgHtml, parsedData) {
+      if (!['image', 'imagenote', 'figure', 'grid'].includes(parsedData.type)) {
+        return imgHtml;
+      }
+
+      const mediaType = this.mediaTypes[parsedData.type] || this.mediaTypes.figure;
+      
+      // Générer un ID unique
+      const id = this.generateId(parsedData.src || '');
+      
+      // Données pour le template
+      const templateData = {
+        type: parsedData.type,
+        classes: parsedData.classes.join(' '),
+        id: id,
+        src: parsedData.src || '',
+        media: imgHtml,
+        caption: parsedData.caption
+      };
+
+      // Générer le HTML
+      let html = this.templateEngine.render(mediaType.template, templateData);
+      
+      // Appliquer les styles CSS
+      html = this.applyStyles(html, parsedData);
+      
+      return html;
+    }
+
+    generateId(src) {
+      const filename = src.split('/').pop()?.replace(/\?.*$/, '')?.replace(/\./g, '') || '';
+      return `content${filename}`;
+    }
+
+    applyStyles(html, parsedData) {
+      const styles = [];
+      const excludedProps = ['type', 'caption', 'classes'];
+      
+      Object.entries(parsedData).forEach(([key, value]) => {
+        if (typeof value === 'string' && !excludedProps.includes(key)) {
+          styles.push(`--${key}: ${value}`);
         }
+      });
 
-        const cleanFile = firstParam
-          .replace(/[\u200B-\u200D\uFEFF]/g, "")
-          .trim();
-        const filePath = path.join(`./${config.publicFolder}`, cleanFile);
+      if (styles.length > 0) {
+        const styleAttr = styles.join('; ');
+        html = html.replace(/(<[^>]+)>/i, `$1 style="${styleAttr}">`);
+      }
 
-        try {
-          const content = await fs.promises.readFile(filePath, "utf8");
-          globalElementCounter++;
+      return html;
+    }
+  }
 
-          const styleAttr = generateStyles(parsedOptions);
-          const classAttr = parsedOptions.class
-            ? ` class="${parsedOptions.class}"`
-            : "";
-          const idAttr = parsedOptions.id
-            ? ` id="${parsedOptions.id}"`
-            : ` id="markdown-${globalElementCounter}"`;
+  // Initialiser les composants
+  const typeDetector = new TypeDetector(mediaTypes);
+  const mediaParser = new MediaParser(typeDetector);
+  const templateEngine = new TemplateEngine();
+  const mediaRenderer = new MediaRenderer(templateEngine, mediaTypes);
 
-          const renderedContent = cleanFile.endsWith(".md")
-            ? md.render(content)
-            : content;
-          return `<div data-grid="markdown" data-md="${cleanFile}"${idAttr}${classAttr}${styleAttr}>${renderedContent}</div>`;
-        } catch (error) {
-          console.error(`Erreur inclusion ${cleanFile}:`, error.message);
-          return `<div class="include error">❌ Erreur: ${cleanFile} non trouvé</div>`;
-        }
-      } else if (
-        isImageFile ||
-        firstParam.includes("/") ||
-        firstParam.includes(".")
-      ) {
-        // Traitement comme image (URL ou chemin)
+  // Fonction pour traiter les images
+  function shouldProcessMedia(parsedData) {
+    if (!['image', 'imagenote', 'figure', 'grid'].includes(parsedData.type)) return false;
+    
+    return !!(
+      parsedData.caption || 
+      parsedData.col || 
+      parsedData.width ||
+      parsedData['print-col'] ||
+      parsedData['print-width'] ||
+      parsedData['print-row'] ||
+      parsedData['print-height'] ||
+      parsedData['print-x'] ||
+      parsedData['print-y'] ||
+      parsedData['img-w'] ||
+      parsedData['align-self'] ||
+      parsedData['pagedjs-full-page'] ||
+      parsedData.type !== 'figure'
+    );
+  }
 
-        if (
-          typeof firstParam === "string" &&
-          !firstParam.includes("/") &&
-          !firstParam.includes(".")
-        ) {
-          // ID référence dans JSON
-          itemId = firstParam;
-          imageConfig = getImageConfig(itemId, options);
+  // Remplacer le rendu par défaut des images
+  const defaultImageRender = md.renderer.rules.image || function(tokens, idx, options, env, self) {
+    return self.renderToken(tokens, idx, options);
+  };
 
-          if (!imageConfig.src) {
-            return `<!-- ERROR: Image "${itemId}" non trouvée dans JSON -->`;
-          }
-        } else {
-          // URL/chemin direct
-          itemId = options.id;
-          const existingConfig = imageConfigs[itemId] || {};
+  md.renderer.rules.image = function(tokens, idx, options, env, self) {
+    const token = tokens[idx];
+    const altText = token.content || '';
+    const src = token.attrGet('src') || '';
+    const filename = src.split('/').pop() || '';
+    
+    // Parser les attributs
+    const parsedData = mediaParser.parseAttributes(altText, filename);
+    parsedData.src = src;
 
-          imageConfig = {
-            ...existingConfig,
-            ...options,
-            src: firstParam,
-          };
+    // Vérifier si on doit traiter cette image
+    if (!shouldProcessMedia(parsedData)) {
+      return defaultImageRender(tokens, idx, options, env, self);
+    }
 
-          if (
-            itemId &&
-            ENABLE_JSON_SAVE &&
-            JSON.stringify(existingConfig) !== JSON.stringify(imageConfig)
-          ) {
-            imageConfigs[itemId] = { ...imageConfig };
-            configHasChanged = true;
-          }
-        }
+    // Générer le HTML de l'image de base
+    const imgHtml = defaultImageRender(tokens, idx, options, env, self);
+    
+    // Traiter avec le renderer
+    return mediaRenderer.renderMedia(imgHtml, parsedData);
+  };
 
-        return generateHTML("grid", imageConfig);
+  // Support pour les grilles d'images (code blocks)
+  md.use(require('markdown-it-container'), 'columnGrid', {
+    render: function (tokens, idx) {
+      if (tokens[idx].nesting === 1) {
+        return '<div class="columnGrid">\n';
       } else {
-        // Fallback: traitement comme référence d'image
-        itemId = firstParam;
-        imageConfig = getImageConfig(itemId, options);
-
-        if (!imageConfig.src) {
-          return `<!-- ERROR: Item "${itemId}" non trouvé dans JSON -->`;
-        }
-
-        return generateHTML("grid", imageConfig);
+        return '</div>\n';
       }
     }
-  );
-
-  eleventyConfig.addShortcode("video", function (firstParam, options = {}) {
-    let config, imageId;
-
-    if (
-      typeof firstParam === "string" &&
-      !firstParam.includes("/") &&
-      !firstParam.includes(".")
-    ) {
-      imageId = firstParam;
-      config = getImageConfig(imageId, options);
-
-      if (!config.src) {
-        return `<!-- ERROR: Video "${imageId}" non trouvée dans JSON -->`;
-      }
-    } else {
-      imageId = options.id;
-      const existingConfig = imageConfigs[imageId] || {};
-
-      config = {
-        ...existingConfig,
-        ...options,
-        src: firstParam,
-      };
-
-      if (
-        imageId &&
-        ENABLE_JSON_SAVE &&
-        JSON.stringify(existingConfig) !== JSON.stringify(config)
-      ) {
-        imageConfigs[imageId] = { ...config };
-        configHasChanged = true;
-      }
-    }
-
-    return generateHTML("video", config);
   });
-
-  eleventyConfig.addShortcode("figure", function (firstParam, options = {}) {
-    let config, imageId;
-
-    if (
-      typeof firstParam === "string" &&
-      !firstParam.includes("/") &&
-      !firstParam.includes(".")
-    ) {
-      imageId = firstParam;
-      config = getImageConfig(imageId, options);
-
-      if (!config.src) {
-        return `<!-- ERROR: Figure "${imageId}" non trouvée dans JSON -->`;
-      }
-    } else {
-      imageId = options.id;
-      const existingConfig = imageConfigs[imageId] || {};
-
-      config = {
-        ...existingConfig,
-        ...options,
-        src: firstParam,
-      };
-
-      if (
-        imageId &&
-        ENABLE_JSON_SAVE &&
-        JSON.stringify(existingConfig) !== JSON.stringify(config)
-      ) {
-        imageConfigs[imageId] = { ...config };
-        configHasChanged = true;
-      }
-    }
-
-    return generateHTML("figure", config);
-  });
-
-  eleventyConfig.addShortcode("imagenote", function (firstParam, options = {}) {
-    let config, imageId;
-
-    if (
-      typeof firstParam === "string" &&
-      !firstParam.includes("/") &&
-      !firstParam.includes(".")
-    ) {
-      imageId = firstParam;
-      config = getImageConfig(imageId, options);
-
-      if (!config.src) {
-        return `<!-- ERROR: ImageNote "${imageId}" non trouvée dans JSON -->`;
-      }
-    } else {
-      imageId = options.id;
-      const existingConfig = imageConfigs[imageId] || {};
-
-      config = {
-        ...existingConfig,
-        ...options,
-        src: firstParam,
-      };
-
-      if (
-        imageId &&
-        ENABLE_JSON_SAVE &&
-        JSON.stringify(existingConfig) !== JSON.stringify(config)
-      ) {
-        imageConfigs[imageId] = { ...config };
-        configHasChanged = true;
-      }
-    }
-
-    return generateHTML("imagenote", config);
-  });
-
-  eleventyConfig.addShortcode("fullpage", function (firstParam, options = {}) {
-    let config, itemId;
-
-    if (
-      typeof firstParam === "string" &&
-      !firstParam.includes("/") &&
-      !firstParam.includes(".")
-    ) {
-      itemId = firstParam;
-      config = getImageConfig(itemId, options);
-
-      if (!config.src) {
-        return `<!-- ERROR: Item "${itemId}" non trouvé dans JSON -->`;
-      }
-    } else {
-      itemId = options.id;
-      const existingConfig = imageConfigs[itemId] || {};
-
-      config = {
-        ...existingConfig,
-        ...options,
-        src: firstParam,
-      };
-
-      if (
-        itemId &&
-        ENABLE_JSON_SAVE &&
-        JSON.stringify(existingConfig) !== JSON.stringify(config)
-      ) {
-        imageConfigs[itemId] = { ...config };
-        configHasChanged = true;
-      }
-    }
-
-    return generateHTML("fullpage", config);
-  });
-
-  eleventyConfig.addAsyncShortcode(
-    "markdown",
-    async function (file, optionsString) {
-      // Parse manual pour supporter les trailing commas
-      let options = {};
-      if (typeof optionsString === "string") {
-        try {
-          // Nettoie les trailing commas
-          const cleanString = optionsString.replace(/,(\s*[}\]])/g, "$1");
-          options = Function(`"use strict"; return (${cleanString})`)();
-        } catch (e) {
-          console.warn("Erreur parsing options markdown:", e.message);
-          options = {};
-        }
-      } else if (typeof optionsString === "object") {
-        options = optionsString || {};
-      }
-      const cleanFile = file.replace(/[\u200B-\u200D\uFEFF]/g, "").trim();
-      const filePath = path.join(`./${config.publicFolder}`, cleanFile);
-
-      try {
-        const content = await fs.promises.readFile(filePath, "utf8");
-
-        globalElementCounter++;
-
-        const styleAttr = generateStyles(options);
-        const classAttr = options.class ? ` class="${options.class}"` : "";
-        const idAttr = options.id
-          ? ` id="${options.id}"`
-          : ` id="markdown-${globalElementCounter}"`;
-
-        const renderedContent = cleanFile.endsWith(".md")
-          ? md.render(content)
-          : content;
-
-        return `<div data-grid="markdown" data-md="${cleanFile}"${idAttr}${classAttr}${styleAttr}>${renderedContent}</div>`;
-      } catch (error) {
-        console.error(`Erreur inclusion ${cleanFile}:`, error.message);
-        return `<div class="include error">❌ Erreur: ${cleanFile} non trouvé</div>`;
-      }
-    }
-  );
 };
