@@ -8,29 +8,13 @@
         "type": "tabs",
         "children": [
           {
-            "id": "a94aea7a04ed2b66",
-            "type": "leaf",
-            "state": {
-              "type": "vscode-editor",
-              "state": {
-                "file": "eleventy.config.js"
-              },
-              "icon": "lucide-file",
-              "title": "eleventy.config"
-            }
-          },
-          {
             "id": "8417fa405a2418e6",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "old-valentine/test-v2.md",
-                "mode": "source",
-                "source": true
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "test-v2"
+              "title": "Nouvel onglet"
             }
           }
         ]
@@ -254,8 +238,9 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "a94aea7a04ed2b66",
+  "active": "8417fa405a2418e6",
   "lastOpenFiles": [
+    "eleventy.config.js",
     "_11ty/config/mediaShortcodes.js",
     "valentine/210.remerciement.md",
     "valentine/columnGrid.md",
