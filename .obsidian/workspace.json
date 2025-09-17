@@ -51,21 +51,21 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "valentine/10.cover.md",
+                "file": "valentine/40.introduction.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "10.cover"
+              "title": "40.introduction"
             }
           },
           {
-            "id": "28419554cec5259c",
+            "id": "a94aea7a04ed2b66",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "valentine/page-de-test.md",
+                "file": "old-valentine/page-de-test.md",
                 "mode": "source",
                 "source": false
               },
@@ -271,7 +271,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 773.5
+    "width": 449.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -297,18 +297,27 @@
   },
   "active": "5c8b10f24c5d9455",
   "lastOpenFiles": [
-    ".obsidian/plugins/mediashortcode/src/main.ts",
     "_site/index.html",
-    "valentine/10.cover.md",
-    "_site/assets/css/print/fonts/BBBBaskervvol/BBBBaskervvol-Base.woff",
-    "_site/assets/css/print/fonts/PostGrotesk/postgrotesk-bold.woff2",
-    "_site/assets/css/print/fonts/BBBBaskervvol/index.css",
-    "_site/assets/css/print/fonts/BBBBaskervvol/BBBBaskervvol-Fondue.woff2",
-    "_site/assets/css/print/fonts/BBBBaskervvol/BBBBaskervvol-Fondue.woff",
-    "_site/assets/css/print/fonts/IBM-plex-sans/IBMPlexSans-BoldItalic.woff2",
-    "_site/assets/css/print/fonts/BBBBaskervvol/BBBBaskervvol-Base.woff2",
-    "_site/assets/css/print/fonts/BBBBaskervvol/BBBBaskervvol-Base.ttf",
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-Regular.woff2",
+    "_site/print.html",
+    "_site/images/alternative_crasset.png",
+    "_site/images/carte_skate-01.jpg",
+    "_site/images/archery-outdoors-women-dithered.png",
+    "_site/images/alternative2.jpg",
+    "_site/images/Aaron_Swartz_profile.jpg",
+    "_site/images/1430077789-398f32bbf5de586eb7325d2e44215f75aad64154121b379aaf2d4e06a8c90b46-d.avif",
+    "_site/images/mongolian-child-archer-Nasanbat_Nasaa_dithered.png",
+    "_site/images/maxresdefault.webp",
+    "_site/images/lowtech_distilateur.png",
+    "_site/images/lowtech2.png",
+    "_site/images/Excerpt from Mother of All Demos (1968).ogg",
+    "_site/assets/css/templates/blankpage.css",
+    "_site/assets/css/screen.css",
+    "_site/assets/css/print.css",
+    "_site/assets/css/print/variables.css",
+    "_site/assets/css/print/spacing.css",
+    "_site/assets/css/print/fonts/WorkSans/WorkSans-Regular.woff",
+    "_site/assets/css/print/sidenotes.css",
+    "_site/assets/css/print/list.css",
     "_site/csspageweaver/plugins/tableOfContent/README.md",
     "_site/csspageweaver/plugins/reloadInPlace/Readme.md",
     "_site/csspageweaver/plugins/pageMove/README.md",
@@ -322,26 +331,17 @@
     "_site/csspageweaver/plugins/editor/README-DEV-TURNDOWN.md",
     "_site/csspageweaver/plugins/editor/README-DEV-TOOLBAR.md",
     "_site/csspageweaver/plugins/baseline/README.md",
-    "_site/images/img_test_2.jpg",
-    "_site/images/intro_domestique.png",
-    "_site/images/velo4.jpg",
-    "_site/images/velo3.jpg",
-    "_site/images/velo2.jpg",
-    "_site/images/velo.jpg",
-    "_site/images/tomeIII-candle_dithered.png",
-    "_site/images/siege.jpg",
-    "_site/images/reparer1.png",
-    "_site/images/rebar-foundation-wind-turbine_dithered.png",
     "_site/csspageweaver/README.md",
+    "valentine/40.introduction.md",
+    "old-valentine/page-de-test.md",
+    "valentine/30.sommaire.md",
+    "valentine/11.blankpage.md",
+    "valentine/20.faux_titre.md",
+    "valentine/10.cover.md",
     "valentine/100.domestique.md",
     "valentine/templates/screen.md",
     "valentine/templates/print.md",
     "valentine/inclure/titre.md",
-    "valentine/inclure/mentions.md",
-    "valentine/inclure/sous-titre.md",
-    "old-valentine/inclure/sous-titre.md",
-    "old-valentine/inclure/titre.md",
-    "old-valentine/templates/screen.md",
-    "old-valentine/templates/print.md"
+    "valentine/inclure/mentions.md"
   ]
 }
