@@ -49,10 +49,12 @@
             "id": "5c8b10f24c5d9455",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "vscode-editor",
+              "state": {
+                "file": ".obsidian/plugins/mediashortcode/src/main.ts"
+              },
               "icon": "lucide-file",
-              "title": "Nouvel onglet"
+              "title": "main"
             }
           },
           {
@@ -291,44 +293,45 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "0eba038119f666d3",
+  "active": "5c8b10f24c5d9455",
   "lastOpenFiles": [
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-Light.woff2",
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-Light.woff",
-    "_site/assets/css/print/fonts/IBM-plex-sans/IBMPlexSans-Regular.woff2",
+    "_site/index.html",
+    "valentine/10.cover.md",
+    "_site/assets/css/print/fonts/BBBBaskervvol/BBBBaskervvol-Base.woff",
+    "_site/assets/css/print/fonts/PostGrotesk/postgrotesk-bold.woff2",
+    "_site/assets/css/print/fonts/BBBBaskervvol/index.css",
+    "_site/assets/css/print/fonts/BBBBaskervvol/BBBBaskervvol-Fondue.woff2",
+    "_site/assets/css/print/fonts/BBBBaskervvol/BBBBaskervvol-Fondue.woff",
+    "_site/assets/css/print/fonts/IBM-plex-sans/IBMPlexSans-BoldItalic.woff2",
+    "_site/assets/css/print/fonts/BBBBaskervvol/BBBBaskervvol-Base.woff2",
+    "_site/assets/css/print/fonts/BBBBaskervvol/BBBBaskervvol-Base.ttf",
     "_site/assets/css/print/fonts/WorkSans/WorkSans-Regular.woff2",
     "_site/assets/css/print/fonts/WorkSans/WorkSans-Regular.woff",
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-LightItalic.woff2",
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-LightItalic.woff",
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-Italic.woff2",
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-Italic.woff",
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-ExtraLightItalic.woff2",
-    "_site/assets/css/print/fonts/WorkSans/WorkSans-ExtraLightItalic.woff",
     "_site/csspageweaver/plugins/tableOfContent/README.md",
     "_site/csspageweaver/plugins/reloadInPlace/Readme.md",
-    "_site/csspageweaver/plugins/inlineNotes/README.md",
     "_site/csspageweaver/plugins/pageMove/README.md",
     "_site/csspageweaver/plugins/marker/README.md",
     "_site/csspageweaver/plugins/layout/README.md",
-    "_site/csspageweaver/plugins/fullContent/README.md",
+    "_site/csspageweaver/plugins/inlineNotes/README.md",
     "_site/csspageweaver/plugins/fullPage/README.md",
+    "_site/csspageweaver/plugins/fullContent/README.md",
     "_site/csspageweaver/plugins/footnotesFix/README.md",
     "_site/csspageweaver/plugins/editor/README.md",
     "_site/csspageweaver/plugins/editor/README-DEV-TURNDOWN.md",
     "_site/csspageweaver/plugins/editor/README-DEV-TOOLBAR.md",
     "_site/csspageweaver/plugins/baseline/README.md",
-    "_site/csspageweaver/README.md",
-    "_site/images/mongolian-child-archer-Nasanbat_Nasaa_dithered.png",
-    "_site/images/tomeIII-candle_dithered.png",
+    "_site/images/img_test_2.jpg",
+    "_site/images/intro_domestique.png",
     "_site/images/velo4.jpg",
     "_site/images/velo3.jpg",
     "_site/images/velo2.jpg",
     "_site/images/velo.jpg",
+    "_site/images/tomeIII-candle_dithered.png",
     "_site/images/siege.jpg",
     "_site/images/reparer1.png",
     "_site/images/rebar-foundation-wind-turbine_dithered.png",
-    "_site/images/nobody-at-table-edited_dithered.png",
-    "valentine/10.cover.md",
+    "_site/csspageweaver/README.md",
+    "valentine/100.domestique.md",
     "valentine/templates/screen.md",
     "valentine/templates/print.md",
     "valentine/inclure/titre.md",
@@ -337,7 +340,6 @@
     "old-valentine/inclure/sous-titre.md",
     "old-valentine/inclure/titre.md",
     "old-valentine/templates/screen.md",
-    "old-valentine/templates/print.md",
-    "old-valentine/inclure/mentions.md"
+    "old-valentine/templates/print.md"
   ]
 }

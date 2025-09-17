@@ -1,7 +1,30 @@
 const markdownIt = require("markdown-it");
+const config = require('./siteData.js');
 
 module.exports = function (eleventyConfig) {
-  // Créer une instance markdown locale pour le rendu des captions
+  // Ajouter le preprocessor pour les wikilinks AVANT le reste
+  eleventyConfig.addPreprocessor("wikilinks", "*", (data, content) => {
+    // Convertir ![[image|params]] en ![](image "params")
+    content = content.replace(/!\[\[([^|\]]+)(\|([^\]]+))?\]\]/g, (match, imagePath, _, params) => {
+      // Nettoyer le chemin d'image
+      let cleanPath = imagePath.trim();
+      
+      // Si le chemin ne commence pas par ./ et ne contient pas de dossier, 
+      // l'ajouter au dossier d'images configuré
+      if (!cleanPath.startsWith('./') && !cleanPath.includes('/')) {
+        cleanPath = `./${config.publicFolder}/images/${cleanPath}`;
+      } else if (!cleanPath.startsWith('./')) {
+        cleanPath = `./${config.publicFolder}/${cleanPath}`;
+      }
+      
+      const altText = params ? params.trim() : '';
+      return `![](${cleanPath} "${altText}")`;
+    });
+    
+    return content;
+  });
+
+  // Votre code existant pour les types de médias...
   const md = markdownIt({
     html: true,
     breaks: true,
@@ -31,11 +54,11 @@ module.exports = function (eleventyConfig) {
       template: '<figure data-type="{type}" data-grid="image" class="figure {type} {classes}">{media}</figure><figcaption class="figcaption">{caption}</figcaption>',
       extensions: []
     },
-   fullpage: {
-    name: 'Full Page',
-    template: '<figure data-type="{type}" data-grid="image" class="full-page figure {type} {classes}">{media} <figcaption class="figcaption">{caption}</figcaption> </figure>',
-    extensions: []
-  }
+    fullpage: {
+      name: 'Full Page',
+      template: '<figure data-type="{type}" data-grid="image" class="full-page figure {type} {classes}">{media} <figcaption class="figcaption">{caption}</figcaption> </figure>',
+      extensions: []
+    }
   };
 
   // Classe pour détecter le type
@@ -208,7 +231,7 @@ module.exports = function (eleventyConfig) {
     }
 
     renderMedia(imgHtml, parsedData) {
-      if (!['image', 'imagenote', 'figure', 'grid'].includes(parsedData.type)) {
+      if (!['image', 'imagenote', 'figure', 'grid', 'fullpage'].includes(parsedData.type)) {
         return imgHtml;
       }
 
@@ -265,7 +288,7 @@ module.exports = function (eleventyConfig) {
 
   // Fonction pour traiter les images
   function shouldProcessMedia(parsedData) {
-    if (!['image', 'imagenote', 'figure', 'grid'].includes(parsedData.type)) return false;
+    if (!['image', 'imagenote', 'figure', 'grid', 'fullpage'].includes(parsedData.type)) return false;
     
     return !!(
       parsedData.caption || 
