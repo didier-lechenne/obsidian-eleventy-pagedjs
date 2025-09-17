@@ -7,7 +7,7 @@ _11ty/_data/token.yml
 # Répertoires contenant "old"
 **/*old*/
 
-**/*a_garder*/
+*a_garder*/
 
 # Eleventy
 _site/
