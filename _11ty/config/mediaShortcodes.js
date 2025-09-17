@@ -24,17 +24,17 @@ module.exports = function (eleventyConfig) {
     },
     figure: {
       name: 'Figure',
-      template: '<figure id="{id}" data-type="{type}" data-grid="image" class="{type} {classes}"{styles}>{media}{captionHtml}</figure>',
+      template: '<figure data-type="{type}" data-grid="image" class="{type} {classes}"{styles}>{media}{captionHtml}</figure>',
       extensions: []
     },
     grid: {
       name: 'Grid',
-      template: '<figure id="{id}" data-type="{type}" data-grid="image" class="figure {type} {classes}"{styles}>{media}</figure>{captionHtml}',
+      template: '<figure data-type="{type}" data-grid="image" class="figure {type} {classes}"{styles}>{media}</figure>{captionHtml}',
       extensions: []
     },
     fullpage: {
       name: 'Full Page',
-      template: '<figure id="{id}" data-type="{type}" data-grid="image" class="full-page figure {type} {classes}"{styles}>{media}</figure>',
+      template: '<figure data-type="{type}" data-grid="image" class="full-page figure {type} {classes}"{styles}>{media}</figure>',
       extensions: []
     }
   };
@@ -304,6 +304,25 @@ module.exports = function (eleventyConfig) {
   const mediaParser = new MediaParser(typeDetector);
   const templateEngine = new TemplateEngine();
   const wikilinkProcessor = new WikilinkProcessor(templateEngine, mediaTypes, mediaParser);
+
+  // Shortcode grid utilisant la même logique que les wikilinks
+  eleventyConfig.addShortcode("grid", function(src, options = {}) {
+    // Convertir les options en format "params" pour réutiliser le parser
+    const params = Object.entries(options)
+      .map(([key, value]) => {
+        // Gérer les valeurs avec espaces (caption, class)
+        if (typeof value === 'string' && (value.includes(' ') || value.includes(':'))) {
+          return `${key}:"${value}"`;
+        }
+        return `${key}:${value}`;
+      })
+      .join('|');
+    
+    // Ajouter le type grid si pas déjà spécifié
+    const finalParams = params ? `grid|${params}` : 'grid';
+    
+    return wikilinkProcessor.processWikilink('', src, finalParams);
+  });
 
   eleventyConfig.addPreprocessor("processWikilinks", "*", (data, content) => {
     const wikilinkRegex = /!\[\[\s*([^|\]]+?)\s*(?:\|([\s\S]*?))?\]\]/g;
