@@ -64,8 +64,11 @@ module.exports = function (eleventyConfig) {
       for (const param of params) {
         const lowerParam = param.toLowerCase();
         
-        if (allowedTypes.includes(lowerParam)) {
-          return lowerParam;
+        // Chercher type exact ou type suivi de :
+        for (const type of allowedTypes) {
+          if (lowerParam === type || lowerParam.startsWith(type + ':')) {
+            return type;
+          }
         }
       }
       
@@ -286,16 +289,12 @@ module.exports = function (eleventyConfig) {
   const templateEngine = new TemplateEngine();
   const wikilinkProcessor = new WikilinkProcessor(templateEngine, mediaTypes, mediaParser);
 
-  eleventyConfig.addTransform("processWikilinks", function(content, outputPath) {
-    if (outputPath && outputPath.endsWith('.html')) {
-      const wikilinkRegex = /!\[\[\s*([^|\]]+?)\s*(?:\|([\s\S]*?))?\]\]/g;
-      content = content.replace(wikilinkRegex, (match, filename, params) => {
-        return wikilinkProcessor.processWikilink(match, filename, params);
-      });
-    }
-    
-    return content;
+eleventyConfig.addPreprocessor("processWikilinks", "*", (data, content) => {
+  const wikilinkRegex = /!\[\[\s*([^|\]]+?)\s*(?:\|([\s\S]*?))?\]\]/g;
+  return content.replace(wikilinkRegex, (match, filename, params) => {
+    return wikilinkProcessor.processWikilink(match, filename, params);
   });
+});
 
   const markdownItContainer = require('markdown-it-container');
   
