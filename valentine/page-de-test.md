@@ -1,0 +1,160 @@
+---
+template: default
+toc: ignore
+draft: true
+---
+### Markdown
+
+{% fullpage "./images/archery-outdoors-women-dithered.png", { 
+  id: "full-page-cover",
+  class: "cover"
+} %}
+
+
+![[images/alternative_crasset.png|caption: *view* **from** Ma légende [http://wikipedia.org](http://wikipedia.org)|class:classe1,classe2|fullpage: spread|align-self:start]]
+
+
+![[images/alternative_crasset.png|caption: *view* **from** Ma légende [http://wikipedia.org](http://wikipedia.org)|class:classe1,classe2|width:3|align-self:start]]
+
+Markdown is a lightweight markup language for creating formatted text using a plain-text editor. John Gruber![[images/Aaron_Swartz_profile.jpg|imagenote|caption:Aaron Swartz. [texte](https://example.com)]] and Aaron Swartz created Markdown in 2004 as a markup language that is intended to be easy to read in its source code form. Markdown is widely used for blogging and instant messaging, and also used elsewhere in online forums, collaborative software, documentation pages, and readme files.
+Basic formatting includes typesetting _italics_, **bold**, ~~marking text as deleted~~, ==highlighting text==, creating [http://wikipedia.org](http://wikipedia.org) and even `code`. It can also typeset headings and subheadings, images, quotes and lists. Markdown is a lightweight markup language for creating formatted text using a plain-text editor. John Gruber and Aaron Swartz created Markdown in 2004 as a markup language that is intended to be easy to read in its source code form. Markdown is widely used for blogging and instant messaging, and also used elsewhere in online forums, collaborative software, documentation pages, and readme files. Basic formatting includes typesetting _italics_, **bold**, ~~marking text as deleted~~, ==highlighting text==, creating [hyperlinks](http://wikipedia.org) and even `code`. It can also typeset headings and subheadings, images, quotes and lists.
+
+
+
+![[Excerpt from Mother of All Demos (1968).ogg|caption: legende son]]
+
+
+
+
+![[images/alternative_crasset.png|caption: Ma et ma legende |class: myClass, autreClass, alla|col: 1|imgX: 1245|imgY: 1200]]
+
+![[images/alternative_crasset.png|caption:*view* **from** Ma légende et encore|class:classe1,classe2,classe8|width:3]]
+
+
+```columnGrid
+![[images/carte_skate-01.jpg
+|caption: *view* **from** Ma belle légende
+|image
+|col:1
+|print-col:2
+|width:4
+|print-width:3
+|class:highlight, allAA
+]]
+
+![[images/alternative_crasset.png|image
+|caption: Ma légende 2
+|width:4
+]]
+
+![[images/alternative_crasset.png
+|image
+|caption: Ma légende 3
+|width: 4
+]]
+
+![[images/alternative_crasset.png
+|image
+|caption: Ma légende 3
+|width:3
+]]
+
+![[images/carte_skate-01.jpg
+|image
+|caption: Ma légende
+|width:3
+|class:highlight
+]]
+
+![[images/alternative_crasset.png
+|image
+|caption: Ma légende 2
+|width:4
+]]
+
+![[images/alternative_crasset.png
+|image
+|caption: Ma légende 3
+|width:2
+]]
+
+![[images/alternative_crasset.png
+|image
+|caption: Ma légende 3
+|width:3
+]]
+```
+
+
+
+
+
+
+****
+
+
+
+
+
+
+> Markdown is intended to be as easy-to-read and easy-to-write as is feasible. Readability, however, is emphasized above all else. A Markdown-formatted document should be publishable as-is, as plain text, without looking like it's been marked up with tags or formatting instructions[^note2].
+
+
+### Markdown Extra
+
+Markdown’s raw flavor is updated to _Markdown Extra_ that allows more formatting options and extend common markdown towards a slightly more powerful tool:
+
+- abbreviations
+- ordered lists and definition lists
+- special attributes (like `class` or `id`)
+- tables
+- inline HTML
+- footnotes
+
+An extensive documentation, in French, is available online and should help you in getting started with PageTypeToPrint: [ateliers.esad-pyrenees.fr/pagetypetoprint](https://ateliers.esad-pyrenees.fr/pagetypetoprint/).
+
+<br class="breakpage">
+
+### Shortcodes
+
+In addition to markdown extra, PageTypeToPrint introduces a number of _shortcodes_ that allow videos or images to be inserted into the text (in the form of notes, figures within the text or iconographic sections).
+
+The text below is an extract of _Printing in Relation to Graphic Art_, an essay by George French, published by _The Imperial Press_ in Cleveland, 1903[^note3]
+
+Because it is difficult to perfectly transfer a thought from one mind to another it is essential that the principal medium through which such transference is accomplished may be as perfect as it is possible to make it
+
+It is not wholly by means of the literal significance of certain forms of words that ideas are given currency, whether the words are spoken or printed(figure: images/a.jpg width:4 printwidth:12 caption: A figure whose display is moved to the end of the chapter). In speaking it is easy to convey an impression opposed to the literal meaning of the words employed, by the tone, the expression, the emphasis. It is so also with printed matter. The thought or idea to be communicated acquires or loses force, directness, clearness, lucidity, beauty, in proportion to the fitness of the typography employed as a medium.
+
+It is not primarily a question of beauty of form that is essential in printing, but of the appropriateness of form. Beauty for itself alone is, in printing, but an accessory quality, to be considered as an aid to the force and clarity of the substance of the printed matter(figure: images/01.jpg width:8 printwidth: 12 caption: Another figure whose display is moved to the end of the chapter and is referenced earlier in the text).
+
+An object of art illustrating forms and expressions of beauty subtly suggests esthetic or sensuous emotions, which play upon the differing consciousnesses of beholders as their capacities and natures enable them to appreciate it. The impulse received from the art object is individually interpreted and appropriated, and its value to the individual is determined by each recipient, in accord with his nature, training, and capacity(imagenote: images/01.jpg caption: An image with `printleft` class class: printleft). 
+
+The motive of a piece of printing is driven(figure: images/02.jpg width:6 printwidth: 4 caption: These kind of iconographic calls are useful for the layout of bigger figures than the main text flow allows.) into the consciousness of the reader with brutal directness, and it is one of the offices of the typographer to mitigate the severity of the message or to give an added grace to its welcome.
+
+The book has become such a force as had not been dreamed of a generation ago. The magical increase in the circulation of books, by sale and through libraries, is one of the modern marvels. It is inevitable that the gentle and elevating influence of good literature will be greater and broader in proportion to the increase of the reading habit, for despite the great amount of triviality in literature the proportion of good is larger than ever before, and the trivial has not as large a proportion of absolute badness. The critical are prone to underrate the influence of what they esteem trivial literature upon the lives of the people who read little else. It is certain that there is some good in it, and that it affects the lives of those who read it. Even the most lawless of the bandits of the sanguinary novels has a knightly strain in his character, and his high crimes and misdemeanors are tempered with a certain imperative code of homely morality and chivalry. The spectacular crimes are recognized by the majority of readers as the stage setting for the tale—the tabasco sauce for the literary pabulum. They are not considered to be essential traits of admirable character. The cure for the distemper it is supposed to excite resides in the sensational literature of the day; it is as likely to lead to better things, it may be, as it is likely to deprave.
+
+The cultivating power of any book is enhanced if it is itself an object of art. If it is made in accord with the principles of art, as they are applicable to printing and binding, it will have a certain refining influence, independent of its literary tendency(imagenote: images/02.jpg caption: With `printright` class class: printright).
+
+If we are to subscribe to the best definition of esthetics(imagenote: images/03.png caption: Another with `printleft` class class: printleft), we are bound to recognize in the physical character of the books that are read by masses of people a powerful element for artistic education(imagenote: images/04.jpg caption: An image with no class), and one lending itself to the educational propaganda with ready acquiescence and inviting eagerness. propaganda with ready acquiescence and inviting eagerness. propaganda with ready acquiescence and inviting eagerness.
+
+The business and the mechanics of printing have attained a high degree of perfection. The attention bestowed upon the machinery of business, the perfection of systems and methods, has brought commercial and mechanical processes to a degree of perfection and finish that leaves slight prospect of further improvement, more illuminating systems, or more exact methods. The business of printing is conducted in a manner undreamt of by the men who were most consequential a generation ago. Only a few years have passed since the methods that now control in the counting-rooms of the larger printshops were unknown. Now all is system; knowledge, by the grace of formulas and figures.
+
+A like condition prevails in the work rooms: in the composing-room and the pressroom. The processes incident to printing have been improved, in a mechanical way, until little is left for hope to feed upon. The trade of the printer has been broken into specialized units. The "all 'round" printer is no more. In his place there is the hand compositor, the "ad" compositor, the job compositor, the machine operator, the make-up man, the pressman, the press feeder, etc., each a proficient specialist but neither one a printer. To further mechanicalize the working printers, the planning of the work has been largely taken into the counting-room, or is done in detail at the foreman's desk. So every influence has been at work to limit the versatility and kill the originality of the man at the case. The compensatory reflection is the probability that the assembly of results accomplished by expert units may be a whole of a higher grade of excellence.
+
+The process of specialized improvement has been carried through all the mechanical departments, and has had its way with every machine and implement, revolutionizing them and their manipulation also. The time is ripe for a new motive of improvement and advance to become operative. The mechanical evolution may well stay its course. It has far outstripped the artistic and the intellectual motives. It is quite time to return to them and bring them up to the point reached by the mechanics of the craft, if it be found not possible to put them as far in advance as their relative importance seems to demand.
+
+(video: https://www.youtube.com/watch?v=6mav7bPLXK0 poster: images/01.jpg caption: A YouTube video with a special `poster` attribute, which is printed in place of YouTube player.)
+
+It is not difficult to conclude that certain principles of art have been influential in printing since the craft was inaugurated by Gutenberg and Fust and their contemporaries, but it appears that the relation between printing and the graphic arts has not yet been fully and consciously acknowledged. Some of the older rules and principles of printing are in perfect harmony with the principles and rules of art, and undoubtedly had their origin in the same necessity for harmony that lies in human nature and that was the seed of art principles.
+
+Printing touches life upon so many of its facets, and is such a constant constituent of it, that it requires no special plea to raise it to the plane of one of the absolute forces of culture and one of the most important elements of progress(figure: images/b.jpg width:6 printwidth: 8 caption: These kind of iconographic calls are useful for the layout of bigger figures than the main text flow allows.). This postulate admitted, and the plea for the fuller recognition of the control of art principles in printing needs to be pressed only to the point of full recognition, and it requires no stretch of indulgent imagination to find printing successfully asserting a claim to be recognized as an art. It is manifest that printing is not an art in the sense that painting is an art. Painting has no utilitarian side. It is, with it, art or nothing. Printing is 99–100ths utilitarian. It is essentially a craft. If there is a possibility latent in it of development of true art through refinement and reform in its processes, and the application of art principles, to the end that the possibility of the production of occasional pieces that can demonstrate a claim to be art be admitted, it is all that can be hoped. This is claiming for printing only that which is conceded to the other crafts. There is no claim put forward for silversmiths that their work is all artistic; the chief part of it is very manifestly craftsmanship, yet examples that are true art constantly appear. The same is true of wood carving, of repoussé work in metals, and of many crafts. 
+
+
+
+
+
+[^note1]: Markdown article on [Wikipedia](https://en.wikipedia.org/wiki/Markdown).
+
+[^note2]: John Gruber, Daring Fireball, [Mardown phiulosophy](https://daringfireball.net/projects/markdown/syntax#philosophy).
+
+[^note3]: It has been used in [an early Paged.js demo](https://gitlab.coko.foundation/pagedjs/samples/printinginrelationtographicart/-/tree/master).

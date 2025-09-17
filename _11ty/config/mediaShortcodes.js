@@ -1,347 +1,517 @@
-const markdownIt = require("markdown-it");
 const fs = require("fs");
 const path = require("path");
-const config = require('./siteData.js');
+
+const config = require("./siteData.js");
+
+const markdownIt = require("markdown-it");
+const markdownItFootnote = require("markdown-it-footnote");
+const md = markdownIt({
+  html: true,
+  breaks: true,
+  linkify: false,
+  typographer: true,
+});
+
+md.use(markdownItFootnote);
+
+// OPTION : Désactiver la sauvegarde JSON
+const ENABLE_JSON_SAVE = false; // Passer à true pour réactiver
 
 module.exports = function (eleventyConfig) {
-  const md = markdownIt({
-    html: true,
-    breaks: true,
-    linkify: false,
-    typographer: true,
+  let globalImageCounter = 0;
+  let globalFigureCounter = 0;
+  let globalFigureGridCounter = 0;
+  let globalFullpageCounter = 0;
+  let globalElementCounter = 0;
+
+  // Cache pour les configurations d'images
+  let imageConfigs = {};
+  let configHasChanged = false;
+
+  function getImageConfig(imageId, overrides = {}) {
+    const baseConfig = imageConfigs[imageId] || {};
+    return { ...baseConfig, ...overrides };
+  }
+
+  function generateStyles(config) {
+    const cssVarMapping = {
+      col: "--col",
+      printCol: "--print-col",
+      width: "--width",
+      printWidth: "--print-width",
+      printRow: "--print-row",
+      printHeight: "--print-height",
+      alignSelf: "--align-self",
+      alignself: "--align-self",
+      "align-self": "--align-self",
+      imgX: "--img-x",
+      imgY: "--img-y",
+      imgW: "--img-w",
+      page: "--pagedjs-full-page",
+    };
+
+    let styles = "";
+    Object.entries(config).forEach(([key, value]) => {
+      if (
+        cssVarMapping[key] &&
+        value !== undefined &&
+        value !== null &&
+        value !== ""
+      ) {
+        // Nettoie les guillemets si présents
+        const cleanValue =
+          typeof value === "string" ? value.replace(/^["']|["']$/g, "") : value;
+        styles += `${cssVarMapping[key]}: ${cleanValue}; `;
+      }
+    });
+    return styles ? ` style="${styles}"` : "";
+  }
+
+  function generateHTML(type, config) {
+    const styleAttr = generateStyles(config);
+    const classAttr = config.class ? ` ${config.class}` : "";
+    const captionHTML = config.caption ? md.renderInline(config.caption) : "";
+    const id = config.id;
+    let cleanAlt = "";
+    if (config.caption) {
+      cleanAlt = config.caption
+        .replace(/\*([^*]+)\*/g, "$1")
+        .replace(/<[^>]+>/g, " ")
+        .replace(/&[^;]+;/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    // Incrémenter le compteur pour tous les types qui en ont besoin
+    if (["image", "grid", "fullpage", "figure"].includes(type)) {
+      globalElementCounter++;
+    }
+
+    switch (type) {
+      case "image":
+        return `<figure data-id="${id}" data-grid="image" id="image-${globalElementCounter}" class="figure image${classAttr}"${styleAttr}>
+        <img src="${config.src}" alt="${cleanAlt}" >
+        ${
+          captionHTML
+            ? `<figcaption class="figcaption">${captionHTML}</figcaption>`
+            : ""
+        }
+      </figure>`;
+
+      case "grid":
+        let output = `<figure data-id="${id}" data-grid="image" class="${classAttr}" id="figure-${globalElementCounter}"${styleAttr}>
+        <img src="${config.src}" alt="${cleanAlt}" >
+      </figure>`;
+        if (captionHTML) {
+          output += `<figcaption class="figcaption figcaption-${globalElementCounter}" ${styleAttr}>${captionHTML}</figcaption>`;
+        }
+        return output;
+
+      case "fullpage":
+        return `<figure data-id="${id}" data-grid="image" id="figure-${globalElementCounter}" class="full-page ${classAttr}"${styleAttr}>
+        <img src="${config.src}" alt="${cleanAlt}">
+      </figure>`;
+
+      case "figure":
+        return `<span class="spanMove figure_call" id="fig-${globalElementCounter}-call">
+        [<a href="#fig-${globalElementCounter}">fig. ${globalElementCounter}</a>]
+      </span>
+      <span class="figure figmove${classAttr}" data-grid="image" id="fig-${globalElementCounter}"${styleAttr}>
+        <img src="${config.src}" alt="${cleanAlt}" >
+        ${
+          captionHTML
+            ? `<span class="figcaption"><span class="figure_reference">[fig. ${globalElementCounter}]</span> ${captionHTML}</span>`
+            : ""
+        }
+      </span>`;
+
+      case "imagenote":
+        return `<span class="imagenote sideNote${classAttr}" data-grid="image"${styleAttr}>
+        <img src="${config.src}" alt="${cleanAlt}" >
+        ${captionHTML ? `<span class="caption">${captionHTML}</span>` : ""}
+      </span>`;
+
+      case "video":
+        const posterAttr = config.poster ? ` poster="${config.poster}"` : "";
+        return `<figure class="video${classAttr}" data-grid="content"${styleAttr}>
+        <video controls${posterAttr}>
+          <source src="${config.src}">
+        </video>
+        ${
+          captionHTML
+            ? `<figcaption class="figcaption">${captionHTML}</figcaption>`
+            : ""
+        }
+      </figure>`;
+
+      default:
+        return `<!-- Type ${type} non supporté -->`;
+    }
+  }
+
+  eleventyConfig.on("eleventy.before", () => {
+    globalFigureCounter = 0;
+    globalFigureGridCounter = 0;
+    globalImageCounter = 0;
+    globalElementCounter = 0;
+
+    if (ENABLE_JSON_SAVE) {
+      try {
+        imageConfigs = JSON.parse(
+          fs.readFileSync("_11ty/_data/images.json", "utf8")
+        );
+        console.log(
+          `✅ ${Object.keys(imageConfigs).length} configs d'images chargées`
+        );
+      } catch (e) {
+        imageConfigs = {};
+        console.log("📝 Nouveau fichier images.json sera créé");
+      }
+    } else {
+      imageConfigs = {};
+      console.log("🚫 Sauvegarde JSON désactivée");
+    }
+    configHasChanged = false;
   });
 
-  const mediaTypes = {
-    image: {
-      name: 'Image',
-      template: '<figure data-type="{type}" data-grid="image" class="figure {type} {classes}" id="{id}" data-src="{src}"{styles}>{media}{captionHtml}</figure>',
-      extensions: ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg']
-    },
-    imagenote: {
-      name: 'Image Note',
-      template: '<span data-type="{type}" class="{type} {classes}" id="{id}" data-src="{src}"{styles}>{media}{captionHtml}</span>',
-      extensions: []
-    },
-    figure: {
-      name: 'Figure',
-      template: '<figure data-type="{type}" data-grid="image" class="{type} {classes}"{styles}>{media}{captionHtml}</figure>',
-      extensions: []
-    },
-    grid: {
-      name: 'Grid',
-      template: '<figure data-type="{type}" data-grid="image" class="figure {type} {classes}"{styles}>{media}</figure>{captionHtml}',
-      extensions: []
-    },
-    fullpage: {
-      name: 'Full Page',
-      template: '<figure data-type="{type}" data-grid="image" class="full-page figure {type} {classes}"{styles}>{media}</figure>',
-      extensions: []
+  eleventyConfig.on("eleventy.after", () => {
+    if (configHasChanged && ENABLE_JSON_SAVE) {
+      fs.writeFileSync(
+        "_11ty/_data/images.json",
+        JSON.stringify(imageConfigs, null, 2)
+      );
+      console.log(`💾 ${Object.keys(imageConfigs).length} configs sauvées`);
     }
-  };
+  });
 
-  class TypeDetector {
-    constructor(mediaTypes) {
-      this.mediaTypes = mediaTypes;
-    }
+  eleventyConfig.addShortcode("image", function (firstParam, options = {}) {
+    let config, imageId;
 
-    detectFromFilename(filename) {
-      const ext = this.getFileExtension(filename);
-      
-      for (const [typeName, config] of Object.entries(this.mediaTypes)) {
-        if (!['image', 'imagenote', 'figure', 'grid', 'fullpage'].includes(typeName)) continue;
-        
-        if (config.extensions.includes(ext)) {
-          return typeName;
-        }
+    if (
+      typeof firstParam === "string" &&
+      !firstParam.includes("/") &&
+      !firstParam.includes(".")
+    ) {
+      imageId = firstParam;
+      config = getImageConfig(imageId, options);
+
+      if (!config.src) {
+        return `<!-- ERROR: Image "${imageId}" non trouvée dans JSON -->`;
       }
-      
-      return 'figure';
+    } else {
+      imageId = options.id;
+      const existingConfig = imageConfigs[imageId] || {};
+
+      config = {
+        ...existingConfig,
+        ...options,
+        src: firstParam,
+      };
+
+      if (
+        imageId &&
+        ENABLE_JSON_SAVE &&
+        JSON.stringify(existingConfig) !== JSON.stringify(config)
+      ) {
+        imageConfigs[imageId] = { ...config };
+        configHasChanged = true;
+      }
     }
 
-    detectFromKeyword(params) {
-      const allowedTypes = ['image', 'imagenote', 'figure', 'grid', 'fullpage'];
-      
-      for (const param of params) {
-        const lowerParam = param.toLowerCase();
-        
-        // Chercher type exact ou type suivi de :
-        for (const type of allowedTypes) {
-          if (lowerParam === type || lowerParam.startsWith(type + ':')) {
-            return type;
+    return generateHTML("image", config);
+  });
+
+  eleventyConfig.addAsyncShortcode(
+    "grid",
+    async function (firstParam, options = {}) {
+      let imageConfig, itemId;
+
+      // Détection automatique du type de contenu
+      const isMarkdownFile = firstParam.endsWith(".md");
+      const isImageFile = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(firstParam);
+
+      if (isMarkdownFile) {
+        // Traitement markdown - copie de la logique du shortcode markdown
+        let parsedOptions = {};
+        if (typeof options === "string") {
+          try {
+            const cleanString = options.replace(/,(\s*[}\]])/g, "$1");
+            parsedOptions = Function(`"use strict"; return (${cleanString})`)();
+          } catch (e) {
+            parsedOptions = {};
+          }
+        } else {
+          parsedOptions = options || {};
+        }
+
+        const cleanFile = firstParam
+          .replace(/[\u200B-\u200D\uFEFF]/g, "")
+          .trim();
+        const filePath = path.join(`./${config.publicFolder}`, cleanFile);
+
+        try {
+          const content = await fs.promises.readFile(filePath, "utf8");
+          globalElementCounter++;
+
+          const styleAttr = generateStyles(parsedOptions);
+          const classAttr = parsedOptions.class
+            ? ` class="${parsedOptions.class}"`
+            : "";
+          const idAttr = parsedOptions.id
+            ? ` id="${parsedOptions.id}"`
+            : ` id="markdown-${globalElementCounter}"`;
+
+          const renderedContent = cleanFile.endsWith(".md")
+            ? md.render(content)
+            : content;
+          return `<div data-grid="markdown" data-md="${cleanFile}"${idAttr}${classAttr}${styleAttr}>${renderedContent}</div>`;
+        } catch (error) {
+          console.error(`Erreur inclusion ${cleanFile}:`, error.message);
+          return `<div class="include error">❌ Erreur: ${cleanFile} non trouvé</div>`;
+        }
+      } else if (
+        isImageFile ||
+        firstParam.includes("/") ||
+        firstParam.includes(".")
+      ) {
+        // Traitement comme image (URL ou chemin)
+
+        if (
+          typeof firstParam === "string" &&
+          !firstParam.includes("/") &&
+          !firstParam.includes(".")
+        ) {
+          // ID référence dans JSON
+          itemId = firstParam;
+          imageConfig = getImageConfig(itemId, options);
+
+          if (!imageConfig.src) {
+            return `<!-- ERROR: Image "${itemId}" non trouvée dans JSON -->`;
+          }
+        } else {
+          // URL/chemin direct
+          itemId = options.id;
+          const existingConfig = imageConfigs[itemId] || {};
+
+          imageConfig = {
+            ...existingConfig,
+            ...options,
+            src: firstParam,
+          };
+
+          if (
+            itemId &&
+            ENABLE_JSON_SAVE &&
+            JSON.stringify(existingConfig) !== JSON.stringify(imageConfig)
+          ) {
+            imageConfigs[itemId] = { ...imageConfig };
+            configHasChanged = true;
           }
         }
+
+        return generateHTML("grid", imageConfig);
+      } else {
+        // Fallback: traitement comme référence d'image
+        itemId = firstParam;
+        imageConfig = getImageConfig(itemId, options);
+
+        if (!imageConfig.src) {
+          return `<!-- ERROR: Item "${itemId}" non trouvé dans JSON -->`;
+        }
+
+        return generateHTML("grid", imageConfig);
       }
-      
-      return null;
     }
+  );
 
-    getFileExtension(filename) {
-      const lastDot = filename.lastIndexOf('.');
-      return lastDot === -1 ? '' : filename.substring(lastDot).toLowerCase();
-    }
-  }
+  eleventyConfig.addShortcode("video", function (firstParam, options = {}) {
+    let config, imageId;
 
-  class MediaParser {
-    constructor(typeDetector) {
-      this.typeDetector = typeDetector;
-    }
+    if (
+      typeof firstParam === "string" &&
+      !firstParam.includes("/") &&
+      !firstParam.includes(".")
+    ) {
+      imageId = firstParam;
+      config = getImageConfig(imageId, options);
 
-    parseAttributes(altText, filename) {
-      const result = {
-        type: 'figure',
-        caption: '',
-        classes: [],
+      if (!config.src) {
+        return `<!-- ERROR: Video "${imageId}" non trouvée dans JSON -->`;
+      }
+    } else {
+      imageId = options.id;
+      const existingConfig = imageConfigs[imageId] || {};
+
+      config = {
+        ...existingConfig,
+        ...options,
+        src: firstParam,
       };
 
-      if (!altText) {
-        if (filename) {
-          result.type = this.typeDetector.detectFromFilename(filename);
-        }
-        return result;
-      }
-
-      const cleanedAltText = altText.replace(/\s+/g, ' ').trim();
-      const parts = cleanedAltText.split('|').map(part => part.trim());
-
-      const keywordType = this.typeDetector.detectFromKeyword(parts);
-      if (keywordType) {
-        result.type = keywordType;
-        const keywordIndex = parts.findIndex(p => p.toLowerCase() === keywordType);
-        if (keywordIndex !== -1) {
-          parts.splice(keywordIndex, 1);
-        }
-      } else if (filename) {
-        result.type = this.typeDetector.detectFromFilename(filename);
-      }
-
-      for (const part of parts) {
-        if (part.includes(':')) {
-          this.parseKeyValuePair(part, result);
-        } else if (part && !result.caption) {
-          result.caption = part;
-        }
-      }
-
-      return result;
-    }
-
-    parseKeyValuePair(part, result) {
-      const [rawKey, ...valueParts] = part.split(':');
-      const key = rawKey.trim(); 
-      const value = valueParts.join(':').trim();
-
-      switch (key.toLowerCase()) {
-        case 'caption':
-          result.caption = value;
-          break;
-        case 'class':
-          result.classes = value.split(',').map(cls => cls.trim());
-          break;
-        case 'width':
-          result.width = value;
-          break;
-        case 'col':
-          result.col = value;
-          break;
-        case 'fullpage':
-        case 'full-page':
-          result['pagedjs-full-page'] = value;
-          break;
-        case 'alignself':
-        case 'align-self':
-          result['align-self'] = value;
-          break;
-        case 'print-col':
-        case 'printcol':
-        case 'printCol':
-          result['print-col'] = value;
-          break;
-        case 'print-width':
-        case 'printwidth':
-        case 'printWidth':
-          result['print-width'] = value;
-          break;
-        case 'print-row':
-        case 'printrow':
-          result['print-row'] = value;
-          break;
-        case 'print-height':
-        case 'printheight':
-          result['print-height'] = value;
-          break;
-        case 'print-x':
-        case 'img-x':
-        case 'imgx':
-          result['print-x'] = value;
-          break;
-        case 'print-y':
-        case 'img-y':
-        case 'imgy':
-          result['print-y'] = value;
-          break;
-        case 'img-w':
-        case 'imgw':
-          result['img-w'] = value;
-          break;
-        default:
-          result[key.toLowerCase()] = value;
-          break;
+      if (
+        imageId &&
+        ENABLE_JSON_SAVE &&
+        JSON.stringify(existingConfig) !== JSON.stringify(config)
+      ) {
+        imageConfigs[imageId] = { ...config };
+        configHasChanged = true;
       }
     }
-  }
 
-  class TemplateEngine {
-    render(template, data) {
-      return template
-        .replace(/{type}/g, data.type)
-        .replace(/{classes}/g, data.classes)
-        .replace(/{id}/g, data.id)
-        .replace(/{src}/g, data.src)
-        .replace(/{media}/g, data.media)
-        .replace(/{caption}/g, data.caption)
-        .replace(/{captionHtml}/g, data.captionHtml)
-        .replace(/{styles}/g, data.styles);
-    }
-  }
+    return generateHTML("video", config);
+  });
 
-  class WikilinkProcessor {
-    constructor(templateEngine, mediaTypes, mediaParser) {
-      this.templateEngine = templateEngine;
-      this.mediaTypes = mediaTypes;
-      this.mediaParser = mediaParser;
-    }
+  eleventyConfig.addShortcode("figure", function (firstParam, options = {}) {
+    let config, imageId;
 
-    processWikilink(match, filename, params = '') {
-      const parsedData = this.mediaParser.parseAttributes(params, filename);
-      const mediaType = this.mediaTypes[parsedData.type] || this.mediaTypes.figure;
-      
-      let src = filename.trim();
-      if (!src.startsWith('./') && !src.startsWith('/')) {
-        src = `./images/${src.split('/').pop()}`;
+    if (
+      typeof firstParam === "string" &&
+      !firstParam.includes("/") &&
+      !firstParam.includes(".")
+    ) {
+      imageId = firstParam;
+      config = getImageConfig(imageId, options);
+
+      if (!config.src) {
+        return `<!-- ERROR: Figure "${imageId}" non trouvée dans JSON -->`;
       }
-            
-      const stylesString = this.applyStyles(parsedData);
-      
-      // Generate caption HTML only if caption exists
-      let captionHtml = '';
-      if (parsedData.caption) {
-        const renderedCaption = md.renderInline(parsedData.caption);
-        
-        if (parsedData.type === 'imagenote') {
-          captionHtml = `<span class="figcaption">${renderedCaption}</span>`;
-        } else if (parsedData.type === 'grid') {
-          captionHtml = `<figcaption class="figcaption"${stylesString ? ` style="${stylesString}"` : ''}>${renderedCaption}</figcaption>`;
-        } else {
-          captionHtml = `<figcaption class="figcaption">${renderedCaption}</figcaption>`;
-        }
-      }
-      
-      const templateData = {
-        type: parsedData.type,
-        classes: parsedData.classes.join(' '),
-        id: this.generateId(filename),
-        src: src,
-        media: `<img src="${src}" alt="${parsedData.caption || ''}" loading="lazy">`,
-        caption: parsedData.caption || '',
-        captionHtml: captionHtml,
-        styles: stylesString ? ` style="${stylesString}"` : ''
+    } else {
+      imageId = options.id;
+      const existingConfig = imageConfigs[imageId] || {};
+
+      config = {
+        ...existingConfig,
+        ...options,
+        src: firstParam,
       };
 
-      return this.templateEngine.render(mediaType.template, templateData);
-    }
-
-    generateId(filename) {
-      const cleanFilename = filename.replace(/\./g, '').replace(/[^a-zA-Z0-9]/g, '');
-      return `content${cleanFilename}`;
-    }
-
-    applyStyles(parsedData) {
-      const styles = [];
-      const excludedProps = ['type', 'caption', 'classes'];
-      
-      Object.entries(parsedData).forEach(([key, value]) => {
-        if (typeof value === 'string' && !excludedProps.includes(key)) {
-          styles.push(`--${key}: ${value}`);
-        }
-      });
-
-      return styles.join('; ');
-    }
-  }
-
-  eleventyConfig.addAsyncShortcode("markdown", async function (file, options = {}) {
-    const cleanFile = file.replace(/[\u200B-\u200D\uFEFF]/g, "").trim();
-    const filePath = path.join(`./${config.publicFolder}`, cleanFile);
-
-    try {
-      const content = await fs.promises.readFile(filePath, "utf8");
-      
-      const styles = [];
-
-      Object.entries(options).forEach(([key, value]) => {
-        if (value !== undefined) {
-          // Convertir camelCase en kebab-case et ajouter --
-          const cssVar = `--${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`;
-          styles.push(`${cssVar}: ${value}`);
-        }
-      });
-
-      const styleAttr = styles.length > 0 ? ` style="${styles.join('; ')}"` : "";
-      const classAttr = options.class ? ` class="${options.class}"` : "";
-      const idAttr = options.id ? ` id="${options.id}"` : "";
-
-      const renderedContent = cleanFile.endsWith(".md") ? md.render(content) : content;
-
-      return `<div data-grid="markdown" data-md="${cleanFile}"${idAttr}${classAttr}${styleAttr}>${renderedContent}</div>`;
-      
-    } catch (error) {
-      console.error(`Erreur inclusion ${cleanFile}:`, error.message);
-      return `<div class="include error">❌ Erreur: ${cleanFile} non trouvé</div>`;
-    }
-  });
-
-  const typeDetector = new TypeDetector(mediaTypes);
-  const mediaParser = new MediaParser(typeDetector);
-  const templateEngine = new TemplateEngine();
-  const wikilinkProcessor = new WikilinkProcessor(templateEngine, mediaTypes, mediaParser);
-
-  // Shortcode grid utilisant la même logique que les wikilinks
-  eleventyConfig.addShortcode("grid", function(src, options = {}) {
-    // Convertir les options en format "params" pour réutiliser le parser
-    const params = Object.entries(options)
-      .map(([key, value]) => {
-        // Gérer les valeurs avec espaces (caption, class)
-        if (typeof value === 'string' && (value.includes(' ') || value.includes(':'))) {
-          return `${key}:"${value}"`;
-        }
-        return `${key}:${value}`;
-      })
-      .join('|');
-    
-    // Ajouter le type grid si pas déjà spécifié
-    const finalParams = params ? `grid|${params}` : 'grid';
-    
-    return wikilinkProcessor.processWikilink('', src, finalParams);
-  });
-
-  eleventyConfig.addPreprocessor("processWikilinks", "*", (data, content) => {
-    const wikilinkRegex = /!\[\[\s*([^|\]]+?)\s*(?:\|([\s\S]*?))?\]\]/g;
-    return content.replace(wikilinkRegex, (match, filename, params) => {
-      return wikilinkProcessor.processWikilink(match, filename, params);
-    });
-  });
-
-  const markdownItContainer = require('markdown-it-container');
-  
-  eleventyConfig.amendLibrary("md", mdLib => {
-    mdLib.use(markdownItContainer, 'columnGrid', {
-      render: function (tokens, idx) {
-        if (tokens[idx].nesting === 1) {
-          return '<div class="columnGrid">\n';
-        } else {
-          return '</div>\n';
-        }
+      if (
+        imageId &&
+        ENABLE_JSON_SAVE &&
+        JSON.stringify(existingConfig) !== JSON.stringify(config)
+      ) {
+        imageConfigs[imageId] = { ...config };
+        configHasChanged = true;
       }
-    });
+    }
+
+    return generateHTML("figure", config);
   });
+
+  eleventyConfig.addShortcode("imagenote", function (firstParam, options = {}) {
+    let config, imageId;
+
+    if (
+      typeof firstParam === "string" &&
+      !firstParam.includes("/") &&
+      !firstParam.includes(".")
+    ) {
+      imageId = firstParam;
+      config = getImageConfig(imageId, options);
+
+      if (!config.src) {
+        return `<!-- ERROR: ImageNote "${imageId}" non trouvée dans JSON -->`;
+      }
+    } else {
+      imageId = options.id;
+      const existingConfig = imageConfigs[imageId] || {};
+
+      config = {
+        ...existingConfig,
+        ...options,
+        src: firstParam,
+      };
+
+      if (
+        imageId &&
+        ENABLE_JSON_SAVE &&
+        JSON.stringify(existingConfig) !== JSON.stringify(config)
+      ) {
+        imageConfigs[imageId] = { ...config };
+        configHasChanged = true;
+      }
+    }
+
+    return generateHTML("imagenote", config);
+  });
+
+  eleventyConfig.addShortcode("fullpage", function (firstParam, options = {}) {
+    let config, itemId;
+
+    if (
+      typeof firstParam === "string" &&
+      !firstParam.includes("/") &&
+      !firstParam.includes(".")
+    ) {
+      itemId = firstParam;
+      config = getImageConfig(itemId, options);
+
+      if (!config.src) {
+        return `<!-- ERROR: Item "${itemId}" non trouvé dans JSON -->`;
+      }
+    } else {
+      itemId = options.id;
+      const existingConfig = imageConfigs[itemId] || {};
+
+      config = {
+        ...existingConfig,
+        ...options,
+        src: firstParam,
+      };
+
+      if (
+        itemId &&
+        ENABLE_JSON_SAVE &&
+        JSON.stringify(existingConfig) !== JSON.stringify(config)
+      ) {
+        imageConfigs[itemId] = { ...config };
+        configHasChanged = true;
+      }
+    }
+
+    return generateHTML("fullpage", config);
+  });
+
+  eleventyConfig.addAsyncShortcode(
+    "markdown",
+    async function (file, optionsString) {
+      // Parse manual pour supporter les trailing commas
+      let options = {};
+      if (typeof optionsString === "string") {
+        try {
+          // Nettoie les trailing commas
+          const cleanString = optionsString.replace(/,(\s*[}\]])/g, "$1");
+          options = Function(`"use strict"; return (${cleanString})`)();
+        } catch (e) {
+          console.warn("Erreur parsing options markdown:", e.message);
+          options = {};
+        }
+      } else if (typeof optionsString === "object") {
+        options = optionsString || {};
+      }
+      const cleanFile = file.replace(/[\u200B-\u200D\uFEFF]/g, "").trim();
+      const filePath = path.join(`./${config.publicFolder}`, cleanFile);
+
+      try {
+        const content = await fs.promises.readFile(filePath, "utf8");
+
+        globalElementCounter++;
+
+        const styleAttr = generateStyles(options);
+        const classAttr = options.class ? ` class="${options.class}"` : "";
+        const idAttr = options.id
+          ? ` id="${options.id}"`
+          : ` id="markdown-${globalElementCounter}"`;
+
+        const renderedContent = cleanFile.endsWith(".md")
+          ? md.render(content)
+          : content;
+
+        return `<div data-grid="markdown" data-md="${cleanFile}"${idAttr}${classAttr}${styleAttr}>${renderedContent}</div>`;
+      } catch (error) {
+        console.error(`Erreur inclusion ${cleanFile}:`, error.message);
+        return `<div class="include error">❌ Erreur: ${cleanFile} non trouvé</div>`;
+      }
+    }
+  );
 };
