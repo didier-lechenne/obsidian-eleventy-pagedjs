@@ -36,9 +36,23 @@
               "icon": "file-text",
               "title": "Journal des modifications"
             }
+          },
+          {
+            "id": "64b1329f62bbcbfb",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Sans titre.md",
+                "mode": "source",
+                "source": true
+              },
+              "icon": "lucide-file",
+              "title": "Sans titre"
+            }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -162,6 +176,7 @@
   },
   "left-ribbon": {
     "hiddenItems": {
+      "cmdr:Recharger l'application sans enregistrer": false,
       "switcher:Ouvrir le sélecteur rapide": false,
       "graph:Ouvrir la vue graphique": false,
       "canvas:Créer une nouvelle toile": false,
@@ -180,19 +195,21 @@
       "vscode-editor:Create Code File": false
     }
   },
-  "active": "ed3c635b9aef9c2d",
+  "active": "64b1329f62bbcbfb",
   "lastOpenFiles": [
-    ".obsidian/plugins/vscode-editor/styles.css",
-    ".obsidian/plugins/vscode-editor/manifest.json",
-    ".obsidian/plugins/vscode-editor/main.js",
-    ".obsidian/plugins/vscode-editor/data.json",
-    ".obsidian/plugins/show-hidden-files/styles.css",
-    ".obsidian/plugins/show-hidden-files/manifest.json",
-    ".obsidian/plugins/show-hidden-files/main.js",
-    ".obsidian/plugins/regex-mark/styles.css",
-    ".obsidian/plugins/regex-mark/manifest.json",
-    ".obsidian/plugins/regex-mark/main.js",
-    ".obsidian/plugins/regex-mark/data.json",
+    "Sans titre.md",
+    ".obsidian/plugins/hot-reload/versions.json",
+    ".obsidian/plugins/hot-reload/tsconfig.json",
+    ".obsidian/plugins/hot-reload/README.md",
+    ".obsidian/plugins/hot-reload/pnpm-lock.yaml",
+    ".obsidian/plugins/hot-reload/package.json",
+    ".obsidian/plugins/hot-reload/ophidian.config.mjs",
+    ".obsidian/plugins/hot-reload/manifest.json",
+    ".obsidian/plugins/hot-reload/main.js",
+    ".obsidian/plugins/hot-reload/LICENSE",
+    ".obsidian/plugins/hot-reload/hot-reload.ts",
+    ".obsidian/plugins/hot-reload/CHANGELOG.md",
+    ".obsidian/plugins/hot-reload/.gitignore",
     "README.md",
     "valentine/10.cover.md"
   ]
