@@ -197,7 +197,6 @@
   },
   "active": "64b1329f62bbcbfb",
   "lastOpenFiles": [
-    "Sans titre.md",
     ".obsidian/plugins/hot-reload/versions.json",
     ".obsidian/plugins/hot-reload/tsconfig.json",
     ".obsidian/plugins/hot-reload/README.md",
@@ -210,6 +209,8 @@
     ".obsidian/plugins/hot-reload/hot-reload.ts",
     ".obsidian/plugins/hot-reload/CHANGELOG.md",
     ".obsidian/plugins/hot-reload/.gitignore",
+    ".obsidian/plugins/vscode-editor/styles.css",
+    "Sans titre.md",
     "README.md",
     "valentine/10.cover.md"
   ]
